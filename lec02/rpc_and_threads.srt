@@ -3957,54 +3957,67 @@ by reference instead of by copying so it
 
 926
 00:40:01,970 --> 00:40:03,770
+所以在底层
 so under the hood what must really be
 
 927
 00:40:03,770 --> 00:40:05,330
+go 把指向map对象的指针
 going on here is that go is passing a
 
 928
 00:40:05,330 --> 00:40:08,480
+传递给
 pointer to the map object
 
 929
 00:40:08,480 --> 00:40:10,070
+每个crawl函数调用
 to each of the calls of crawl so they
 
 930
 00:40:10,070 --> 00:40:12,830
+因此这些调用共享同一个对象和内存的指针
 all share the pointer to the same object
 
 931
 00:40:12,830 --> 00:40:15,740
+而不是（对象）的拷贝
 and memory rather than copying rather
 
 932
 00:40:15,740 --> 00:40:22,760
+有什么问题吗
 than copying than that any questions so
 
 933
 00:40:22,760 --> 00:40:24,140
+这段代码显然没有解决
 this code definitely does not solve the
 
 934
 00:40:24,140 --> 00:40:25,760
+造成的问题
 problem that was posed right because it
 
 935
 00:40:25,760 --> 00:40:30,650
+因为它没有并行的启动fetch（函数）
 doesn't launch parallel parallel fetches
 
 936
 00:40:30,650 --> 00:40:33,200
+我们需要把goroutine
 now so clue we need to insert goroutines
 
 937
 00:40:33,200 --> 00:40:35,150
+放在正确的地方
 somewhere in this code right to get
 
 938
 00:40:35,150 --> 00:40:37,880
+来实现并行的fetch 让我们假设
 parallel fetches so let's suppose just
 
 939
@@ -4017,438 +4030,547 @@ most lazy thing because why so I'm gonna
 
 941
 00:40:51,440 --> 00:40:54,950
+我这么改代码 
 just modify the code to run the
 
 942
 00:40:54,950 --> 00:40:57,470
-subsidiary crawls each in its own go
+把每个crawl子调用
+subsidiary crawls each in its own 
 
 943
 00:40:57,470 --> 00:41:00,470
-routine actually before I do that why
+放到各自的goroutine里执行
+goroutine actually before I do that why
 
 944
 00:41:00,470 --> 00:41:01,580
+我执行这段代码 给你们看看
 don't I run the code just to show you
 
 945
 00:41:01,580 --> 00:41:04,070
+正确的output是什么样
 what correct output looks like so hoping
 
 946
 00:41:04,070 --> 00:41:07,670
+这个窗口运行crawler
 this other window Emad run the crawler
 
 947
 00:41:07,670 --> 00:41:09,380
+实际上执行了全部3个crawler
 it actually runs all three copies of the
 
 948
 00:41:09,380 --> 00:41:10,970
+它们都找到了
 crawler and they all find exactly the
 
 949
 00:41:10,970 --> 00:41:14,330
+完全相同的一组网页
 same set of webpages so this is the
 
 950
 00:41:14,330 --> 00:41:16,100
+这正是我们期望看到的输出
 output that we're hoping to see five
 
 951
 00:41:16,100 --> 00:41:19,220
+5行，5个不同的网页被爬取到
 lines five different web pages are are
 
 952
 00:41:19,220 --> 00:41:20,750
+每个打印出一行
 fetched prints a line for each one so
 
 953
 00:41:20,750 --> 00:41:26,120
+现在我们把crawler
 let me now run the subsidiary crawls in
 
 954
 00:41:26,120 --> 00:41:28,130
-their own go routines and run that code
+放在各自的goroutine里执行
+their own goroutines and run that code
 
 955
 00:41:28,130 --> 00:41:35,540
+我将看到什么结果
 so what am I going to see the hope is to
 
 956
 00:41:35,540 --> 00:41:37,880
+我们的期望是并行爬取网页
 fetch these webpages in parallel for
 
 957
 00:41:37,880 --> 00:41:42,800
+达到更高的性能 好的 
 higher performance so okay so you're
 
 958
 00:41:42,800 --> 00:41:45,110
+你的观点是只会看到一个URL
 voting for only seeing one URL and why
 
 959
 00:41:45,110 --> 00:41:47,680
+为什么
 so why is that
 
 960
 00:41:50,980 --> 00:41:55,220
+对 完全正确
 yeah yes that's exactly right you know
 
 961
 00:41:55,220 --> 00:41:59,000
+它不会等待在
 after the after it's not gonna wait in
 
 962
 00:41:59,000 --> 00:42:00,559
+for循环，第26行
 this loop at line 26 it's gonna zip
 
 963
 00:42:00,559 --> 00:42:02,450
+它将迅速执行完循环
 right through that loop I was gonna
 
 964
 00:42:02,450 --> 00:42:04,849
-fetch 1p when the ferry first webpage at
+当最开始的那个网页被抓取（第22行）
+fetch 1 page when the very first webpage at 
 
 965
 00:42:04,849 --> 00:42:07,039
-line 22 and then a loop it's gonna fly
+然后一个循环 它将会启动
+line 22 and then a loop it's gonna fire
 
 966
 00:42:07,039 --> 00:42:08,390
-off the Go routines and immediately
+这些goroutine
+off the Goroutines and immediately
 
 967
 00:42:08,390 --> 00:42:10,220
-the scroll function is gonna return and
+紧接着crawl函数就将返回
+the crawl function is gonna return and
 
 968
 00:42:10,220 --> 00:42:11,990
+而且crawl是在main函数里调用的
 if it was called from main main what was
 
 969
 00:42:11,990 --> 00:42:13,789
+几乎可以确定main
 exit almost certainly before any of the
 
 970
 00:42:13,789 --> 00:42:15,200
-routines was able to do any work at all
+会在这些goroutine能做任何事之前退出
+goroutines was able to do any work at all
 
 971
 00:42:15,200 --> 00:42:16,880
+所以我们很可能只会看到第一个网页
 so we'll probably just see the first web
 
 972
 00:42:16,880 --> 00:42:19,690
+我运行它
 page and I'm gonna do when I run it
 
 973
 00:42:19,690 --> 00:42:23,920
+你会看到，这里，在Serial下面
 you'll see here under serial that only
 
 974
 00:42:23,920 --> 00:42:26,660
+唯一被找到的网页
 the one web page was found now in fact
 
 975
 00:42:26,660 --> 00:42:28,730
+由于程序并没有在Serial Crawler结束后退出
 since this program doesn't exit after
 
 976
 00:42:28,730 --> 00:42:30,799
-the serial crawler those Guru T's are
+这些goroutine
+the Serial crawler those goroutines are
 
 977
 00:42:30,799 --> 00:42:32,269
+仍然在运行 实际上 他们打印的输出
 still running and they actually print
 
 978
 00:42:32,269 --> 00:42:35,390
+和后面的crawler例子（的输出）
 their output down here interleaved with
 
 979
 00:42:35,390 --> 00:42:37,819
+混在了一起
 the next crawler example but
 
 980
 00:42:37,819 --> 00:42:42,829
+然而 这段代码 只是在这里加了一个go关键词
 nevertheless the codes just adding a go
 
 981
 00:42:42,829 --> 00:42:45,829
+完全不起作用
 here absolutely doesn't work so let's
 
 982
 00:42:45,829 --> 00:42:49,579
+我们忘掉这段代码 现在我
 get rid of that okay so now I want to
 
 983
 00:42:49,579 --> 00:42:52,190
+想给你们看一种并发风格的crawler
 show you a one style of concurrent
 
 984
 00:42:52,190 --> 00:42:55,789
+我马上会展示其中一个
 crawler and I'm presenting to one of
 
 985
 00:42:55,789 --> 00:42:59,750
+（它）使用了共享数据
 them written with shared data shared
 
 986
 00:42:59,750 --> 00:43:02,809
+共享对象和锁 这是第一个（crawler）
 objects and locks it's the first one and
 
 987
 00:43:02,809 --> 00:43:05,059
+还有一个（crawler）没有用共享数据
 another one written without shared data
 
 988
 00:43:05,059 --> 00:43:08,990
+但使用channel传递消息
 but with passing information along
 
 989
 00:43:08,990 --> 00:43:11,359
+来协调
 channels in order to coordinate the
 
 990
 00:43:11,359 --> 00:43:12,920
+不同的线程  现在（要讲的）是共享数据的
 different threads so this is the shared
 
 991
 00:43:12,920 --> 00:43:17,000
+这只是众多使用共享数据
 data one or this is just one of many
 
 992
 00:43:17,000 --> 00:43:18,980
+来构建crawler的方式之一
 ways of building a web crawler using
 
 993
 00:43:18,980 --> 00:43:22,460
+这段代码明显
 shared data so this code significantly
 
 994
 00:43:22,460 --> 00:43:26,079
+比Serial crawler要复杂的多
 more complicated than a serial crawler
 
 995
 00:43:26,079 --> 00:43:31,130
+它为每个fetch创建一个thread
 it creates a thread for each fetch it
 
 996
 00:43:31,130 --> 00:43:33,740
+最大的不同之处在于
 does alright but the huge difference is
 
 997
 00:43:33,740 --> 00:43:38,390
+它做了两件事
 that it does with two things one it does
 
 998
 00:43:38,390 --> 00:43:40,700
+一是必要的统计 以注意到
 the bookkeeping required to notice when
 
 999
 00:43:40,700 --> 00:43:44,690
+所有爬取完成的时刻
 all of the crawls have finished and it
 
 1000
 00:43:44,690 --> 00:43:47,900
+它也会处理共享表格
 handles the shared table of which URLs
 
 1001
 00:43:47,900 --> 00:43:49,849
+记录已爬取的URL
 have been crawled correctly so this code
 
 1002
 00:43:49,849 --> 00:43:53,809
+所以这段代码仍然有URL表格
 still has this table of URLs and that's
 
 1003
 00:43:53,809 --> 00:43:59,349
+即F.fetched
 this F dot fetched this F dot fetch
 
 1004
 00:43:59,349 --> 00:44:06,130
+在第43行 但这个表格
 map at line 43 but this this table is
 
 1005
 00:44:06,130 --> 00:44:10,660
+被所有的crawler线程共享
 actually shared by all of the all of the
 
 1006
 00:44:10,660 --> 00:44:12,190
+所有的crawler线程
 crawler threads and all the crawler
 
 1007
 00:44:12,190 --> 00:44:14,890
+执行在
 threads are making or executing inside
 
 1008
 00:44:14,890 --> 00:44:16,900
-concurrent mutex and so we still have
+函数ConcurrentMutex内 所以我们仍然
+ConcurrentMutex and so we still have
 
 1009
 00:44:16,900 --> 00:44:18,609
-this sort of tree up in current mutexes
+有ConcurrentMutex的树结构
+this sort of tree of ConcurrentMutexes
 
 1010
 00:44:18,609 --> 00:44:20,619
+来探索网络图的不同部分
 that's exploring different parts of the
 
 1011
 00:44:20,619 --> 00:44:22,599
+但它们中的每一个是被
 web graph but each one of them was
 
 1012
 00:44:22,599 --> 00:44:25,660
-launched as a as his own go routine
+被放在各自的goroutine中启动
+launched as a as his own goroutine
 
 1013
 00:44:25,660 --> 00:44:28,720
+而不是作为函数调用
 instead of as a function call but
 
 1014
 00:44:28,720 --> 00:44:30,400
+但是它们都共享一个状态表
 they're all sharing this table of state
 
 1015
 00:44:30,400 --> 00:44:32,859
-this table of test URLs because if one
+记录已爬取URL的表格 
+this table of fetched URLs because if one
 
 1016
 00:44:32,859 --> 00:44:34,990
-go routine fetches a URL we don't want
+因为如果有个goroutine爬取了一个URL
+goroutine fetches a URL we don't want
 
 1017
 00:44:34,990 --> 00:44:36,970
-another Go routine to accidentally
+我们不希望另一个goroutine
+another goroutine to accidentally
 
 1018
 00:44:36,970 --> 00:44:40,420
+意外地爬取同一个URL 
 fetch the same URL and as you can see
 
 1019
 00:44:40,420 --> 00:44:43,150
+你在这里看到 在第42行和第45行
 here line 42 and 45 I've surrounded them
 
 1020
 00:44:43,150 --> 00:44:48,250
-by the new taxes that are required to to
+我在这段代码前后加上互斥锁
+by the mutexes that are required to to
 
 1021
 00:44:48,250 --> 00:44:51,099
+用于防止race
 prevent a race that would occur if I
 
 1022
 00:44:51,099 --> 00:44:52,900
-didn't add them new Texas so the danger
+如果不加 race就可能发生
+didn't add the mutexes so the danger
 
 1023
 00:44:52,900 --> 00:44:57,730
+所以这里的危险是
 here is that at line 43 a thread is
 
 1024
 00:44:57,730 --> 00:44:59,980
+在第43行 一个线程正在检查URL是否已经被爬取
 checking of URLs already been fetched so
 
 1025
 00:44:59,980 --> 00:45:02,680
+两个线程恰好在处理
 two threads happen to be following the
 
 1026
 00:45:02,680 --> 00:45:06,819
-same URL now two calls to concurrent
+同一个URL  两个ConcurrentMutex函数的调用
+same URL now two calls to ConcurrentMutex
 
 1027
 00:45:06,819 --> 00:45:09,490
-mutex end up looking at the same URL
+结果却会看到同一个URL
+end up looking at the same URL
 
 1028
 00:45:09,490 --> 00:45:11,140
+原因可能是同一个URL
 maybe because that URL was mentioned in
 
 1029
 00:45:11,140 --> 00:45:13,930
+在两个不同的网页都出现过
 two different web pages if we didn't
 
 1030
 00:45:13,930 --> 00:45:17,559
+如果我们没有锁 
 have the lock they'd both access the
 
 1031
 00:45:17,559 --> 00:45:18,819
+它们都将访问表格 
 math table to see if the threaded and
 
 1032
 00:45:18,819 --> 00:45:20,829
+查看URL是否已经爬取
 then already if the URL had been already
 
 1033
 00:45:20,829 --> 00:45:23,650
+在第43行它们都拿到False
 fetched and they both get false at line
 
 1034
 00:45:23,650 --> 00:45:27,069
+在第44行 它们都把表格中的
 43 they both set the URLs entering the
 
 1035
 00:45:27,069 --> 00:45:30,880
+URL项设置为True
 table to true at line 44 and at 47 they
 
 1036
 00:45:30,880 --> 00:45:32,380
+在第47行 它们都看到already值为False
 will both see that I already was false
 
 1037
 00:45:32,380 --> 00:45:33,880
-and then they both go on to patch the
+之后它们都会去爬取这个网页
+and then they both go on to fetch the
 
 1038
 00:45:33,880 --> 00:45:37,030
+所以我们需要在那里加锁
 web page so we need the lock there and
 
 1039
 00:45:37,030 --> 00:45:38,740
+对于（在那里加锁）的一个理解方式 我觉得是
 the way to think about it I think is
 
 1040
 00:45:38,740 --> 00:45:41,410
+我们希望第43行和44行（一起）
 that we want lines 43 and 44 to be
 
 1041
 00:45:41,410 --> 00:45:44,020
+是原子性的 也即是说我们不希望
 atomic that is we don't want some other
 
 1042
 00:45:44,020 --> 00:45:45,910
+其他线程进入第43行和44行
 thread to to get in and be using the
 
 1043
 00:45:45,910 --> 00:45:48,460
+使用表 我们想要
 table between 43 and 44 we we want to
 
 1044
 00:45:48,460 --> 00:45:50,349
+读取当前的内容 每个线程
 read the current content each thread
 
 1045
 00:45:50,349 --> 00:45:52,690
+希望能读取当前的表格内容
 wants to read the current table contents
 
 1046
 00:45:52,690 --> 00:45:55,780
+并更新 且没有其他线程干扰
 and update it without any other thread
 
 1047
 00:45:55,780 --> 00:45:57,309
+这正是锁
 interfering and so that's what the locks
 
 1048
 00:45:57,309 --> 00:46:01,150
+为我们做到的事情 对于这里使用锁的策略 
 are doing for us okay so so actually any
 
 1049
 00:46:01,150 --> 00:46:03,280
+有任何问题吗
 questions about the about the locking
 
 1050
@@ -4457,234 +4579,292 @@ strategy here
 
 1051
 00:46:07,750 --> 00:46:10,760
+好 当我们检查表中的URL条目之后
 all right once we check the URLs entry
 
 1052
 00:46:10,760 --> 00:46:13,670
-in the table alliant 51 it just crawls
+在51行 
+in the table at line 51 it just crawls
 
 1053
 00:46:13,670 --> 00:46:15,320
+URL被以常见的方式爬取
 it just fetches that page in the usual
 
 1054
 00:46:15,320 --> 00:46:18,950
+之后另一个有趣的事情
 way and then the other thing interesting
 
 1055
 00:46:18,950 --> 00:46:20,600
+是线程的启动
 thing that's going on is the launching
 
 1056
 00:46:20,600 --> 00:46:35,450
+（这个同学的）问题是
 of the threads yes so the question is
 
 1057
 00:46:35,450 --> 00:46:43,970
-what's with the F dot no no the MU it is
+关于F. 不 
+what's with the F dot no no the mu it is
 
 1058
 00:46:43,970 --> 00:46:47,120
+在第36行有一个结构体
 okay so there's a structure to find out
 
 1059
 00:46:47,120 --> 00:46:50,330
+某种意义上聚集了
 line 36 that sort of collects together
 
 1060
 00:46:50,330 --> 00:46:53,930
+所有的不同的东西
 all the different stuff that all the
 
 1061
 00:46:53,930 --> 00:46:55,280
+所有我们需要的不同状态 用以运行crawl
 different state that we need to run this
 
 1062
 00:46:55,280 --> 00:46:57,380
+这里只有两个对象
 crawl and here it's only two objects but
 
 1063
 00:46:57,380 --> 00:46:58,820
+但是可以是更多
 you know it could be a lot more and
 
 1064
 00:46:58,820 --> 00:47:00,620
+只是为了方便
 they're only grouped together for
 
 1065
 00:47:00,620 --> 00:47:02,030
+才它们放在一起
 convenience there's no other
 
 1066
 00:47:02,030 --> 00:47:05,390
+把mu和fetched放在一个结构中
 significance to the fact there's no deep
 
 1067
 00:47:05,390 --> 00:47:07,490
-significance the fact that mu and fetch
+并没有什么深层意义
+significance the fact that mu and fetched
 
 1068
 00:47:07,490 --> 00:47:11,750
-store it inside the same structure and
+在同一个结构体里
+inside the same structure and
 
 1069
 00:47:11,750 --> 00:47:14,690
+F. 只是一种语法
 that F dot is just sort of the syntax
 
 1070
 00:47:14,690 --> 00:47:15,890
+用于取出结构体里的元素
 are getting out one of the elements in
 
 1071
 00:47:15,890 --> 00:47:17,180
+我只是刚巧把它们
 the structure so I just happened to put
 
 1072
 00:47:17,180 --> 00:47:19,070
+放在结构体里 因为
 them you in the structure because it
 
 1073
 00:47:19,070 --> 00:47:21,080
+它让我把与crawl相关的东西
 allows me to group together all the
 
 1074
 00:47:21,080 --> 00:47:22,790
+组织在一起 但是
 stuff related to a crawl but that
 
 1075
 00:47:22,790 --> 00:47:25,600
+这绝对不是说
 absolutely does not mean that go
 
 1076
 00:47:25,600 --> 00:47:28,880
-associates the MU with that structure or
+go把mu和那个结构体联系在一起
+associates the mu with that structure or
 
 1077
 00:47:28,880 --> 00:47:30,950
+或是和fetch表联系在一起 
 with the fetch map or anything it's just
 
 1078
 00:47:30,950 --> 00:47:33,710
-a lock objects and just has a lock
+它只是个锁的对象 
+a lock objects and just has a Lock
 
 1079
 00:47:33,710 --> 00:47:35,090
+只是有一个Lock函数你可以调用
 function you can call and that's all
 
 1080
 00:47:35,090 --> 00:47:37,930
+仅此而已
 that's going on
 
 1081
 00:47:53,790 --> 00:47:58,750
+（学生的）问题是
 so the question is how come in order to
 
 1082
 00:47:58,750 --> 00:48:00,520
+为了传引用，我必须在这里使用*操作符
 pass something by reference I had to use
 
 1083
 00:48:00,520 --> 00:48:02,440
+但在前一个例子里
 star here where it is when a in the
 
 1084
 00:48:02,440 --> 00:48:03,940
+我们传递了一个map
 previous example when we were passing a
 
 1085
 00:48:03,940 --> 00:48:06,040
+没有使用*操作符
 map we didn't have to use star that is
 
 1086
 00:48:06,040 --> 00:48:07,569
+不是一定要传递pointer 我的意思是
 didn't have to pass a pointer I mean
 
 1087
 00:48:07,569 --> 00:48:09,069
+第41行的*记号
 that star notation you're seeing there
 
 1088
 00:48:09,069 --> 00:48:15,339
-in mine 41 basically and he's saying
+如他所说
+in line 41 basically and he's saying
 
 1089
 00:48:15,339 --> 00:48:16,809
+我们传递指针
 that we're passing a pointer to this
 
 1090
 00:48:16,809 --> 00:48:19,210
+给这个fetchState对象 我们这里要用指针
 fetch state object and we want it to be
 
 1091
 00:48:19,210 --> 00:48:20,559
+是因为我们希望
 a pointer because we want there to be
 
 1092
 00:48:20,559 --> 00:48:22,000
+内存里有一个对象
 one object in memory and all the
 
 1093
 00:48:22,000 --> 00:48:23,710
-different go routines I want to use that
+并且所有不同的goroutine都使用那个对象
+different goroutines I want to use that
 
 1094
 00:48:23,710 --> 00:48:25,240
+所以它们需要一个
 same object so they all need a pointer
 
 1095
 00:48:25,240 --> 00:48:28,000
+指向同一个对象的指针
 to that same object so so we need to
 
 1096
 00:48:28,000 --> 00:48:29,410
+所以我们需要找到你们自己的结构体
 find your own structure that's sort of
 
 1097
 00:48:29,410 --> 00:48:30,940
+某种你用来传递指针的语法
 the syntax you use for passing a pointer
 
 1098
 00:48:30,940 --> 00:48:32,530
+我们不需要对map这么做
 the reason why we didn't have to do it
 
 1099
 00:48:32,530 --> 00:48:35,920
+是因为 虽然
 with map is because although it's not
 
 1100
 00:48:35,920 --> 00:48:39,000
+从语法上没那么清晰 （但）map是个指针
 clear from the syntax a map is a pointer
 
 1101
 00:48:39,000 --> 00:48:42,579
+因为map是语言内置的
 it's just because it's built into the
 
 1102
 00:48:42,579 --> 00:48:45,069
+它们让你无需使用*操作符
 language they don't make you put a star
 
 1103
 00:48:45,069 --> 00:48:50,530
+但map是什么
 there but what a map is is if you
 
 1104
 00:48:50,530 --> 00:48:52,420
+如果你声明一个map类型的变量
 declare a variable type map what that is
 
 1105
 00:48:52,420 --> 00:48:55,319
+这个变量是指向堆上数据的指针
 is a pointer to some data in the heap so
 
 1106
 00:48:55,319 --> 00:48:57,579
+所以不管怎样，它是个指针
 it was a pointer anyway and it's always
 
 1107
 00:48:57,579 --> 00:48:59,260
+它总是以引用形式传递
 passed by reference do they you just
 
 1108
 00:48:59,260 --> 00:49:00,609
+你就无需使用*运算符 它（语言）替你做了
 don't have to put the star and it does
 
 1109
@@ -4693,866 +4873,1082 @@ it for you
 
 1110
 00:49:01,210 --> 00:49:03,609
+所以map是特殊的
 so there's they're definitely map is
 
 1111
 00:49:03,609 --> 00:49:06,130
+你不能在语言中定义map
 special you cannot define map in the
 
 1112
 00:49:06,130 --> 00:49:07,900
-language it's it has to be built in
+它必须是语言内置的
+language it's it has to be built-in
 
 1113
 00:49:07,900 --> 00:49:09,430
+因为有些古怪的事情
 because there's some curious things
 
 1114
 00:49:09,430 --> 00:49:15,819
+好的 好的 我们爬取网页 
 about it okay good okay so we fetch the
 
 1115
 00:49:15,819 --> 00:49:18,849
-page now we want to fire off a crawl go
+现在我们想要
+page now we want to fire off a crawl goroutine
 
 1116
 00:49:18,849 --> 00:49:20,799
-routine for each URL mentioned in the
+为每一个刚爬取页面中的URL
+for each URL mentioned in the
 
 1117
 00:49:20,799 --> 00:49:23,170
+启动一个crawler goroutine
 page we just fetch so that's done in
 
 1118
 00:49:23,170 --> 00:49:26,440
-line 56 on line 50 sisters loops over
+在第56行 
+line 56 on line 56 just loops over
 
 1119
 00:49:26,440 --> 00:49:29,890
+遍历fetch函数返回的URLs
 the URLs that the fetch function
 
 1120
 00:49:29,890 --> 00:49:32,950
-returned and for each one fires off a go
+第58行 对每个URL
+returned and for each one fires off a 
 
 1121
 00:49:32,950 --> 00:49:35,740
-routine at line 58 and that lines that
+启动一个goroutine
+goroutine at line 58 and that lines that
 
 1122
 00:49:35,740 --> 00:49:41,530
+58行的func语法是一个闭包
 func syntax in line 58 is a closure or a
 
 1123
 00:49:41,530 --> 00:49:43,990
+或一个匿名函数
 sort of immediate function but that func
 
 1124
 00:49:43,990 --> 00:49:46,599
+func关键字声明了一个函数
 thing keyword is doing is to clearing a
 
 1125
 00:49:46,599 --> 00:49:49,140
+然后我们调用了这个函数
 function right there that we then call
 
 1126
 00:49:49,140 --> 00:49:53,280
+所以 可能 理解（这段代码）的方式是
 so the way to read it maybe is
 
 1127
 00:49:53,740 --> 00:49:56,780
+你把一个函数声明成
 that if you can declare a function as a
 
 1128
 00:49:56,780 --> 00:50:00,230
+一段数据 先写下func关键字
 piece of data as just func you know and
 
 1129
 00:50:00,230 --> 00:50:03,349
+然后给出函数参数
 then you give the arguments and then you
 
 1130
 00:50:03,349 --> 00:50:08,930
+之后写出函数体 结束
 give the body and that's a clears and so
 
 1131
 00:50:08,930 --> 00:50:12,500
+现在这是一个对象 
 this is an object now this is like it's
 
 1132
 00:50:12,500 --> 00:50:14,000
+就好比你敲下1，你有了1
 like when you type one when you have a
 
 1133
 00:50:14,000 --> 00:50:18,349
+或23 或什么别的你在声明的东西
 one or 23 or something you're declaring
 
 1134
 00:50:18,349 --> 00:50:19,819
+你在声明某种常量对象
 a sort of constant object and this is
 
 1135
 00:50:19,819 --> 00:50:21,079
+这是声明常量函数的方式
 the way to define a constant function
 
 1136
 00:50:21,079 --> 00:50:24,079
+我们这么做是因为我们想要
 and we do it here because we want to
 
 1137
 00:50:24,079 --> 00:50:25,730
-launch a go routine that's gonna run
+启动一个goroutine
+launch a goroutine that's gonna run
 
 1138
 00:50:25,730 --> 00:50:27,290
+来运行我们刚声明的这个函数
 this function that we declared right
 
 1139
 00:50:27,290 --> 00:50:29,119
-here and so we in order to make the go
+为了让它成为一个goroutine
+here and so we in order to make the goroutine
 
 1140
 00:50:29,119 --> 00:50:31,069
-routine we have to add a go in front to
+我们要在func前
+we have to add a go in front to
 
 1141
 00:50:31,069 --> 00:50:33,140
-say we want to go routine and then we
+加上go关键字
+say we want a goroutine and then we
 
 1142
 00:50:33,140 --> 00:50:35,059
+然后我们必须要调用这个函数
 have to call the function because the go
 
 1143
 00:50:35,059 --> 00:50:37,520
+因为在go语法中
 syntax says the syntax of the go
 
 1144
 00:50:37,520 --> 00:50:39,140
+go关键字后面
 keywords as you follow it by a function
 
 1145
 00:50:39,140 --> 00:50:40,910
+接函数名 以及要传递的参数
 name and arguments you want to pass that
 
 1146
 00:50:40,910 --> 00:50:43,460
+所以我们在这里
 function and so we're gonna pass some
 
 1147
 00:50:43,460 --> 00:50:50,900
+传递一些参数 这么做有两个原因
 arguments here and there's two reasons
 
 1148
 00:50:50,900 --> 00:50:52,670
+我们这么做
 we're doing this well really this one
 
 1149
 00:50:52,670 --> 00:50:55,069
+原因是
 reason we you know in some other
 
 1150
 00:50:55,069 --> 00:50:57,790
+在其他某些情况下 我们写go ConcurrentMutex
 circumstance we could have just said go
 
 1151
 00:50:57,790 --> 00:51:00,230
-concurrent mutex oh I concur mutex is
+ConcurrentMutex是
+ConcurrentMutex so I ConcurrentMutex is
 
 1152
 00:51:00,230 --> 00:51:01,400
+我们要调用的函数的名字
 the name of the function we actually
 
 1153
 00:51:01,400 --> 00:51:06,619
+实际上我们把URL作为参数调用这个函数
 want to call with this URL but we want
 
 1154
 00:51:06,619 --> 00:51:08,119
+但我们也想要做一点别的事情
 to do a few other things as well so we
 
 1155
 00:51:08,119 --> 00:51:10,160
+所以我们定义这个小辅助函数
 define this little helper function that
 
 1156
 00:51:10,160 --> 00:51:12,170
-first calls concurrent mutex for us with
+先调用函数ConcurrentMutex url作为参数
+first calls ConcurrentMutex for us with
 
 1157
 00:51:12,170 --> 00:51:15,740
-the URL and then after them current
+在ConcurrentMutex
+the URL and then after ConcurrentMutex
 
 1158
 00:51:15,740 --> 00:51:17,119
-mutex is finished we do something
+结束之后 我们做一些
+is finished we do something
 
 1159
 00:51:17,119 --> 00:51:19,520
+特殊操作 来帮助我们
 special in order to help us wait for all
 
 1160
 00:51:19,520 --> 00:51:22,069
+在外层函数退出之前
 the crawls to be done before the outer
 
 1161
 00:51:22,069 --> 00:51:24,920
+等待所有crawl结束 这为我们
 function returns so that brings us to
 
 1162
 00:51:24,920 --> 00:51:27,380
-the the wait group the wait group at
+引入了WaitGroup 第55行的WaitGroup 
+the the wait group the WaitGroup at
 
 1163
 00:51:27,380 --> 00:51:29,569
-line 55 it's a just a data structure to
+是go语言定义的一个数据结构
+line 55 it's a just a data structure defined
 
 1164
 00:51:29,569 --> 00:51:33,619
-find by go to help with coordination and
+用于帮助协作
+by go to help with coordination and
 
 1165
 00:51:33,619 --> 00:51:35,030
-the game with wait group is that
+WaitGroup内部
+the game with WaitGroup is that
 
 1166
 00:51:35,030 --> 00:51:39,290
+有一个计数器
 internally it has a counter and you call
 
 1167
 00:51:39,290 --> 00:51:43,640
-wait group dot add like a line 57 to
+就像第57行 你调用WaitGroup.Add()来增加计数器
+WaitGroup dot add like line 57 to
 
 1168
 00:51:43,640 --> 00:51:46,549
-increment the counter and we group done
+调用WaitGroup.Done()
+increment the counter and WaitGroup dot done
 
 1169
 00:51:46,549 --> 00:51:48,619
+来减小计数器
 to decrement it and then this wait
 
 1170
 00:51:48,619 --> 00:51:50,900
+第63行 这个Wait方法被调用
 what this wait method called line 63
 
 1171
 00:51:50,900 --> 00:51:53,119
+等待计数器归零
 waits for the counter to get down to
 
 1172
 00:51:53,119 --> 00:51:56,510
+因此WaitGroup是一种
 zero so a wait group is a way to wait
 
 1173
 00:51:56,510 --> 00:51:59,329
+用于等待若干事件结束的方式
 for a specific number of things to
 
 1174
 00:51:59,329 --> 00:52:02,540
+它在很多不同场景中
 finish and it's useful in a bunch of
 
 1175
 00:52:02,540 --> 00:52:04,010
+都有应用 这里我们应用它
 different situations here we're using it
 
 1176
 00:52:04,010 --> 00:52:05,359
-to wait for the last go routine to
+来等待最后一个goroutine
+to wait for the last goroutine to
 
 1177
 00:52:05,359 --> 00:52:05,920
+结束
 finish
 
 1178
 00:52:05,920 --> 00:52:07,839
+因为我们对于每个goroutine
 because we add one to the wait group
 
 1179
 00:52:07,839 --> 00:52:11,200
-for every go routine we create line 60
+都对WaitGroup加一
+for every goroutine we create line 60
 
 1180
 00:52:11,200 --> 00:52:13,119
+第60行 在这个函数的末尾
 at the end of this function we've
 
 1181
 00:52:13,119 --> 00:52:15,310
+我们把WaitGroup里的counter减一
 declared decrement the counter in the
 
 1182
 00:52:15,310 --> 00:52:18,130
-wait group and then line three waits
+然后第63行等待
+WaitGroup and then line three waits
 
 1183
 00:52:18,130 --> 00:52:20,250
+直到所有的减一操作完成
 until all the decrements have finished
 
 1184
 00:52:20,250 --> 00:52:22,300
+我们声明这种函数的原因
 and so the reason why we declared this
 
 1185
 00:52:22,300 --> 00:52:23,920
-little function was basically to be able
+基本上是为了能够
+sort of function was basically to be able
 
 1186
 00:52:23,920 --> 00:52:26,530
-to both call concurrently text and call
+即调用函数ConcurrentMutex 又调用Done
+to both call ConcurrentMutex and call
 
 1187
 00:52:26,530 --> 00:52:28,630
+这就是为什么
 done that's really why we needed that
 
 1188
 00:52:28,630 --> 00:52:39,760
+我们需要这个函数 （学生的）问题是
 function so the question is what if one
 
 1189
 00:52:39,760 --> 00:52:43,240
+如果某个子程序失败 导致done没被调用
 of the subroutines fails and doesn't
 
 1190
 00:52:43,240 --> 00:52:45,820
+该怎么办  这是个很好的问题
 reach the done line that's a darn good
 
 1191
 00:52:45,820 --> 00:52:49,210
+我不记得
 question there is you know if I forget
 
 1192
 00:52:49,210 --> 00:52:51,070
+能够导致goroutine失败
 the exact range of errors that will
 
 1193
 00:52:51,070 --> 00:52:53,440
-cause the go routine to fail without
+但整个程序没有失败
+cause the goroutine to fail without
 
 1194
 00:52:53,440 --> 00:52:55,150
-causing the program to feel maybe
+的错误有哪些
+causing the program to fail maybe
 
 1195
 00:52:55,150 --> 00:52:56,589
-divides by zero I don't know where
+可能是除零错误 我不确定
+divides by zero I don't know or
 
 1196
 00:52:56,589 --> 00:52:57,790
-dereference is a null pointer
+或者对null指针解引用
+dereferences a null pointer
 
 1197
 00:52:57,790 --> 00:52:59,140
+不太确定 但是有些方式
 not sure but there are certainly ways
 
 1198
 00:52:59,140 --> 00:53:04,570
+可以使function失败
 for a function to fail and I have the go
 
 1199
 00:53:04,570 --> 00:53:06,910
+goroutine死掉而整个程序不死
 routine die without having the program
 
 1200
 00:53:06,910 --> 00:53:08,890
+这对我们是个麻烦
 die and that would be a problem for us
 
 1201
 00:53:08,890 --> 00:53:12,130
+所以实际上 正确的方式是
 and so really the white right way to I'm
 
 1202
 00:53:12,130 --> 00:53:13,660
+我确定你其实知道这个 
 sure you had this in mind and asking the
 
 1203
 00:53:13,660 --> 00:53:15,849
+才问这个问题的 正确的写法是
 question the right way to write this to
 
 1204
 00:53:15,849 --> 00:53:18,520
+这样写（defer） 以确保 不论goroutine是怎么结束的
 be sure that the done call is made no
 
 1205
 00:53:18,520 --> 00:53:20,740
-matter why this go routine is finishing
+done都会被调用
+matter why this goroutine is finishing
 
 1206
 00:53:20,740 --> 00:53:27,180
+把defer放在这里
 would be to put a defer here which means
 
 1207
 00:53:27,180 --> 00:53:31,540
+意味着在包含它的函数结束前调用done.Done()
 call done before the surrounding
 
 1208
 00:53:31,540 --> 00:53:34,330
+而且总是会被调用
 function finishes and always call it no
 
 1209
 00:53:34,330 --> 00:53:36,130
-matter why the surrounding function is
+不管包含它的函数
+matter why this surrounding function is
 
 1210
 00:53:36,130 --> 00:53:42,119
+是以何种原因结束的
 finished yes
 
 1211
 00:53:53,559 --> 00:53:58,789
+是的 提问说的是 
 and yes yeah so the question is how come
 
 1212
 00:53:58,789 --> 00:54:00,650
-two users have done in different threads
+为什么两个不同threads对done的调用
+two uses of done in different threads
 
 1213
 00:54:00,650 --> 00:54:08,210
+不构成race 答案是
 aren't a race yeah so the answer must be
 
 1214
 00:54:08,210 --> 00:54:10,640
-that internally dot a wait group has a
+（WaitGroup）内部有互斥锁
+that internally dot a WaitGroup has a
 
 1215
 00:54:10,640 --> 00:54:14,170
+或类似的机制
 mutex or something like it that each of
 
 1216
 00:54:14,170 --> 00:54:18,200
-Dunn's methods acquires before doing
+每个done的方法会在执行任何指令前先取得锁
+done's methods acquires before doing
 
 1217
 00:54:18,200 --> 00:54:19,970
+于是同时
 anything else so that simultaneously
 
 1218
 00:54:19,970 --> 00:54:22,789
-calls to a done to await groups methods
+调用WaitGroup的方法
+calls to a done to a WaitGroups methods
 
 1219
 00:54:22,789 --> 00:54:32,170
-are trees we could to did a low class
+并不构成race
+aren't races we could to did a low class
 
 1220
 00:54:39,519 --> 00:54:43,880
-yeah for certain leaf C++ and in C you
+是的 当然 C++ 在C语言中
+yeah for certainty C++ and in C you
 
 1221
 00:54:43,880 --> 00:54:45,440
+你可能需要看Pthreads
 want to look at something called P
 
 1222
 00:54:45,440 --> 00:54:47,390
+对于C语言，线程由库提供
 threads for C threads come in a library
 
 1223
 00:54:47,390 --> 00:54:48,650
+它们不是语言的一部分
 they're not really part of the language
 
 1224
 00:54:48,650 --> 00:54:51,710
+叫做Pthreads 它有
 called P threads which they have these
 
 1225
 00:54:51,710 --> 00:54:55,420
+非常传统且古老的原语
 are extremely traditional and ancient
 
 1226
 00:54:55,420 --> 00:55:04,450
-primitives that all languages yeah
+所有的语言都有
+primitives that all languages have yeah
 
 1227
 00:55:06,630 --> 00:55:12,220
+请重复一遍 不在这段代码里
 say it again you know not in this code
 
 1228
 00:55:12,220 --> 00:55:14,140
+你可以想象一下WaitGroup如何使用
 but you know you could imagine a use of
 
 1229
 00:55:14,140 --> 00:55:15,250
-wait groups I mean wait groups just
+我的意思是 WaitGroup只是
+WaitGroups I mean WaitGroups just
 
 1230
 00:55:15,250 --> 00:55:21,250
-count stuff and yeah yeah yeah wait
+一个计数的东西 是的
+count stuff and yeah yeah yeah WaitGroup
 
 1231
 00:55:21,250 --> 00:55:22,990
-group doesn't really care what you're
+WaitGroup并不关心
+doesn't really care what you're
 
 1232
 00:55:22,990 --> 00:55:27,370
-pounding or why I mean you know this is
+你在数什么或者为什么计数 我的意思是
+counding or why I mean you know this is
 
 1233
 00:55:27,370 --> 00:55:45,850
+这是最常见的用法
 the most common way to see it use you're
 
 1234
 00:55:45,850 --> 00:55:48,550
-wondering why you is passed as a
+你在困惑 为什么u被作为参数
+wondering why u is passed as a
 
 1235
 00:55:48,550 --> 00:55:54,780
+传递给58行这个函数 
 parameter to the function at 58 okay
 
 1236
 00:55:54,780 --> 00:55:59,070
+是的 好吧 提问是
 yeah this is alright so the question is
 
 1237
 00:55:59,070 --> 00:56:01,450
+好的 实际上
 okay so actually backing up a little bit
 
 1238
 00:56:01,450 --> 00:56:05,890
+这里function的规则是
 the rules for these for a function like
 
 1239
 00:56:05,890 --> 00:56:09,010
+正如我在58行定义的
 the one I'm defining on 58 is that if
 
 1240
 00:56:09,010 --> 00:56:10,960
+如果函数体里访问了一个变量
 the function body mentions a variable
 
 1241
 00:56:10,960 --> 00:56:14,050
+这个变量的定义在外围的函数里
 that's declared in the outer function
 
 1242
 00:56:14,050 --> 00:56:17,470
+但没有被遮蔽 然后
 but not shadowed then the the inner
 
 1243
 00:56:17,470 --> 00:56:19,000
+内部函数使用的变量
 functions use of that is the same
 
 1244
 00:56:19,000 --> 00:56:20,650
+和外部函数中的
 variable in the inner function as in the
 
 1245
 00:56:20,650 --> 00:56:23,080
+是同一个变量
 outer function and so that's what's
 
 1246
 00:56:23,080 --> 00:56:26,380
-happening with Fechter for example like
+例如fetcher就是这样
+happening with fetcher for example like
 
 1247
 00:56:26,380 --> 00:56:28,780
+这里内部函数里的fetcher变量
 what is this variable here refer to what
 
 1248
 00:56:28,780 --> 00:56:30,250
-does the Fechter variable refer to in
+指代的
+does the fetcher variable refer to in
 
 1249
 00:56:30,250 --> 00:56:32,980
+内部函数 好吧 它指代
 the inner function well it refers it's
 
 1250
 00:56:32,980 --> 00:56:35,290
+和外部函数中fetcher指代的
 the same variable as as the fetcher in
 
 1251
 00:56:35,290 --> 00:56:37,480
+是同一个变量
 the outer function says just is that
 
 1252
 00:56:37,480 --> 00:56:38,920
+所以当内部函数
 variable and so when the inner function
 
 1253
 00:56:38,920 --> 00:56:40,510
+涉及fetcher的地方意味着
 refers to fetcher it just means it's
 
 1254
 00:56:40,510 --> 00:56:42,310
+表示它指代的是和这里相同的变量
 just referring the same variable as this
 
 1255
 00:56:42,310 --> 00:56:45,670
+同理f也是一样
 one here and the same with F f is it's
 
 1256
 00:56:45,670 --> 00:56:48,160
+这里用了它 它就是这个变量
 used here it's just is this variable so
 
 1257
 00:56:48,160 --> 00:56:50,320
+所以你可能觉得我们可以摆脱
 you might think that we could get rid of
 
 1258
 00:56:50,320 --> 00:56:55,990
+这个u参数
 the this u argument that we're passing
 
 1259
 00:56:55,990 --> 00:56:57,880
+就让内部函数完全不含参数
 and just have the inner function take no
 
 1260
 00:56:57,880 --> 00:56:59,860
-arguments at all but just use the U that
+直接使用
+arguments at all but just use the u that
 
 1261
 00:56:59,860 --> 00:57:04,530
+定义在第56行循环里的u
 was defined up on line 56 in the loop
 
 1262
 00:57:05,070 --> 00:57:07,390
+假如我们可以这么做 当然很棒
 and it'll be nice if we could do that
 
 1263
 00:57:07,390 --> 00:57:09,910
+因为能让我们少打些字
 because save us some typing it turns out
 
 1264
 00:57:09,910 --> 00:57:12,550
+但这样行不通 理由是
 not to work and the reason is that the
 
 1265
 00:57:12,550 --> 00:57:16,060
+go的for循环语义
 semantics of go of the for loop at line
 
 1266
 00:57:16,060 --> 00:57:17,410
+第56行
 56 is that the
 
 1267
 00:57:17,410 --> 00:57:21,850
-for the updates the variable u so in
+for循环更新了变量u
+for loop updates the variable u so in
 
 1268
 00:57:21,850 --> 00:57:23,620
+所以在for循环的第一次迭代中
 the first iteration of the for loop that
 
 1269
 00:57:23,620 --> 00:57:29,380
+变量u包含了某个URL
 variable u contains some URL and when
 
 1270
 00:57:29,380 --> 00:57:31,510
-you enter the second iteration before
+当进入for循环的第二次迭代
+you enter the second iteration the for loop
 
 1271
 00:57:31,510 --> 00:57:34,150
-the that variable this contents are
+变量的内容
+that variable its content are
 
 1272
 00:57:34,150 --> 00:57:37,750
+变成了第二个URL
 changed to be the second URL and that
 
 1273
 00:57:37,750 --> 00:57:39,370
-means that the first go routine that we
+这意味着 我们第一个启动的goroutine
+means that the first goroutine that we
 
 1274
 00:57:39,370 --> 00:57:41,530
+看外部
 launched that's just looking at the
 
 1275
 00:57:41,530 --> 00:57:43,000
+如果我们看外部函数的
 outer if it we're looking at the outer
 
 1276
 00:57:43,000 --> 00:57:46,930
-functions u variable the that first go
+变量u 我们启动的第一个goroutine
+functions u variable the that first goroutine
 
 1277
 00:57:46,930 --> 00:57:48,910
-routine we launched would see a different
+将看到u中是
+we launched would see a different
 
 1278
 00:57:48,910 --> 00:57:51,400
+不同的值 
 value in the u variable after the outer
 
 1279
 00:57:51,400 --> 00:57:53,800
+（因为）外部函数 已经更新了u
 function it updated it and sometimes
 
 1280
 00:57:53,800 --> 00:57:55,150
+有时这正是你们想要的
 that's actually what you want so for
 
 1281
 00:57:55,150 --> 00:57:58,000
+例如 f.fetched
 example for for F and then particular F
 
 1282
 00:57:58,000 --> 00:58:01,600
-dot fetched we interaction absolutely
+内部函数当然
+dot fetched we inter function absolutely
 
 1283
 00:58:01,600 --> 00:58:04,960
+希望看到map的变化 但是
 wants to see changes to that map but for
 
 1284
 00:58:04,960 --> 00:58:06,490
+对于u 我们不希望看到改变
 u we don't want to see changes the
 
 1285
 00:58:06,490 --> 00:58:09,070
-first go routine we spawn should read
+我们启动的第一个goroutine应该
+first goroutine we spawn should read
 
 1286
 00:58:09,070 --> 00:58:12,130
+读取第一个URL 而不是第二个URL
 the first URL not the second URL so we
 
 1287
 00:58:12,130 --> 00:58:13,810
-want that go routine to have a copy you
+所以我们希望goroutine能够有一份拷贝
+want that goroutine to have a copy you
 
 1288
 00:58:13,810 --> 00:58:16,080
+你有它自己的URL拷贝
 have its own private copy of the URL and
 
 1289
 00:58:16,080 --> 00:58:18,370
+你懂的 如果我们有别的办法做到这件事
 you know is we could have done it in
 
 1290
 00:58:18,370 --> 00:58:20,560
+我们也可以那么做
 other ways we could have but the way
 
 1291
 00:58:20,560 --> 00:58:22,150
+但是这段代码的
 this code happens to do it to produce
 
 1292
 00:58:22,150 --> 00:58:25,630
+给内部函数一个私有拷贝的方式
 the copy private to that inner function
 
 1293
 00:58:25,630 --> 00:58:31,860
+是传递URL参数给内部函数 是的
 is by passing the URLs in argument yes
 
 1294
 00:58:34,450 --> 00:58:36,890
+是的 如果我们把u的地址传递
 yeah if we have passed the address of
 
 1295
 00:58:36,890 --> 00:58:51,200
+是的 事实上
 u yeah then it uh it's actually I
 
 1296
 00:58:51,200 --> 00:58:52,190
+我不知道string怎么行得通的
 don't know how strings work but it is
 
 1297
 00:58:52,190 --> 00:58:54,049
+但是肯定是给你 你自己的私有的
 absolutely giving you your own private
 
 1298
 00:58:54,049 --> 00:59:00,140
+变量的拷贝 你拿到自己的
 copy of the variable you get your own
 
 1299
 00:59:00,140 --> 00:59:08,950
+变量拷贝 它 是的
 copy of the variable and it yeah
 
 1300
 00:59:26,500 --> 00:59:28,850
+你说我们不需要
 are you saying we don't need to play
 
 1301
 00:59:28,850 --> 00:59:33,860
+在这段代码中 用这个技巧？
 this trick in the code we definitely
 
 1302
 00:59:33,860 --> 00:59:35,270
+我们当然需要这个技巧
 need to play this trick in the code and
 
 1303
 00:59:35,270 --> 00:59:37,700
+实际上发生的是 它是
 what's going on is this it's so the
 
 1304
 00:59:37,700 --> 00:59:39,170
+（学生的）问题是 既然strings是不可变的
 question is Oh strings are immutable
 
 1305
 00:59:39,170 --> 00:59:41,960
+strings是不可变的 是的 那么
 strings are immutable right yeah so how
 
 1306
 00:59:41,960 --> 00:59:43,850
+strings是不可变的 那么
 kind of strings are immutable how can
 
 1307
 00:59:43,850 --> 00:59:45,110
+外部函数又是怎么改变这个string的呢
 the outer function change the string
 
 1308
 00:59:45,110 --> 00:59:47,720
+不该有这个问题 问题并不是
 there should be no problem the problem
 
 1309
 00:59:47,720 --> 00:59:49,700
+string被改变了
 is not that the string is changed the
 
 1310
 00:59:49,700 --> 00:59:51,500
-problem is that the variable U is
+问题是变量u
+problem is that the variable u is
 
 1311
 00:59:51,500 --> 00:59:56,150
+被改变了 所以当内部函数
 changed so the when the inner function
 
 1312
 00:59:56,150 --> 00:59:57,860
+访问一个定义在
 mentions a variable that's defined in
 
 1313
 00:59:57,860 --> 00:59:59,000
+外部函数的变量时 他访问的是
 the outer function it's referring to
 
 1314
 00:59:59,000 --> 01:00:01,070
+这个变量 这个变量当前的值
 that variable and the variables current
 
 1315
 01:00:01,070 --> 01:00:03,320
+所以当你 假如你有一个string变量
 value so when you if you have a string
 
 1316
 01:00:03,320 --> 01:00:06,590
+里面含有一个字母‘a’ 
 variable that has has a in it and then
 
 1317
 01:00:06,590 --> 01:00:09,110
+然后你把‘B’赋值给那个string变量
 you assign B to that string variable
 
 1318
 01:00:09,110 --> 01:00:10,520
-you're not over writing the string
+你并不是在重写这个string
+you're not overwriting the string
 
 1319
 01:00:10,520 --> 01:00:12,530
+（而是）你改变了这个变量
 you're changing the variable to point to
 
 1320
 01:00:12,530 --> 01:00:15,950
+让它指向了一个不同的string
 a different string and and because the
 
 1321
 01:00:15,950 --> 01:00:18,680
-for loop changes the U variable to point
+由于for循环改变了变量u 
+for loop changes the u variable to point
 
 1322
 01:00:18,680 --> 01:00:21,290
+它指向了一个不同的string 你懂的
 to a different string you know that
 
 1323
 01:00:21,290 --> 01:00:22,970
+这种改变对于内部函数
 change to you would be visible inside
 
 1324
 01:00:22,970 --> 01:00:24,680
+是可见的 因此
 the inner function and therefore the
 
 1325
 01:00:24,680 --> 01:00:26,390
+内部函数自己需要一个变量的拷贝
 inner function needs its own copy of the
 
 1326
@@ -5561,694 +5957,867 @@ variable
 
 1327
 01:00:36,150 --> 01:00:42,000
+本质上是复制一份
 essentially make a copy of that so that
 
 1328
 01:00:50,250 --> 01:00:53,110
+好的 但是这正是我们在这段代码里做的
 okay but that is what we're doing in
 
 1329
 01:00:53,110 --> 01:00:54,670
+这就是为什么是这段code
 this code and that's that is why this
 
 1330
 01:00:54,670 --> 01:00:56,440
+能跑通的原因
 code works okay
 
 1331
 01:00:56,440 --> 01:00:59,080
+你的提议 或者说我们没有采用的错误的代码
 the proposal or the broken code that
 
 1332
 01:00:59,080 --> 01:01:00,400
+我会给你展示一下
 we're not using here I will show you the
 
 1333
 01:01:00,400 --> 01:01:02,850
+错误的代码
 broken code
 
 1334
 01:01:44,060 --> 01:01:46,440
+这只是些可怕的细节
 this is just like a horrible detail but
 
 1335
 01:01:46,440 --> 01:01:47,700
+但是不幸的 
 it is unfortunately one that you'll run
 
 1336
 01:01:47,700 --> 01:01:50,850
+你们在lab中会遇到它们
 into while doing the labs so you should
 
 1337
 01:01:50,850 --> 01:01:52,200
-be at least where that there's a problem
+所以你们至少应该有意识 这里有个麻烦
+be at least aware that there's a problem
 
 1338
 01:01:52,200 --> 01:01:54,690
+当你遇到这个问题时
 and when you run into it maybe you can
 
 1339
 01:01:54,690 --> 01:02:12,170
+你可以尝试想弄清楚细节
 try to figure out the details okay
 
 1340
 01:02:12,170 --> 01:02:15,870
+这是个很好的问题
 that's a great question so so the
 
 1341
 01:02:15,870 --> 01:02:18,090
+提问说的是 如果你有一个内部函数
 question is you know if you have an
 
 1342
 01:02:18,090 --> 01:02:19,770
+我重复一遍
 inner function just a repeated if you
 
 1343
 01:02:19,770 --> 01:02:21,180
+如果你有一个内部函数
 have an inner function that refers to a
 
 1344
 01:02:21,180 --> 01:02:23,430
+访问定义在外部的变量
 variable in the surrounding function but
 
 1345
 01:02:23,430 --> 01:02:25,980
+但是外部函数返回之后
 the surrounding function returns what is
 
 1346
 01:02:25,980 --> 01:02:28,590
+内部函数的变量将指向哪里
 the inner functions variable referring
 
 1347
 01:02:28,590 --> 01:02:30,030
+由于外部函数已经返回
 to anymore since the outer function is
 
 1348
 01:02:30,030 --> 01:02:32,460
+答案是 
 as returned and the answer is that go
 
 1349
 01:02:32,460 --> 01:02:35,190
+go会注意到 go会分析你的内部函数
 notices go analyzes your inner functions
 
 1350
 01:02:35,190 --> 01:02:38,160
+或者说闭包
 or these are called closures go analyzes
 
 1351
 01:02:38,160 --> 01:02:39,870
+go分析它们 编译器分析它们 aha
 them the compiler analyze them says aha
 
 1352
 01:02:39,870 --> 01:02:41,580
+oh 这个闭包 这个函数
 oh this disclosure this inner function
 
 1353
 01:02:41,580 --> 01:02:42,570
+使用了外部函数里的变量
 is using a variable in the outer
 
 1354
 01:02:42,570 --> 01:02:44,310
+我们实际上会
 function we're actually gonna and the
 
 1355
 01:02:44,310 --> 01:02:47,580
-compiler will allocate heat memory to
+编译器会分配堆内存
+compiler will allocate heap memory to
 
 1356
 01:02:47,580 --> 01:02:50,670
+来放这些变量 你懂的
 hold the variable the you know the
 
 1357
 01:02:50,670 --> 01:02:52,590
+这些变量的当前的值
 current value of the variable and both
 
 1358
 01:02:52,590 --> 01:02:55,230
+两个函数将找到
 functions will refer to that that little
 
 1359
 01:02:55,230 --> 01:02:58,350
+堆上的那小片区域 所以
 area heap that has the barrel so it
 
 1360
 01:02:58,350 --> 01:02:59,760
+变量不会被分配在栈上
 won't be allocated the variable won't be
 
 1361
 01:02:59,760 --> 01:03:01,590
+如你可能预期的
 on the stack as you might expect it's
 
 1362
 01:03:01,590 --> 01:03:03,180
+如果编译器看到闭包 
 moved to the heap if if the compiler
 
 1363
 01:03:03,180 --> 01:03:04,980
+变量会被放到堆上
 sees that it's using a closure and then
 
 1364
 01:03:04,980 --> 01:03:06,060
+当外部函数返回时
 when the outer function returns the
 
 1365
 01:03:06,060 --> 01:03:07,950
+对象仍然在堆上
 object is still there in the heap the
 
 1366
 01:03:07,950 --> 01:03:09,840
+内部函数还是能够访问到它
 inner function can still get at it and
 
 1367
 01:03:09,840 --> 01:03:11,820
+之后垃圾回收器负责
 then the garbage collector is
 
 1368
 01:03:11,820 --> 01:03:13,440
+监测最后一个
 responsible for noticing that the last
 
 1369
 01:03:13,440 --> 01:03:15,540
+涉及那段堆的函数退出
 function to refer to this little piece
 
 1370
 01:03:15,540 --> 01:03:18,540
-of heat that's exited returned and to
+返回
+of heap that's exited returned and to
 
 1371
 01:03:18,540 --> 01:03:24,769
+并且将它释放 好的
 free it only then okay okay
 
 1372
 01:03:24,769 --> 01:03:29,309
-okay so wait group wait group is maybe
+所以WaitGroup WaitGroup可能是
+okay so WaitGroup WaitGroup is maybe
 
 1373
 01:03:29,309 --> 01:03:30,629
+（这节课） 更重要的话题
 the more important thing here that the
 
 1374
 01:03:30,629 --> 01:03:32,549
+这段代码使用这个技术
 technique that this code uses to wait
 
 1375
 01:03:32,549 --> 01:03:35,719
+来等待当前层所有的crawl结束
 for all the all this level of crawls to
 
 1376
 01:03:35,719 --> 01:03:37,739
-finished all its direct chill and the
+等待它的直系孩子结束
+finish all its direct children and the
 
 1377
 01:03:37,739 --> 01:03:39,599
-finish is the wait group of course
+当然
+finish is the WaitGroup of course
 
 1378
 01:03:39,599 --> 01:03:41,279
-there's many of these wait groups one
+这里有很多这样的WaitGroup
+there's many of these WaitGroups one
 
 1379
 01:03:41,279 --> 01:03:44,909
-per call two concurrent mutex each call
+每次调用ConcurrentMutex函数就有一个（WaitGroup）
+per call to ConcurrentMutex each call
 
 1380
 01:03:44,909 --> 01:03:46,289
-that concurrent mutex just waits for its
+ConcurrentMutex等待孩子结束
+that ConcurrentMutex just waits for its
 
 1381
 01:03:46,289 --> 01:03:49,519
+然后返回
 own children to finish and then returns
 
 1382
 01:03:49,519 --> 01:03:53,609
+好的 回到锁 实际上
 okay so back to the lock actually
 
 1383
 01:03:53,609 --> 01:03:54,479
+关于锁还有一个事情 我想要谈
 there's one more thing I want to talk
 
 1384
 01:03:54,479 --> 01:03:56,279
+那就是探究 如果我们不加锁
 about with a lock and that is to explore
 
 1385
 01:03:56,279 --> 01:03:57,949
+会发生什么
 what would happen if we hadn't locked
 
 1386
 01:03:57,949 --> 01:04:00,689
+好的 我认为 你懂的  
 right I'm claiming oh you know you don't
 
 1387
 01:04:00,689 --> 01:04:02,369
+你不加锁的话，你会遇到race
 lock you're gonna get these races you're
 
 1388
 01:04:02,369 --> 01:04:05,209
+你会得到不正确的运行结果
 gonna get incorrect execution whatever
 
 1389
 01:04:05,209 --> 01:04:11,039
+让我们试试 我将会
 let's give it a shot I'm gonna I'm gonna
 
 1390
 01:04:11,039 --> 01:04:14,519
+把锁注释掉
 comment out the locks and the question
 
 1391
 01:04:14,519 --> 01:04:17,159
+问题是：如果我运行这段不加锁的代码
 is what happens if I run the code with
 
 1392
 01:04:17,159 --> 01:04:24,179
-no locks what am I gonna see so we maght
+我将会看到什么
+no locks what am I gonna see so we might
 
 1393
 01:04:24,179 --> 01:04:26,459
+我们可能会看到一个URL打印两次，或者说被爬取两遍
 see a url called twice or I fetch
 
 1394
 01:04:26,459 --> 01:04:28,589
+是的 你会想 
 twice yeah that's yeah that would be the
 
 1395
 01:04:28,589 --> 01:04:31,649
+那将是个错误
 error you might expect alright so I'll
 
 1396
 01:04:31,649 --> 01:04:34,799
+我运行无锁的代码
 run it without locks and we're looking
 
 1397
 01:04:34,799 --> 01:04:36,269
-at the concurrent map the one in the
+我们看ConcurrentMutex 
+at the ConcurrentMutex the one in the
 
 1398
 01:04:36,269 --> 01:04:38,459
+中间的这段  这次似乎没有
 middle this time it doesn't seem to have
 
 1399
 01:04:38,459 --> 01:04:40,369
+爬取任何URL两遍 只有五行
 fetched anything twice it's only five
 
 1400
 01:04:40,369 --> 01:04:49,139
+再运行一次 天哪 
 run again gosh so far genius so maybe
 
 1401
 01:04:49,139 --> 01:04:50,719
+我们可能在浪费时间
 we're wasting our time with those locks
 
 1402
 01:04:50,719 --> 01:04:52,499
+是的 似乎永远不有出错
 yeah never seems to go wrong I've
 
 1403
 01:04:52,499 --> 01:04:57,419
-actually never seem to go wrong so the
+实际上我从来没有看到它出错
+actually never seen to go wrong so the
 
 1404
 01:04:57,419 --> 01:05:00,269
+虽然如此 代码是错的
 code is nevertheless wrong and someday
 
 1405
 01:05:00,269 --> 01:05:03,329
+总有一天程序会失败 好的 问题在于
 it will fail okay the problem is that
 
 1406
 01:05:03,329 --> 01:05:04,559
+你懂的 
 you know this is only a couple of
 
 1407
 01:05:04,559 --> 01:05:06,179
+这里只是几个指令 
 instructions here and so the chances of
 
 1408
 01:05:06,179 --> 01:05:07,979
+而线程有几百个指令
 these two threads which are maybe
 
 1409
 01:05:07,979 --> 01:05:09,539
+两个线程同时执行到这几个指令
 hundreds of instructions happening to
 
 1410
 01:05:09,539 --> 01:05:12,269
+且犯错的几率非常低
 stumble on this you know the same couple
 
 1411
 01:05:12,269 --> 01:05:14,489
+
 of instructions at the same time is
 
 1412
 01:05:14,489 --> 01:05:17,729
+确实 这是
 quite low and indeed and and this is a
 
 1413
 01:05:17,729 --> 01:05:20,459
+一个有race bug的代码令人失望的地方
 real bummer about buggy code with races
 
 1414
 01:05:20,459 --> 01:05:23,519
+它通常运行良好
 is that it usually works just fine but
 
 1415
 01:05:23,519 --> 01:05:25,289
+但当客户在他们的电脑上运行时
 it probably won't work when the customer
 
 1416
 01:05:25,289 --> 01:05:28,020
+总是可能会出问题
 runs it on their computer
 
 1417
 01:05:28,020 --> 01:05:30,510
+所以 这对我们是个坏消息
 so it's actually bad news for us right
 
 1418
 01:05:30,510 --> 01:05:32,940
+你懂的 这可能出现在
 what do we you know it it can be in
 
 1419
 01:05:32,940 --> 01:05:34,920
+复杂的程序里 
 complex programs quite difficult to
 
 1420
 01:05:34,920 --> 01:05:37,170
+非常难搞清楚你是不有一个race
 figure out if you have a race right and
 
 1421
 01:05:37,170 --> 01:05:39,390
+你可能会 你可能会有一段代码
 you might you may have code that just
 
 1422
 01:05:39,390 --> 01:05:41,910
+看起来非常合理
 looks completely reasonable that is in
 
 1423
 01:05:41,910 --> 01:05:44,610
+但实际上有某些你未知的race 
 fact sort of unknown to you using shared
 
 1424
 01:05:44,610 --> 01:05:47,970
+是使用共享变量导致的  
 variables and the answer is you really
 
 1425
 01:05:47,970 --> 01:05:50,040
+在实践中唯一能发现race的方法是
 the only way to find races in practice
 
 1426
 01:05:50,040 --> 01:05:53,580
-to be is you automated tools and luckily
+使用自动化的工具 幸运的是
+to be is use automated tools and luckily
 
 1427
 01:05:53,580 --> 01:05:55,890
+go给我们提供了一个很不错的race探测器
 go actually gives us this pretty good
 
 1428
 01:05:55,890 --> 01:06:00,119
+内置于go 
 race detector built-in to go and you
 
 1429
 01:06:00,119 --> 01:06:04,619
-should use it so if you pass the - race
+你应该使用它 如果你把 -race 作为命令行参数
+should use it so if you pass the minus race
 
 1430
 01:06:04,619 --> 01:06:06,540
+当你必须让你的go程序
 flag when you have to get your go
 
 1431
 01:06:06,540 --> 01:06:09,710
+运行这个race探测器
 program and run this race detector which
 
 1432
 01:06:09,710 --> 01:06:11,760
+好的 我将会运行race检测器
 well I'll run the race detector and
 
 1433
 01:06:11,760 --> 01:06:16,650
+我们将会看到 它发出了一个错误信息
 we'll see so it emits an error message
 
 1434
 01:06:16,650 --> 01:06:19,680
+它已经找到一个race
 from us it's found a race and it
 
 1435
 01:06:19,680 --> 01:06:21,420
+实际它上告诉我们
 actually tells us exactly where the race
 
 1436
 01:06:21,420 --> 01:06:23,550
+race发生的准确位置 输出里有很多废物
 happened so there's a lot of junk in
 
 1437
 01:06:23,550 --> 01:06:25,260
+但是真正关键的是
 this output but the really critical
 
 1438
 01:06:25,260 --> 01:06:28,320
+race检测器意识到
 thing is that the race detector realize
 
 1439
 01:06:28,320 --> 01:06:30,180
+我们读了一个变量
 that we had read a variable that's what
 
 1440
 01:06:30,180 --> 01:06:32,790
+读取的内容是之前写入的
 this read is that was previously written
 
 1441
 01:06:32,790 --> 01:06:35,670
+并且（这两个操作）中间
 and there was no intervening release and
 
 1442
 01:06:35,670 --> 01:06:37,770
+没有锁的释放和申请
 acquire of a lock that's what that's
 
 1443
 01:06:37,770 --> 01:06:40,200
+此外 它告诉我们
 what this means furthermore it tells us
 
 1444
 01:06:40,200 --> 01:06:43,710
+行号 所以它告诉我们
 the line number so it's told us that the
 
 1445
 01:06:43,710 --> 01:06:49,290
+读取在第43行 写入
 read was a line 43 and the write the
 
 1446
 01:06:49,290 --> 01:06:51,660
+之前的写入在第44行 确实
 previous write was at line 44 and indeed
 
 1447
 01:06:51,660 --> 01:06:53,190
-we look at the code and the read isn't
+我们看代码 读操作在第43行
+we look at the code and the read is on
 
 1448
 01:06:53,190 --> 01:06:56,220
-line 43 and the right is at line 44 so
+写操作在第44行
+line 43 and the write is at line 44 so
 
 1449
 01:06:56,220 --> 01:06:58,170
+这意味着一个线程在第44行
 that means that one thread did a write
 
 1450
 01:06:58,170 --> 01:07:00,869
+执行了写入 
 at line 44 and then without any
 
 1451
 01:07:00,869 --> 01:07:02,520
+之后没有任何锁介入
 intervening lock and another thread came
 
 1452
 01:07:02,520 --> 01:07:05,340
+并且之后另一个线程在第43行读取了这个写入的数据
 along and read that written data at line
 
 1453
 01:07:05,340 --> 01:07:07,560
+这些就是race探测器寻找的
 43 that's basically what the race
 
 1454
 01:07:07,560 --> 01:07:10,020
+它工作的原理
 detector is looking for the way it works
 
 1455
 01:07:10,020 --> 01:07:11,820
+内部地 探测器分配了
 internally is it allocates sort of
 
 1456
 01:07:11,820 --> 01:07:15,000
-shadow memory now lucky some you know it
+某种隐蔽内存 分配了某种 你懂的
+shadow memory allocates some you know it
 
 1457
 01:07:15,000 --> 01:07:16,260
+它使用了大量的内存
 uses a huge amount of memory and
 
 1458
 01:07:16,260 --> 01:07:17,460
+基本上对于每一个内存位置
 basically for every one of your memory
 
 1459
 01:07:17,460 --> 01:07:19,710
+race探测器
 locations the race detector is allocated
 
 1460
 01:07:19,710 --> 01:07:21,600
+都被分配了少量内存
 a little bit of memory itself in which
 
 1461
 01:07:21,600 --> 01:07:24,330
+用于跟踪哪些线程
 it keeps track of which threads recently
 
 1462
 01:07:24,330 --> 01:07:26,400
+最近读取或者写入了任何内存位置
 read or wrote every single memory
 
 1463
 01:07:26,400 --> 01:07:28,590
+然后
 location and then when and it also to
 
 1464
 01:07:28,590 --> 01:07:30,810
+它也跟踪
 keep tracking keeping track of when
 
 1465
 01:07:30,810 --> 01:07:32,609
-threads acquiring release locks and do
+线程申请锁和释放锁
+threads acquires or release locks and do
 
 1466
 01:07:32,609 --> 01:07:35,430
+以及别的强制线程
 other synchronization activities that it
 
 1467
 01:07:35,430 --> 01:07:37,980
-knows forces but force threads to not
+以非并发形式运行的
+knows forces before threads to not
 
 1468
 01:07:37,980 --> 01:07:39,180
-run
+同步活动
+run concurrently
 
 1469
 01:07:39,180 --> 01:07:40,980
-and if the race detector driver sees a
+如果race探测器看到
+and if the race detector ever sees a
 
 1470
 01:07:40,980 --> 01:07:42,450
+有内存位置被写入 
 ha there was a memory location that was
 
 1471
 01:07:42,450 --> 01:07:45,210
+然后被读取
 written and then read with no
 
 1472
 01:07:45,210 --> 01:07:49,160
-intervening market it'll raise an error
+而且中间没有锁 它就会报错
+intervening lock it'll raise an error
 
 1473
 01:07:49,160 --> 01:08:06,600
+是的 我相信这并不完美
 yes I believe it is not perfect yeah I
 
 1474
 01:08:06,600 --> 01:08:12,170
+我必须要思考一下
 have to think about it what one
 
 1475
 01:08:12,170 --> 01:08:15,180
+当然一个不完美的情况是
 certainly one way it is not perfect is
 
 1476
 01:08:15,180 --> 01:08:18,899
+如果你不执行任何代码
 that if you if you don't execute some
 
 1477
 01:08:18,899 --> 01:08:21,270
+那么race探测器不会知道任何事
 code the race detector doesn't know
 
 1478
 01:08:21,270 --> 01:08:25,109
+它将不会分析
 anything about it so it's not analyzing
 
 1479
 01:08:25,109 --> 01:08:27,990
+它并不是做静态分析
 it's not doing static analysis the
 
 1480
 01:08:27,990 --> 01:08:29,220
-racing sectors not looking at your
+race探测器不会看你的源代码
+racing detectors not looking at your
 
 1481
 01:08:29,220 --> 01:08:31,770
+不会基于源代码作出判断
 source and making decisions based on the
 
 1482
 01:08:31,770 --> 01:08:33,390
+某种程度上 它观察
 source it's sort of watching what
 
 1483
 01:08:33,390 --> 01:08:35,700
+一次具体的程序运行
 happened at on this particular run of
 
 1484
 01:08:35,700 --> 01:08:37,649
+所以如果这次
 the program and so if this particular
 
 1485
 01:08:37,649 --> 01:08:39,330
+具体的程序运行 没有执行
 run of the program didn't execute some
 
 1486
 01:08:39,330 --> 01:08:42,450
+某些恰好读写共享数据的代码
 code that happens to read or write
 
 1487
 01:08:42,450 --> 01:08:44,370
+那么race探测器不可能知道（有race）
 shared data then the race detector will
 
 1488
 01:08:44,370 --> 01:08:46,500
-never know and there could be erased
+但这里可能确实有race
+never know and there could be a race
 
 1489
 01:08:46,500 --> 01:08:48,270
+这是需要小心的地方
 there so that's certainly something to
 
 1490
 01:08:48,270 --> 01:08:49,319
+你懂的 如果你想
 watch out for so you know if you're
 
 1491
 01:08:49,319 --> 01:08:50,580
+认真对待race探测器
 serious about the race detector you need
 
 1492
 01:08:50,580 --> 01:08:53,100
+你需要设置某种测试装置
 to set up sort of testing apparatus that
 
 1493
 01:08:53,100 --> 01:08:55,620
+以确保所有的代码
 tries to make sure all all the code is
 
 1494
 01:08:55,620 --> 01:08:59,340
+都被执行 但是这是 非常好
 executed but it's it's it's very good
 
 1495
 01:08:59,340 --> 01:09:01,620
-and you just have to use it for your a
+你需要把它用在你的6.824lab中
+and you just have to use it for your 824
 
 1496
 01:09:01,620 --> 01:09:07,830
-to 4 labs okay so this is race here and
+这是这里的race 
+labs okay so this is race here and
 
 1497
 01:09:07,830 --> 01:09:09,300
+当然这个race没有真的发生
 of course the race didn't actually occur
 
 1498
 01:09:09,300 --> 01:09:12,330
-what the race editor did not see was the
+race探测器没有看到
+what the race detector did not see was the
 
 1499
 01:09:12,330 --> 01:09:14,370
+这些敏感代码真的同时执行交织在一起
 actual interleaving simultaneous
 
 1500
@@ -6257,718 +6826,897 @@ execution of some sensitive code right
 
 1501
 01:09:17,370 --> 01:09:18,899
+它没有看到两个线程
 it didn't see two threads literally
 
 1502
 01:09:18,899 --> 01:09:21,859
+同时执行第43行和第44行
 execute lines 43 and 44 at the same time
 
 1503
 01:09:21,859 --> 01:09:23,970
+我们知道
 and as we know from having run the
 
 1504
 01:09:23,970 --> 01:09:25,140
+我们已经手动运行了过几次
 things by hand that apparently doesn't
 
 1505
 01:09:25,140 --> 01:09:28,319
-happen only with low probability all it
+显而易见race并没有发生 或者概率很小
+happen or only with low probability all it
 
 1506
 01:09:28,319 --> 01:09:29,880
-saw was at one point that was a right
+探测器看到的只是 某时刻有一个写操作
+saw was at one point that was a write
 
 1507
 01:09:29,880 --> 01:09:31,529
-and they made me much later there was a
+很久之后有一个读操作
+and then much later there was a
 
 1508
 01:09:31,529 --> 01:09:37,620
+没有锁隔开
 read with no intervening lock and so
 
 1509
 01:09:37,620 --> 01:09:39,180
-enact in that sense it can sort of
+从那种意义上 它能探测到
+in that sense it can sort of
 
 1510
 01:09:39,180 --> 01:09:41,540
+不一定真的会发生的race
 detect races that didn't actually happen
 
 1511
 01:09:41,540 --> 01:09:47,630
+或者不会真的导致bug
 or didn't really cause bugs okay
 
 1512
 01:09:49,540 --> 01:09:52,550
+好的 最后一个关于这个crawler的问题
 okay one final question about this this
 
 1513
 01:09:52,550 --> 01:09:57,550
+它创建了多少个线程
 crawler how many threads does it create
 
 1514
 01:10:03,639 --> 01:10:10,119
+最多有多少个并发的线程
 yeah and how many concurrent threads
 
 1515
 01:10:10,119 --> 01:10:24,969
+是的 这个crawler的缺陷是
 could there be yeah so a defect in this
 
 1516
 01:10:24,969 --> 01:10:27,159
+没有一个明显的
 crawler is that there's no obvious bound
 
 1517
 01:10:27,159 --> 01:10:28,719
+同时存在线程的
 on the number of simultaneous threads
 
 1518
 01:10:28,719 --> 01:10:30,580
+数量界限 你懂的 
 that might create you know with the test
 
 1519
 01:10:30,580 --> 01:10:32,800
+在这个测试数据下，只有5个URL
 case which only has five URLs big
 
 1520
 01:10:32,800 --> 01:10:34,659
+如果你爬取真实的网络
 whoopee but if you're crawling a real
 
 1521
 01:10:34,659 --> 01:10:36,610
-wheel web with you know I don't know are
+真实的网络 我不确定
+real web with you know I don't know are
 
 1522
 01:10:36,610 --> 01:10:38,380
+有数十亿的URL在那儿
 there billions of URLs out there maybe
 
 1523
 01:10:38,380 --> 01:10:40,389
+我们当然不希望
 not we certainly don't want to be in a
 
 1524
 01:10:40,389 --> 01:10:41,380
+遇到这种情况 crawler可能
 position where the crawler might
 
 1525
 01:10:41,380 --> 01:10:43,380
+意外地创建了数十亿计的线程
 accidentally create billions of threads
 
 1526
 01:10:43,380 --> 01:10:46,119
+因为 你懂的 几千个线程 
 because you know thousands of threads
 
 1527
 01:10:46,119 --> 01:10:47,889
+没问题 数十亿计个线程是不行
 it's just fine billions of threads it's
 
 1528
 01:10:47,889 --> 01:10:51,070
+因为每个（线程）
 not okay because each one sits on some
 
 1529
 01:10:51,070 --> 01:10:54,280
+占据一定量的内存
 amount of memory so a you know there's
 
 1530
 01:10:54,280 --> 01:10:56,080
+在现实中这个crawler
 probably many defects in real life for
 
 1531
 01:10:56,080 --> 01:10:58,270
+可能有很多缺陷 在我们讨论的这一层
 this crawler but one at the level we're
 
 1532
 01:10:58,270 --> 01:11:00,219
+它确实创建太多线程
 talking about is that it does create too
 
 1533
 01:11:00,219 --> 01:11:01,600
+最好有一种方式
 many threads and really ought to have a
 
 1534
 01:11:01,600 --> 01:11:03,280
+可以创建 好比20,000个
 way of saying well you can create 20
 
 1535
 01:11:03,280 --> 01:11:04,630
+或100个 或1000个线程
 threads or 100 threads or a thousand
 
 1536
 01:11:04,630 --> 01:11:06,520
+但是不会更多
 threads but no more so one way to do
 
 1537
 01:11:06,520 --> 01:11:08,199
-that would be to pre create a pool a
+一个方式是预先创建
+that would be to pre-create a pool a
 
 1538
 01:11:08,199 --> 01:11:11,050
+一个固定大小的线程池
 fixed size pool of workers and have the
 
 1539
 01:11:11,050 --> 01:11:13,179
+池中的worker迭代地
 workers just iteratively look for
 
 1540
 01:11:13,179 --> 01:11:14,830
+寻找下一个要爬取的URL
 another URL to crawl crawl that URL
 
 1541
 01:11:14,830 --> 01:11:18,159
+而不是为每个URL创建新的线程
 rather than creating a new thread for
 
 1542
 01:11:18,159 --> 01:11:21,070
+所以 接下来我想要
 each URL okay so next up I want to talk
 
 1543
 01:11:21,070 --> 01:11:23,230
+讨论另一种crawler
 about a another crawler that's
 
 1544
 01:11:23,230 --> 01:11:25,600
-implemented and a significantly
+它的实现方式显著不同
+implemented in a significantly
 
 1545
 01:11:25,600 --> 01:11:28,780
+使用了channel 
 different way using channels instead of
 
 1546
 01:11:28,780 --> 01:11:31,869
-shared memory it's a member on the mutex
+而不是共享内存
+shared memory remember on the mutex
 
 1547
 01:11:31,869 --> 01:11:33,489
+回忆之前的版本
 call or I just said there is this table
 
 1548
 01:11:33,489 --> 01:11:34,840
-of URLs that are called that's shared
+记录URL的表格被所有线程共享
+of URLs recorded that's shared
 
 1549
 01:11:34,840 --> 01:11:36,550
-between all the threads and asked me
+必须加锁
+between all the threads has to be
 
 1550
 01:11:36,550 --> 01:11:40,330
+这个版本没有这样一个（共享）的表格
 locked this version does not have such a
 
 1551
 01:11:40,330 --> 01:11:44,440
+没有共享内存
 table does not share memory and does not
 
 1552
 01:11:44,440 --> 01:11:52,510
+不需要使用锁 好的
 need to use locks okay so this one the
 
 1553
 01:11:52,510 --> 01:11:55,060
+相反地 有一个master线程
 instead there's basically a master
 
 1554
 01:11:55,060 --> 01:11:57,790
-thread that's his master function on a
+第86行的master函数
+thread that's master function on 86
 
 1555
 01:11:57,790 --> 01:12:00,699
-decent 986 and it has a table but the
+它有一个表格
+line 86 and it has a table but the
 
 1556
 01:12:00,699 --> 01:12:02,800
+但是这个表格是master函数私有的
 table is private to the master function
 
 1557
 01:12:02,800 --> 01:12:06,690
+master函数并不像前一个版本那样
 and what the master function is doing is
 
 1558
 01:12:06,690 --> 01:12:09,219
+创建
 instead of sort of basically creating a
 
 1559
 01:12:09,219 --> 01:12:11,409
+一棵函数调用树
 tree of functions that corresponds to
 
 1560
 01:12:11,409 --> 01:12:13,330
+以对应图结构的搜索
 the exploration of the graph which the
 
 1561
 01:12:13,330 --> 01:12:17,940
-previous crawler did this one fires off
+这个版本
+previous crawler did this one fires off just 
 
 1562
 01:12:17,940 --> 01:12:21,880
-one u one go routine per URL that it's
+为每个URL创建一个goroutine
+one u one goroutine per URL that is
 
 1563
 01:12:21,880 --> 01:12:23,770
+但是只由master来创建
 fetches and that but it's only the
 
 1564
 01:12:23,770 --> 01:12:26,560
+只有唯一一个master
 master only the one master that's
 
 1565
 01:12:26,560 --> 01:12:28,300
+创建这些线程 所以我们没有
 creating these threads so we don't have
 
 1566
 01:12:28,300 --> 01:12:30,130
+一个函数的树形结构
 a tree of functions creating threads we
 
 1567
 01:12:30,130 --> 01:12:35,199
+我们只有一个master 好的
 just have the one master okay so it
 
 1568
 01:12:35,199 --> 01:12:37,540
-creates its own private map a line 88
+它在第88行创建了自己的私有的map
+creates its own private map at line 88
 
 1569
 01:12:37,540 --> 01:12:41,550
+记录哪些URL已经爬取
 this record what it's fetched and then
 
 1570
 01:12:41,550 --> 01:12:44,650
+然后创建一个channel
 it also creates a channel just a single
 
 1571
 01:12:44,650 --> 01:12:46,900
+只有一个channel 所有的worker线程
 channel that all of its worker threads
 
 1572
 01:12:46,900 --> 01:12:49,120
+都将通过这个channel沟通
 are going to talk to and the idea is
 
 1573
 01:12:49,120 --> 01:12:50,699
+这个思路是 启动一个worker线程
 that it's gonna fire up a worker thread
 
 1574
 01:12:50,699 --> 01:12:53,040
+每个worker线程
 and each worker thread that it fires up
 
 1575
 01:12:53,040 --> 01:12:55,630
+在结束时
 when it finished such as fetching the
 
 1576
 01:12:55,630 --> 01:12:58,150
+只会通过channel发送恰好一份数据
 page will send exactly one item back to
 
 1577
 01:12:58,150 --> 01:13:00,250
+给master
 the master on the channel and that item
 
 1578
 01:13:00,250 --> 01:13:03,219
+这份数据包含了这个worker
 will be a list of the URLs in the page
 
 1579
 01:13:03,219 --> 01:13:07,960
+从网页上爬取的网页中的URL的列表
 that that worker thread fetched so the
 
 1580
 01:13:07,960 --> 01:13:10,420
+master在第89行循环中 从channel中
 master sits in a loop we're in line
 
 1581
 01:13:10,420 --> 01:13:13,989
-eighty nine is reading entries from the
+读取数据
+89 is reading entries from the
 
 1582
 01:13:13,989 --> 01:13:16,780
+我们想象
 channel and so we have to imagine that
 
 1583
 01:13:16,780 --> 01:13:20,469
+它已经预先启动一些worker
 it's started up some workers in advance
 
 1584
 01:13:20,469 --> 01:13:22,840
+现在读取
 and now it's reading the information the
 
 1585
 01:13:22,840 --> 01:13:24,489
+这些worker发回的URL列表
 URL lists that those workers send back
 
 1586
 01:13:24,489 --> 01:13:26,830
-and each time he gets a URL is sitting
+每当89行拿到一个URL
+and each time he gets a URLs is sitting
 
 1587
 01:13:26,830 --> 01:13:28,810
-on land eighty nine it then loops over
+它遍历
+on line 89 it then loops over
 
 1588
 01:13:28,810 --> 01:13:32,620
+这些从爬取的网页中获得的
 the URLs in that URL list from a single
 
 1589
 01:13:32,620 --> 01:13:36,100
-page fetch align ninety and if the URL
+URL列表里的URL
+page fetch at line 90 and if the URL
 
 1590
 01:13:36,100 --> 01:13:39,969
+如果URL还未被爬取，它将在第94行
 hasn't already been fetched it fires off
 
 1591
 01:13:39,969 --> 01:13:42,190
+启动一个新的worker去爬取那个URL 
 a new worker at line 94 to fetch that
 
 1592
 01:13:42,190 --> 01:13:44,800
+我们看worker代码
 URL and if we look at the worker code
 
 1593
 01:13:44,800 --> 01:13:47,320
-online starting line 77 basically calls
+第77行 从第77行开始 大概是说
+on line starting on line 77 basically calls
 
 1594
 01:13:47,320 --> 01:13:51,130
+调用fetcher 然后第80行，82行
 his fetcher and then sends a message on
 
 1595
 01:13:51,130 --> 01:13:53,710
-the channel a line 80 or 82 saying
+发送信息给channel
+the channel at line 80 or 82 saying
 
 1596
 01:13:53,710 --> 01:13:57,929
+这是爬取的网页中的URLs
 here's the URLs in the page they fetched
 
 1597
 01:13:57,929 --> 01:14:01,170
+注意到
 and notice that now that the maybe
 
 1598
 01:14:01,170 --> 01:14:03,639
+可能有趣的事情是
 interesting thing about this is that the
 
 1599
 01:14:03,639 --> 01:14:07,989
+worker线程不共享任何对象
 worker threads don't share any objects
 
 1600
 01:14:07,989 --> 01:14:10,210
+worker和master之间
 there's no shared object between the
 
 1601
 01:14:10,210 --> 01:14:11,530
+也不共享任何对象
 workers and the master so we don't have
 
 1602
 01:14:11,530 --> 01:14:12,850
+所以我们不必担心锁
 to worry about locking we don't have to
 
 1603
 01:14:12,850 --> 01:14:16,360
+我们不必担心race
 worry about races instead this is a
 
 1604
 01:14:16,360 --> 01:14:18,940
+这是通信的例子
 example of sort of communicating
 
 1605
 01:14:18,940 --> 01:14:21,100
+而不是通过
 information instead of getting at it
 
 1606
 01:14:21,100 --> 01:14:25,620
+共享内存 是的
 through shared memory yes
 
 1607
 01:14:33,930 --> 01:14:38,140
+是的 可以观察到
 yeah yeah so the observation is that the
 
 1608
 01:14:38,140 --> 01:14:40,810
+代码看上去好像 但是worker是
 code appears but the workers are the
 
 1609
 01:14:40,810 --> 01:14:42,250
+可以观察到 worker在改变channel
 observation is the workers are modifying
 
 1610
 01:14:42,250 --> 01:14:47,130
-ch while the Masters reading it and
+同时master在读channel
+ch while the master is reading it and
 
 1611
 01:14:49,170 --> 01:14:51,520
+go的作者不会希望
 that's not the way the go authors would
 
 1612
 01:14:51,520 --> 01:14:54,160
+你们这样理解
 like you to think about this the way
 
 1613
 01:14:54,160 --> 01:14:55,360
+他们希望你这么思考
 they want you to think about this is
 
 1614
 01:14:55,360 --> 01:14:58,030
-that CH is a channel and the channel has
+ch是channel，channel有
+that ch is a channel and the channel has
 
 1615
 01:14:58,030 --> 01:15:00,880
+发送和接收操作
 send and receive operations and the
 
 1616
 01:15:00,880 --> 01:15:03,070
+worker发送到channel上
 workers are sending on the channel while
 
 1617
 01:15:03,070 --> 01:15:05,260
+同时master读channel
 the master receives on the channel and
 
 1618
 01:15:05,260 --> 01:15:09,250
+这完全合法 channel毫无压力
 that's perfectly legal the channel is
 
 1619
 01:15:09,250 --> 01:15:11,050
+我的意思是 那意味着
 happy I mean what that really means is
 
 1620
 01:15:11,050 --> 01:15:12,790
+channel内部实现中
 that the internal implementation of
 
 1621
 01:15:12,790 --> 01:15:15,610
+有一个互斥锁
 channel has a mutex in it and the
 
 1622
 01:15:15,610 --> 01:15:19,000
+当它们把channel内部数据混在一起时
 channel operations are careful to take
 
 1623
 01:15:19,000 --> 01:15:20,860
+channel的操作小心的
 out the mutex when they're messing with
 
 1624
 01:15:20,860 --> 01:15:22,449
+使用了互斥锁
 the channels internal data to ensure
 
 1625
 01:15:22,449 --> 01:15:24,190
+来保证 
 that it doesn't actually have any
 
 1626
 01:15:24,190 --> 01:15:27,580
-reasons in it but yeah channels are sort
+实际上没有任何race 是的
+races in it but yeah channels are sort
 
 1627
 01:15:27,580 --> 01:15:29,290
+channel被保护了起来 免受并发风险
 of protected against concurrency and
 
 1628
 01:15:29,290 --> 01:15:30,400
+你可以在不同的线程中
 you're allowed to use them concurrently
 
 1629
 01:15:30,400 --> 01:15:34,680
+并发地使用它 是的
 from different threads yes
 
 1630
 01:15:36,389 --> 01:15:43,190
+通过channel接收 是的
 over the channel receive yes
 
 1631
 01:15:53,810 --> 01:15:56,260
+我们不需要关闭channel
 we don't need to close the channel I
 
 1632
 01:15:56,260 --> 01:15:58,850
+我的意思是 好吧 这个break语句
 mean okay the the break statement is
 
 1633
 01:15:58,850 --> 01:16:00,590
+当crawl完全结束
 about when the crawl has completely
 
 1634
 01:16:00,590 --> 01:16:03,160
+我们爬取了每个URL 
 finished and we fetched every single URL
 
 1635
 01:16:03,160 --> 01:16:06,410
+发生的事情是
 right because hey what's going on is the
 
 1636
 01:16:06,410 --> 01:16:09,230
+master持续  我的意思是 这个n
 master is keeping I mean this n value is
 
 1637
 01:16:09,230 --> 01:16:13,190
+是私有的 每当master
 private value and a master every time it
 
 1638
 01:16:13,190 --> 01:16:14,860
-fires off a worker at increments the end
+启动一个worker 会增加n
+fires off a worker increments the n
 
 1639
 01:16:14,860 --> 01:16:17,360
-though every worker it starts since
+每个启动的worker
+though every worker it starts sends
 
 1640
 01:16:17,360 --> 01:16:20,480
+发送恰好一个东西到channel上
 exactly one item on the channel and so
 
 1641
 01:16:20,480 --> 01:16:21,920
+所以每次master从channel读取一个
 every time the master reads an item off
 
 1642
 01:16:21,920 --> 01:16:23,120
+就能知道 一个worker
 the channel it knows that one of his
 
 1643
 01:16:23,120 --> 01:16:24,920
+已经结束 当worker数目
 workers is finished and when the number
 
 1644
 01:16:24,920 --> 01:16:29,060
+降为0 
 of outstanding workers goes to zero then
 
 1645
 01:16:29,060 --> 01:16:32,870
+我们就完成了 我们不 一旦
 we're done and we don't once the number
 
 1646
 01:16:32,870 --> 01:16:34,520
+当所有worker的数目降为0
 of outstanding workers goes to zero then
 
 1647
 01:16:34,520 --> 01:16:36,500
+之后唯一引用channel的
 the only reference to the channel is
 
 1648
 01:16:36,500 --> 01:16:40,370
+是master函数 或者
 from the master or from oh really from
 
 1649
 01:16:40,370 --> 01:16:41,780
+是调用master的代码
 the code that calls the master and so
 
 1650
 01:16:41,780 --> 01:16:43,460
+垃圾回收器很快看到
 the garbage collector will very soon see
 
 1651
 01:16:43,460 --> 01:16:45,260
+这个channel没有被引用
 that the channel has no references to it
 
 1652
 01:16:45,260 --> 01:16:48,680
+将会释放这个channel
 and will free the channel so in this
 
 1653
 01:16:48,680 --> 01:16:50,060
+在这种情况下 有时你需要关闭channel
 case sometimes you need to close
 
 1654
 01:16:50,060 --> 01:16:53,630
+实际上 我很少必须要
 channels but actually I rarely have to
 
 1655
 01:16:53,630 --> 01:16:56,170
+关闭channel
 close channels
 
 1656
 01:17:03,150 --> 01:17:06,050
-he said again
+你能重复一遍吗
+can you say that again
 
 1657
 01:17:09,749 --> 01:17:12,219
+问题说的是 
 so the question is alright so you can
 
 1658
 01:17:12,219 --> 01:17:16,389
+看第106行 在调用master之前
 see at line 106 before calling master
 
 1659
 01:17:16,389 --> 01:17:19,949
+并发channel某种程度启动了一个
 concurrent channel sort of fires up one
 
 1660
 01:17:19,949 --> 01:17:25,659
+把一个URL塞进了channel
 shoves one URL into the channel and it's
 
 1661
 01:17:25,659 --> 01:17:26,710
+这样开始整个流程
 to sort of get the whole thing started
 
 1662
 01:17:26,710 --> 01:17:28,059
+因为master代码这样写的
 because the code for master was written
 
 1663
 01:17:28,059 --> 01:17:29,469
+你懂的 在第89行master直接
 you know the master goes right into
 
 1664
 01:17:29,469 --> 01:17:31,749
+从channel读取数据
 reading from the channel line 89 so
 
 1665
 01:17:31,749 --> 01:17:33,489
+所以最开始channel中要有数据
 there better be something in the channel
 
 1666
 01:17:33,489 --> 01:17:36,550
+否则89行将永远阻塞
 otherwise line 89 would block forever so
 
 1667
 01:17:36,550 --> 01:17:38,260
+如果没有107行的代码
 if it weren't for that little code at
 
 1668
 01:17:38,260 --> 01:17:42,550
+89行将block在读channel上
 line 107 the for loop at 89 would block
 
 1669
 01:17:42,550 --> 01:17:44,050
+一直在channel上读取
 reading from the channel forever and
 
 1670
 01:17:44,050 --> 01:17:54,460
+这段代码不能工作 是的
 this code wouldn't work well yeah so the
 
 1671
 01:17:54,460 --> 01:17:56,289
+一个观察是 天哪 如果
 observation is gosh you know wouldn't it
 
 1672
 01:17:56,289 --> 01:17:57,510
+写出的代码 
 be nice to be able to write code that
 
 1673
 01:17:57,510 --> 01:17:59,530
+能够注意到
 would be able to notice if there's
 
 1674
 01:17:59,530 --> 01:18:01,570
+是否有东西在等待channel 就好了
 nothing waiting on the channel and you
 
 1675
 01:18:01,570 --> 01:18:03,219
+如果你去看select语句 你可以做到
 can if you look up the Select statement
 
 1676
 01:18:03,219 --> 01:18:05,019
+它更复杂
 it's much more complicated than this but
 
 1677
 01:18:05,019 --> 01:18:06,579
+但是select语句
 there is the Select statement which
 
 1678
 01:18:06,579 --> 01:18:09,460
+让你免于block 继续执行
 allows you to proceed to not block if
 
 1679
 01:18:09,460 --> 01:18:11,139
+如果没有等待在channel
 something if there's nothing waiting on
 
 1680
@@ -6977,81 +7725,103 @@ the channel
 
 1681
 01:18:44,590 --> 01:18:59,600
+因为worker没有结束 好的 抱歉
 because the worker aren't finish okay sorry
 
 1682
 01:18:59,600 --> 01:19:02,600
+对于第一个问题 我觉得
 to the first question is there I think
 
 1683
 01:19:02,600 --> 01:19:03,830
+你真正担心的是
 what you're really worried about is
 
 1684
 01:19:03,830 --> 01:19:05,630
+我们是否真的能够并行启动
 whether we're actually able to launch
 
 1685
 01:19:05,630 --> 01:19:09,110
+最开始的第一个fetch不会并行
 parallel so the very first fetch won't be
 
 1686
 01:19:09,110 --> 01:19:37,220
+因为
 in parallel because there's an exit
 
 1687
 01:19:37,220 --> 01:19:40,270
-owner the for-loop waits in at line 89
+不 不 不 for循环在第89行等待
+no no no the for-loop waits in at line 89
 
 1688
 01:19:40,270 --> 01:19:44,450
+89行的for loop
 that's not okay that for loop at line 89
 
 1689
 01:19:44,450 --> 01:19:47,660
+并不是 遍历当前channel的内容
 is does not just loop over the current
 
 1690
 01:19:47,660 --> 01:19:49,190
+然后退出
 contents of the channel and then quit
 
 1691
 01:19:49,190 --> 01:19:54,230
+89行的for循环将会读 
 that is the for loop at 89 is going to
 
 1692
 01:19:54,230 --> 01:19:58,100
+它可以永不退出
 read it may never exit but it's gonna
 
 1693
 01:19:58,100 --> 01:19:59,780
+它将一直等待
 read it's just going to keep waiting
 
 1694
 01:19:59,780 --> 01:20:01,130
+直到有东西出现在channel中
 until something shows up in the channel
 
 1695
 01:20:01,130 --> 01:20:04,280
+所以 如果没有第99行的break
 so if you don't hit the break at line 99
 
 1696
 01:20:04,280 --> 01:20:10,250
-the for loop own exit yeah alright I'm
+for循环不会被结束 是的 好
+the for loop won't exit yeah alright I'm
 
 1697
 01:20:10,250 --> 01:20:12,440
+恐怕我们时间到了 我们会继续
 afraid we're out of time we'll continue
 
 1698
 01:20:12,440 --> 01:20:15,800
+事实上我们的助教安排了一场展示
 this actually we have a presentation
 
 1699
 01:20:15,800 --> 01:20:18,260
-scheduled by the TAS which I'll talk
+在那儿会聊更多关于go的话题
+scheduled by the TAs which will talk
 
 1700
 01:20:18,260 --> 00:00:00,000
+
 more about go
+
+
 
