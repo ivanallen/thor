@@ -1,10 +1,12 @@
 1
 00:00:02,500 --> 00:00:07,370
+（翻译：Allen, Adam）
 今天我想谈谈 Go 语言
 today I'd like to talk about Go which
 
 2
 00:00:07,370 --> 00:00:08,990
+（翻译：Allen, Adam）
 它真的相当有趣
 is interesting especially interesting
 
