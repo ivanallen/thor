@@ -1,0 +1,7057 @@
+1
+00:00:02,500 --> 00:00:07,370
+今天我想谈谈 Go 语言
+today I'd like to talk about Go which
+
+2
+00:00:07,370 --> 00:00:08,990
+它真的相当有趣
+is interesting especially interesting
+
+3
+00:00:08,990 --> 00:00:10,849
+在这门课中
+for us in this course because course Go
+
+4
+00:00:10,849 --> 00:00:12,709
+未来的 labs
+is the language at the labs you're all
+
+5
+00:00:12,709 --> 00:00:14,450
+将使用 Go 语言来完成，所以今天我想
+going to do the labs in and so I want to
+
+6
+00:00:14,450 --> 00:00:17,090
+花些精力关注
+focus today particularly on some of the
+
+7
+00:00:17,090 --> 00:00:19,280
+在 labs 会用到的部分
+machinery that sort of most useful in
+
+8
+00:00:19,280 --> 00:00:22,940
+特别是在
+the labs and in most particular to
+
+9
+00:00:22,940 --> 00:00:26,170
+分布式程序中，嗯，首先
+distributed programming um first of all
+
+10
+00:00:26,170 --> 00:00:29,600
+为什么在这门课里我们要使用 Go 语言？
+you know it's worth asking why we use go
+
+11
+00:00:29,600 --> 00:00:32,180
+事实上，我们已经使用过
+in this class in fact we could have used
+
+12
+00:00:32,180 --> 00:00:33,890
+其它风格的编程语言
+any one of a number of other system
+
+13
+00:00:33,890 --> 00:00:35,899
+非常多，比如
+style languages plenty languages like
+
+14
+00:00:35,899 --> 00:00:38,210
+Java, C#, 甚至是 Python
+Java or C sharp or even Python that
+
+15
+00:00:38,210 --> 00:00:40,730
+这些语言提供了我们需要的工具
+provide the kind of facilities we need
+
+16
+00:00:40,730 --> 00:00:42,859
+我们也在这门课用使用过 C++
+and indeed we used to use C++ in this
+
+17
+00:00:42,859 --> 00:00:47,079
+并且它也能很好的得出满意的结果
+class and it worked out fine it'll go
+
+18
+00:00:47,079 --> 00:00:49,010
+Go 也像其它编程语言一样
+indeed like many other languages
+
+19
+00:00:49,010 --> 00:00:50,719
+给你打包了一些非常便利的功能（特性）
+provides a bunch of features which are
+
+20
+00:00:50,719 --> 00:00:51,649
+供你使用
+particularly convenient
+
+21
+00:00:51,649 --> 00:00:53,409
+尤其是在多线程、
+that's good support for threads and
+
+22
+00:00:53,409 --> 00:00:56,659
+锁，以及线程间同步上，Go 都做的相当的棒！
+locking and synchronization between
+
+23
+00:00:56,659 --> 00:00:59,239
+未来我们会大量使用这些特性
+threads which we use a lot it is a
+
+24
+00:00:59,239 --> 00:01:01,789
+另外 RPC package(RPC 包)也相当的好用
+convenient remote procedure call package
+
+25
+00:01:01,789 --> 00:01:04,879
+它听起来好像没什么大不了的
+which doesn't sound like much but it
+
+26
+00:01:04,879 --> 00:01:06,380
+但是这在其它诸如 C++ 这样的语言中
+actually turns out to be a significant
+
+27
+00:01:06,380 --> 00:01:09,950
+真的是个很大的包袱，用起来不尽人意
+constraint from many languages like C++
+
+28
+00:01:09,950 --> 00:01:11,210
+比如说，你很难找到一个好用的
+for example it's actually a bit hard to
+
+29
+00:01:11,210 --> 00:01:13,579
+RPC 包
+find a convenient easy to use remote
+
+30
+00:01:13,579 --> 00:01:14,930
+当然了
+procedure call package and of course we
+
+31
+00:01:14,930 --> 00:01:16,570
+在这门课里或是
+use it all the time in this course or
+
+32
+00:01:16,570 --> 00:01:18,409
+程序中，并且在不同的机器上，我们会用它做比较
+programs and different machines to talk
+
+33
+00:01:18,409 --> 00:01:22,610
+不像 C++, Go 是类型安全
+to each other unlike C++ go is type safe
+
+34
+00:01:22,610 --> 00:01:25,100
+且内存安全的语言
+and memory safe that is it's pretty hard
+
+35
+00:01:25,100 --> 00:01:27,619
+想要编写一个完美的程序真的太难了
+to write a program that due to a bug
+
+36
+00:01:27,619 --> 00:01:29,180
+它总是或多或少存在和内存相关的 bug
+scribbles over some random piece of
+
+37
+00:01:29,180 --> 00:01:31,340
+然后导致程序产生一些奇奇怪怪的事情
+memory and then causes the program to do
+
+38
+00:01:31,340 --> 00:01:34,789
+然而，Go 的垃圾回收机制
+mysterious things and that just
+
+39
+00:01:34,789 --> 00:01:36,320
+能尽可能的帮我们消灭大量类似的 bug
+eliminates a big class of bugs similarly
+
+40
+00:01:36,320 --> 00:01:39,680
+这意味着
+it's garbage collected which means you
+
+41
+00:01:39,680 --> 00:01:41,869
+你再也不用饱受 double free
+never in danger of priam the same memory
+
+42
+00:01:41,869 --> 00:01:44,509
+或是释放正在被使用的内存的痛苦
+twice or free memory that's still in use
+
+43
+00:01:44,509 --> 00:01:46,340
+还有一些不用的 vector
+or something the garbage vector just
+
+44
+00:01:46,340 --> 00:01:48,859
+当它不被使用时，也应该要被释放掉
+frees things when they stop being used
+
+45
+00:01:48,859 --> 00:01:51,920
+还有一些看起来不太明显的问题
+and one thing it's maybe not obvious
+
+46
+00:01:51,920 --> 00:01:54,829
+直到你接触
+until you played around with just this
+
+47
+00:01:54,829 --> 00:01:56,719
+这样的程序之前
+kind of programming before but the
+
+48
+00:01:56,719 --> 00:01:58,640
+多线程协同，垃圾回收
+combination of threads and garbage
+
+49
+00:01:58,640 --> 00:02:01,880
+也是相当重要的事情之一
+collection is particularly important one
+
+50
+00:02:01,880 --> 00:02:03,200
+在非垃圾回收型语言中
+of the things that goes wrong in a non
+
+51
+00:02:03,200 --> 00:02:06,109
+这些都很容易出错，比如 C++
+garbage collected language like C++ if
+
+52
+00:02:06,109 --> 00:02:08,899
+如果你使用它(C++)编写多线程程序
+you use threads is that it's always a
+
+53
+00:02:08,899 --> 00:02:10,690
+它总会出现一些让人迷惑的的问题
+bit of a puzzle and requires a bunch of
+
+54
+00:02:10,690 --> 00:02:13,430
+这要求你需要一大本草稿本帮助你去理解
+bookkeeping to figure out when the last
+
+55
+00:02:13,430 --> 00:02:14,190
+什么时候最后一个线程
+thread
+
+56
+00:02:14,190 --> 00:02:15,660
+不在使用共享对象
+that's using a shared object has
+
+57
+00:02:15,660 --> 00:02:17,340
+因为只有
+finished using that object because only
+
+58
+00:02:17,340 --> 00:02:19,530
+在这个时候，你才能释放对象
+then can you free the object and so you end
+
+59
+00:02:19,530 --> 00:02:20,910
+所以最终你会写很多代码
+up writing quite a bit of code just like
+
+60
+00:02:20,910 --> 00:02:22,620
+就像许多程序员会
+many of the programmer writes about a
+
+61
+00:02:22,620 --> 00:02:24,480
+自己动手写一堆代码那样
+bunch of code manually. you know do
+
+62
+00:02:24,480 --> 00:02:26,580
+你知道可以实现类似引用计数这样的功能
+reference counting or something in order
+
+63
+00:02:26,580 --> 00:02:28,470
+来解决它，你也知道
+to figure out you know when the last
+
+64
+00:02:28,470 --> 00:02:30,030
+当最后一个使用对象的线程结束时（需要释放它）
+thread stopped using an object and
+
+65
+00:02:30,030 --> 00:02:32,460
+那真是相当的痛苦
+that's just a pain and that problem
+
+66
+00:02:32,460 --> 00:02:34,710
+如果有垃圾回收，这些问题都将不复存在
+completely goes away if you use garbage
+
+67
+00:02:34,710 --> 00:02:36,560
+比如在 Go 语言中
+collection like we have in go
+
+68
+00:02:36,560 --> 00:02:39,390
+最后一点，这门语言比 C++ 要简单的多。
+and finally the language is simple much
+
+69
+00:02:39,390 --> 00:02:41,460
+使用 C++ 的麻烦的问题之一，比如
+simpler than C++ one of the problems
+
+70
+00:02:41,460 --> 00:02:44,640
+你可能只是一个拼写错误
+with using C++ is that often if you made
+
+71
+00:02:44,640 --> 00:02:47,250
+它就可能导致编译器
+an error you know maybe even just a typo
+
+72
+00:02:47,250 --> 00:02:51,420
+报出非常复杂的错误信息
+the the error message you get back from
+
+73
+00:02:51,420 --> 00:02:53,730
+在 C++ 里
+the compiler is so complicated that in
+
+74
+00:02:53,730 --> 00:02:56,160
+尝试去理解这些
+C++ it's usually not worth trying to
+
+75
+00:02:56,160 --> 00:02:57,510
+错误信息不太值得了
+figure out what the error message meant
+
+76
+00:02:57,510 --> 00:02:59,520
+我觉得更好、更快的方法
+and I find it's always just much quicker
+
+77
+00:02:59,520 --> 00:03:01,470
+就是去看看出错的那一行代码
+to go look at the line number and try to
+
+78
+00:03:01,470 --> 00:03:02,670
+尝试去猜测它到底是什么错误
+guess what the error must have been
+
+79
+00:03:02,670 --> 00:03:04,170
+因为这门语言真是太
+because the language is far too
+
+80
+00:03:04,170 --> 00:03:04,800
+复杂了
+complicated
+
+81
+00:03:04,800 --> 00:03:07,140
+然而 Go，你懂的，
+whereas go is you know probably doesn't
+
+82
+00:03:07,140 --> 00:03:09,710
+它没有许多让人热衷的特性
+have a lot of people's favorite features
+
+83
+00:03:09,710 --> 00:03:11,580
+相对而言它是一门“直接了当”
+but it's relatively straightforward
+
+84
+00:03:11,580 --> 00:03:14,940
+的语言。Okay, 所以现在你们
+language okay so at this point you're
+
+85
+00:03:14,940 --> 00:03:17,250
+都应该看看 Go 语言教程
+both on the tutorial if you're looking
+
+86
+00:03:17,250 --> 00:03:19,290
+如果你正在纠结关于这门语言，你下一步应该学习什么的时候
+for sort of you know what to look at
+
+87
+00:03:19,290 --> 00:03:21,630
+有一个好东西你可以看看
+next to learn about the language a good
+
+88
+00:03:21,630 --> 00:03:23,190
+名为《Effective Go》
+place to look is the document titled
+
+89
+00:03:23,190 --> 00:03:25,590
+你可以通过
+effective go which you know you can find
+
+90
+00:03:25,590 --> 00:03:30,390
+互联网搜索到这本书
+by searching the web
+
+91
+00:03:30,390 --> 00:03:33,110
+好吧，现在我们谈谈多线程
+all right the first thing I want to talk about is threads
+
+92
+00:03:33,110 --> 00:03:35,940
+在这门课里
+the reason why we care a lot about
+
+93
+00:03:35,940 --> 00:03:39,000
+为什么要关注多线程？
+threads in this course is that threads
+
+94
+00:03:39,000 --> 00:03:41,459
+线程将是在这门课中
+are the sort of main tool we're going to
+
+95
+00:03:41,459 --> 00:03:44,370
+实现并发的重要工具
+be using to manage concurrency in
+
+96
+00:03:44,370 --> 00:03:47,340
+在分布式程序中
+programs and concurrency is a particular
+
+97
+00:03:47,340 --> 00:03:49,920
+并发相当有意思
+interest in distributed programming
+
+98
+00:03:49,920 --> 00:03:52,440
+比较常见的情况是
+because it's often the case that one
+
+99
+00:03:52,440 --> 00:03:53,820
+一个程序需要同时
+program actually needs to talk to a
+
+100
+00:03:53,820 --> 00:03:55,890
+和多台计算机通信
+bunch of other computers you know client
+
+101
+00:03:55,890 --> 00:03:58,230
+客户端可能会同时和多台服务器通信
+may talk to many servers or a server may
+
+102
+00:03:58,230 --> 00:04:00,300
+一台服务器可能会同时响应
+be serving requests at the same time on
+
+103
+00:04:00,300 --> 00:04:02,430
+来自不同客户端的多条请求
+behalf of many different clients and so
+
+104
+00:04:02,430 --> 00:04:04,830
+我们需要一种方式来解释，，，噢，你知道我是
+we need a way to say oh you know I'm my
+
+105
+00:04:04,830 --> 00:04:06,030
+我的程序同时有 7 个不同的事情在进行
+program really has seven different
+
+106
+00:04:06,030 --> 00:04:07,410
+因为它正和 7 个不同
+things going on because it's talking to
+
+107
+00:04:07,410 --> 00:04:10,110
+客户端在通信
+seven different clients and I want a
+
+108
+00:04:10,110 --> 00:04:12,450
+我想要一种简单的方式
+simple way to allow it to do these seven
+
+109
+00:04:12,450 --> 00:04:14,459
+实现它能同时做 7 件不同的事情
+different things you know without too
+
+110
+00:04:14,459 --> 00:04:16,858
+我不需要做太复杂的编程
+much complex programming I mean sort of
+
+111
+00:04:16,858 --> 00:04:19,589
+线程就能很好的解决它
+thrust threads are the answer so these
+
+112
+00:04:19,589 --> 00:04:21,630
+在 Go 的文档中，
+are the things that the go documentation
+
+113
+00:04:21,630 --> 00:04:24,419
+它把线程称为 goroutine
+calls go routines which I call threads
+
+114
+00:04:24,419 --> 00:04:26,789
+goroutine 真的很像
+the go routines are really this same
+
+115
+00:04:26,789 --> 00:04:27,880
+大家所说的线程
+as what everybody else calls threads
+
+116
+00:04:27,880 --> 00:04:32,560
+你可以这样来思考线程
+so the way to think of threads is
+
+117
+00:04:32,560 --> 00:04:36,600
+你有一个程序
+that you have a program，one program
+
+118
+00:04:36,600 --> 00:04:43,120
+有一个地址空间，让我来画个小盒子
+and one address space I'm gonna draw a
+
+119
+00:04:43,120 --> 00:04:46,060
+来表示地址空间
+box to sort of denote an address space
+
+120
+00:04:46,060 --> 00:04:48,250
+在这个地址空间里
+and within that address space in a
+
+121
+00:04:48,250 --> 00:04:51,520
+串行执行的程序是没有多个线程的
+serial program without threads you just
+
+122
+00:04:51,520 --> 00:04:54,550
+你只有一个线程
+have one thread of execution executing
+
+123
+00:04:54,550 --> 00:04:57,040
+它在这个地址空间中执行代码
+code in that address space one program
+
+124
+00:04:57,040 --> 00:05:00,100
+它只有一个程序计数器，只有一套寄存器，一个（运行时）栈
+counter one set of registers one stack
+
+125
+00:05:00,100 --> 00:05:02,080
+这些东西就能描述
+that are sort of describing the current
+
+126
+00:05:02,080 --> 00:05:04,180
+当前的执行状态
+state of the execution
+
+127
+00:05:04,180 --> 00:05:06,160
+在一个多线程程序中，比方说 Go 程序
+in a threaded program like a go program you could have
+
+128
+00:05:06,160 --> 00:05:09,190
+你可以拥有多个线程，
+multiple threads and you know I got raw
+
+129
+00:05:09,190 --> 00:05:10,870
+我来画些弯弯的线条来表示它
+it as multiple squiggly lines and when
+
+130
+00:05:10,870 --> 00:05:13,480
+每条线之间都是分开的
+each line represents really is a
+
+131
+00:05:13,480 --> 00:05:16,120
+特别是，
+separate if the especially if the
+
+132
+00:05:16,120 --> 00:05:17,440
+如果这些线程同时执行
+threads are executing at the same time
+
+133
+00:05:17,440 --> 00:05:19,630
+那它们就分别有一个属于自己的程序计数器
+but a separate program counter a
+
+134
+00:05:19,630 --> 00:05:21,550
+一套寄存器和一个栈
+separate set of registers and a separate
+
+135
+00:05:21,550 --> 00:05:24,220
+是的，每个线程都有自己的一套东西
+stack for each of the threads so that
+
+136
+00:05:24,220 --> 00:05:26,230
+自己的一套线程控制
+they can have a sort of their own thread
+
+137
+00:05:26,230 --> 00:05:28,330
+他们可以在程序中不同的部分
+of control and be executing each thread
+
+138
+00:05:28,330 --> 00:05:31,810
+执行每个线程
+in a different part of the program and
+
+139
+00:05:31,810 --> 00:05:33,310
+有一个不太让人注意的细节
+so hidden here is that for every stack
+
+140
+00:05:33,310 --> 00:05:35,530
+每一个独立的线程都有一个栈
+there's a seprate thread there's a
+
+141
+00:05:35,530 --> 00:05:41,170
+这些栈都在执行
+stack that it's executing on
+
+142
+00:05:41,170 --> 00:05:44,530
+这些栈都在程序中的同一个地址空间里
+the stacks are actually in in the one address space
+
+143
+00:05:44,530 --> 00:05:46,720
+所以，即使
+of the program so even though each stack
+
+144
+00:05:46,720 --> 00:05:47,860
+每个线程都有它自己的栈
+each thread has its own stack
+
+145
+00:05:47,860 --> 00:05:51,220
+严格来讲他们都在同一地址空间中
+technically the they're all in the same
+
+146
+00:05:51,220 --> 00:05:52,240
+如果知道正确的地址的话
+address space and different threads
+
+147
+00:05:52,240 --> 00:05:53,800
+不同的线程总会关联到自己的栈上
+could refer to each other stacks if they
+
+148
+00:05:53,800 --> 00:05:55,960
+
+knew the right addresses
+
+149
+00:05:55,960 --> 00:05:59,050
+尽管你通常不会这么干
+although you typically don't do that
+
+150
+00:05:59,050 --> 00:06:01,510
+在 Go 中，即便在只有 main 函数的程序中
+and in go, when you even the main program you know when
+
+151
+00:06:01,510 --> 00:06:02,890
+当你首次启动程序时
+you first start up the program and it
+
+152
+00:06:02,890 --> 00:06:05,110
+它会在 main 函数中运行
+runs in main that's also it's just a go
+
+153
+00:06:05,110 --> 00:06:06,490
+它就是一个 goroutine，然后做完所有的事情
+routine and can do all the things that goroutine can do
+
+154
+00:06:06,490 --> 00:06:14,440
+好啦
+all right so as I
+
+155
+00:06:14,440 --> 00:06:17,850
+我想说的最重要的原因
+mentioned one of the big reasons is
+
+156
+00:06:17,850 --> 00:06:21,730
+就是允许程序中不同的部分
+to allow different parts of the program to
+
+157
+00:06:21,730 --> 00:06:25,030
+都能独立的
+sort of be in its own point in a
+
+158
+00:06:25,030 --> 00:06:27,550
+执行不同的动作
+different activity so I usually refer to
+
+159
+00:06:27,550 --> 00:06:31,510
+我常常说 IO 并发是出于历史原因
+that as IO concurrency for historical
+
+160
+00:06:31,510 --> 00:06:36,580
+称之为 IO 并发
+reasons and the reason I call it IO
+
+161
+00:06:36,580 --> 00:06:38,050
+是因为在过去这个概念
+concurrency is that in the old days
+
+162
+00:06:38,050 --> 00:06:39,580
+第一次被提出的时候是这样的：
+where this first came up is that
+
+163
+00:06:39,580 --> 00:06:41,260
+你可能有一个线程
+oh you might have one thread that's waiting to
+
+164
+00:06:41,260 --> 00:06:43,240
+正在等待从磁盘上读数据
+read from the disk and while it's waiting to
+
+166
+00:06:43,240 --> 00:06:44,410
+当它在等待的时候，你又想要
+reach from the disk you'd like to have a
+
+167
+00:06:44,410 --> 00:06:46,330
+另一个线程，可能用来做计算或是
+second thread that maybe can compute or
+
+168
+00:06:46,330 --> 00:06:49,000
+从某个磁盘的地方读取数据
+read somewhere else in the disk or send
+
+169
+00:06:49,000 --> 00:06:50,560
+或是向网络发送一条消息并等待回复
+a message in the network and wait for reply
+
+170
+00:06:50,560 --> 00:06:54,490
+所以 IO 并发
+and so I/O concurrency is one of
+
+171
+00:06:54,490 --> 00:06:57,250
+也是你使用多线程的地方之一
+the things that threads by you for us it
+
+172
+00:06:57,250 --> 00:07:00,190
+比如说
+would usually mean I can I/O concurrency
+
+173
+00:07:00,190 --> 00:07:01,690
+我们有一个程序
+we usually mean I can have one program
+
+174
+00:07:01,690 --> 00:07:04,090
+已经启动并且通过 RPC 
+that has launched, remote procedure
+
+175
+00:07:04,090 --> 00:07:06,010
+请求网络上不同的服务器
+calls requests to different servers on
+
+176
+00:07:06,010 --> 00:07:08,140
+然后同时在等待多个回复
+the network and is waiting for many replies at the same time 
+
+177
+00:07:08,140 --> 00:07:10,570
+这就是我们要解决的问题
+that's how it'll come up for us
+
+178
+00:07:10,570 --> 00:07:15,040
+具体做法是
+and you know the way you would do that with threads is
+
+180
+00:07:15,040 --> 00:07:18,790
+你会为每个 RPC 调用创建一个线程
+that you would create one thread for each of the remote procedure calls that
+
+182
+00:07:18,790 --> 00:07:21,190
+每个线程
+you wanted to launch that thread would
+
+183
+00:07:21,190 --> 00:07:26,380
+都会通过 RPC 发送 request 消息
+have code that you know sent the remote procedure call request message and sort
+
+185
+00:07:26,380 --> 00:07:27,820
+然后在这个位置等待
+of waited at this point in the thread
+
+186
+00:07:27,820 --> 00:07:29,320
+当响应回复时
+and then finally when the reply came
+
+187
+00:07:29,320 --> 00:07:31,330
+这个线程将会继续执行
+back the thread would continue executing
+
+188
+00:07:31,330 --> 00:07:33,220
+使用多线程
+and using threads allows us to have
+
+189
+00:07:33,220 --> 00:07:36,250
+可以让我们同时发起多个网络请求
+multiple threads that all launch requests into the network at the same time
+
+191
+00:07:36,250 --> 00:07:38,440
+所有线程都会等待回复
+they all wait or they don't have to
+
+192
+00:07:38,440 --> 00:07:40,690
+也不是非得在同一时间去发请求
+do it at the same time they can you know
+
+193
+00:07:40,690 --> 00:07:43,090
+只要它愿意，这些线程总可以做不同的事情
+execute the different parts of this whenever they feel like it
+
+195
+00:07:43,090 --> 00:07:49,720
+不同 IO 并发活动可能会有互相重叠的部分
+so that's i/o concurrency sort of overlapping of the progress of different activities
+
+197
+00:07:49,720 --> 00:07:57,060
+也允许一个活动正在等待，另一个活动可以继续执行
+and allowing while one activity is waiting, other activities can proceed
+
+199
+00:07:57,060 --> 00:08:00,330
+使用多线程的另一个最重要原原因是多核并行
+another big reason to use threads is multi-core parallelism
+
+200
+00:08:00,330 --> 00:08:08,680
+我就写并行化吧
+which I'll just call parallelism
+
+202
+00:08:08,680 --> 00:08:10,270
+我们想通过线程来达到并行化的目的
+and here the thing where we'd be trying to achieve with threads
+
+203
+00:08:10,270 --> 00:08:11,890
+并行化就是如果你有个多核机器
+is if you have a multi-core
+
+204
+00:08:11,890 --> 00:08:13,540
+我确定你们每个人都能用你的笔记本做到
+machine like I'm sure all of you do in
+
+205
+00:08:13,540 --> 00:08:15,760
+如果你有一个计算繁重的工作
+your laptops if you have a sort of
+
+206
+00:08:15,760 --> 00:08:17,470
+它需要消耗许多 CPU 时钟
+compute heavy job that needs a lot of
+
+207
+00:08:17,470 --> 00:08:19,150
+这不是太好
+CPU cycles wouldn't it be nice if you
+
+208
+00:08:19,150 --> 00:08:21,060
+假设你的程序
+could have one program that could use
+
+209
+00:08:21,060 --> 00:08:23,860
+能使用机器上所有的 CPU 核
+CPU cycles on all of the cores of the
+
+210
+00:08:23,860 --> 00:08:27,580
+比方说它是用 Go 写的多线程程序
+machine and indeed if you write a multi-threaded go
+
+212
+00:08:27,580 --> 00:08:30,040
+你启动了多个 goroutine
+if you launch multiple go routines and go and they do something
+
+213
+00:08:30,040 --> 00:08:31,570
+这些 goroutine 执行一些计算密集型的任务
+computer intensive like sit there in a
+
+214
+00:08:31,570 --> 00:08:33,940
+比如一直在那执行一个循环，计算 pi（圆周率)的值
+loop and you know compute digits of pi
+
+215
+00:08:33,940 --> 00:08:38,520
+直到达到机器上 cpu 核的极限
+or something then up to the limit of the number of cores in the physical machine
+
+217
+00:08:38,520 --> 00:08:41,260
+你的线程将会真正的以并行的方式运行
+your threads will run truly in parallel
+
+218
+00:08:41,260 --> 00:08:43,690
+如果你启动 2 个线程代替 1 个线程
+and if you launch you know two threads
+
+219
+00:08:43,690 --> 00:08:45,750
+你就能获得 2 倍的性能
+instead of one you'll get twice as many
+
+220
+00:08:45,750 --> 00:08:48,370
+就能使用 2 倍数量的 CPU 核时钟
+you'll be able to use twice as many CPU cycles per second
+
+221
+00:08:48,370 --> 00:08:51,070
+对部分人来说这真的太重要了
+so this is very
+
+222
+00:08:51,070 --> 00:08:53,170
+但是在这门课里
+important to some people it's not a big
+
+223
+00:08:53,170 --> 00:08:54,740
+这其实没什么大不了的
+deal on this course
+
+224
+00:08:54,740 --> 00:08:57,440
+我们并不会把多过精力
+be... it's rare that we'll sort of think
+
+225
+00:08:57,440 --> 00:08:59,480
+放在这一类并行化上
+specifically about this kind of parallelism 
+
+226
+00:08:59,480 --> 00:09:01,640
+在现实世界中
+in the real world though of
+
+227
+00:09:01,640 --> 00:09:05,390
+我们开发像服务器这样的程序
+building things like servers to form
+
+228
+00:09:05,390 --> 00:09:06,890
+来组成分布式系统的一部分
+parts of the distributed systems it can
+
+229
+00:09:06,890 --> 00:09:09,770
+有时让服务器
+sometimes be extremely important to be
+
+230
+00:09:09,770 --> 00:09:11,780
+能使用多线程
+able to have the server be able to run
+
+231
+00:09:11,780 --> 00:09:13,550
+能使用多核还是非常重要的
+threads and harness the CPU power of a
+
+232
+00:09:13,550 --> 00:09:15,140
+因为往往客户端
+lot of cores just because the load from
+
+233
+00:09:15,140 --> 00:09:18,740
+带给服务器的负载非常高
+clients can often be pretty high
+
+234
+00:09:18,740 --> 00:09:22,850
+okay, 所以并行化是第二个原因
+okay so parallelism is a second reason
+
+235
+00:09:22,850 --> 00:09:25,310
+那么为什么咱们会在分布式系统中
+why threads are quite a bit interested in
+
+236
+00:09:25,310 --> 00:09:27,170
+如此关注多线程呢
+distributed systems and a third reason
+
+237
+00:09:27,170 --> 00:09:29,540
+第三个原因，但也可能不那么重要
+which is maybe a little bit less
+
+238
+00:09:29,540 --> 00:09:32,780
+就是有时候
+important is there's some there's times
+
+239
+00:09:32,780 --> 00:09:38,630
+你只是想在后台做一些事情
+when you really just want to be able to do something in the background
+
+241
+00:09:38,630 --> 00:09:42,770
+比如你就想周期性的去执行它
+or you know there's just something you need to do periodically
+
+243
+00:09:42,770 --> 00:09:45,260
+但你又不愿意在主线程
+and you don't want to have to sort of in the main part of your
+
+244
+00:09:45,260 --> 00:09:47,420
+插入一些检查
+program sort of insert checks to say
+
+245
+00:09:47,420 --> 00:09:49,190
+比如我要做的那个动作
+well should I be doing this things that
+
+246
+00:09:49,190 --> 00:09:51,080
+它应该每秒发生一次
+should happen every second or so you
+
+247
+00:09:51,080 --> 00:09:52,370
+就像你生火一样
+just like to be able to fire something
+
+248
+00:09:52,370 --> 00:09:54,380
+每秒都能做
+up that every second does whatever the
+
+249
+00:09:54,380 --> 00:09:56,060
+不管周期性执行做什么事情
+periodic thing is
+
+250
+00:09:56,060 --> 00:10:00,500
+都有一些原因
+so there's some convenience reasons
+
+251
+00:10:00,500 --> 00:10:03,380
+这里有个例子
+and an example which will come up for you
+
+252
+00:10:03,380 --> 00:10:05,210
+也是经常会遇到的情况
+is it's often the case
+
+253
+00:10:05,210 --> 00:10:07,250
+比如有一个 master 服务就需要周期性的检查它的 worker 服务
+that some you know a master server may want to check periodically whether
+
+254
+00:10:07,250 --> 00:10:09,350
+是否一直存活
+its workers are still alive because one
+
+255
+00:10:09,350 --> 00:10:10,580
+因为这些 worker 之一宕机的话
+of them is died you know you want to
+
+256
+00:10:10,580 --> 00:10:12,170
+就需要把工作扔到另一台机器上去执行
+launch that work on another machine like
+
+257
+00:10:12,170 --> 00:10:14,540
+就像 MapReduce 那样
+MapReduce might do that and one way to
+
+258
+00:10:14,540 --> 00:10:17,420
+你可以每秒、每分钟
+arrange sort of oh do this check every
+
+259
+00:10:17,420 --> 00:10:21,680
+通过发送一条“你还活着吗？”这样的消息到 worker 服务上
+second every minute you know send a message to the worker are you alive is
+
+261
+00:10:21,680 --> 00:10:24,170
+你能启动一个 goroutine
+to fire off a go routine that just sits
+
+262
+00:10:24,170 --> 00:10:25,700
+然后执行一个死循环，sleep 1 秒后
+in a loop that sleeps for a second and
+
+263
+00:10:25,700 --> 00:10:26,990
+然后做需要周期执行的动作
+then does the periodic thing and then
+
+264
+00:10:26,990 --> 00:10:28,700
+然后又 sleep 1 秒
+sleeps for a second again and so in the
+
+265
+00:10:28,700 --> 00:10:31,400
+在后面的 lab 里，你最后将会创建这样的线程
+labs you'll end up firing off these kind of threads quite a bit 
+
+266
+00:10:31,400 --> 00:10:36,560
+（提问...猜测是开启 goroutine 开销的问题）
+yes is the
+
+267
+00:10:36,560 --> 00:10:42,470
+这个开销是值得的，是的，这个开销
+overhead worth it yes the overhead is
+
+268
+00:10:42,470 --> 00:10:44,840
+真的非常少
+really pretty small for this stuff I
+
+269
+00:10:44,840 --> 00:10:46,700
+这依赖于你创建多少线程
+mean you know it depends on how many you
+
+270
+00:10:46,700 --> 00:10:50,150
+但是如果你创建了 100 万个线程
+create a million threads that he sit in
+
+271
+00:10:50,150 --> 00:10:52,040
+每个线程中执行循环，循环只 sleep 1 毫秒
+a loop waiting for a millisecond and
+
+272
+00:10:52,040 --> 00:10:53,960
+然后发送网络消息
+then send a network message that's
+
+273
+00:10:53,960 --> 00:10:56,330
+这可能会给你的机器带来巨大的负载
+probably a huge load on your machine but
+
+274
+00:10:56,330 --> 00:10:59,200
+如果你就创建了 10 个线程的话
+if you create you know ten threads that
+
+275
+00:10:59,200 --> 00:11:01,400
+sleep 1 秒，然后做一点点工作
+sleep for a second and do a little bit
+
+276
+00:11:01,400 --> 00:11:04,850
+这真的没什么大不了的
+of work it's probably not a big deal at all
+
+277
+00:11:04,850 --> 00:11:10,019
+我保证这会节约你很多时间
+and it's I guarantee you the programmer time you
+
+279
+00:11:10,019 --> 00:11:13,980
+你不用把各种不同的
+save by not having the sort of much
+
+280
+00:11:13,980 --> 00:11:16,199
+功能搞到一起
+together they're different different
+
+281
+00:11:16,199 --> 00:11:19,319
+放在一行代码里
+activities into one line of code it's
+
+282
+00:11:19,319 --> 00:11:21,449
+它只会消耗一点点 CPU
+it's worth the small amount of CPU cost almost always
+
+283
+00:11:21,449 --> 00:11:26,160
+如果很不幸
+still you know you will if
+
+284
+00:11:26,160 --> 00:11:27,600
+你在 Labs 发现
+you're unlucky you'll discover in the
+
+285
+00:11:27,600 --> 00:11:30,449
+有些循环 sleep 的时间不够长
+labs that some loop of yours is not
+
+286
+00:11:30,449 --> 00:11:32,519
+或者是创建了大量的 goroutine
+sleeping long enough or are you fired
+
+287
+00:11:32,519 --> 00:11:35,730
+也从未让他们退出
+off a bunch of these and never made them
+
+288
+00:11:35,730 --> 00:11:37,589
+这样 goroutine 就会越来越多
+exit for example and they just
+
+289
+00:11:37,589 --> 00:11:41,329
+甚至是你做的更过火
+accumulate so you can push it too far
+
+290
+00:11:41,329 --> 00:11:43,680
+okay，所以这些原因
+okay so these are the reasons that the
+
+291
+00:11:43,680 --> 00:11:46,410
+是人们喜欢线程的主要原因
+main reasons that people like threads a
+
+292
+00:11:46,410 --> 00:11:47,730
+也是我们在这门课里使用多线程的原因
+lot and that will use threads in this
+
+293
+00:11:47,730 --> 00:11:50,370
+关于线程大家还有什么问题吗？
+class any other questions about threads
+
+294
+00:11:50,370 --> 00:12:01,860
+（提问：...）通过异步编程
+in general by asynchronous program you
+
+295
+00:12:01,860 --> 00:12:03,569
+你的意思是通过单线程
+mean like a single thread of control
+
+296
+00:12:03,569 --> 00:12:06,779
+来追踪不同活动的状态是吗？
+that keeps state about many different
+
+297
+00:12:06,779 --> 00:12:09,509
+yeah，这真的是个好问题
+activities yeah so this is a good question actually
+
+298
+00:12:09,509 --> 00:12:13,439
+如果不使用多线程会怎样？
+there is you know what would happen if we didn't have threads
+
+300
+00:12:13,439 --> 00:12:15,089
+可能因为某些原因我们不想使用线程
+or we'd for some reason we didn't want
+
+301
+00:12:15,089 --> 00:12:16,800
+那么我们如何写程序？
+to use threads like how would we be able to write a program 
+
+302
+00:12:16,800 --> 00:12:21,209
+你知道服务器
+that could you know a server 
+
+
+304
+00:12:21,209 --> 00:12:23,339
+能够同时与不同客户端通信
+that could talk to many different clients at the same time
+
+305
+00:12:23,339 --> 00:12:24,509
+或是客户端能同时与多个服务器通信
+or a client that could talk to many servers right
+
+306
+00:12:24,509 --> 00:12:26,100
+这时候应该使用什么样的工具？
+what what tools could be used and it
+
+307
+00:12:26,100 --> 00:12:29,069
+事实上还有另一种方式
+turns out there is sort of another line
+
+308
+00:12:29,069 --> 00:12:36,420
+另一种主要风格
+of another kind of another major style
+
+309
+00:12:36,420 --> 00:12:40,019
+这种组织程序的方式称为异步编程
+of how do you structure these programs called you call the asynchronous program
+
+312
+00:12:40,019 --> 00:12:42,529
+也称为事件驱动编程
+I might call it event-driven programming
+
+313
+00:12:42,529 --> 00:12:45,899
+你可以使用事件驱动编程
+so sort of or you could use event-driven
+
+314
+00:12:45,899 --> 00:12:52,709
+事件驱动编程的一般结构
+programming and the the general structure of an event-driven program is
+
+316
+00:12:52,709 --> 00:12:54,420
+通常它有一个线程
+usually that it has a single thread and
+
+317
+00:12:54,420 --> 00:12:57,380
+同时有一个循环
+a single loop and what that loop does is
+
+318
+00:12:57,380 --> 00:13:01,380
+这个循环等待输入
+sits there and waits for any input or
+
+319
+00:13:01,380 --> 00:13:03,779
+或者是其它任何事件
+sort of any event that might trigger
+
+320
+00:13:03,779 --> 00:13:05,699
+这些事件能触发程序继续进行
+processing so an event might be the
+
+321
+00:13:05,699 --> 00:13:07,800
+事件可能是一个来自客户端的请求
+arrival of a request from a client or a
+
+322
+00:13:07,800 --> 00:13:10,889
+可能是定时器到期，如果你在编写
+timer going off or if you're building a
+
+323
+00:13:10,889 --> 00:13:12,629
+windows 系统程序
+Windows System, many Windows
+
+324
+00:13:12,629 --> 00:13:14,189
+你电脑上的许多 windows 系统程序
+systems on your laptops I've driven
+
+325
+00:13:14,189 --> 00:13:16,019
+都是通过事件驱动的风格来编写的
+written an event-driven style where what
+
+326
+00:13:16,019 --> 00:13:17,639
+它们等待的东西是像键盘击键
+they're waiting for is like key clicks
+
+327
+00:13:17,639 --> 00:13:18,339
+或者是鼠标移动这样的事件
+or Mouse move
+
+328
+00:13:18,339 --> 00:13:20,259
+因此你可能会有一个单一的
+or something so you might have a single
+
+329
+00:13:20,259 --> 00:13:21,550
+只有一个控制线程的程序
+an event-driven programing of a
+
+330
+00:13:21,550 --> 00:13:23,350
+这个线程有一个循环一直等待输入
+single thread of control sits a loop
+
+331
+00:13:23,350 --> 00:13:25,269
+无论何时有输入进来
+waits for input and whenever it gets an
+
+332
+00:13:25,269 --> 00:13:27,160
+比如收到报文，它能够找出来
+input like a packet it figures out oh
+
+333
+00:13:27,160 --> 00:13:28,749
+是哪个客户端发送的这个报文
+you know which client did this packet
+
+334
+00:13:28,749 --> 00:13:31,540
+它有一张表格
+come from and then it'll have a table of
+
+335
+00:13:31,540 --> 00:13:38,199
+记录这个客户端到底处于什么样的活动状态
+sort of what the state is of whatever activity its managing for that client
+
+337
+00:13:38,199 --> 00:13:40,509
+比如说，oh 上帝，
+and it'll say oh gosh I was in the
+
+338
+00:13:40,509 --> 00:13:42,220
+我现在处于“读”某个文件的状态
+middle of reading such-and-such a file
+
+339
+00:13:42,220 --> 00:13:44,110
+那么它就会要求我去读下一个数据块
+you know now it's asked me to read the
+
+340
+00:13:44,110 --> 00:13:45,850
+然后我就会去读取下一个数据块然后返回
+next block I'll go and be the next block
+
+341
+00:13:45,850 --> 00:13:55,480
+使用线程的话
+and return it and threads are generally
+
+342
+00:13:55,480 --> 00:13:57,249
+通常会变的更加方便
+more convenient because they allow you
+
+343
+00:13:57,249 --> 00:14:00,069
+因为线程能让你更容易把把程序写的连贯有序
+to really you know it's much easier to write sequential
+
+344
+00:14:00,069 --> 00:14:03,610
+你就一溜写下来几行代码
+just like straight lines of control code that does you know
+
+346
+00:14:03,610 --> 00:14:05,649
+计算，然后发送消息，然后等待响应
+computes sends a message waits for
+
+347
+00:14:05,649 --> 00:14:09,009
+这比在只有一个线程里
+response whatever it's much easier to write that kind of code in a thread than
+
+349
+00:14:09,009 --> 00:14:16,269
+把一个活动给分割成一块一块的办法要容易多了
+it is to chop up whatever the activity is into a bunch of little pieces that
+
+351
+00:14:16,269 --> 00:14:19,089
+在事件驱动循环里
+can sort of be activated one at a time
+
+352
+00:14:19,089 --> 00:14:23,379
+你一次只能执行一个活动
+by one of these event-driven loops
+
+353
+00:14:23,379 --> 00:14:29,110
+这种编程模式的问题在于
+that said they are and so one problem with
+
+354
+00:14:29,110 --> 00:14:32,889
+它实现起来有点痛苦
+the scheme is that it's it's a little bit of a pain to program
+
+356
+00:14:32,889 --> 00:14:34,660
+另一个潜在的缺陷
+another potential defect is that while you get
+
+357
+00:14:34,660 --> 00:14:36,639
+当你用这种方法获取了 IO 并发后
+io concurrency from this approach you
+
+358
+00:14:36,639 --> 00:14:38,769
+你就没法利用 CPU 的并行化机制
+don't get CPU parallelism so if you're
+
+359
+00:14:38,769 --> 00:14:39,910
+所以当你写一个负载很高的服务
+writing a busy server that would really
+
+360
+00:14:39,910 --> 00:14:42,730
+你得相当设法把一台大型机器的 32 核都用上
+like to keep you know 32 cores busy on a big server machine
+
+361
+00:14:42,730 --> 00:14:49,149
+使用一个单一循环的话，你知道，它相当的不自然
+you know a single loop is you know it's it's not a very
+
+
+363
+00:14:49,149 --> 00:14:50,620
+也很难获得多核的性能
+natural way to harness more than one core
+
+364
+00:14:50,620 --> 00:14:55,029
+另一方面，
+on the other hand the overheads of
+
+365
+00:14:55,029 --> 00:14:56,620
+冒这样的风险编程
+adventure programming are generally
+
+366
+00:14:56,620 --> 00:14:59,259
+通常换来的性能提升相比多线和来说并不会太多
+quite a bit less than threads you know
+
+367
+00:14:59,259 --> 00:15:01,660
+而且线程相对来说也很廉价
+threads are pretty cheap but each one of
+
+368
+00:15:01,660 --> 00:15:05,379
+但是每个线程都有一个栈
+these threads is sitting on a stack you
+
+369
+00:15:05,379 --> 00:15:07,329
+栈通常是 1kb 或数千字节
+know stack is a kilobyte or a kilobytes
+
+370
+00:15:07,329 --> 00:15:09,459
+如果你有 20 个线程
+or something you know if you have 20 of
+
+371
+00:15:09,459 --> 00:15:10,959
+这些消耗根本不用在意
+these threads who cares if you have a
+
+372
+00:15:10,959 --> 00:15:12,970
+但是你若有 100 万个线程
+million of these threads then it's
+
+373
+00:15:12,970 --> 00:15:14,009
+那它就会消耗大量的内存
+starting to be a huge amount of memory
+
+374
+00:15:14,009 --> 00:15:17,769
+另外，线程调度
+and you know maybe the scheduling
+
+375
+00:15:17,769 --> 00:15:20,980
+就是决定下一步选择哪个线程运行
+bookkeeping for deciding what the thread to run next might also start you know
+
+377
+00:15:20,980 --> 00:15:25,899
+有一个调度列表，上面记录了 1000 个线程
+you now have list scheduling lists with a thousand threads in them
+
+379
+00:15:25,899 --> 00:15:28,420
+线程的执行将付出相当昂贵的代码
+the threads can start to get quite expensive so if
+
+380
+00:15:28,420 --> 00:15:30,519
+所以，当你只有一个服务器的时候
+you are in a position where you need to
+
+381
+00:15:30,519 --> 00:15:33,520
+你的服务器需要为 100 万个客户端提供服务
+have a single server that serves you know a million clients
+
+383
+00:15:33,520 --> 00:15:35,050
+你需要为这 100 万个客户端记录一些状态
+and has to sort of keep a little bit of state for each of a million clients
+
+385
+00:15:37,920 --> 00:15:39,370
+这个代码还是挺高的
+this could be expensive
+
+386
+00:15:39,370 --> 00:15:46,060
+花点时间的话，应该容易写一个……你知道
+and it's easier to write a very you know at some expense in programmer time 
+
+388
+00:15:46,060 --> 00:15:47,440
+使用事件驱动编程的话
+it's easier to write a really stripped-down
+
+389
+00:15:47,440 --> 00:15:50,560
+更容易写一个简单的而又五脏俱全高性能的服务
+efficient low overhead service in event-driven programming
+
+390
+00:15:50,560 --> 00:15:51,940
+只是要花点时间
+just a lot more work
+
+391
+00:15:51,940 --> 00:16:15,390
+你是问我 JavaScript 吗？
+are you asking my JavaScript I
+
+392
+00:16:15,390 --> 00:16:18,040
+你这个问题我也不会
+don't know the question is whether
+
+393
+00:16:18,040 --> 00:16:20,950
+JavaScript 有没有利用多核这个……
+JavaScript has multiple cores executing
+
+394
+00:16:20,950 --> 00:16:25,870
+有人知道吗? 这得取决于具体实现
+your does anybody know depends on the implementation
+
+395
+00:16:25,870 --> 00:16:27,250
+yeah，不过我确实不太清楚这个
+yeah so I don't know
+
+396
+00:16:27,250 --> 00:16:29,230
+有个很自然的想法
+I mean it's a natural thought though even
+
+397
+00:16:29,230 --> 00:16:31,570
+即使是在 Go 中
+in you know even in Go you might well
+
+398
+00:16:31,570 --> 00:16:33,400
+假设你知道你的机器有 8 个核
+want to have if you knew your machine
+
+399
+00:16:33,400 --> 00:16:35,170
+你想写一个世界上最高效的 server
+had eight cores if you wanted to write
+
+400
+00:16:35,170 --> 00:16:39,490
+你可能就会启动 8 个线程
+the world's most efficient whatever server you could fire up eight threads
+
+402
+00:16:39,490 --> 00:16:47,350
+每个线程上运行一个精简的事件驱动循环
+and on each of the threads run sort of stripped-down event-driven loop
+
+404
+00:16:47,350 --> 00:16:49,660
+一个循环一个核
+just you know sort of one event loop per core and
+
+405
+00:16:49,660 --> 00:16:54,700
+对于 IO 并发来说，这是一种获得并行化的方式
+that you know that would be a way to get both parallelism and to the I/O concurrency concurrency 
+
+407
+00:16:54,700 --> 00:16:59,160
+(提问)
+yes
+
+408
+00:17:05,060 --> 00:17:07,950
+okay，所以你想问多线程与多进程的区别是什么对吧
+okay so the question is what's the difference between threads and processes
+
+410
+00:17:07,950 --> 00:17:11,190
+通常，对于类 UNIX 系统的机器来说
+so usually on a like a UNIX machine a
+
+411
+00:17:11,190 --> 00:17:14,880
+一个进程就是一个单独运行的程序
+process is a single program that you're
+
+412
+00:17:14,880 --> 00:17:16,650
+只有一个地址空间
+running and a sort of single address
+
+413
+00:17:16,650 --> 00:17:18,690
+一大片可供进程使用的内存
+space a single bunch of memory for the
+
+414
+00:17:18,690 --> 00:17:22,109
+在这个进程里你可能同时会有好多个线程
+process and inside a process you might have multiple threads 
+
+415
+00:17:22,109 --> 00:17:25,290
+当你准备好一个 go 程序并运行
+and when you ready a go program and you run the go program
+
+417
+00:17:25,290 --> 00:17:31,890
+将会创建一个 unix 进程和一块内存区
+running the go program creates one unix process and one sort of memory area
+
+419
+00:17:31,890 --> 00:17:35,880
+当你的 Go 进程创建 goroutine 时
+and then when your go process creates go
+
+420
+00:17:35,880 --> 00:17:37,380
+它们实际上都是在同一个进程里的
+routines those are so sitting inside that one process 
+
+421
+00:17:37,380 --> 00:17:42,990
+我不太确定真实的答案是不是这样
+so I'm not sure that's really an answer but just historically
+
+423
+00:17:42,990 --> 00:17:45,360
+但历史上，操作系统都提供了像这样的大盒子
+the operating systems have provided like
+
+424
+00:17:45,360 --> 00:17:47,490
+它就是个进程
+this big box is the process that's
+
+425
+00:17:47,490 --> 00:17:49,580
+实际上这也取决于操作系统的实现
+implemented by the operating system and
+
+426
+00:17:49,580 --> 00:17:52,050
+确实有个别人或一些操作系统
+the individual and some of the operating
+
+427
+00:17:52,050 --> 00:17:53,940
+并不关心你的进程内部到底发生了什么事情
+system does not care what happens inside
+
+428
+00:17:53,940 --> 00:17:56,550
+也不关心你使用什么语言
+your process what language you use none
+
+429
+00:17:56,550 --> 00:17:59,130
+不关心操作系统内部的业务逻辑
+of the operating systems business but
+
+430
+00:17:59,130 --> 00:18:00,810
+在进程内部能运行多个线程就行了
+inside that process you can run lots of
+
+431
+00:18:00,810 --> 00:18:06,630
+好，如果在你的机器上运行了不止一个进程
+threads now you know if you run more than one process in your machine you know you run more than one program
+
+434
+00:18:06,630 --> 00:18:09,570
+比如一个编辑器或是编译器
+like an editor or compiler
+
+435
+00:18:09,570 --> 00:18:12,360
+操作系统需要让它们彼此分开
+the operating system keep quite separate
+
+436
+00:18:12,360 --> 00:18:13,620
+你的编译器和你的编译器
+right you're your editor and your compiler each have
+
+437
+00:18:13,620 --> 00:18:15,690
+都有自己的内存空间
+memory but it's not the same memory that
+
+438
+00:18:15,690 --> 00:18:16,830
+他们之间无法看到彼此的内存
+are not allowed to look at each other
+
+439
+00:18:16,830 --> 00:18:20,000
+不同的进程之间不会有交集
+memory there's not much interaction between different processes so
+
+441
+00:18:20,000 --> 00:18:22,470
+你的编译器可能有多个线程
+your edditor may have threads and your
+
+442
+00:18:22,470 --> 00:18:24,030
+你的编译器也可能有多个线程
+compiler may have threads but they're
+
+443
+00:18:24,030 --> 00:18:27,480
+但是他们都处于各自的世界
+just in different worlds so within any
+
+444
+00:18:27,480 --> 00:18:29,190
+但是在同一个进程中，线程与线程之间可以共享内存
+one program the threads can share memory
+
+445
+00:18:29,190 --> 00:18:31,890
+可以使用 channel(Go语言中的概念) 进行同步
+and can synchronize with channels and
+
+446
+00:18:31,890 --> 00:18:33,720
+也可以使用 mutex 等
+use mutexes etc. but between
+
+447
+00:18:33,720 --> 00:18:38,240
+但进程之间是没有交集的
+processes there's just no no interaction
+
+448
+00:18:38,240 --> 00:18:45,509
+这类软件的传统结构就是这样
+that's just a traditional structure of these this kind of software
+
+450
+00:18:45,509 --> 00:18:48,509
+(提问)
+yeah
+
+451
+00:18:53,370 --> 00:19:08,010
+问题：当上下文切换时，是所有线程都在切换吗？
+so the question is when a context switch happens does it happened for all threads
+
+453
+00:19:08,010 --> 00:19:10,420
+okay，我们想象一下
+okay so let's let's imagine you have a
+
+454
+00:19:10,420 --> 00:19:12,580
+你只有一个单核机器
+single core machine that's really only
+
+455
+00:19:12,580 --> 00:19:14,530
+这意味着在同一个时刻你只能做一件事情
+running and as just doing one thing at a
+
+456
+00:19:14,530 --> 00:19:19,900
+你这样想
+time maybe the right way to think about
+
+457
+00:19:19,900 --> 00:19:22,960
+你打算在你的机器上运行多进程
+it is that you're going to be you're running multiple processes on your machine
+
+459
+00:19:22,960 --> 00:19:27,520
+操作系统把 CPU 时间片
+the operating system will give
+
+460
+00:19:27,520 --> 00:19:33,430
+反复的分配给这两个程序
+the CPU sort of time slicing back and forth between these two programs
+
+462
+00:19:33,430 --> 00:19:35,950
+当硬件时钟到期时
+so when the hardware timer ticks and the
+
+463
+00:19:35,950 --> 00:19:38,950
+操作系统就判断是时候把 CPU 从当前正在运行的进程剥夺
+operating systems decides it's time to take away the CPU from the currently running process 
+
+465
+00:19:38,950 --> 00:19:40,480
+然后把 CPU 分配给另一个进程
+and give it to another
+
+466
+00:19:40,480 --> 00:19:44,700
+这件事件是在进程级别上做的
+process that's done at a process level
+
+467
+00:19:48,600 --> 00:19:52,330
+这有点复杂，好
+it's complicated all right let me let me
+
+468
+00:19:52,330 --> 00:19:55,240
+让我们重新再思考这个问题
+let me restart this these the threads
+
+469
+00:19:55,240 --> 00:20:00,070
+我们使用的线程最终是由是操作系统线程所提供的
+that we use are based on threads that are provided by the operating system in the end
+
+471
+00:20:00,070 --> 00:20:02,080
+当操作系统上下文切换时
+and when the operating system's
+
+472
+00:20:02,080 --> 00:20:03,910
+就是不同的线程之间产生切换时
+context switches its switching between
+
+473
+00:20:03,910 --> 00:20:06,520
+操作系统是知道这一切的
+the threads that it knows about so in a
+
+474
+00:20:06,520 --> 00:20:08,620
+所以操作系统可能会清楚
+situation like this the operating system
+
+475
+00:20:08,620 --> 00:20:11,560
+这儿有两个线程在这个进程中，有三个线程在那个进程
+might know that there are two threads here in this process and three threads in this process 
+
+477
+00:20:11,560 --> 00:20:13,600
+当时钟到期时
+and when the timer ticks
+
+478
+00:20:13,600 --> 00:20:16,870
+操作系统会基于一些调度算法选择一个不同的线程来运行
+the operating system will based on some scheduling algorithm pick a different thread thread to run 
+
+480
+00:20:16,870 --> 00:20:18,730
+在这个进程中的线程和另一进程中的线程可能是不同的
+it might be a different thread in this process or one of the threads in this process
+
+483
+00:20:22,270 --> 00:20:25,690
+另外，Go 会聪明复用一个操作系统线程
+in addition go cleverly multiplex as
+
+484
+00:20:25,690 --> 00:20:29,860
+在上面运行尽可能多的 goroutine 以节省开支
+many go routines on top of single operating system threads to reduce overhead 
+
+486
+00:20:29,860 --> 00:20:32,590
+所以这可能需要两个阶段去调度
+so it's really probably a two
+
+487
+00:20:32,590 --> 00:20:34,480
+首先操作系统选择一个线程去运行
+stages of scheduling the operating system picks which big thread to run
+
+488
+00:20:34,480 --> 00:20:45,820
+然后在这个进程中，Go 会再去选择哪个 goroutine 去运行
+and then within that process go may have a choice of go routines to run
+
+491
+00:20:45,820 --> 00:20:53,409
+好啦，线程真的很方便
+all right okay so threads are convenient
+
+492
+00:20:53,409 --> 00:20:59,919
+大多数时候，使用它就能让你在每个线程中写出非常普通、连贯的代码
+because a lot of times they allow you to write the code for each thread just as if it were a pretty ordinary sequential program
+
+495
+00:20:59,919 --> 00:21:15,149
+然而，事实上写多线程程序是有些挑战的
+however there are in fact some challenges with writing threaded code
+
+497
+00:21:15,149 --> 00:21:17,679
+其中一个是共享数据
+one is what to do about shared data one
+
+498
+00:21:17,679 --> 00:21:18,999
+关于线程模型，牛逼的地方在于
+of the really cool things about the
+
+499
+00:21:18,999 --> 00:21:22,359
+这些线程共享地址空间，共享内存
+threading model is that these threads share the same address space they share memory
+
+501
+00:21:22,359 --> 00:21:24,309
+如果某个线程在内存中创建了一个对象
+if one thread creates an object
+
+502
+00:21:24,309 --> 00:21:26,919
+在其它线程中你也能使用它
+in memory you can let other threads use
+
+503
+00:21:26,919 --> 00:21:29,139
+你可以创建个数组或是别的什么东西
+it right you can have a array or
+
+504
+00:21:29,139 --> 00:21:31,419
+所有不同的线程都能读写
+something that all the different threads are reading and writing and that
+
+506
+00:21:31,419 --> 00:21:33,879
+这就存在一些临界情况
+sometimes critical right if you you know
+
+507
+00:21:33,879 --> 00:21:35,080
+如果你你持有一些你关注的状态
+if you're keeping some interesting state
+
+508
+00:21:35,080 --> 00:21:36,309
+可能你会缓存一些数据
+you know maybe you have a cache of
+
+509
+00:21:36,309 --> 00:21:39,099
+你的 server，你的缓存，你的内存
+things that your server your cache and
+
+510
+00:21:39,099 --> 00:21:40,840
+当其中一个线程正处理一个客户端的请求的时候
+memory when a thread is handling a
+
+511
+00:21:40,840 --> 00:21:42,309
+首先它会先查一下缓存中的数据
+client request it's gonna first look in
+
+512
+00:21:42,309 --> 00:21:43,809
+但是这个共享缓存，每个线程都能读
+that cache but the shared cache and each
+
+513
+00:21:43,809 --> 00:21:49,179
+当线程里有新的信息时，线程可能会向缓存里写入数据进行更新
+thread reads it and the threads may write the cache to update it when they have new information to stick in the cache
+
+516
+00:21:49,179 --> 00:21:51,220
+所以这真的很厉害
+so it's really cool you can share
+
+517
+00:21:51,220 --> 00:21:55,210
+你可以共享内存
+that memory but it turns out that it's
+
+518
+00:21:55,210 --> 00:21:57,970
+但是事实也表明这也非常容易出现 bug
+very very easy to get bugs if you're not
+
+519
+00:21:57,970 --> 00:21:59,739
+如果你不关心多线程之间共享内存的话
+careful and you're sharing memory between threads
+
+520
+00:21:59,739 --> 00:22:05,529
+有个经典的例子
+so a totally classic example is you know supposing your
+
+522
+00:22:05,529 --> 00:22:07,629
+假设你有一个全局变量 N
+thread so you have a global variable N
+
+523
+00:22:07,629 --> 00:22:09,669
+在不同的线程之间共享
+and that's shared among the different
+
+524
+00:22:09,669 --> 00:22:11,440
+其中一个线程只是对 N 做自增
+threads and a thread just wants to
+
+525
+00:22:11,440 --> 00:22:20,710
+这可能就是造成 bug 的原因
+increment n right but itself this is likely to be an invitation to bugs right
+
+527
+00:22:20,710 --> 00:22:22,239
+如果你不做一些特殊处理的话
+if you don't do anything special around this code
+
+528
+00:22:22,239 --> 00:22:25,119
+为什么？
+and the reason is that you
+
+529
+00:22:25,119 --> 00:22:31,899
+无论何时你在多线程中读写共享数据
+know whenever you write code in a thread that you you know is accessing reading or writing data that's shared with other
+
+532
+00:22:31,899 --> 00:22:33,669
+总是存在一种可能性
+threads you know there's always the
+
+533
+00:22:33,669 --> 00:22:35,259
+你得牢记
+possibility and you got to keep in mind
+
+534
+00:22:35,259 --> 00:22:39,549
+在同一时刻，总有其它的线程可能也正在查看，或是修改这个共享数据
+that some other thread may be looking at the data or modifying the data at the same time 
+
+536
+00:22:39,549 --> 00:22:41,739
+所以这里有个很明显的问题
+so the obvious problem with
+
+537
+00:22:41,739 --> 00:22:43,899
+看这里，线程 1 正在执行
+this is that maybe thread 1 is executing this code and thread 2 is actually
+
+538
+00:22:43,899 --> 00:22:50,799
+但是另一个不同的线程 2 也在执行相同的代码
+in the same function in a different thread executing the very same code
+
+541
+00:22:50,799 --> 00:22:53,049
+记得刚我说 N 它是一个全局变量
+right and remember I'm imagining the N is a global
+
+542
+00:22:53,049 --> 00:22:54,369
+所以这里我们说的这个 N 都是同一个 N
+variable so they're talking about the
+
+543
+00:22:54,369 --> 00:22:57,039
+这里再总结一下
+same n so what this boils down to you
+
+544
+00:22:57,039 --> 00:22:58,269
+实际上机器运行的并不是这样的代码
+know you're not actually running this
+
+545
+00:22:58,269 --> 00:23:01,749
+而是由编译器吐出来的机器码
+code you're running machine code the compiler produced and
+
+547
+00:23:01,749 --> 00:23:03,879
+机器码长啥样呢
+what that machine code does is it you
+
+548
+00:23:03,879 --> 00:23:06,720
+首先把 X 载入到一个寄存器里
+know it loads X into a register
+
+549
+00:23:06,720 --> 00:23:13,210
+然后把这个寄存器的加 1
+you know adds one to the register and
+
+550
+00:23:13,210 --> 00:23:18,129
+接着再把寄存器的值保存到 X
+then stores that register into X with
+
+551
+00:23:18,129 --> 00:23:21,009
+这里 X 是某个位置的内存地址
+where X is a address of some location
+
+552
+00:23:21,009 --> 00:23:24,340
+所以你可以指望所有的线程
+and ran so you know you can count on both of the threads
+
+554
+00:23:24,340 --> 00:23:25,929
+都在执行这行代码
+they're both executing this line of code
+
+555
+00:23:25,929 --> 00:23:28,720
+他们都会执行 load x 到寄存器
+you know they both load the variable X
+
+556
+00:23:28,720 --> 00:23:31,090
+x 从 0 开始有效
+into a register an effect starts out at 0
+
+557
+00:23:31,090 --> 00:23:32,470
+这意味着，所有线程都把 0 读入寄存器
+that means they both load at 0
+
+558
+00:23:32,470 --> 00:23:33,970
+然后他们都给寄存器加 1
+they both increment that register so
+
+559
+00:23:33,970 --> 00:23:35,619
+这样所有线程各有自的寄存器的值是 1
+they get one and they both store one
+
+560
+00:23:35,619 --> 00:23:37,809
+最后再把寄存器的值 1 重新保存到内存里
+back to memory and now two threads of
+
+561
+00:23:37,809 --> 00:23:39,999
+现在，这两个线程对 N 做自增后，结果都是 1
+incremented n and the resulting value is 1
+
+562
+00:23:39,999 --> 00:23:44,019
+谁知道程序员心里想的啥呢
+which well who knows what the
+
+563
+00:23:44,019 --> 00:23:45,489
+可能他就是这么想
+programmer intended maybe that's what
+
+564
+00:23:45,489 --> 00:23:47,289
+但是碰巧这样写并不正确
+the programmer wanted but chances are
+
+565
+00:23:47,289 --> 00:23:49,149
+碰巧程序想要的结果不是 1
+not right chances are the programmer wanted to not 1 
+
+566
+00:23:49,149 --> 00:24:02,710
+(提问...) 有一些指令是原子的
+no, some some instructions
+
+567
+00:24:02,710 --> 00:24:04,239
+这个问题不错
+are atomic so the question is a very
+
+568
+00:24:04,239 --> 00:24:09,639
+这些独立的指令是不是原子的
+good question which it's whether individual instructions are atomic
+
+570
+00:24:11,259 --> 00:24:13,269
+答案是有些是，有些不是
+so the answer is some are and some aren't
+
+571
+00:24:13,269 --> 00:24:23,440
+对于 32 位的 store 指令它极有可能是原子的
+so a store a 32-bit store is likely the extremely likely to be atomic
+
+573
+00:24:23,440 --> 00:24:27,960
+从某种意义上来说，如果有两个处理器同时在相同的内存地址上执行 store 一个 32 位值
+in the sense that if 2 processors store at the same time to the same memory address 32-bit values 
+
+575
+00:24:27,960 --> 00:24:35,169
+最终要么是其中一个处理器上的 32 位值，要么是另一个处理器上的 32 位值
+well you'll end up with is either the 32 bits from one processor or the 32 bits from the other processor
+
+578
+00:24:35,169 --> 00:24:38,200
+而不是一个混合的值
+but not a mixture
+
+579
+00:24:38,200 --> 00:24:40,450
+其它尺寸大小的未必就这么清晰，
+other sizes it's not so clear like one byte stores it depends on
+
+580
+00:24:40,450 --> 00:24:41,980
+比如一个字节的存储这依赖于你所使用的 CPU
+the CPU you using because a one byte
+
+581
+00:24:41,980 --> 00:24:44,440
+因为 1 字节的存储几乎和 32 字节的 load 差不多
+store is really almost certainly a 32
+
+582
+00:24:44,440 --> 00:24:47,919
+就是 8 bit 的修改，和一个 32 字节的存储
+byte load and then a modification of 8 bits and a 32 byte store
+
+583
+00:24:47,919 --> 00:24:51,820
+这依赖于处理器和更复杂的指令
+but it depends on the processor and more complicated instructions
+
+585
+00:24:51,820 --> 00:24:55,899
+比如微处理器上的自增指令
+like increment your microprocessor may well have an increment instruction
+
+587
+00:24:55,899 --> 00:25:00,220
+它能直接给内存上某个地址的值加 1
+that can directly increment some memory location like
+
+589
+00:25:00,220 --> 00:25:04,239
+未必就是原子的
+pretty unlikely to be atomic although
+
+590
+00:25:04,239 --> 00:25:07,890
+尽管这些指令存在原子版本的
+there's atomic versions of some of these instructions
+
+592
+00:25:07,890 --> 00:25:16,679
+好，咱们继续。所以这是一个非常经典的错误
+so there's no. any way all right so this is this is a just classic danger
+
+594
+00:25:16,679 --> 00:25:20,490
+通常我们叫他“竞争”(注：后面不译，直接使用 race)，后面我打算会多次提起它
+and it's usually called a race I'm gonna come up a lot
+
+595
+00:25:20,490 --> 00:25:22,679
+因为你将会做大量的多线程编程
+cause you're gonna do a lot of
+
+596
+00:25:22,679 --> 00:25:25,280
+且存在共享状态
+threaded programming with shared state
+
+597
+00:25:25,280 --> 00:25:30,570
+这里 race 这个词，我认为来源于电子电路中的一类古老的 bug
+race I think refers to as some ancient class of bugs involving electronic circuits
+
+599
+00:25:30,570 --> 00:25:37,770
+但是对我们来说，称为 race 是因为如果一个 CPU 已经开始执行这段代码
+but for us that you know the reason why it's called a race is because if one of the CPUs have started
+
+602
+00:25:37,770 --> 00:25:44,790
+另一些线程正在结束这段代码
+executing this code and the other one the others thread is sort of getting close to this code
+
+604
+00:25:44,790 --> 00:25:46,320
+这就是 race
+it's sort of a race
+
+605
+00:25:46,320 --> 00:25:48,090
+第一个处理器能够
+as to whether the first processor can
+
+606
+00:25:48,090 --> 00:25:53,370
+在第二个处理器开始执行 load 前执行 store
+finish and get to the store before the second processor start status execute the load
+
+608
+00:25:53,370 --> 00:25:54,809
+如果第一个处理器的 store
+if the first processor actually
+
+609
+00:25:54,809 --> 00:25:59,070
+确实是在第二个处理器 load 之前
+manages it to do the store before the second processor gets to the load then
+
+611
+00:25:59,070 --> 00:26:00,750
+那么第二个处理器就能看到第一个处理器存储的值
+the second processor will see the stored
+
+612
+00:26:00,750 --> 00:26:07,370
+第二个处理器将 load 值 1，然后再加 1，再把 2 存入
+value and the second processor will load one and add one to it in store two
+
+614
+00:26:07,370 --> 00:26:10,200
+好了，你可以通过上面这种方式理解这个术语
+that's how you can justify this terminology
+
+615
+00:26:10,200 --> 00:26:15,270
+okay, 解决这个问题的方式很简单
+okay and so the way you solve this certainly something this simple
+
+617
+00:26:15,270 --> 00:26:16,890
+加个锁就行了
+is you insert locks
+
+618
+00:26:16,890 --> 00:26:19,470
+你知道，作为一个程序员
+you know you as a programmer you have
+
+619
+00:26:19,470 --> 00:26:23,910
+你心中应该有一些办法如何给数据加锁
+some strategy in mind for locking the
+
+620
+00:26:23,910 --> 00:26:31,500
+只有在持有锁的时候，这个共享数据才能被使用
+data you can say well you know this piece of shared data can only be used when such-and-such a lock is held and
+
+623
+00:26:31,500 --> 00:26:33,090
+到后面你就会明白
+you'll see this and you may have used
+
+624
+00:26:33,090 --> 00:26:36,660
+在后面的教程里你可能就会用到
+this in the tutorial the go calls locks
+
+625
+00:26:36,660 --> 00:26:39,799
+Go 调用 lock 来锁住 mutex，你能看到 mu.Lock()
+mutexes so what you'll see is a mu dot lock
+
+626
+00:26:39,799 --> 00:26:44,130
+加在这一段使用共享数据的代码前面
+before a sequence of code that uses
+
+627
+00:26:44,130 --> 00:26:48,320
+然后在结束的地方调用  mu.Unlock()
+shared data and you unlock afterwards
+
+628
+00:26:48,320 --> 00:26:52,020
+无论哪个线程执行到这里
+and then whichever two threads execute
+
+629
+00:26:52,020 --> 00:26:53,340
+只有足够幸运的那个线程才能第一个抢到锁
+this one that everyone is lucky enough to get the lock first
+
+630
+00:26:53,340 --> 00:26:56,220
+然后执行所有这些代码
+gets to do all this stuff
+
+631
+00:26:56,220 --> 00:26:57,600
+在结束之前，另一个线程都不能继续
+and finish before the other one is allowed to proceed
+
+633
+00:26:57,600 --> 00:27:02,340
+你可以考虑把这些在锁中间的代码封装起来
+and so you can think of wrapping a some code in a lock
+
+634
+00:27:02,340 --> 00:27:05,460
+就像这一堆东西
+as making a bunch of you know remember
+
+635
+00:27:05,460 --> 00:27:07,020
+记住，尽管这里只有一行代码
+this even though it's one line it's
+
+636
+00:27:07,020 --> 00:27:10,380
+实际上这里也有 3 条不同的指令
+really three distinct operations you can
+
+637
+00:27:10,380 --> 00:27:16,040
+对于必须加锁的人来说，
+think of a lock as causing this sort of multi-step code sequence to be atomic
+
+639
+00:27:16,040 --> 00:27:18,240
+你可以认为锁能把这一连串的代码变成一个原子操作
+with respect to other people who have to lock
+
+640
+00:27:18,240 --> 00:27:21,320
+(提问)
+yes
+
+641
+00:27:26,370 --> 00:27:30,970
+你是……胆子小吗，能不能再说一遍？
+should you sissy can you repeat the question
+
+643
+00:27:30,970 --> 00:27:37,090
+oh，这个问题很棒
+oh that's a great question the question
+
+644
+00:27:37,090 --> 00:27:39,040
+Go 怎么知道我们正锁住哪些变量？
+was how does go know which variable
+
+645
+00:27:39,040 --> 00:27:41,350
+在这里
+we're locking right here of course is
+
+646
+00:27:41,350 --> 00:27:43,090
+就只有一个变量
+only one variable but maybe we're locking
+
+647
+00:27:43,090 --> 00:27:45,910
+但是也可能我们会锁住等于 x + y 的值
+an equals x plus y really threes few
+
+648
+00:27:45,910 --> 00:27:47,440
+实际上三个不同变量
+different variables and the answer is
+
+649
+00:27:47,440 --> 00:27:52,890
+所以答案是 go 并不知道
+that go has no idea it's not there's no
+
+650
+00:27:52,890 --> 00:27:55,030
+他们一点关联都没有
+association at all
+
+651
+00:27:55,030 --> 00:27:58,030
+在这个锁里的任何位置
+anywhere between this lock so this new
+
+652
+00:27:58,030 --> 00:28:00,640
+所以，这里新的东西是这个变量(mu)
+thing is a variable which is a tight
+
+653
+00:28:00,640 --> 00:28:04,600
+它是个 mutex，
+mutex there's just there's no
+
+654
+00:28:04,600 --> 00:28:07,630
+在 lock 和任何变量之间
+association in the language between the
+
+655
+00:28:07,630 --> 00:28:10,720
+他们并没有什么关联
+lock and any variables the associations
+
+656
+00:28:10,720 --> 00:28:12,340
+在程序员脑袋中
+in the programmers head so as a
+
+657
+00:28:12,340 --> 00:28:14,470
+你只需要说：
+programmer you need to say oh here's a
+
+658
+00:28:14,470 --> 00:28:18,670
+oh, 这里有一堆共享数据
+bunch of shared data and any time you
+
+659
+00:28:18,670 --> 00:28:20,770
+在任意时刻，你修改其中任意一个
+modify any of it you know here's a
+
+660
+00:28:20,770 --> 00:28:22,810
+有些复杂的数据结构
+complex data structure say a tree or an
+
+661
+00:28:22,810 --> 00:28:24,280
+比如是树或是可扩展的 hash 表或是别的什么
+expandable hash table or something
+
+662
+00:28:24,280 --> 00:28:26,560
+任何时候你若打算修改它
+anytime you're going to modify it and of
+
+663
+00:28:26,560 --> 00:28:27,820
+当然，树是有许多对象组合而成的
+course a tree is composed many many
+
+664
+00:28:27,820 --> 00:28:29,710
+任何时候，你打算修改任何
+objects anytime you got to modify
+
+665
+00:28:29,710 --> 00:28:30,880
+和这个数据结构关联的东西
+anything that's associated with this
+
+666
+00:28:30,880 --> 00:28:32,290
+你都得先拿到这样的锁
+data structure you have to hold such and
+
+667
+00:28:32,290 --> 00:28:34,540
+当然，包含许多对象
+such a lock. and of course, many
+
+668
+00:28:34,540 --> 00:28:36,580
+以及对象的集合的修改
+objects and the set of objects changes
+
+669
+00:28:36,580 --> 00:28:37,630
+因为你可能会分配一个新的树节点
+because you might allocate new tree
+
+670
+00:28:37,630 --> 00:28:40,120
+但是程序员必须想出一个策略
+nodes but it's really the programmer who
+
+671
+00:28:40,120 --> 00:28:41,980
+保证在同一时刻
+sort of works out a strategy for
+
+672
+00:28:41,980 --> 00:28:44,710
+数据结构只在一个核上被使用
+ensuring that the data structure is used
+
+673
+00:28:44,710 --> 00:28:47,470
+所以
+by only one core at a time and so it
+
+674
+00:28:47,470 --> 00:28:50,260
+需要创建一个甚至是多个锁
+creates the one or maybe more locks and
+
+675
+00:28:50,260 --> 00:28:51,670
+有许多许多加锁的方案
+there's many many locking strategies you
+
+676
+00:28:51,670 --> 00:28:53,020
+应用到树上
+could apply to a tree you can imagine a
+
+677
+00:28:53,020 --> 00:28:57,580
+你可以想象一棵树上所有的树节点只有一个锁
+tree with a lock for every tree node the
+
+678
+00:28:57,580 --> 00:28:58,780
+程序员可以制定一些策略来分配锁
+programmer works out the strategy
+
+679
+00:28:58,780 --> 00:29:02,230
+在脑子里记住数据之间关系
+allocates the locks and keeps in the programmers head the relationship to the data
+
+681
+00:29:02,230 --> 00:29:04,960
+但是对 Go 来说
+but go for go it's this is this
+
+682
+00:29:04,960 --> 00:29:07,690
+这里的这个锁其实非常简单
+lock it's just like a very simple thing
+
+683
+00:29:07,690 --> 00:29:10,930
+它是一个锁对象
+there's a lock object the first thread
+
+684
+00:29:10,930 --> 00:29:12,970
+第一个线程调用 lock 方法拿到锁
+that calls lock gets the lock other
+
+685
+00:29:12,970 --> 00:29:14,770
+其它所有线程等待直接 unlock 被执行
+threads have to wait until unlocks
+
+686
+00:29:14,770 --> 00:29:18,540
+所有这些事情 Go 都清楚
+and that's all go knows
+
+687
+00:29:18,800 --> 00:29:21,160
+(提问)
+yeah
+
+688
+00:29:23,990 --> 00:29:26,730
+不用给一个对象中
+does it not lock all variables that are
+
+689
+00:29:26,730 --> 00:29:29,040
+所有变量都加上锁吗？
+part of the object go doesn't know
+
+690
+00:29:29,040 --> 00:29:30,690
+Go 不知道变量和锁之间是什么关系
+anything about the relationship between
+
+691
+00:29:30,690 --> 00:29:33,720
+当你请求锁的时候
+variables and locks so when you acquire
+
+692
+00:29:33,720 --> 00:29:37,710
+当你的代码调用 lock 方法时
+that lock when you have code that calls
+
+693
+00:29:37,710 --> 00:29:41,280
+它在做什么
+lock exactly what it is doing it is
+
+694
+00:29:41,280 --> 00:29:44,220
+它就是想拿到这个锁，这就是它的作用
+acquiring this lock and that's all this
+
+695
+00:29:44,220 --> 00:29:47,280
+其它任何人想尝试获得锁对象
+does and anybody else who tries to lock
+
+696
+00:29:47,280 --> 00:29:49,260
+所以在某个地方
+objects so somewhere else who would have
+
+697
+00:29:49,260 --> 00:29:55,170
+需要声明一个 mutex mu;
+declared you know mutex mu all right
+
+698
+00:29:55,170 --> 00:29:56,580
+这个 mu 指向了某些特别的 lock 对象
+and this mu refers to some particular
+
+699
+00:29:56,580 --> 00:29:58,410
+有许多（听不懂。。。）
+lock object and there are many many
+
+700
+00:29:58,410 --> 00:30:01,350
+所有这些动作都是获取这把锁
+locks right all this does is acquires
+
+701
+00:30:01,350 --> 00:30:04,620
+其它任何人想获得它
+this lock and anybody else who wants to
+
+702
+00:30:04,620 --> 00:30:06,000
+都需要等待，直到 unlock 这把锁
+acquire it has to wait until we unlock
+
+703
+00:30:06,000 --> 00:30:09,120
+作为程序员，我们使用锁保护保护什么
+this lock that's totally up to us as
+
+704
+00:30:09,120 --> 00:30:11,970
+就是所有我们要做的事情
+programmers what we were protecting with
+
+705
+00:30:11,970 --> 00:30:33,570
+(提问) 所以问题是
+that lock so the question is is it
+
+706
+00:30:33,570 --> 00:30:38,100
+让锁私有会不会好些
+better to have the lock be a private the
+
+707
+00:30:38,100 --> 00:30:39,660
+数据结构的私有数据
+private business of the data structure
+
+708
+00:30:39,660 --> 00:30:42,890
+我们假设有个城市的分区图
+like supposing it a zoning map yeah and
+
+709
+00:30:42,890 --> 00:30:44,820
+你可能希望，尽管这不是真的
+you know you would hope although it's
+
+710
+00:30:44,820 --> 00:30:46,860
+地图内部需要有一把锁来保护它
+not true that map internally would have
+
+711
+00:30:46,860 --> 00:30:49,860
+这是个合理的策略
+a lock protecting it and that's a reasonable strategy
+
+712
+00:30:49,860 --> 00:30:56,340
+有了这些会怎样？
+would be to have them, I mean what would be to have them if you
+
+714
+00:30:56,340 --> 00:30:58,350
+如果你定义了一个
+define a data structure that needs to be
+
+715
+00:30:58,350 --> 00:30:59,820
+需要加锁使用的数据结构
+locked to have the lock be sort of
+
+716
+00:30:59,820 --> 00:31:01,650
+这个锁是内部私有的
+interior that have each of the data
+
+717
+00:31:01,650 --> 00:31:03,210
+数据结构的每个方法都有责任
+structures methods be responsible for
+
+718
+00:31:03,210 --> 00:31:04,860
+请求这把锁
+acquiring that lock and the user the
+
+719
+00:31:04,860 --> 00:31:06,840
+用户，数据结构可能永远都不知道有这把锁的存在
+data structure may never know that
+
+720
+00:31:06,840 --> 00:31:09,210
+这个相当合理
+that's pretty reasonable and the only
+
+721
+00:31:09,210 --> 00:31:10,830
+但是唯一点需要打破
+point at which that breaks down is that
+
+722
+00:31:10,830 --> 00:31:15,930
+好吧，有几件事，其中之一是
+um well it's a couple things one is if
+
+723
+00:31:15,930 --> 00:31:18,090
+如果程序员知道这个数据从未被共享
+the programmer knew that the data was
+
+724
+00:31:18,090 --> 00:31:20,910
+他们可能会感觉烦恼
+never shared they might be bummed that
+
+725
+00:31:20,910 --> 00:31:22,200
+因为他们得多付出锁的开销
+they were paying the lock overhead for
+
+726
+00:31:22,200 --> 00:31:23,400
+他们清楚这没必要加锁
+something they knew didn't need to be
+
+727
+00:31:23,400 --> 00:31:25,820
+所以这是个潜在的问题
+locked so that's one potential problem
+
+728
+00:31:25,820 --> 00:31:31,140
+另一件事
+the other is that if you if there's any
+
+729
+00:31:31,140 --> 00:31:33,060
+如果有任何内部数据结构依赖
+inter data structure of dependencies so
+
+730
+00:31:33,060 --> 00:31:36,020
+比如我们有两个带有锁的数据结构
+we have two data structures each with locks and
+
+732
+00:31:36,020 --> 00:31:38,710
+他们可能会互相使用
+and they maybe use each other then
+
+733
+00:31:38,710 --> 00:31:41,080
+这可能会导致产生环和死锁
+there's a risk of cycles and deadlocks
+
+734
+00:31:41,080 --> 00:31:45,160
+死锁可以被解决
+right and the deadlocks can be solved
+
+735
+00:31:45,160 --> 00:31:47,600
+
+but the usual solutions to deadlocks
+
+736
+00:31:47,600 --> 00:31:52,370
+requires lifting the locks out of out of
+
+737
+00:31:52,370 --> 00:31:54,290
+the implementations up into the calling
+
+738
+00:31:54,290 --> 00:31:56,000
+code I will talk about that some point
+
+739
+00:31:56,000 --> 00:31:59,180
+but it's not a it's a good idea to hide
+
+740
+00:31:59,180 --> 00:32:00,710
+the locks but it's not always a good
+
+741
+00:32:00,710 --> 00:32:11,600
+idea all right okay so one problem you
+
+742
+00:32:11,600 --> 00:32:14,060
+run into with threads is these races and
+
+743
+00:32:14,060 --> 00:32:16,370
+generally you solve them with locks okay
+
+744
+00:32:16,370 --> 00:32:18,020
+or actually there's two big strategies
+
+745
+00:32:18,020 --> 00:32:19,430
+one is you figure out some locking
+
+746
+00:32:19,430 --> 00:32:22,330
+strategy for making access to the data
+
+747
+00:32:22,330 --> 00:32:25,180
+single thread one thread at a time or
+
+748
+00:32:25,180 --> 00:32:29,170
+you fix your code to not share data
+
+749
+00:32:29,170 --> 00:32:32,420
+if you can do that it's that's probably
+
+750
+00:32:32,420 --> 00:32:35,540
+better because it's less complex all
+
+751
+00:32:35,540 --> 00:32:38,330
+right so another issue that shows up
+
+752
+00:32:38,330 --> 00:32:40,100
+with leads threads is called
+
+753
+00:32:40,100 --> 00:32:44,780
+coordination when we're doing locking
+
+754
+00:32:44,780 --> 00:32:46,670
+the different threads involved probably
+
+755
+00:32:46,670 --> 00:32:48,530
+have no idea that the other ones exist
+
+756
+00:32:48,530 --> 00:32:49,820
+they just want to like be able to get
+
+757
+00:32:49,820 --> 00:32:51,650
+out the data without anybody else
+
+758
+00:32:51,650 --> 00:32:53,960
+interfering but there are also cases
+
+759
+00:32:53,960 --> 00:32:55,220
+where you need where you do
+
+760
+00:32:55,220 --> 00:32:56,870
+intentionally want different threads to
+
+761
+00:32:56,870 --> 00:32:58,370
+interact I want to wait for you
+
+762
+00:32:58,370 --> 00:32:59,930
+maybe you're producing some data you
+
+763
+00:32:59,930 --> 00:33:01,550
+know you're a different thread than me
+
+764
+00:33:01,550 --> 00:33:03,140
+you're you're producing data I'm gonna
+
+765
+00:33:03,140 --> 00:33:05,900
+wait until you've generated the data
+
+766
+00:33:05,900 --> 00:33:09,980
+before I read it right or you launch a
+
+767
+00:33:09,980 --> 00:33:11,180
+bunch of threads to say you crawl the
+
+768
+00:33:11,180 --> 00:33:12,440
+web and you want to wait for all those
+
+769
+00:33:12,440 --> 00:33:14,180
+fits to finish so there's times when we
+
+770
+00:33:14,180 --> 00:33:16,970
+intentionally want different to us to
+
+771
+00:33:16,970 --> 00:33:18,260
+interact with each other to wait for
+
+772
+00:33:18,260 --> 00:33:18,770
+each other
+
+773
+00:33:18,770 --> 00:33:23,320
+and that's usually called coordination
+
+774
+00:33:23,440 --> 00:33:26,630
+and there's a bunch of as you probably
+
+775
+00:33:26,630 --> 00:33:28,250
+know from having done the tutorial
+
+776
+00:33:28,250 --> 00:33:31,220
+there's a bunch of techniques in go for
+
+777
+00:33:31,220 --> 00:33:34,299
+doing this like channels
+
+778
+00:33:34,299 --> 00:33:37,029
+which are really about sending data from
+
+779
+00:33:37,029 --> 00:33:38,950
+one thread to another and breeding but
+
+780
+00:33:38,950 --> 00:33:42,039
+they did to be sent there's also other
+
+781
+00:33:42,039 --> 00:33:45,239
+stuff that more special purpose things
+
+782
+00:33:45,239 --> 00:33:48,940
+like there's a idea called condition
+
+783
+00:33:48,940 --> 00:33:51,549
+variables which is great if there's some
+
+784
+00:33:51,549 --> 00:33:53,229
+thread out there and you want to kick it
+
+785
+00:33:53,229 --> 00:33:54,489
+period you're not sure if the other
+
+786
+00:33:54,489 --> 00:33:55,839
+threads even waiting for you but if it
+
+787
+00:33:55,839 --> 00:33:57,459
+is waiting for you you just like to give
+
+788
+00:33:57,459 --> 00:33:59,499
+it a kick so it can well know that it
+
+789
+00:33:59,499 --> 00:34:01,509
+should continue whatever it's doing and
+
+790
+00:34:01,509 --> 00:34:06,279
+then there's wait group which is
+
+791
+00:34:06,279 --> 00:34:08,260
+particularly good for launching a a
+
+792
+00:34:08,260 --> 00:34:10,449
+known number of go routines and then
+
+793
+00:34:10,449 --> 00:34:14,469
+waiting for them Dolph to finish and a
+
+794
+00:34:14,469 --> 00:34:16,059
+final piece of damage that comes up with
+
+795
+00:34:16,059 --> 00:34:23,619
+threads deadlock the deadlock refers to
+
+796
+00:34:23,619 --> 00:34:25,929
+the general problem that you sometimes
+
+797
+00:34:25,929 --> 00:34:29,219
+run into where one thread
+
+798
+00:34:29,219 --> 00:34:32,829
+you know thread this thread is waiting
+
+799
+00:34:32,829 --> 00:34:35,859
+for thread two to produce something so
+
+800
+00:34:35,859 --> 00:34:37,750
+you know it's draw an arrow to say
+
+801
+00:34:37,750 --> 00:34:41,168
+thread one is waiting for thread two you
+
+802
+00:34:41,168 --> 00:34:42,279
+know for example thread one may be
+
+803
+00:34:42,279 --> 00:34:43,989
+waiting for thread two to release a lock
+
+804
+00:34:43,989 --> 00:34:46,690
+or to send something on the channel or
+
+805
+00:34:46,690 --> 00:34:48,279
+to you know decrement something in a
+
+806
+00:34:48,279 --> 00:34:51,579
+wait group however unfortunately maybe T
+
+807
+00:34:51,579 --> 00:34:55,210
+two is waiting for thread thread one to
+
+808
+00:34:55,210 --> 00:34:57,900
+do something and this is particularly
+
+809
+00:34:57,900 --> 00:35:00,069
+common in the case of locks its thread
+
+810
+00:35:00,069 --> 00:35:01,839
+one acquires lock a and thread to
+
+811
+00:35:01,839 --> 00:35:05,740
+acquire lock be so thread one is
+
+812
+00:35:05,740 --> 00:35:07,690
+acquired lock a throw two is required
+
+813
+00:35:07,690 --> 00:35:11,230
+lot B and then next thread one needs to
+
+814
+00:35:11,230 --> 00:35:14,589
+lock B also that is hold two locks which
+
+815
+00:35:14,589 --> 00:35:15,910
+sometimes shows up and it just so
+
+816
+00:35:15,910 --> 00:35:17,289
+happens that thread two needs to hold
+
+817
+00:35:17,289 --> 00:35:19,990
+block hey that's a deadlock all right at
+
+818
+00:35:19,990 --> 00:35:21,490
+least grab their first lock and then
+
+819
+00:35:21,490 --> 00:35:23,410
+proceed down to where they need their
+
+820
+00:35:23,410 --> 00:35:24,520
+second lock and now they're waiting for
+
+821
+00:35:24,520 --> 00:35:26,740
+each other forever right neither can
+
+822
+00:35:26,740 --> 00:35:28,779
+proceed neither then can release the
+
+823
+00:35:28,779 --> 00:35:33,569
+lock and usually just nothing happens so
+
+824
+00:35:33,569 --> 00:35:36,190
+if your program just kind of grinds to a
+
+825
+00:35:36,190 --> 00:35:37,420
+halt and doesn't seem to be doing
+
+826
+00:35:37,420 --> 00:35:40,000
+anything but didn't crash deadlock is
+
+827
+00:35:40,000 --> 00:35:42,960
+it's one thing to check
+
+828
+00:35:43,799 --> 00:35:48,339
+okay all right let's look at the web
+
+829
+00:35:48,339 --> 00:35:53,859
+crawler from the tutorial as an example
+
+830
+00:35:53,859 --> 00:36:00,430
+of some of this threading stuff I have a
+
+831
+00:36:00,430 --> 00:36:03,730
+couple of two solutions and different
+
+832
+00:36:03,730 --> 00:36:07,630
+styles are really three solutions in
+
+833
+00:36:07,630 --> 00:36:09,430
+different styles to allow us to talk a
+
+834
+00:36:09,430 --> 00:36:10,779
+bit about the details of some of this
+
+835
+00:36:10,779 --> 00:36:13,539
+thread programming so first of all you
+
+836
+00:36:13,539 --> 00:36:16,119
+all probably know web crawler its job is
+
+837
+00:36:16,119 --> 00:36:18,490
+you give it the URL of a page that it
+
+838
+00:36:18,490 --> 00:36:20,470
+starts at and you know many web pages
+
+839
+00:36:20,470 --> 00:36:23,109
+have links to other pages so what a web
+
+840
+00:36:23,109 --> 00:36:24,849
+crawler is trying to do is if that's the
+
+841
+00:36:24,849 --> 00:36:27,609
+first page extract all the URLs that
+
+842
+00:36:27,609 --> 00:36:29,529
+were mentioned that pages links you know
+
+843
+00:36:29,529 --> 00:36:32,049
+fetch the pages they point to look at
+
+844
+00:36:32,049 --> 00:36:33,730
+all those pages for the ules are all
+
+845
+00:36:33,730 --> 00:36:35,740
+those but all urls that they refer to
+
+846
+00:36:35,740 --> 00:36:38,380
+and keep on going until it's fetched all
+
+847
+00:36:38,380 --> 00:36:41,230
+the pages in the web let's just say and
+
+848
+00:36:41,230 --> 00:36:45,490
+then it should stop in addition the the
+
+849
+00:36:45,490 --> 00:36:52,150
+graph of pages and URLs is cyclic that
+
+850
+00:36:52,150 --> 00:36:53,380
+is if you're not careful
+
+851
+00:36:53,380 --> 00:36:55,420
+um you may end up following if you don't
+
+852
+00:36:55,420 --> 00:36:57,099
+remember oh I've already fetched this
+
+853
+00:36:57,099 --> 00:36:59,019
+web page already you may end up
+
+854
+00:36:59,019 --> 00:37:01,450
+following cycles forever and you know
+
+855
+00:37:01,450 --> 00:37:03,579
+your crawler will never finish so one of
+
+856
+00:37:03,579 --> 00:37:05,559
+the jobs of the crawler is to remember
+
+857
+00:37:05,559 --> 00:37:08,140
+the set of pages that is already crawled
+
+858
+00:37:08,140 --> 00:37:10,779
+or already even started a fetch for and
+
+859
+00:37:10,779 --> 00:37:15,819
+to not start a second fetch for any page
+
+860
+00:37:15,819 --> 00:37:17,200
+that it's already started fetching on
+
+861
+00:37:17,200 --> 00:37:18,849
+and you can think of that as sort of
+
+862
+00:37:18,849 --> 00:37:21,759
+imposing a tree structure finding a sort
+
+863
+00:37:21,759 --> 00:37:25,269
+of tree shaped subset of the cyclic
+
+864
+00:37:25,269 --> 00:37:31,809
+graph of actual web pages okay so we
+
+865
+00:37:31,809 --> 00:37:33,430
+want to avoid cycles we want to be able
+
+866
+00:37:33,430 --> 00:37:37,059
+to not fetch a page twice it also it
+
+867
+00:37:37,059 --> 00:37:38,289
+turns out that it just takes a long time
+
+868
+00:37:38,289 --> 00:37:40,089
+to fetch a web page but it's good
+
+869
+00:37:40,089 --> 00:37:42,160
+servers are slow and because the network
+
+870
+00:37:42,160 --> 00:37:46,960
+has a long speed of light latency and so
+
+871
+00:37:46,960 --> 00:37:48,670
+you definitely don't want to fetch pages
+
+872
+00:37:48,670 --> 00:37:50,289
+one at a time unless you want to crawl
+
+873
+00:37:50,289 --> 00:37:54,190
+to take many years so it pays enormous
+
+874
+00:37:54,190 --> 00:37:56,030
+lead to fetch many pages that same
+
+875
+00:37:56,030 --> 00:37:57,980
+I'm up to some limit right you want to
+
+876
+00:37:57,980 --> 00:37:59,480
+keep on increasing the number of pages
+
+877
+00:37:59,480 --> 00:38:01,490
+you fetch in parallel until the
+
+878
+00:38:01,490 --> 00:38:03,140
+throughput you're getting in pages per
+
+879
+00:38:03,140 --> 00:38:05,690
+second stops increasing that is running
+
+880
+00:38:05,690 --> 00:38:07,910
+increase the concurrency until you run
+
+881
+00:38:07,910 --> 00:38:11,300
+out of network capacity so we want to be
+
+882
+00:38:11,300 --> 00:38:12,500
+able to launch multiple fetches in
+
+883
+00:38:12,500 --> 00:38:15,980
+parallel and a final challenge which is
+
+884
+00:38:15,980 --> 00:38:17,900
+sometimes the hardest thing to solve is
+
+885
+00:38:17,900 --> 00:38:19,400
+to know when the crawl is finished
+
+886
+00:38:19,400 --> 00:38:21,620
+and once we've crawled all the pages we
+
+887
+00:38:21,620 --> 00:38:24,110
+want to stop and say we're done but we
+
+888
+00:38:24,110 --> 00:38:25,370
+actually need to write the code to
+
+889
+00:38:25,370 --> 00:38:27,110
+realize aha
+
+890
+00:38:27,110 --> 00:38:29,840
+we've crawled every single page and for
+
+891
+00:38:29,840 --> 00:38:32,480
+some solutions I've tried figuring out
+
+892
+00:38:32,480 --> 00:38:33,890
+when you're done has turned out to be
+
+893
+00:38:33,890 --> 00:38:38,420
+the hardest part all right so my first
+
+894
+00:38:38,420 --> 00:38:40,730
+crawler is this serial crawler here and
+
+895
+00:38:40,730 --> 00:38:43,400
+by the way this code is available on the
+
+896
+00:38:43,400 --> 00:38:45,980
+website under crawler go on the schedule
+
+897
+00:38:45,980 --> 00:38:48,500
+you won't look at it this wrist calls a
+
+898
+00:38:48,500 --> 00:38:53,240
+serial crawler it effectively performs a
+
+899
+00:38:53,240 --> 00:38:58,120
+depth-first search into the web graph
+
+900
+00:38:58,120 --> 00:39:02,870
+and there is sort of one moderately
+
+901
+00:39:02,870 --> 00:39:04,490
+interesting thing about it it keeps this
+
+902
+00:39:04,490 --> 00:39:06,650
+map called fetched which is basically
+
+903
+00:39:06,650 --> 00:39:08,630
+using as a set in order to remember
+
+904
+00:39:08,630 --> 00:39:11,210
+which pages it's crawled and that's like
+
+905
+00:39:11,210 --> 00:39:12,830
+the only interesting part of this you
+
+906
+00:39:12,830 --> 00:39:16,250
+give it a URL that at line 18 if it's
+
+907
+00:39:16,250 --> 00:39:17,920
+already fetched the URL it just returns
+
+908
+00:39:17,920 --> 00:39:20,210
+if it doesn't fetch the URL it first
+
+909
+00:39:20,210 --> 00:39:22,420
+remembers that it is now fetched it
+
+910
+00:39:22,420 --> 00:39:26,060
+actually gets fetches that page and
+
+911
+00:39:26,060 --> 00:39:27,650
+extracts the URLs that are in the page
+
+912
+00:39:27,650 --> 00:39:29,540
+with the fetcher and then iterates over
+
+913
+00:39:29,540 --> 00:39:33,430
+the URLs in that page and calls itself
+
+914
+00:39:33,430 --> 00:39:35,660
+for every one of those pages and it
+
+915
+00:39:35,660 --> 00:39:38,060
+passes to itself the way it it really
+
+916
+00:39:38,060 --> 00:39:40,010
+has just a one table there's only one
+
+917
+00:39:40,010 --> 00:39:43,070
+fetched map of course because you know
+
+918
+00:39:43,070 --> 00:39:45,770
+when I call recursive crawl and it
+
+919
+00:39:45,770 --> 00:39:47,330
+fetches a bunch of pages after it
+
+920
+00:39:47,330 --> 00:39:49,970
+returns I want to be where you know the
+
+921
+00:39:49,970 --> 00:39:52,340
+outer crawl instance needs to be aware
+
+922
+00:39:52,340 --> 00:39:53,960
+that certain pages are already fetched
+
+923
+00:39:53,960 --> 00:39:56,330
+so we depend very much on the fetched
+
+924
+00:39:56,330 --> 00:39:58,250
+map being passed between the functions
+
+925
+00:39:58,250 --> 00:40:01,970
+by reference instead of by copying so it
+
+926
+00:40:01,970 --> 00:40:03,770
+so under the hood what must really be
+
+927
+00:40:03,770 --> 00:40:05,330
+going on here is that go is passing a
+
+928
+00:40:05,330 --> 00:40:08,480
+pointer to the map object
+
+929
+00:40:08,480 --> 00:40:10,070
+to each of the calls of crawl so they
+
+930
+00:40:10,070 --> 00:40:12,830
+all share the pointer to the same object
+
+931
+00:40:12,830 --> 00:40:15,740
+and memory rather than copying rather
+
+932
+00:40:15,740 --> 00:40:22,760
+than copying than that any questions so
+
+933
+00:40:22,760 --> 00:40:24,140
+this code definitely does not solve the
+
+934
+00:40:24,140 --> 00:40:25,760
+problem that was posed right because it
+
+935
+00:40:25,760 --> 00:40:30,650
+doesn't launch parallel parallel fetches
+
+936
+00:40:30,650 --> 00:40:33,200
+now so clue we need to insert goroutines
+
+937
+00:40:33,200 --> 00:40:35,150
+somewhere in this code right to get
+
+938
+00:40:35,150 --> 00:40:37,880
+parallel fetches so let's suppose just
+
+939
+00:40:37,880 --> 00:40:41,480
+for chuckles dad we just start with the
+
+940
+00:40:41,480 --> 00:40:51,440
+most lazy thing because why so I'm gonna
+
+941
+00:40:51,440 --> 00:40:54,950
+just modify the code to run the
+
+942
+00:40:54,950 --> 00:40:57,470
+subsidiary crawls each in its own go
+
+943
+00:40:57,470 --> 00:41:00,470
+routine actually before I do that why
+
+944
+00:41:00,470 --> 00:41:01,580
+don't I run the code just to show you
+
+945
+00:41:01,580 --> 00:41:04,070
+what correct output looks like so hoping
+
+946
+00:41:04,070 --> 00:41:07,670
+this other window Emad run the crawler
+
+947
+00:41:07,670 --> 00:41:09,380
+it actually runs all three copies of the
+
+948
+00:41:09,380 --> 00:41:10,970
+crawler and they all find exactly the
+
+949
+00:41:10,970 --> 00:41:14,330
+same set of webpages so this is the
+
+950
+00:41:14,330 --> 00:41:16,100
+output that we're hoping to see five
+
+951
+00:41:16,100 --> 00:41:19,220
+lines five different web pages are are
+
+952
+00:41:19,220 --> 00:41:20,750
+fetched prints a line for each one so
+
+953
+00:41:20,750 --> 00:41:26,120
+let me now run the subsidiary crawls in
+
+954
+00:41:26,120 --> 00:41:28,130
+their own go routines and run that code
+
+955
+00:41:28,130 --> 00:41:35,540
+so what am I going to see the hope is to
+
+956
+00:41:35,540 --> 00:41:37,880
+fetch these webpages in parallel for
+
+957
+00:41:37,880 --> 00:41:42,800
+higher performance so okay so you're
+
+958
+00:41:42,800 --> 00:41:45,110
+voting for only seeing one URL and why
+
+959
+00:41:45,110 --> 00:41:47,680
+so why is that
+
+960
+00:41:50,980 --> 00:41:55,220
+yeah yes that's exactly right you know
+
+961
+00:41:55,220 --> 00:41:59,000
+after the after it's not gonna wait in
+
+962
+00:41:59,000 --> 00:42:00,559
+this loop at line 26 it's gonna zip
+
+963
+00:42:00,559 --> 00:42:02,450
+right through that loop I was gonna
+
+964
+00:42:02,450 --> 00:42:04,849
+fetch 1p when the ferry first webpage at
+
+965
+00:42:04,849 --> 00:42:07,039
+line 22 and then a loop it's gonna fly
+
+966
+00:42:07,039 --> 00:42:08,390
+off the Go routines and immediately
+
+967
+00:42:08,390 --> 00:42:10,220
+the scroll function is gonna return and
+
+968
+00:42:10,220 --> 00:42:11,990
+if it was called from main main what was
+
+969
+00:42:11,990 --> 00:42:13,789
+exit almost certainly before any of the
+
+970
+00:42:13,789 --> 00:42:15,200
+routines was able to do any work at all
+
+971
+00:42:15,200 --> 00:42:16,880
+so we'll probably just see the first web
+
+972
+00:42:16,880 --> 00:42:19,690
+page and I'm gonna do when I run it
+
+973
+00:42:19,690 --> 00:42:23,920
+you'll see here under serial that only
+
+974
+00:42:23,920 --> 00:42:26,660
+the one web page was found now in fact
+
+975
+00:42:26,660 --> 00:42:28,730
+since this program doesn't exit after
+
+976
+00:42:28,730 --> 00:42:30,799
+the serial crawler those Guru T's are
+
+977
+00:42:30,799 --> 00:42:32,269
+still running and they actually print
+
+978
+00:42:32,269 --> 00:42:35,390
+their output down here interleaved with
+
+979
+00:42:35,390 --> 00:42:37,819
+the next crawler example but
+
+980
+00:42:37,819 --> 00:42:42,829
+nevertheless the codes just adding a go
+
+981
+00:42:42,829 --> 00:42:45,829
+here absolutely doesn't work so let's
+
+982
+00:42:45,829 --> 00:42:49,579
+get rid of that okay so now I want to
+
+983
+00:42:49,579 --> 00:42:52,190
+show you a one style of concurrent
+
+984
+00:42:52,190 --> 00:42:55,789
+crawler and I'm presenting to one of
+
+985
+00:42:55,789 --> 00:42:59,750
+them written with shared data shared
+
+986
+00:42:59,750 --> 00:43:02,809
+objects and locks it's the first one and
+
+987
+00:43:02,809 --> 00:43:05,059
+another one written without shared data
+
+988
+00:43:05,059 --> 00:43:08,990
+but with passing information along
+
+989
+00:43:08,990 --> 00:43:11,359
+channels in order to coordinate the
+
+990
+00:43:11,359 --> 00:43:12,920
+different threads so this is the shared
+
+991
+00:43:12,920 --> 00:43:17,000
+data one or this is just one of many
+
+992
+00:43:17,000 --> 00:43:18,980
+ways of building a web crawler using
+
+993
+00:43:18,980 --> 00:43:22,460
+shared data so this code significantly
+
+994
+00:43:22,460 --> 00:43:26,079
+more complicated than a serial crawler
+
+995
+00:43:26,079 --> 00:43:31,130
+it creates a thread for each fetch it
+
+996
+00:43:31,130 --> 00:43:33,740
+does alright but the huge difference is
+
+997
+00:43:33,740 --> 00:43:38,390
+that it does with two things one it does
+
+998
+00:43:38,390 --> 00:43:40,700
+the bookkeeping required to notice when
+
+999
+00:43:40,700 --> 00:43:44,690
+all of the crawls have finished and it
+
+1000
+00:43:44,690 --> 00:43:47,900
+handles the shared table of which URLs
+
+1001
+00:43:47,900 --> 00:43:49,849
+have been crawled correctly so this code
+
+1002
+00:43:49,849 --> 00:43:53,809
+still has this table of URLs and that's
+
+1003
+00:43:53,809 --> 00:43:59,349
+this F dot fetched this F dot fetch
+
+1004
+00:43:59,349 --> 00:44:06,130
+map at line 43 but this this table is
+
+1005
+00:44:06,130 --> 00:44:10,660
+actually shared by all of the all of the
+
+1006
+00:44:10,660 --> 00:44:12,190
+crawler threads and all the crawler
+
+1007
+00:44:12,190 --> 00:44:14,890
+threads are making or executing inside
+
+1008
+00:44:14,890 --> 00:44:16,900
+concurrent mutex and so we still have
+
+1009
+00:44:16,900 --> 00:44:18,609
+this sort of tree up in current mutexes
+
+1010
+00:44:18,609 --> 00:44:20,619
+that's exploring different parts of the
+
+1011
+00:44:20,619 --> 00:44:22,599
+web graph but each one of them was
+
+1012
+00:44:22,599 --> 00:44:25,660
+launched as a as his own go routine
+
+1013
+00:44:25,660 --> 00:44:28,720
+instead of as a function call but
+
+1014
+00:44:28,720 --> 00:44:30,400
+they're all sharing this table of state
+
+1015
+00:44:30,400 --> 00:44:32,859
+this table of test URLs because if one
+
+1016
+00:44:32,859 --> 00:44:34,990
+go routine fetches a URL we don't want
+
+1017
+00:44:34,990 --> 00:44:36,970
+another Go routine to accidentally
+
+1018
+00:44:36,970 --> 00:44:40,420
+fetch the same URL and as you can see
+
+1019
+00:44:40,420 --> 00:44:43,150
+here line 42 and 45 I've surrounded them
+
+1020
+00:44:43,150 --> 00:44:48,250
+by the new taxes that are required to to
+
+1021
+00:44:48,250 --> 00:44:51,099
+prevent a race that would occur if I
+
+1022
+00:44:51,099 --> 00:44:52,900
+didn't add them new Texas so the danger
+
+1023
+00:44:52,900 --> 00:44:57,730
+here is that at line 43 a thread is
+
+1024
+00:44:57,730 --> 00:44:59,980
+checking of URLs already been fetched so
+
+1025
+00:44:59,980 --> 00:45:02,680
+two threads happen to be following the
+
+1026
+00:45:02,680 --> 00:45:06,819
+same URL now two calls to concurrent
+
+1027
+00:45:06,819 --> 00:45:09,490
+mutex end up looking at the same URL
+
+1028
+00:45:09,490 --> 00:45:11,140
+maybe because that URL was mentioned in
+
+1029
+00:45:11,140 --> 00:45:13,930
+two different web pages if we didn't
+
+1030
+00:45:13,930 --> 00:45:17,559
+have the lock they'd both access the
+
+1031
+00:45:17,559 --> 00:45:18,819
+math table to see if the threaded and
+
+1032
+00:45:18,819 --> 00:45:20,829
+then already if the URL had been already
+
+1033
+00:45:20,829 --> 00:45:23,650
+fetched and they both get false at line
+
+1034
+00:45:23,650 --> 00:45:27,069
+43 they both set the URLs entering the
+
+1035
+00:45:27,069 --> 00:45:30,880
+table to true at line 44 and at 47 they
+
+1036
+00:45:30,880 --> 00:45:32,380
+will both see that I already was false
+
+1037
+00:45:32,380 --> 00:45:33,880
+and then they both go on to patch the
+
+1038
+00:45:33,880 --> 00:45:37,030
+web page so we need the lock there and
+
+1039
+00:45:37,030 --> 00:45:38,740
+the way to think about it I think is
+
+1040
+00:45:38,740 --> 00:45:41,410
+that we want lines 43 and 44 to be
+
+1041
+00:45:41,410 --> 00:45:44,020
+atomic that is we don't want some other
+
+1042
+00:45:44,020 --> 00:45:45,910
+thread to to get in and be using the
+
+1043
+00:45:45,910 --> 00:45:48,460
+table between 43 and 44 we we want to
+
+1044
+00:45:48,460 --> 00:45:50,349
+read the current content each thread
+
+1045
+00:45:50,349 --> 00:45:52,690
+wants to read the current table contents
+
+1046
+00:45:52,690 --> 00:45:55,780
+and update it without any other thread
+
+1047
+00:45:55,780 --> 00:45:57,309
+interfering and so that's what the locks
+
+1048
+00:45:57,309 --> 00:46:01,150
+are doing for us okay so so actually any
+
+1049
+00:46:01,150 --> 00:46:03,280
+questions about the about the locking
+
+1050
+00:46:03,280 --> 00:46:05,940
+strategy here
+
+1051
+00:46:07,750 --> 00:46:10,760
+all right once we check the URLs entry
+
+1052
+00:46:10,760 --> 00:46:13,670
+in the table alliant 51 it just crawls
+
+1053
+00:46:13,670 --> 00:46:15,320
+it just fetches that page in the usual
+
+1054
+00:46:15,320 --> 00:46:18,950
+way and then the other thing interesting
+
+1055
+00:46:18,950 --> 00:46:20,600
+thing that's going on is the launching
+
+1056
+00:46:20,600 --> 00:46:35,450
+of the threads yes so the question is
+
+1057
+00:46:35,450 --> 00:46:43,970
+what's with the F dot no no the MU it is
+
+1058
+00:46:43,970 --> 00:46:47,120
+okay so there's a structure to find out
+
+1059
+00:46:47,120 --> 00:46:50,330
+line 36 that sort of collects together
+
+1060
+00:46:50,330 --> 00:46:53,930
+all the different stuff that all the
+
+1061
+00:46:53,930 --> 00:46:55,280
+different state that we need to run this
+
+1062
+00:46:55,280 --> 00:46:57,380
+crawl and here it's only two objects but
+
+1063
+00:46:57,380 --> 00:46:58,820
+you know it could be a lot more and
+
+1064
+00:46:58,820 --> 00:47:00,620
+they're only grouped together for
+
+1065
+00:47:00,620 --> 00:47:02,030
+convenience there's no other
+
+1066
+00:47:02,030 --> 00:47:05,390
+significance to the fact there's no deep
+
+1067
+00:47:05,390 --> 00:47:07,490
+significance the fact that mu and fetch
+
+1068
+00:47:07,490 --> 00:47:11,750
+store it inside the same structure and
+
+1069
+00:47:11,750 --> 00:47:14,690
+that F dot is just sort of the syntax
+
+1070
+00:47:14,690 --> 00:47:15,890
+are getting out one of the elements in
+
+1071
+00:47:15,890 --> 00:47:17,180
+the structure so I just happened to put
+
+1072
+00:47:17,180 --> 00:47:19,070
+them you in the structure because it
+
+1073
+00:47:19,070 --> 00:47:21,080
+allows me to group together all the
+
+1074
+00:47:21,080 --> 00:47:22,790
+stuff related to a crawl but that
+
+1075
+00:47:22,790 --> 00:47:25,600
+absolutely does not mean that go
+
+1076
+00:47:25,600 --> 00:47:28,880
+associates the MU with that structure or
+
+1077
+00:47:28,880 --> 00:47:30,950
+with the fetch map or anything it's just
+
+1078
+00:47:30,950 --> 00:47:33,710
+a lock objects and just has a lock
+
+1079
+00:47:33,710 --> 00:47:35,090
+function you can call and that's all
+
+1080
+00:47:35,090 --> 00:47:37,930
+that's going on
+
+1081
+00:47:53,790 --> 00:47:58,750
+so the question is how come in order to
+
+1082
+00:47:58,750 --> 00:48:00,520
+pass something by reference I had to use
+
+1083
+00:48:00,520 --> 00:48:02,440
+star here where it is when a in the
+
+1084
+00:48:02,440 --> 00:48:03,940
+previous example when we were passing a
+
+1085
+00:48:03,940 --> 00:48:06,040
+map we didn't have to use star that is
+
+1086
+00:48:06,040 --> 00:48:07,569
+didn't have to pass a pointer I mean
+
+1087
+00:48:07,569 --> 00:48:09,069
+that star notation you're seeing there
+
+1088
+00:48:09,069 --> 00:48:15,339
+in mine 41 basically and he's saying
+
+1089
+00:48:15,339 --> 00:48:16,809
+that we're passing a pointer to this
+
+1090
+00:48:16,809 --> 00:48:19,210
+fetch state object and we want it to be
+
+1091
+00:48:19,210 --> 00:48:20,559
+a pointer because we want there to be
+
+1092
+00:48:20,559 --> 00:48:22,000
+one object in memory and all the
+
+1093
+00:48:22,000 --> 00:48:23,710
+different go routines I want to use that
+
+1094
+00:48:23,710 --> 00:48:25,240
+same object so they all need a pointer
+
+1095
+00:48:25,240 --> 00:48:28,000
+to that same object so so we need to
+
+1096
+00:48:28,000 --> 00:48:29,410
+find your own structure that's sort of
+
+1097
+00:48:29,410 --> 00:48:30,940
+the syntax you use for passing a pointer
+
+1098
+00:48:30,940 --> 00:48:32,530
+the reason why we didn't have to do it
+
+1099
+00:48:32,530 --> 00:48:35,920
+with map is because although it's not
+
+1100
+00:48:35,920 --> 00:48:39,000
+clear from the syntax a map is a pointer
+
+1101
+00:48:39,000 --> 00:48:42,579
+it's just because it's built into the
+
+1102
+00:48:42,579 --> 00:48:45,069
+language they don't make you put a star
+
+1103
+00:48:45,069 --> 00:48:50,530
+there but what a map is is if you
+
+1104
+00:48:50,530 --> 00:48:52,420
+declare a variable type map what that is
+
+1105
+00:48:52,420 --> 00:48:55,319
+is a pointer to some data in the heap so
+
+1106
+00:48:55,319 --> 00:48:57,579
+it was a pointer anyway and it's always
+
+1107
+00:48:57,579 --> 00:48:59,260
+passed by reference do they you just
+
+1108
+00:48:59,260 --> 00:49:00,609
+don't have to put the star and it does
+
+1109
+00:49:00,609 --> 00:49:01,210
+it for you
+
+1110
+00:49:01,210 --> 00:49:03,609
+so there's they're definitely map is
+
+1111
+00:49:03,609 --> 00:49:06,130
+special you cannot define map in the
+
+1112
+00:49:06,130 --> 00:49:07,900
+language it's it has to be built in
+
+1113
+00:49:07,900 --> 00:49:09,430
+because there's some curious things
+
+1114
+00:49:09,430 --> 00:49:15,819
+about it okay good okay so we fetch the
+
+1115
+00:49:15,819 --> 00:49:18,849
+page now we want to fire off a crawl go
+
+1116
+00:49:18,849 --> 00:49:20,799
+routine for each URL mentioned in the
+
+1117
+00:49:20,799 --> 00:49:23,170
+page we just fetch so that's done in
+
+1118
+00:49:23,170 --> 00:49:26,440
+line 56 on line 50 sisters loops over
+
+1119
+00:49:26,440 --> 00:49:29,890
+the URLs that the fetch function
+
+1120
+00:49:29,890 --> 00:49:32,950
+returned and for each one fires off a go
+
+1121
+00:49:32,950 --> 00:49:35,740
+routine at line 58 and that lines that
+
+1122
+00:49:35,740 --> 00:49:41,530
+func syntax in line 58 is a closure or a
+
+1123
+00:49:41,530 --> 00:49:43,990
+sort of immediate function but that func
+
+1124
+00:49:43,990 --> 00:49:46,599
+thing keyword is doing is to clearing a
+
+1125
+00:49:46,599 --> 00:49:49,140
+function right there that we then call
+
+1126
+00:49:49,140 --> 00:49:53,280
+so the way to read it maybe is
+
+1127
+00:49:53,740 --> 00:49:56,780
+that if you can declare a function as a
+
+1128
+00:49:56,780 --> 00:50:00,230
+piece of data as just func you know and
+
+1129
+00:50:00,230 --> 00:50:03,349
+then you give the arguments and then you
+
+1130
+00:50:03,349 --> 00:50:08,930
+give the body and that's a clears and so
+
+1131
+00:50:08,930 --> 00:50:12,500
+this is an object now this is like it's
+
+1132
+00:50:12,500 --> 00:50:14,000
+like when you type one when you have a
+
+1133
+00:50:14,000 --> 00:50:18,349
+one or 23 or something you're declaring
+
+1134
+00:50:18,349 --> 00:50:19,819
+a sort of constant object and this is
+
+1135
+00:50:19,819 --> 00:50:21,079
+the way to define a constant function
+
+1136
+00:50:21,079 --> 00:50:24,079
+and we do it here because we want to
+
+1137
+00:50:24,079 --> 00:50:25,730
+launch a go routine that's gonna run
+
+1138
+00:50:25,730 --> 00:50:27,290
+this function that we declared right
+
+1139
+00:50:27,290 --> 00:50:29,119
+here and so we in order to make the go
+
+1140
+00:50:29,119 --> 00:50:31,069
+routine we have to add a go in front to
+
+1141
+00:50:31,069 --> 00:50:33,140
+say we want to go routine and then we
+
+1142
+00:50:33,140 --> 00:50:35,059
+have to call the function because the go
+
+1143
+00:50:35,059 --> 00:50:37,520
+syntax says the syntax of the go
+
+1144
+00:50:37,520 --> 00:50:39,140
+keywords as you follow it by a function
+
+1145
+00:50:39,140 --> 00:50:40,910
+name and arguments you want to pass that
+
+1146
+00:50:40,910 --> 00:50:43,460
+function and so we're gonna pass some
+
+1147
+00:50:43,460 --> 00:50:50,900
+arguments here and there's two reasons
+
+1148
+00:50:50,900 --> 00:50:52,670
+we're doing this well really this one
+
+1149
+00:50:52,670 --> 00:50:55,069
+reason we you know in some other
+
+1150
+00:50:55,069 --> 00:50:57,790
+circumstance we could have just said go
+
+1151
+00:50:57,790 --> 00:51:00,230
+concurrent mutex oh I concur mutex is
+
+1152
+00:51:00,230 --> 00:51:01,400
+the name of the function we actually
+
+1153
+00:51:01,400 --> 00:51:06,619
+want to call with this URL but we want
+
+1154
+00:51:06,619 --> 00:51:08,119
+to do a few other things as well so we
+
+1155
+00:51:08,119 --> 00:51:10,160
+define this little helper function that
+
+1156
+00:51:10,160 --> 00:51:12,170
+first calls concurrent mutex for us with
+
+1157
+00:51:12,170 --> 00:51:15,740
+the URL and then after them current
+
+1158
+00:51:15,740 --> 00:51:17,119
+mutex is finished we do something
+
+1159
+00:51:17,119 --> 00:51:19,520
+special in order to help us wait for all
+
+1160
+00:51:19,520 --> 00:51:22,069
+the crawls to be done before the outer
+
+1161
+00:51:22,069 --> 00:51:24,920
+function returns so that brings us to
+
+1162
+00:51:24,920 --> 00:51:27,380
+the the wait group the wait group at
+
+1163
+00:51:27,380 --> 00:51:29,569
+line 55 it's a just a data structure to
+
+1164
+00:51:29,569 --> 00:51:33,619
+find by go to help with coordination and
+
+1165
+00:51:33,619 --> 00:51:35,030
+the game with wait group is that
+
+1166
+00:51:35,030 --> 00:51:39,290
+internally it has a counter and you call
+
+1167
+00:51:39,290 --> 00:51:43,640
+wait group dot add like a line 57 to
+
+1168
+00:51:43,640 --> 00:51:46,549
+increment the counter and we group done
+
+1169
+00:51:46,549 --> 00:51:48,619
+to decrement it and then this wait
+
+1170
+00:51:48,619 --> 00:51:50,900
+what this wait method called line 63
+
+1171
+00:51:50,900 --> 00:51:53,119
+waits for the counter to get down to
+
+1172
+00:51:53,119 --> 00:51:56,510
+zero so a wait group is a way to wait
+
+1173
+00:51:56,510 --> 00:51:59,329
+for a specific number of things to
+
+1174
+00:51:59,329 --> 00:52:02,540
+finish and it's useful in a bunch of
+
+1175
+00:52:02,540 --> 00:52:04,010
+different situations here we're using it
+
+1176
+00:52:04,010 --> 00:52:05,359
+to wait for the last go routine to
+
+1177
+00:52:05,359 --> 00:52:05,920
+finish
+
+1178
+00:52:05,920 --> 00:52:07,839
+because we add one to the wait group
+
+1179
+00:52:07,839 --> 00:52:11,200
+for every go routine we create line 60
+
+1180
+00:52:11,200 --> 00:52:13,119
+at the end of this function we've
+
+1181
+00:52:13,119 --> 00:52:15,310
+declared decrement the counter in the
+
+1182
+00:52:15,310 --> 00:52:18,130
+wait group and then line three waits
+
+1183
+00:52:18,130 --> 00:52:20,250
+until all the decrements have finished
+
+1184
+00:52:20,250 --> 00:52:22,300
+and so the reason why we declared this
+
+1185
+00:52:22,300 --> 00:52:23,920
+little function was basically to be able
+
+1186
+00:52:23,920 --> 00:52:26,530
+to both call concurrently text and call
+
+1187
+00:52:26,530 --> 00:52:28,630
+done that's really why we needed that
+
+1188
+00:52:28,630 --> 00:52:39,760
+function so the question is what if one
+
+1189
+00:52:39,760 --> 00:52:43,240
+of the subroutines fails and doesn't
+
+1190
+00:52:43,240 --> 00:52:45,820
+reach the done line that's a darn good
+
+1191
+00:52:45,820 --> 00:52:49,210
+question there is you know if I forget
+
+1192
+00:52:49,210 --> 00:52:51,070
+the exact range of errors that will
+
+1193
+00:52:51,070 --> 00:52:53,440
+cause the go routine to fail without
+
+1194
+00:52:53,440 --> 00:52:55,150
+causing the program to feel maybe
+
+1195
+00:52:55,150 --> 00:52:56,589
+divides by zero I don't know where
+
+1196
+00:52:56,589 --> 00:52:57,790
+dereference is a null pointer
+
+1197
+00:52:57,790 --> 00:52:59,140
+not sure but there are certainly ways
+
+1198
+00:52:59,140 --> 00:53:04,570
+for a function to fail and I have the go
+
+1199
+00:53:04,570 --> 00:53:06,910
+routine die without having the program
+
+1200
+00:53:06,910 --> 00:53:08,890
+die and that would be a problem for us
+
+1201
+00:53:08,890 --> 00:53:12,130
+and so really the white right way to I'm
+
+1202
+00:53:12,130 --> 00:53:13,660
+sure you had this in mind and asking the
+
+1203
+00:53:13,660 --> 00:53:15,849
+question the right way to write this to
+
+1204
+00:53:15,849 --> 00:53:18,520
+be sure that the done call is made no
+
+1205
+00:53:18,520 --> 00:53:20,740
+matter why this go routine is finishing
+
+1206
+00:53:20,740 --> 00:53:27,180
+would be to put a defer here which means
+
+1207
+00:53:27,180 --> 00:53:31,540
+call done before the surrounding
+
+1208
+00:53:31,540 --> 00:53:34,330
+function finishes and always call it no
+
+1209
+00:53:34,330 --> 00:53:36,130
+matter why the surrounding function is
+
+1210
+00:53:36,130 --> 00:53:42,119
+finished yes
+
+1211
+00:53:53,559 --> 00:53:58,789
+and yes yeah so the question is how come
+
+1212
+00:53:58,789 --> 00:54:00,650
+two users have done in different threads
+
+1213
+00:54:00,650 --> 00:54:08,210
+aren't a race yeah so the answer must be
+
+1214
+00:54:08,210 --> 00:54:10,640
+that internally dot a wait group has a
+
+1215
+00:54:10,640 --> 00:54:14,170
+mutex or something like it that each of
+
+1216
+00:54:14,170 --> 00:54:18,200
+Dunn's methods acquires before doing
+
+1217
+00:54:18,200 --> 00:54:19,970
+anything else so that simultaneously
+
+1218
+00:54:19,970 --> 00:54:22,789
+calls to a done to await groups methods
+
+1219
+00:54:22,789 --> 00:54:32,170
+are trees we could to did a low class
+
+1220
+00:54:39,519 --> 00:54:43,880
+yeah for certain leaf C++ and in C you
+
+1221
+00:54:43,880 --> 00:54:45,440
+want to look at something called P
+
+1222
+00:54:45,440 --> 00:54:47,390
+threads for C threads come in a library
+
+1223
+00:54:47,390 --> 00:54:48,650
+they're not really part of the language
+
+1224
+00:54:48,650 --> 00:54:51,710
+called P threads which they have these
+
+1225
+00:54:51,710 --> 00:54:55,420
+are extremely traditional and ancient
+
+1226
+00:54:55,420 --> 00:55:04,450
+primitives that all languages yeah
+
+1227
+00:55:06,630 --> 00:55:12,220
+say it again you know not in this code
+
+1228
+00:55:12,220 --> 00:55:14,140
+but you know you could imagine a use of
+
+1229
+00:55:14,140 --> 00:55:15,250
+wait groups I mean wait groups just
+
+1230
+00:55:15,250 --> 00:55:21,250
+count stuff and yeah yeah yeah wait
+
+1231
+00:55:21,250 --> 00:55:22,990
+group doesn't really care what you're
+
+1232
+00:55:22,990 --> 00:55:27,370
+pounding or why I mean you know this is
+
+1233
+00:55:27,370 --> 00:55:45,850
+the most common way to see it use you're
+
+1234
+00:55:45,850 --> 00:55:48,550
+wondering why you is passed as a
+
+1235
+00:55:48,550 --> 00:55:54,780
+parameter to the function at 58 okay
+
+1236
+00:55:54,780 --> 00:55:59,070
+yeah this is alright so the question is
+
+1237
+00:55:59,070 --> 00:56:01,450
+okay so actually backing up a little bit
+
+1238
+00:56:01,450 --> 00:56:05,890
+the rules for these for a function like
+
+1239
+00:56:05,890 --> 00:56:09,010
+the one I'm defining on 58 is that if
+
+1240
+00:56:09,010 --> 00:56:10,960
+the function body mentions a variable
+
+1241
+00:56:10,960 --> 00:56:14,050
+that's declared in the outer function
+
+1242
+00:56:14,050 --> 00:56:17,470
+but not shadowed then the the inner
+
+1243
+00:56:17,470 --> 00:56:19,000
+functions use of that is the same
+
+1244
+00:56:19,000 --> 00:56:20,650
+variable in the inner function as in the
+
+1245
+00:56:20,650 --> 00:56:23,080
+outer function and so that's what's
+
+1246
+00:56:23,080 --> 00:56:26,380
+happening with Fechter for example like
+
+1247
+00:56:26,380 --> 00:56:28,780
+what is this variable here refer to what
+
+1248
+00:56:28,780 --> 00:56:30,250
+does the Fechter variable refer to in
+
+1249
+00:56:30,250 --> 00:56:32,980
+the inner function well it refers it's
+
+1250
+00:56:32,980 --> 00:56:35,290
+the same variable as as the fetcher in
+
+1251
+00:56:35,290 --> 00:56:37,480
+the outer function says just is that
+
+1252
+00:56:37,480 --> 00:56:38,920
+variable and so when the inner function
+
+1253
+00:56:38,920 --> 00:56:40,510
+refers to fetcher it just means it's
+
+1254
+00:56:40,510 --> 00:56:42,310
+just referring the same variable as this
+
+1255
+00:56:42,310 --> 00:56:45,670
+one here and the same with F f is it's
+
+1256
+00:56:45,670 --> 00:56:48,160
+used here it's just is this variable so
+
+1257
+00:56:48,160 --> 00:56:50,320
+you might think that we could get rid of
+
+1258
+00:56:50,320 --> 00:56:55,990
+the this u argument that we're passing
+
+1259
+00:56:55,990 --> 00:56:57,880
+and just have the inner function take no
+
+1260
+00:56:57,880 --> 00:56:59,860
+arguments at all but just use the U that
+
+1261
+00:56:59,860 --> 00:57:04,530
+was defined up on line 56 in the loop
+
+1262
+00:57:05,070 --> 00:57:07,390
+and it'll be nice if we could do that
+
+1263
+00:57:07,390 --> 00:57:09,910
+because save us some typing it turns out
+
+1264
+00:57:09,910 --> 00:57:12,550
+not to work and the reason is that the
+
+1265
+00:57:12,550 --> 00:57:16,060
+semantics of go of the for loop at line
+
+1266
+00:57:16,060 --> 00:57:17,410
+56 is that the
+
+1267
+00:57:17,410 --> 00:57:21,850
+for the updates the variable u so in
+
+1268
+00:57:21,850 --> 00:57:23,620
+the first iteration of the for loop that
+
+1269
+00:57:23,620 --> 00:57:29,380
+variable u contains some URL and when
+
+1270
+00:57:29,380 --> 00:57:31,510
+you enter the second iteration before
+
+1271
+00:57:31,510 --> 00:57:34,150
+the that variable this contents are
+
+1272
+00:57:34,150 --> 00:57:37,750
+changed to be the second URL and that
+
+1273
+00:57:37,750 --> 00:57:39,370
+means that the first go routine that we
+
+1274
+00:57:39,370 --> 00:57:41,530
+launched that's just looking at the
+
+1275
+00:57:41,530 --> 00:57:43,000
+outer if it we're looking at the outer
+
+1276
+00:57:43,000 --> 00:57:46,930
+functions u variable the that first go
+
+1277
+00:57:46,930 --> 00:57:48,910
+routine we launched would see a different
+
+1278
+00:57:48,910 --> 00:57:51,400
+value in the u variable after the outer
+
+1279
+00:57:51,400 --> 00:57:53,800
+function it updated it and sometimes
+
+1280
+00:57:53,800 --> 00:57:55,150
+that's actually what you want so for
+
+1281
+00:57:55,150 --> 00:57:58,000
+example for for F and then particular F
+
+1282
+00:57:58,000 --> 00:58:01,600
+dot fetched we interaction absolutely
+
+1283
+00:58:01,600 --> 00:58:04,960
+wants to see changes to that map but for
+
+1284
+00:58:04,960 --> 00:58:06,490
+u we don't want to see changes the
+
+1285
+00:58:06,490 --> 00:58:09,070
+first go routine we spawn should read
+
+1286
+00:58:09,070 --> 00:58:12,130
+the first URL not the second URL so we
+
+1287
+00:58:12,130 --> 00:58:13,810
+want that go routine to have a copy you
+
+1288
+00:58:13,810 --> 00:58:16,080
+have its own private copy of the URL and
+
+1289
+00:58:16,080 --> 00:58:18,370
+you know is we could have done it in
+
+1290
+00:58:18,370 --> 00:58:20,560
+other ways we could have but the way
+
+1291
+00:58:20,560 --> 00:58:22,150
+this code happens to do it to produce
+
+1292
+00:58:22,150 --> 00:58:25,630
+the copy private to that inner function
+
+1293
+00:58:25,630 --> 00:58:31,860
+is by passing the URLs in argument yes
+
+1294
+00:58:34,450 --> 00:58:36,890
+yeah if we have passed the address of
+
+1295
+00:58:36,890 --> 00:58:51,200
+u yeah then it uh it's actually I
+
+1296
+00:58:51,200 --> 00:58:52,190
+don't know how strings work but it is
+
+1297
+00:58:52,190 --> 00:58:54,049
+absolutely giving you your own private
+
+1298
+00:58:54,049 --> 00:59:00,140
+copy of the variable you get your own
+
+1299
+00:59:00,140 --> 00:59:08,950
+copy of the variable and it yeah
+
+1300
+00:59:26,500 --> 00:59:28,850
+are you saying we don't need to play
+
+1301
+00:59:28,850 --> 00:59:33,860
+this trick in the code we definitely
+
+1302
+00:59:33,860 --> 00:59:35,270
+need to play this trick in the code and
+
+1303
+00:59:35,270 --> 00:59:37,700
+what's going on is this it's so the
+
+1304
+00:59:37,700 --> 00:59:39,170
+question is Oh strings are immutable
+
+1305
+00:59:39,170 --> 00:59:41,960
+strings are immutable right yeah so how
+
+1306
+00:59:41,960 --> 00:59:43,850
+kind of strings are immutable how can
+
+1307
+00:59:43,850 --> 00:59:45,110
+the outer function change the string
+
+1308
+00:59:45,110 --> 00:59:47,720
+there should be no problem the problem
+
+1309
+00:59:47,720 --> 00:59:49,700
+is not that the string is changed the
+
+1310
+00:59:49,700 --> 00:59:51,500
+problem is that the variable U is
+
+1311
+00:59:51,500 --> 00:59:56,150
+changed so the when the inner function
+
+1312
+00:59:56,150 --> 00:59:57,860
+mentions a variable that's defined in
+
+1313
+00:59:57,860 --> 00:59:59,000
+the outer function it's referring to
+
+1314
+00:59:59,000 --> 01:00:01,070
+that variable and the variables current
+
+1315
+01:00:01,070 --> 01:00:03,320
+value so when you if you have a string
+
+1316
+01:00:03,320 --> 01:00:06,590
+variable that has has a in it and then
+
+1317
+01:00:06,590 --> 01:00:09,110
+you assign B to that string variable
+
+1318
+01:00:09,110 --> 01:00:10,520
+you're not over writing the string
+
+1319
+01:00:10,520 --> 01:00:12,530
+you're changing the variable to point to
+
+1320
+01:00:12,530 --> 01:00:15,950
+a different string and and because the
+
+1321
+01:00:15,950 --> 01:00:18,680
+for loop changes the U variable to point
+
+1322
+01:00:18,680 --> 01:00:21,290
+to a different string you know that
+
+1323
+01:00:21,290 --> 01:00:22,970
+change to you would be visible inside
+
+1324
+01:00:22,970 --> 01:00:24,680
+the inner function and therefore the
+
+1325
+01:00:24,680 --> 01:00:26,390
+inner function needs its own copy of the
+
+1326
+01:00:26,390 --> 01:00:29,260
+variable
+
+1327
+01:00:36,150 --> 01:00:42,000
+essentially make a copy of that so that
+
+1328
+01:00:50,250 --> 01:00:53,110
+okay but that is what we're doing in
+
+1329
+01:00:53,110 --> 01:00:54,670
+this code and that's that is why this
+
+1330
+01:00:54,670 --> 01:00:56,440
+code works okay
+
+1331
+01:00:56,440 --> 01:00:59,080
+the proposal or the broken code that
+
+1332
+01:00:59,080 --> 01:01:00,400
+we're not using here I will show you the
+
+1333
+01:01:00,400 --> 01:01:02,850
+broken code
+
+1334
+01:01:44,060 --> 01:01:46,440
+this is just like a horrible detail but
+
+1335
+01:01:46,440 --> 01:01:47,700
+it is unfortunately one that you'll run
+
+1336
+01:01:47,700 --> 01:01:50,850
+into while doing the labs so you should
+
+1337
+01:01:50,850 --> 01:01:52,200
+be at least where that there's a problem
+
+1338
+01:01:52,200 --> 01:01:54,690
+and when you run into it maybe you can
+
+1339
+01:01:54,690 --> 01:02:12,170
+try to figure out the details okay
+
+1340
+01:02:12,170 --> 01:02:15,870
+that's a great question so so the
+
+1341
+01:02:15,870 --> 01:02:18,090
+question is you know if you have an
+
+1342
+01:02:18,090 --> 01:02:19,770
+inner function just a repeated if you
+
+1343
+01:02:19,770 --> 01:02:21,180
+have an inner function that refers to a
+
+1344
+01:02:21,180 --> 01:02:23,430
+variable in the surrounding function but
+
+1345
+01:02:23,430 --> 01:02:25,980
+the surrounding function returns what is
+
+1346
+01:02:25,980 --> 01:02:28,590
+the inner functions variable referring
+
+1347
+01:02:28,590 --> 01:02:30,030
+to anymore since the outer function is
+
+1348
+01:02:30,030 --> 01:02:32,460
+as returned and the answer is that go
+
+1349
+01:02:32,460 --> 01:02:35,190
+notices go analyzes your inner functions
+
+1350
+01:02:35,190 --> 01:02:38,160
+or these are called closures go analyzes
+
+1351
+01:02:38,160 --> 01:02:39,870
+them the compiler analyze them says aha
+
+1352
+01:02:39,870 --> 01:02:41,580
+oh this disclosure this inner function
+
+1353
+01:02:41,580 --> 01:02:42,570
+is using a variable in the outer
+
+1354
+01:02:42,570 --> 01:02:44,310
+function we're actually gonna and the
+
+1355
+01:02:44,310 --> 01:02:47,580
+compiler will allocate heat memory to
+
+1356
+01:02:47,580 --> 01:02:50,670
+hold the variable the you know the
+
+1357
+01:02:50,670 --> 01:02:52,590
+current value of the variable and both
+
+1358
+01:02:52,590 --> 01:02:55,230
+functions will refer to that that little
+
+1359
+01:02:55,230 --> 01:02:58,350
+area heap that has the barrel so it
+
+1360
+01:02:58,350 --> 01:02:59,760
+won't be allocated the variable won't be
+
+1361
+01:02:59,760 --> 01:03:01,590
+on the stack as you might expect it's
+
+1362
+01:03:01,590 --> 01:03:03,180
+moved to the heap if if the compiler
+
+1363
+01:03:03,180 --> 01:03:04,980
+sees that it's using a closure and then
+
+1364
+01:03:04,980 --> 01:03:06,060
+when the outer function returns the
+
+1365
+01:03:06,060 --> 01:03:07,950
+object is still there in the heap the
+
+1366
+01:03:07,950 --> 01:03:09,840
+inner function can still get at it and
+
+1367
+01:03:09,840 --> 01:03:11,820
+then the garbage collector is
+
+1368
+01:03:11,820 --> 01:03:13,440
+responsible for noticing that the last
+
+1369
+01:03:13,440 --> 01:03:15,540
+function to refer to this little piece
+
+1370
+01:03:15,540 --> 01:03:18,540
+of heat that's exited returned and to
+
+1371
+01:03:18,540 --> 01:03:24,769
+free it only then okay okay
+
+1372
+01:03:24,769 --> 01:03:29,309
+okay so wait group wait group is maybe
+
+1373
+01:03:29,309 --> 01:03:30,629
+the more important thing here that the
+
+1374
+01:03:30,629 --> 01:03:32,549
+technique that this code uses to wait
+
+1375
+01:03:32,549 --> 01:03:35,719
+for all the all this level of crawls to
+
+1376
+01:03:35,719 --> 01:03:37,739
+finished all its direct chill and the
+
+1377
+01:03:37,739 --> 01:03:39,599
+finish is the wait group of course
+
+1378
+01:03:39,599 --> 01:03:41,279
+there's many of these wait groups one
+
+1379
+01:03:41,279 --> 01:03:44,909
+per call two concurrent mutex each call
+
+1380
+01:03:44,909 --> 01:03:46,289
+that concurrent mutex just waits for its
+
+1381
+01:03:46,289 --> 01:03:49,519
+own children to finish and then returns
+
+1382
+01:03:49,519 --> 01:03:53,609
+okay so back to the lock actually
+
+1383
+01:03:53,609 --> 01:03:54,479
+there's one more thing I want to talk
+
+1384
+01:03:54,479 --> 01:03:56,279
+about with a lock and that is to explore
+
+1385
+01:03:56,279 --> 01:03:57,949
+what would happen if we hadn't locked
+
+1386
+01:03:57,949 --> 01:04:00,689
+right I'm claiming oh you know you don't
+
+1387
+01:04:00,689 --> 01:04:02,369
+lock you're gonna get these races you're
+
+1388
+01:04:02,369 --> 01:04:05,209
+gonna get incorrect execution whatever
+
+1389
+01:04:05,209 --> 01:04:11,039
+let's give it a shot I'm gonna I'm gonna
+
+1390
+01:04:11,039 --> 01:04:14,519
+comment out the locks and the question
+
+1391
+01:04:14,519 --> 01:04:17,159
+is what happens if I run the code with
+
+1392
+01:04:17,159 --> 01:04:24,179
+no locks what am I gonna see so we maght
+
+1393
+01:04:24,179 --> 01:04:26,459
+see a url called twice or I fetch
+
+1394
+01:04:26,459 --> 01:04:28,589
+twice yeah that's yeah that would be the
+
+1395
+01:04:28,589 --> 01:04:31,649
+error you might expect alright so I'll
+
+1396
+01:04:31,649 --> 01:04:34,799
+run it without locks and we're looking
+
+1397
+01:04:34,799 --> 01:04:36,269
+at the concurrent map the one in the
+
+1398
+01:04:36,269 --> 01:04:38,459
+middle this time it doesn't seem to have
+
+1399
+01:04:38,459 --> 01:04:40,369
+fetched anything twice it's only five
+
+1400
+01:04:40,369 --> 01:04:49,139
+run again gosh so far genius so maybe
+
+1401
+01:04:49,139 --> 01:04:50,719
+we're wasting our time with those locks
+
+1402
+01:04:50,719 --> 01:04:52,499
+yeah never seems to go wrong I've
+
+1403
+01:04:52,499 --> 01:04:57,419
+actually never seem to go wrong so the
+
+1404
+01:04:57,419 --> 01:05:00,269
+code is nevertheless wrong and someday
+
+1405
+01:05:00,269 --> 01:05:03,329
+it will fail okay the problem is that
+
+1406
+01:05:03,329 --> 01:05:04,559
+you know this is only a couple of
+
+1407
+01:05:04,559 --> 01:05:06,179
+instructions here and so the chances of
+
+1408
+01:05:06,179 --> 01:05:07,979
+these two threads which are maybe
+
+1409
+01:05:07,979 --> 01:05:09,539
+hundreds of instructions happening to
+
+1410
+01:05:09,539 --> 01:05:12,269
+stumble on this you know the same couple
+
+1411
+01:05:12,269 --> 01:05:14,489
+of instructions at the same time is
+
+1412
+01:05:14,489 --> 01:05:17,729
+quite low and indeed and and this is a
+
+1413
+01:05:17,729 --> 01:05:20,459
+real bummer about buggy code with races
+
+1414
+01:05:20,459 --> 01:05:23,519
+is that it usually works just fine but
+
+1415
+01:05:23,519 --> 01:05:25,289
+it probably won't work when the customer
+
+1416
+01:05:25,289 --> 01:05:28,020
+runs it on their computer
+
+1417
+01:05:28,020 --> 01:05:30,510
+so it's actually bad news for us right
+
+1418
+01:05:30,510 --> 01:05:32,940
+what do we you know it it can be in
+
+1419
+01:05:32,940 --> 01:05:34,920
+complex programs quite difficult to
+
+1420
+01:05:34,920 --> 01:05:37,170
+figure out if you have a race right and
+
+1421
+01:05:37,170 --> 01:05:39,390
+you might you may have code that just
+
+1422
+01:05:39,390 --> 01:05:41,910
+looks completely reasonable that is in
+
+1423
+01:05:41,910 --> 01:05:44,610
+fact sort of unknown to you using shared
+
+1424
+01:05:44,610 --> 01:05:47,970
+variables and the answer is you really
+
+1425
+01:05:47,970 --> 01:05:50,040
+the only way to find races in practice
+
+1426
+01:05:50,040 --> 01:05:53,580
+to be is you automated tools and luckily
+
+1427
+01:05:53,580 --> 01:05:55,890
+go actually gives us this pretty good
+
+1428
+01:05:55,890 --> 01:06:00,119
+race detector built-in to go and you
+
+1429
+01:06:00,119 --> 01:06:04,619
+should use it so if you pass the - race
+
+1430
+01:06:04,619 --> 01:06:06,540
+flag when you have to get your go
+
+1431
+01:06:06,540 --> 01:06:09,710
+program and run this race detector which
+
+1432
+01:06:09,710 --> 01:06:11,760
+well I'll run the race detector and
+
+1433
+01:06:11,760 --> 01:06:16,650
+we'll see so it emits an error message
+
+1434
+01:06:16,650 --> 01:06:19,680
+from us it's found a race and it
+
+1435
+01:06:19,680 --> 01:06:21,420
+actually tells us exactly where the race
+
+1436
+01:06:21,420 --> 01:06:23,550
+happened so there's a lot of junk in
+
+1437
+01:06:23,550 --> 01:06:25,260
+this output but the really critical
+
+1438
+01:06:25,260 --> 01:06:28,320
+thing is that the race detector realize
+
+1439
+01:06:28,320 --> 01:06:30,180
+that we had read a variable that's what
+
+1440
+01:06:30,180 --> 01:06:32,790
+this read is that was previously written
+
+1441
+01:06:32,790 --> 01:06:35,670
+and there was no intervening release and
+
+1442
+01:06:35,670 --> 01:06:37,770
+acquire of a lock that's what that's
+
+1443
+01:06:37,770 --> 01:06:40,200
+what this means furthermore it tells us
+
+1444
+01:06:40,200 --> 01:06:43,710
+the line number so it's told us that the
+
+1445
+01:06:43,710 --> 01:06:49,290
+read was a line 43 and the write the
+
+1446
+01:06:49,290 --> 01:06:51,660
+previous write was at line 44 and indeed
+
+1447
+01:06:51,660 --> 01:06:53,190
+we look at the code and the read isn't
+
+1448
+01:06:53,190 --> 01:06:56,220
+line 43 and the right is at line 44 so
+
+1449
+01:06:56,220 --> 01:06:58,170
+that means that one thread did a write
+
+1450
+01:06:58,170 --> 01:07:00,869
+at line 44 and then without any
+
+1451
+01:07:00,869 --> 01:07:02,520
+intervening lock and another thread came
+
+1452
+01:07:02,520 --> 01:07:05,340
+along and read that written data at line
+
+1453
+01:07:05,340 --> 01:07:07,560
+43 that's basically what the race
+
+1454
+01:07:07,560 --> 01:07:10,020
+detector is looking for the way it works
+
+1455
+01:07:10,020 --> 01:07:11,820
+internally is it allocates sort of
+
+1456
+01:07:11,820 --> 01:07:15,000
+shadow memory now lucky some you know it
+
+1457
+01:07:15,000 --> 01:07:16,260
+uses a huge amount of memory and
+
+1458
+01:07:16,260 --> 01:07:17,460
+basically for every one of your memory
+
+1459
+01:07:17,460 --> 01:07:19,710
+locations the race detector is allocated
+
+1460
+01:07:19,710 --> 01:07:21,600
+a little bit of memory itself in which
+
+1461
+01:07:21,600 --> 01:07:24,330
+it keeps track of which threads recently
+
+1462
+01:07:24,330 --> 01:07:26,400
+read or wrote every single memory
+
+1463
+01:07:26,400 --> 01:07:28,590
+location and then when and it also to
+
+1464
+01:07:28,590 --> 01:07:30,810
+keep tracking keeping track of when
+
+1465
+01:07:30,810 --> 01:07:32,609
+threads acquiring release locks and do
+
+1466
+01:07:32,609 --> 01:07:35,430
+other synchronization activities that it
+
+1467
+01:07:35,430 --> 01:07:37,980
+knows forces but force threads to not
+
+1468
+01:07:37,980 --> 01:07:39,180
+run
+
+1469
+01:07:39,180 --> 01:07:40,980
+and if the race detector driver sees a
+
+1470
+01:07:40,980 --> 01:07:42,450
+ha there was a memory location that was
+
+1471
+01:07:42,450 --> 01:07:45,210
+written and then read with no
+
+1472
+01:07:45,210 --> 01:07:49,160
+intervening market it'll raise an error
+
+1473
+01:07:49,160 --> 01:08:06,600
+yes I believe it is not perfect yeah I
+
+1474
+01:08:06,600 --> 01:08:12,170
+have to think about it what one
+
+1475
+01:08:12,170 --> 01:08:15,180
+certainly one way it is not perfect is
+
+1476
+01:08:15,180 --> 01:08:18,899
+that if you if you don't execute some
+
+1477
+01:08:18,899 --> 01:08:21,270
+code the race detector doesn't know
+
+1478
+01:08:21,270 --> 01:08:25,109
+anything about it so it's not analyzing
+
+1479
+01:08:25,109 --> 01:08:27,990
+it's not doing static analysis the
+
+1480
+01:08:27,990 --> 01:08:29,220
+racing sectors not looking at your
+
+1481
+01:08:29,220 --> 01:08:31,770
+source and making decisions based on the
+
+1482
+01:08:31,770 --> 01:08:33,390
+source it's sort of watching what
+
+1483
+01:08:33,390 --> 01:08:35,700
+happened at on this particular run of
+
+1484
+01:08:35,700 --> 01:08:37,649
+the program and so if this particular
+
+1485
+01:08:37,649 --> 01:08:39,330
+run of the program didn't execute some
+
+1486
+01:08:39,330 --> 01:08:42,450
+code that happens to read or write
+
+1487
+01:08:42,450 --> 01:08:44,370
+shared data then the race detector will
+
+1488
+01:08:44,370 --> 01:08:46,500
+never know and there could be erased
+
+1489
+01:08:46,500 --> 01:08:48,270
+there so that's certainly something to
+
+1490
+01:08:48,270 --> 01:08:49,319
+watch out for so you know if you're
+
+1491
+01:08:49,319 --> 01:08:50,580
+serious about the race detector you need
+
+1492
+01:08:50,580 --> 01:08:53,100
+to set up sort of testing apparatus that
+
+1493
+01:08:53,100 --> 01:08:55,620
+tries to make sure all all the code is
+
+1494
+01:08:55,620 --> 01:08:59,340
+executed but it's it's it's very good
+
+1495
+01:08:59,340 --> 01:09:01,620
+and you just have to use it for your a
+
+1496
+01:09:01,620 --> 01:09:07,830
+to 4 labs okay so this is race here and
+
+1497
+01:09:07,830 --> 01:09:09,300
+of course the race didn't actually occur
+
+1498
+01:09:09,300 --> 01:09:12,330
+what the race editor did not see was the
+
+1499
+01:09:12,330 --> 01:09:14,370
+actual interleaving simultaneous
+
+1500
+01:09:14,370 --> 01:09:17,370
+execution of some sensitive code right
+
+1501
+01:09:17,370 --> 01:09:18,899
+it didn't see two threads literally
+
+1502
+01:09:18,899 --> 01:09:21,859
+execute lines 43 and 44 at the same time
+
+1503
+01:09:21,859 --> 01:09:23,970
+and as we know from having run the
+
+1504
+01:09:23,970 --> 01:09:25,140
+things by hand that apparently doesn't
+
+1505
+01:09:25,140 --> 01:09:28,319
+happen only with low probability all it
+
+1506
+01:09:28,319 --> 01:09:29,880
+saw was at one point that was a right
+
+1507
+01:09:29,880 --> 01:09:31,529
+and they made me much later there was a
+
+1508
+01:09:31,529 --> 01:09:37,620
+read with no intervening lock and so
+
+1509
+01:09:37,620 --> 01:09:39,180
+enact in that sense it can sort of
+
+1510
+01:09:39,180 --> 01:09:41,540
+detect races that didn't actually happen
+
+1511
+01:09:41,540 --> 01:09:47,630
+or didn't really cause bugs okay
+
+1512
+01:09:49,540 --> 01:09:52,550
+okay one final question about this this
+
+1513
+01:09:52,550 --> 01:09:57,550
+crawler how many threads does it create
+
+1514
+01:10:03,639 --> 01:10:10,119
+yeah and how many concurrent threads
+
+1515
+01:10:10,119 --> 01:10:24,969
+could there be yeah so a defect in this
+
+1516
+01:10:24,969 --> 01:10:27,159
+crawler is that there's no obvious bound
+
+1517
+01:10:27,159 --> 01:10:28,719
+on the number of simultaneous threads
+
+1518
+01:10:28,719 --> 01:10:30,580
+that might create you know with the test
+
+1519
+01:10:30,580 --> 01:10:32,800
+case which only has five URLs big
+
+1520
+01:10:32,800 --> 01:10:34,659
+whoopee but if you're crawling a real
+
+1521
+01:10:34,659 --> 01:10:36,610
+wheel web with you know I don't know are
+
+1522
+01:10:36,610 --> 01:10:38,380
+there billions of URLs out there maybe
+
+1523
+01:10:38,380 --> 01:10:40,389
+not we certainly don't want to be in a
+
+1524
+01:10:40,389 --> 01:10:41,380
+position where the crawler might
+
+1525
+01:10:41,380 --> 01:10:43,380
+accidentally create billions of threads
+
+1526
+01:10:43,380 --> 01:10:46,119
+because you know thousands of threads
+
+1527
+01:10:46,119 --> 01:10:47,889
+it's just fine billions of threads it's
+
+1528
+01:10:47,889 --> 01:10:51,070
+not okay because each one sits on some
+
+1529
+01:10:51,070 --> 01:10:54,280
+amount of memory so a you know there's
+
+1530
+01:10:54,280 --> 01:10:56,080
+probably many defects in real life for
+
+1531
+01:10:56,080 --> 01:10:58,270
+this crawler but one at the level we're
+
+1532
+01:10:58,270 --> 01:11:00,219
+talking about is that it does create too
+
+1533
+01:11:00,219 --> 01:11:01,600
+many threads and really ought to have a
+
+1534
+01:11:01,600 --> 01:11:03,280
+way of saying well you can create 20
+
+1535
+01:11:03,280 --> 01:11:04,630
+threads or 100 threads or a thousand
+
+1536
+01:11:04,630 --> 01:11:06,520
+threads but no more so one way to do
+
+1537
+01:11:06,520 --> 01:11:08,199
+that would be to pre create a pool a
+
+1538
+01:11:08,199 --> 01:11:11,050
+fixed size pool of workers and have the
+
+1539
+01:11:11,050 --> 01:11:13,179
+workers just iteratively look for
+
+1540
+01:11:13,179 --> 01:11:14,830
+another URL to crawl crawl that URL
+
+1541
+01:11:14,830 --> 01:11:18,159
+rather than creating a new thread for
+
+1542
+01:11:18,159 --> 01:11:21,070
+each URL okay so next up I want to talk
+
+1543
+01:11:21,070 --> 01:11:23,230
+about a another crawler that's
+
+1544
+01:11:23,230 --> 01:11:25,600
+implemented and a significantly
+
+1545
+01:11:25,600 --> 01:11:28,780
+different way using channels instead of
+
+1546
+01:11:28,780 --> 01:11:31,869
+shared memory it's a member on the mutex
+
+1547
+01:11:31,869 --> 01:11:33,489
+call or I just said there is this table
+
+1548
+01:11:33,489 --> 01:11:34,840
+of URLs that are called that's shared
+
+1549
+01:11:34,840 --> 01:11:36,550
+between all the threads and asked me
+
+1550
+01:11:36,550 --> 01:11:40,330
+locked this version does not have such a
+
+1551
+01:11:40,330 --> 01:11:44,440
+table does not share memory and does not
+
+1552
+01:11:44,440 --> 01:11:52,510
+need to use locks okay so this one the
+
+1553
+01:11:52,510 --> 01:11:55,060
+instead there's basically a master
+
+1554
+01:11:55,060 --> 01:11:57,790
+thread that's his master function on a
+
+1555
+01:11:57,790 --> 01:12:00,699
+decent 986 and it has a table but the
+
+1556
+01:12:00,699 --> 01:12:02,800
+table is private to the master function
+
+1557
+01:12:02,800 --> 01:12:06,690
+and what the master function is doing is
+
+1558
+01:12:06,690 --> 01:12:09,219
+instead of sort of basically creating a
+
+1559
+01:12:09,219 --> 01:12:11,409
+tree of functions that corresponds to
+
+1560
+01:12:11,409 --> 01:12:13,330
+the exploration of the graph which the
+
+1561
+01:12:13,330 --> 01:12:17,940
+previous crawler did this one fires off
+
+1562
+01:12:17,940 --> 01:12:21,880
+one u one go routine per URL that it's
+
+1563
+01:12:21,880 --> 01:12:23,770
+fetches and that but it's only the
+
+1564
+01:12:23,770 --> 01:12:26,560
+master only the one master that's
+
+1565
+01:12:26,560 --> 01:12:28,300
+creating these threads so we don't have
+
+1566
+01:12:28,300 --> 01:12:30,130
+a tree of functions creating threads we
+
+1567
+01:12:30,130 --> 01:12:35,199
+just have the one master okay so it
+
+1568
+01:12:35,199 --> 01:12:37,540
+creates its own private map a line 88
+
+1569
+01:12:37,540 --> 01:12:41,550
+this record what it's fetched and then
+
+1570
+01:12:41,550 --> 01:12:44,650
+it also creates a channel just a single
+
+1571
+01:12:44,650 --> 01:12:46,900
+channel that all of its worker threads
+
+1572
+01:12:46,900 --> 01:12:49,120
+are going to talk to and the idea is
+
+1573
+01:12:49,120 --> 01:12:50,699
+that it's gonna fire up a worker thread
+
+1574
+01:12:50,699 --> 01:12:53,040
+and each worker thread that it fires up
+
+1575
+01:12:53,040 --> 01:12:55,630
+when it finished such as fetching the
+
+1576
+01:12:55,630 --> 01:12:58,150
+page will send exactly one item back to
+
+1577
+01:12:58,150 --> 01:13:00,250
+the master on the channel and that item
+
+1578
+01:13:00,250 --> 01:13:03,219
+will be a list of the URLs in the page
+
+1579
+01:13:03,219 --> 01:13:07,960
+that that worker thread fetched so the
+
+1580
+01:13:07,960 --> 01:13:10,420
+master sits in a loop we're in line
+
+1581
+01:13:10,420 --> 01:13:13,989
+eighty nine is reading entries from the
+
+1582
+01:13:13,989 --> 01:13:16,780
+channel and so we have to imagine that
+
+1583
+01:13:16,780 --> 01:13:20,469
+it's started up some workers in advance
+
+1584
+01:13:20,469 --> 01:13:22,840
+and now it's reading the information the
+
+1585
+01:13:22,840 --> 01:13:24,489
+URL lists that those workers send back
+
+1586
+01:13:24,489 --> 01:13:26,830
+and each time he gets a URL is sitting
+
+1587
+01:13:26,830 --> 01:13:28,810
+on land eighty nine it then loops over
+
+1588
+01:13:28,810 --> 01:13:32,620
+the URLs in that URL list from a single
+
+1589
+01:13:32,620 --> 01:13:36,100
+page fetch align ninety and if the URL
+
+1590
+01:13:36,100 --> 01:13:39,969
+hasn't already been fetched it fires off
+
+1591
+01:13:39,969 --> 01:13:42,190
+a new worker at line 94 to fetch that
+
+1592
+01:13:42,190 --> 01:13:44,800
+URL and if we look at the worker code
+
+1593
+01:13:44,800 --> 01:13:47,320
+online starting line 77 basically calls
+
+1594
+01:13:47,320 --> 01:13:51,130
+his fetcher and then sends a message on
+
+1595
+01:13:51,130 --> 01:13:53,710
+the channel a line 80 or 82 saying
+
+1596
+01:13:53,710 --> 01:13:57,929
+here's the URLs in the page they fetched
+
+1597
+01:13:57,929 --> 01:14:01,170
+and notice that now that the maybe
+
+1598
+01:14:01,170 --> 01:14:03,639
+interesting thing about this is that the
+
+1599
+01:14:03,639 --> 01:14:07,989
+worker threads don't share any objects
+
+1600
+01:14:07,989 --> 01:14:10,210
+there's no shared object between the
+
+1601
+01:14:10,210 --> 01:14:11,530
+workers and the master so we don't have
+
+1602
+01:14:11,530 --> 01:14:12,850
+to worry about locking we don't have to
+
+1603
+01:14:12,850 --> 01:14:16,360
+worry about races instead this is a
+
+1604
+01:14:16,360 --> 01:14:18,940
+example of sort of communicating
+
+1605
+01:14:18,940 --> 01:14:21,100
+information instead of getting at it
+
+1606
+01:14:21,100 --> 01:14:25,620
+through shared memory yes
+
+1607
+01:14:33,930 --> 01:14:38,140
+yeah yeah so the observation is that the
+
+1608
+01:14:38,140 --> 01:14:40,810
+code appears but the workers are the
+
+1609
+01:14:40,810 --> 01:14:42,250
+observation is the workers are modifying
+
+1610
+01:14:42,250 --> 01:14:47,130
+ch while the Masters reading it and
+
+1611
+01:14:49,170 --> 01:14:51,520
+that's not the way the go authors would
+
+1612
+01:14:51,520 --> 01:14:54,160
+like you to think about this the way
+
+1613
+01:14:54,160 --> 01:14:55,360
+they want you to think about this is
+
+1614
+01:14:55,360 --> 01:14:58,030
+that CH is a channel and the channel has
+
+1615
+01:14:58,030 --> 01:15:00,880
+send and receive operations and the
+
+1616
+01:15:00,880 --> 01:15:03,070
+workers are sending on the channel while
+
+1617
+01:15:03,070 --> 01:15:05,260
+the master receives on the channel and
+
+1618
+01:15:05,260 --> 01:15:09,250
+that's perfectly legal the channel is
+
+1619
+01:15:09,250 --> 01:15:11,050
+happy I mean what that really means is
+
+1620
+01:15:11,050 --> 01:15:12,790
+that the internal implementation of
+
+1621
+01:15:12,790 --> 01:15:15,610
+channel has a mutex in it and the
+
+1622
+01:15:15,610 --> 01:15:19,000
+channel operations are careful to take
+
+1623
+01:15:19,000 --> 01:15:20,860
+out the mutex when they're messing with
+
+1624
+01:15:20,860 --> 01:15:22,449
+the channels internal data to ensure
+
+1625
+01:15:22,449 --> 01:15:24,190
+that it doesn't actually have any
+
+1626
+01:15:24,190 --> 01:15:27,580
+reasons in it but yeah channels are sort
+
+1627
+01:15:27,580 --> 01:15:29,290
+of protected against concurrency and
+
+1628
+01:15:29,290 --> 01:15:30,400
+you're allowed to use them concurrently
+
+1629
+01:15:30,400 --> 01:15:34,680
+from different threads yes
+
+1630
+01:15:36,389 --> 01:15:43,190
+over the channel receive yes
+
+1631
+01:15:53,810 --> 01:15:56,260
+we don't need to close the channel I
+
+1632
+01:15:56,260 --> 01:15:58,850
+mean okay the the break statement is
+
+1633
+01:15:58,850 --> 01:16:00,590
+about when the crawl has completely
+
+1634
+01:16:00,590 --> 01:16:03,160
+finished and we fetched every single URL
+
+1635
+01:16:03,160 --> 01:16:06,410
+right because hey what's going on is the
+
+1636
+01:16:06,410 --> 01:16:09,230
+master is keeping I mean this n value is
+
+1637
+01:16:09,230 --> 01:16:13,190
+private value and a master every time it
+
+1638
+01:16:13,190 --> 01:16:14,860
+fires off a worker at increments the end
+
+1639
+01:16:14,860 --> 01:16:17,360
+though every worker it starts since
+
+1640
+01:16:17,360 --> 01:16:20,480
+exactly one item on the channel and so
+
+1641
+01:16:20,480 --> 01:16:21,920
+every time the master reads an item off
+
+1642
+01:16:21,920 --> 01:16:23,120
+the channel it knows that one of his
+
+1643
+01:16:23,120 --> 01:16:24,920
+workers is finished and when the number
+
+1644
+01:16:24,920 --> 01:16:29,060
+of outstanding workers goes to zero then
+
+1645
+01:16:29,060 --> 01:16:32,870
+we're done and we don't once the number
+
+1646
+01:16:32,870 --> 01:16:34,520
+of outstanding workers goes to zero then
+
+1647
+01:16:34,520 --> 01:16:36,500
+the only reference to the channel is
+
+1648
+01:16:36,500 --> 01:16:40,370
+from the master or from oh really from
+
+1649
+01:16:40,370 --> 01:16:41,780
+the code that calls the master and so
+
+1650
+01:16:41,780 --> 01:16:43,460
+the garbage collector will very soon see
+
+1651
+01:16:43,460 --> 01:16:45,260
+that the channel has no references to it
+
+1652
+01:16:45,260 --> 01:16:48,680
+and will free the channel so in this
+
+1653
+01:16:48,680 --> 01:16:50,060
+case sometimes you need to close
+
+1654
+01:16:50,060 --> 01:16:53,630
+channels but actually I rarely have to
+
+1655
+01:16:53,630 --> 01:16:56,170
+close channels
+
+1656
+01:17:03,150 --> 01:17:06,050
+he said again
+
+1657
+01:17:09,749 --> 01:17:12,219
+so the question is alright so you can
+
+1658
+01:17:12,219 --> 01:17:16,389
+see at line 106 before calling master
+
+1659
+01:17:16,389 --> 01:17:19,949
+concurrent channel sort of fires up one
+
+1660
+01:17:19,949 --> 01:17:25,659
+shoves one URL into the channel and it's
+
+1661
+01:17:25,659 --> 01:17:26,710
+to sort of get the whole thing started
+
+1662
+01:17:26,710 --> 01:17:28,059
+because the code for master was written
+
+1663
+01:17:28,059 --> 01:17:29,469
+you know the master goes right into
+
+1664
+01:17:29,469 --> 01:17:31,749
+reading from the channel line 89 so
+
+1665
+01:17:31,749 --> 01:17:33,489
+there better be something in the channel
+
+1666
+01:17:33,489 --> 01:17:36,550
+otherwise line 89 would block forever so
+
+1667
+01:17:36,550 --> 01:17:38,260
+if it weren't for that little code at
+
+1668
+01:17:38,260 --> 01:17:42,550
+line 107 the for loop at 89 would block
+
+1669
+01:17:42,550 --> 01:17:44,050
+reading from the channel forever and
+
+1670
+01:17:44,050 --> 01:17:54,460
+this code wouldn't work well yeah so the
+
+1671
+01:17:54,460 --> 01:17:56,289
+observation is gosh you know wouldn't it
+
+1672
+01:17:56,289 --> 01:17:57,510
+be nice to be able to write code that
+
+1673
+01:17:57,510 --> 01:17:59,530
+would be able to notice if there's
+
+1674
+01:17:59,530 --> 01:18:01,570
+nothing waiting on the channel and you
+
+1675
+01:18:01,570 --> 01:18:03,219
+can if you look up the Select statement
+
+1676
+01:18:03,219 --> 01:18:05,019
+it's much more complicated than this but
+
+1677
+01:18:05,019 --> 01:18:06,579
+there is the Select statement which
+
+1678
+01:18:06,579 --> 01:18:09,460
+allows you to proceed to not block if
+
+1679
+01:18:09,460 --> 01:18:11,139
+something if there's nothing waiting on
+
+1680
+01:18:11,139 --> 01:18:13,590
+the channel
+
+1681
+01:18:44,590 --> 01:18:59,600
+because the worker aren't finish okay sorry
+
+1682
+01:18:59,600 --> 01:19:02,600
+to the first question is there I think
+
+1683
+01:19:02,600 --> 01:19:03,830
+what you're really worried about is
+
+1684
+01:19:03,830 --> 01:19:05,630
+whether we're actually able to launch
+
+1685
+01:19:05,630 --> 01:19:09,110
+parallel so the very first fetch won't be
+
+1686
+01:19:09,110 --> 01:19:37,220
+in parallel because there's an exit
+
+1687
+01:19:37,220 --> 01:19:40,270
+owner the for-loop waits in at line 89
+
+1688
+01:19:40,270 --> 01:19:44,450
+that's not okay that for loop at line 89
+
+1689
+01:19:44,450 --> 01:19:47,660
+is does not just loop over the current
+
+1690
+01:19:47,660 --> 01:19:49,190
+contents of the channel and then quit
+
+1691
+01:19:49,190 --> 01:19:54,230
+that is the for loop at 89 is going to
+
+1692
+01:19:54,230 --> 01:19:58,100
+read it may never exit but it's gonna
+
+1693
+01:19:58,100 --> 01:19:59,780
+read it's just going to keep waiting
+
+1694
+01:19:59,780 --> 01:20:01,130
+until something shows up in the channel
+
+1695
+01:20:01,130 --> 01:20:04,280
+so if you don't hit the break at line 99
+
+1696
+01:20:04,280 --> 01:20:10,250
+the for loop own exit yeah alright I'm
+
+1697
+01:20:10,250 --> 01:20:12,440
+afraid we're out of time we'll continue
+
+1698
+01:20:12,440 --> 01:20:15,800
+this actually we have a presentation
+
+1699
+01:20:15,800 --> 01:20:18,260
+scheduled by the TAS which I'll talk
+
+1700
+01:20:18,260 --> 00:00:00,000
+more about go
+
