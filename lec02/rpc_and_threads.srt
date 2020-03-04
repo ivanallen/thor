@@ -80,7 +80,7 @@ and indeed we used to use C++ in this
 
 17
 00:00:42,859 --> 00:00:47,079
-并且它也能很好的得出满意的结果
+并且它也能得出满意的结果
 class and it worked out fine it'll go
 
 18
@@ -100,7 +100,7 @@ particularly convenient
 
 21
 00:00:51,649 --> 00:00:53,409
-尤其是在多线程、
+尤其是在多线程
 that's good support for threads and
 
 22
@@ -115,7 +115,7 @@ threads which we use a lot it is a
 
 24
 00:00:59,239 --> 00:01:01,789
-另外 RPC package(RPC 包)也相当的好用
+另外 RPC package(RPC 包)也相当的方便
 convenient remote procedure call package
 
 25
@@ -135,12 +135,12 @@ constraint from many languages like C++
 
 28
 00:01:09,950 --> 00:01:11,210
-比如说，你很难找到一个好用的
+比如说，你很难找到一个
 for example it's actually a bit hard to
 
 29
 00:01:11,210 --> 00:01:13,579
-RPC 包
+方便好用的 RPC 包
 find a convenient easy to use remote
 
 30
@@ -200,12 +200,12 @@ it's garbage collected which means you
 
 41
 00:01:39,680 --> 00:01:41,869
-你再也不用饱受 double free
+你再也不用身处 double free 的危险之中
 never in danger of priam the same memory
 
 42
 00:01:41,869 --> 00:01:44,509
-或是释放正在被使用的内存的痛苦
+也不用再为释放正在被使用的内存而担忧
 twice or free memory that's still in use
 
 43
@@ -389,18 +389,13 @@ to go look at the line number and try to
 guess what the error must have been
 
 79
-00:03:02,670 --> 00:03:04,170
-因为这门语言真是太
-because the language is far too
-
-80
-00:03:04,170 --> 00:03:04,800
-复杂了
-complicated
+00:03:02,670 --> 00:03:04,800
+因为这门语言真是太复杂了
+because the language is far too complicated
 
 81
 00:03:04,800 --> 00:03:07,140
-然而 Go，你懂的，
+然而 Go，你懂的
 whereas go is you know probably doesn't
 
 82
@@ -410,12 +405,12 @@ have a lot of people's favorite features
 
 83
 00:03:09,710 --> 00:03:11,580
-相对而言它是一门“直接了当”
+相对而言它是一门“直接了当”的语言
 but it's relatively straightforward
 
 84
 00:03:11,580 --> 00:03:14,940
-的语言。Okay, 所以现在你们
+Okay, 所以现在你们
 language okay so at this point you're
 
 85
@@ -425,27 +420,27 @@ both on the tutorial if you're looking
 
 86
 00:03:17,250 --> 00:03:19,290
-如果你正在纠结关于这门语言，你下一步应该学习什么的时候
+如果你正在纠结关于这门语言
 for sort of you know what to look at
 
 87
 00:03:19,290 --> 00:03:21,630
-有一个好东西你可以看看
+你下一步应该学习什么的时候
 next to learn about the language a good
 
 88
 00:03:21,630 --> 00:03:23,190
-名为《Effective Go》
+有一个好东西你可以看看
 place to look is the document titled
 
 89
 00:03:23,190 --> 00:03:25,590
-你可以通过
+名为《Effective Go》
 effective go which you know you can find
 
 90
 00:03:25,590 --> 00:03:30,390
-互联网搜索到这本书
+你可以通过互联网搜索到这本书
 by searching the web
 
 91
@@ -515,12 +510,12 @@ behalf of many different clients and so
 
 104
 00:04:02,430 --> 00:04:04,830
-我们需要一种方式来解释，，，噢，你知道我是
+我们需要一种方式来解释
 we need a way to say oh you know I'm my
 
 105
 00:04:04,830 --> 00:04:06,030
-我的程序同时有 7 个不同的事情在进行
+我的程序同时有 7 件不同的事情在进行
 program really has seven different
 
 106
@@ -555,7 +550,7 @@ thrust threads are the answer so these
 
 112
 00:04:19,589 --> 00:04:21,630
-在 Go 的文档中，
+在 Go 的文档中
 are the things that the go documentation
 
 113
@@ -615,7 +610,7 @@ code in that address space one program
 
 124
 00:04:57,040 --> 00:05:00,100
-它只有一个程序计数器，只有一套寄存器，一个（运行时）栈
+它只有一个程序计数器，只有一套寄存器，一个栈
 counter one set of registers one stack
 
 125
@@ -650,7 +645,7 @@ each line represents really is a
 
 131
 00:05:13,480 --> 00:05:16,120
-特别是，
+尤其是
 separate if the especially if the
 
 132
@@ -700,7 +695,7 @@ there's a seprate thread there's a
 
 141
 00:05:35,530 --> 00:05:41,170
-这些栈都在执行
+线程会在这些栈上执行
 stack that it's executing on
 
 142
@@ -730,12 +725,12 @@ address space and different threads
 
 147
 00:05:52,240 --> 00:05:53,800
-不同的线程总会关联到自己的栈上
+不同的线程之间
 could refer to each other stacks if they
 
 148
 00:05:53,800 --> 00:05:55,960
-
+是可以互相访问的他们的栈的
 knew the right addresses
 
 149
@@ -805,7 +800,7 @@ concurrency is that in the old days
 
 162
 00:06:38,050 --> 00:06:39,580
-第一次被提出的时候是这样的：
+第一次被提出的时候是这样的
 where this first came up is that
 
 163
@@ -885,23 +880,23 @@ and you know the way you would do that with threads is
 
 180
 00:07:15,040 --> 00:07:18,790
-你会为每个 RPC 调用创建一个线程
+你需要为每个 RPC 调用创建一个线程
 that you would create one thread for each of the remote procedure calls that
 
 182
 00:07:18,790 --> 00:07:21,190
 每个线程
-you wanted to launch that thread would
+you wanted to launch that thread would have code
 
 183
 00:07:21,190 --> 00:07:26,380
 都会通过 RPC 发送 request 消息
-have code that you know sent the remote procedure call request message and sort
+that you know sent the remote procedure call request message
 
 185
 00:07:26,380 --> 00:07:27,820
 然后在这个位置等待
-of waited at this point in the thread
+and sort of waited at this point in the thread
 
 186
 00:07:27,820 --> 00:07:29,320
@@ -944,13 +939,18 @@ execute the different parts of this whenever they feel like it
 so that's i/o concurrency sort of overlapping of the progress of different activities
 
 197
-00:07:49,720 --> 00:07:57,060
-也允许一个活动正在等待，另一个活动可以继续执行
-and allowing while one activity is waiting, other activities can proceed
+00:07:49,720 --> 00:07:55,060
+也允许一个活动正在等待
+and allowing while one activity is waiting
+
+198
+00:07:55,060 --> 00:07:57,060
+另一个活动可以继续执行
+other activities can proceed
 
 199
 00:07:57,060 --> 00:08:00,330
-使用多线程的另一个最重要原原因是多核并行
+使用多线程的另一个重要原因是多核并行
 another big reason to use threads is multi-core parallelism
 
 200
@@ -970,7 +970,7 @@ is if you have a multi-core
 
 204
 00:08:11,890 --> 00:08:13,540
-我确定你们每个人都能用你的笔记本做到
+我确定你们每个人都能用你自己的电脑做到
 machine like I'm sure all of you do in
 
 205
@@ -1180,7 +1180,7 @@ periodic thing is
 
 250
 00:09:56,060 --> 00:10:00,500
-都有一些原因
+所以，易用性也是原因
 so there's some convenience reasons
 
 251
@@ -1195,13 +1195,13 @@ is it's often the case
 
 253
 00:10:05,210 --> 00:10:07,250
-比如有一个 master 服务就需要周期性的检查它的 worker 服务
-that some you know a master server may want to check periodically whether
+比如有一个 master 服务需要
+that some you know a master server may want to
 
 254
 00:10:07,250 --> 00:10:09,350
-是否一直存活
-its workers are still alive because one
+周期性的检查它的 worker 服务是否一直存活
+check periodically whether its workers are still alive because one
 
 255
 00:10:09,350 --> 00:10:10,580
@@ -1671,7 +1671,7 @@ writing a busy server that would really
 
 360
 00:14:39,910 --> 00:14:42,730
-你得相当设法把一台大型机器的 32 核都用上
+你得相方设法把一台大型机器的 32 核都用上
 like to keep you know 32 cores busy on a big server machine
 
 361
@@ -1687,7 +1687,7 @@ natural way to harness more than one core
 
 364
 00:14:50,620 --> 00:14:55,029
-另一方面，
+另一方面
 on the other hand the overheads of
 
 365
@@ -1697,7 +1697,7 @@ adventure programming are generally
 
 366
 00:14:56,620 --> 00:14:59,259
-通常换来的性能提升相比多线和来说并不会太多
+通常换来的性能提升相比多线程来说并不会太多
 quite a bit less than threads you know
 
 367
@@ -1742,17 +1742,17 @@ and you know maybe the scheduling
 
 375
 00:15:17,769 --> 00:15:20,980
-就是决定下一步选择哪个线程运行
+它是指下一步应该选择哪个线程运行
 bookkeeping for deciding what the thread to run next might also start you know
 
 377
 00:15:20,980 --> 00:15:25,899
-有一个调度列表，上面记录了 1000 个线程
+通常有一个调度列表，上面记录了 1000 个线程
 you now have list scheduling lists with a thousand threads in them
 
 379
 00:15:25,899 --> 00:15:28,420
-线程的执行将付出相当昂贵的代码
+这时候切换线程执行将付出相当昂贵的代价
 the threads can start to get quite expensive so if
 
 380
@@ -1766,33 +1766,33 @@ you are in a position where you need to
 have a single server that serves you know a million clients
 
 383
-00:15:33,520 --> 00:15:35,050
+00:15:33,520 --> 00:15:37,920
 你需要为这 100 万个客户端记录一些状态
 and has to sort of keep a little bit of state for each of a million clients
 
 385
 00:15:37,920 --> 00:15:39,370
-这个代码还是挺高的
+这个代价还是挺高的
 this could be expensive
 
 386
 00:15:39,370 --> 00:15:46,060
-花点时间的话，应该容易写一个……你知道
+如果使用事件驱动编程，花点时间的话
 and it's easier to write a very you know at some expense in programmer time 
 
 388
 00:15:46,060 --> 00:15:47,440
-使用事件驱动编程的话
+应该容易写一个
 it's easier to write a really stripped-down
 
 389
 00:15:47,440 --> 00:15:50,560
-更容易写一个简单的而又五脏俱全高性能的服务
+一个简单的而又五脏俱全高性能的服务
 efficient low overhead service in event-driven programming
 
 390
 00:15:50,560 --> 00:15:51,940
-只是要花点时间
+就是你需要多做点工作
 just a lot more work
 
 391
@@ -1977,7 +1977,7 @@ the operating system keep quite separate
 
 436
 00:18:12,360 --> 00:18:13,620
-你的编译器和你的编译器
+你的编辑器和你的编译器
 right you're your editor and your compiler each have
 
 437
@@ -1997,7 +1997,7 @@ memory there's not much interaction between different processes so
 
 441
 00:18:20,000 --> 00:18:22,470
-你的编译器可能有多个线程
+你的编辑器可能有多个线程
 your edditor may have threads and your
 
 442
@@ -2042,7 +2042,7 @@ yeah
 
 451
 00:18:53,370 --> 00:19:08,010
-问题：当上下文切换时，是所有线程都在切换吗？
+问题：当上下文切换时，是所有线程都在切换吗？（内心：这届同学有点难搞）
 so the question is when a context switch happens does it happened for all threads
 
 453
@@ -2186,9 +2186,14 @@ and then within that process go may have a choice of go routines to run
 all right okay so threads are convenient
 
 492
-00:20:53,409 --> 00:20:59,919
-大多数时候，使用它就能让你在每个线程中写出非常普通、连贯的代码
-because a lot of times they allow you to write the code for each thread just as if it were a pretty ordinary sequential program
+00:20:53,409 --> 00:20:55,919
+大多数时候，使用它
+because a lot of times they allow you to write the code for each thread 
+
+493
+00:20:55,409 --> 00:20:59,919
+就能让你在每个线程中写出非常普通、连贯的代码
+just as if it were a pretty ordinary sequential program
 
 495
 00:20:59,919 --> 00:21:15,149
@@ -2266,9 +2271,14 @@ client request it's gonna first look in
 that cache but the shared cache and each
 
 513
-00:21:43,809 --> 00:21:49,179
-当线程里有新的信息时，线程可能会向缓存里写入数据进行更新
-thread reads it and the threads may write the cache to update it when they have new information to stick in the cache
+00:21:43,809 --> 00:21:45,809
+当线程里有新的信息时
+thread reads it and the threads may write the cache to update it
+
+514
+00:21:45,809 --> 00:21:49,179
+线程可能会向缓存里写入数据进行更新
+when they have new information to stick in the cache
 
 516
 00:21:49,179 --> 00:21:51,220
@@ -2341,9 +2351,14 @@ threads you know there's always the
 possibility and you got to keep in mind
 
 534
-00:22:35,259 --> 00:22:39,549
-在同一时刻，总有其它的线程可能也正在查看，或是修改这个共享数据
-that some other thread may be looking at the data or modifying the data at the same time 
+00:22:35,259 --> 00:22:37,549
+在同一时刻，总有其它的线程可能也正在查看
+that some other thread may be looking at the data
+
+535
+00:22:37,259 --> 00:22:39,549
+或是修改这个共享数据
+or modifying the data at the same time 
 
 536
 00:22:39,549 --> 00:22:41,739
@@ -2397,7 +2412,7 @@ know it loads X into a register
 
 549
 00:23:06,720 --> 00:23:13,210
-然后把这个寄存器的加 1
+然后给寄存器的加 1
 you know adds one to the register and
 
 550
@@ -2412,7 +2427,7 @@ where X is a address of some location
 
 552
 00:23:21,009 --> 00:23:24,340
-所以你可以指望所有的线程
+所以你可以假设所有的线程
 and ran so you know you can count on both of the threads
 
 554
@@ -2486,7 +2501,7 @@ no, some some instructions
 are atomic so the question is a very
 
 568
-00:24:04,239 --> 00:24:09,639
+00:24:04,239 --> 00:24:11,259
 这些独立的指令是不是原子的
 good question which it's whether individual instructions are atomic
 
@@ -2501,14 +2516,24 @@ so the answer is some are and some aren't
 so a store a 32-bit store is likely the extremely likely to be atomic
 
 573
-00:24:23,440 --> 00:24:27,960
-从某种意义上来说，如果有两个处理器同时在相同的内存地址上执行 store 一个 32 位值
-in the sense that if 2 processors store at the same time to the same memory address 32-bit values 
+00:24:23,440 --> 00:24:25,960
+从某种意义上来说，如果有两个处理器
+in the sense that if 2 processors store
+
+574
+00:24:25,440 --> 00:24:27,960
+同时在相同的内存地址上执行 store 一个 32 位值
+at the same time to the same memory address 32-bit values 
 
 575
-00:24:27,960 --> 00:24:35,169
-最终要么是其中一个处理器上的 32 位值，要么是另一个处理器上的 32 位值
-well you'll end up with is either the 32 bits from one processor or the 32 bits from the other processor
+00:24:27,960 --> 00:24:30,169
+最终要么是其中一个处理器上的 32 位值
+well you'll end up with is either the 32 bits
+
+576
+00:24:30,169 --> 00:24:35,169
+要么是另一个处理器上的 32 位值
+from one processor or the 32 bits from the other processor
 
 578
 00:24:35,169 --> 00:24:38,200
@@ -2517,7 +2542,7 @@ but not a mixture
 
 579
 00:24:38,200 --> 00:24:40,450
-其它尺寸大小的未必就这么清晰，
+其它尺寸大小的未必就这么简单
 other sizes it's not so clear like one byte stores it depends on
 
 580
@@ -2581,14 +2606,24 @@ cause you're gonna do a lot of
 threaded programming with shared state
 
 597
-00:25:25,280 --> 00:25:30,570
-这里 race 这个词，我认为来源于电子电路中的一类古老的 bug
-race I think refers to as some ancient class of bugs involving electronic circuits
+00:25:25,280 --> 00:25:27,570
+这里 race 这个词
+race I think refers to as some ancient
+
+598
+00:25:27,570 --> 00:25:30,570
+我认为来源于电子电路中的一类古老的 bug
+class of bugs involving electronic circuits
 
 599
-00:25:30,570 --> 00:25:37,770
-但是对我们来说，称为 race 是因为如果一个 CPU 已经开始执行这段代码
-but for us that you know the reason why it's called a race is because if one of the CPUs have started
+00:25:30,570 --> 00:25:33,770
+但是对我们来说
+but for us that you know the reason
+
+600
+00:25:33,770 --> 00:25:37,770
+称为 race 是因为如果一个 CPU 已经开始执行这段代码
+why it's called a race is because if one of the CPUs have started
 
 602
 00:25:37,770 --> 00:25:44,790
@@ -2727,7 +2762,7 @@ really three distinct operations you can
 
 637
 00:27:10,380 --> 00:27:16,040
-对于必须加锁的人来说，
+对于必须加锁的人来说
 think of a lock as causing this sort of multi-step code sequence to be atomic
 
 639
@@ -2797,7 +2832,7 @@ thing is a variable which is a tight
 
 653
 00:28:00,640 --> 00:28:04,600
-它是个 mutex，
+它是个 mutex
 mutex there's just there's no
 
 654
@@ -2817,7 +2852,7 @@ in the programmers head so as a
 
 657
 00:28:12,340 --> 00:28:14,470
-你只需要说：
+你只需要说
 programmer you need to say oh here's a
 
 658
@@ -3042,12 +3077,12 @@ acquire it has to wait until we unlock
 
 703
 00:30:06,000 --> 00:30:09,120
-作为程序员，我们使用锁保护保护什么
+作为程序员，我们使用锁保护什么
 this lock that's totally up to us as
 
 704
 00:30:09,120 --> 00:30:11,970
-就是所有我们要做的事情
+完全由我们自己决定
 programmers what we were protecting with
 
 705
@@ -3081,12 +3116,12 @@ you know you would hope although it's
 not true that map internally would have
 
 711
-00:30:46,860 --> 00:30:49,860
+00:30:46,860 --> 00:30:52,860
 这是个合理的策略
 a lock protecting it and that's a reasonable strategy
 
 712
-00:30:49,860 --> 00:30:56,340
+00:30:52,860 --> 00:30:56,340
 有了这些会怎样？
 would be to have them, I mean what would be to have them if you
 
@@ -3252,7 +3287,7 @@ strategy for making access to the data single thread one thread at a time or
 
 748
 00:32:25,180 --> 00:32:29,170
-另一个方案是你可以不使用共享数据
+另一个方案是你可以让你的代码不要共享数据
 you fix your code to not share data
 
 749
@@ -3272,7 +3307,7 @@ right so another issue that shows up
 
 752
 00:32:38,330 --> 00:32:40,100
-它和领导者线程有关
+它和指导线程运作有关
 with leads threads is called
 
 753
@@ -3372,7 +3407,7 @@ know from having done the tutorial
 
 776
 00:33:28,250 --> 00:33:31,220
-Go 中有很多技术来做实现
+Go 中有很多技术可以做到
 there's a bunch of techniques in go for
 
 777
@@ -3606,7 +3641,7 @@ anything but didn't crash deadlock is
 it's one thing to check
 
 828
-00:35:43,799 --> 00:35:48,339
+00:35:43,799 --> 00:35:53,859
 okay，让我们看看教程里的 web 爬虫
 okay all right let's look at the web crawler from the tutorial
 
@@ -3837,7 +3872,7 @@ I'm up to some limit right you want to
 
 876
 00:37:57,980 --> 00:37:59,480
-你想使用并行化的方式
+你需要使用并行化的方式
 keep on increasing the number of pages
 
 877
@@ -4127,50 +4162,52 @@ this code definitely does not solve the
 
 934
 00:40:24,140 --> 00:40:25,760
-造成的问题
+之前提到的问题
 problem that was posed right because it
 
 935
 00:40:25,760 --> 00:40:30,650
-因为它没有并行的启动fetch（函数）
+因为它没有并行化的执行 fetch（函数）
 doesn't launch parallel parallel fetches
 
 936
 00:40:30,650 --> 00:40:33,200
-我们需要把goroutine
+我们需要把 goroutine
 now so clue we need to insert goroutines
 
 937
 00:40:33,200 --> 00:40:35,150
-放在正确的地方
+放在这段代码的某个位置
 somewhere in this code right to get
 
 938
 00:40:35,150 --> 00:40:37,880
-来实现并行的fetch 让我们假设
+来实现并行的 fetch 让我们假设
 parallel fetches so let's suppose just
 
 939
 00:40:37,880 --> 00:40:41,480
+为了让大家开心一下……
 for chuckles dad we just start with the
 
 940
 00:40:41,480 --> 00:40:51,440
+老爹，让我偷个懒
 most lazy thing because why so I'm gonna
 
 941
 00:40:51,440 --> 00:40:54,950
-我这么改代码 
+为啥我非得这么改代码…… 
 just modify the code to run the
 
 942
 00:40:54,950 --> 00:40:57,470
-把每个crawl子调用
+其实就是想把每个 crawl 子调用
 subsidiary crawls each in its own 
 
 943
 00:40:57,470 --> 00:41:00,470
-放到各自的goroutine里执行
+放到各自的 goroutine 里执行
 goroutine actually before I do that why
 
 944
@@ -4180,7 +4217,7 @@ don't I run the code just to show you
 
 945
 00:41:01,580 --> 00:41:04,070
-正确的output是什么样
+正确的 output 是什么样
 what correct output looks like so hoping
 
 946
@@ -4400,12 +4437,12 @@ but with passing information along
 
 989
 00:43:08,990 --> 00:43:11,359
-来协调
+channel 可以让不同的线程之间进行协作
 channels in order to coordinate the
 
 990
 00:43:11,359 --> 00:43:12,920
-不同的线程  现在（要讲的）是共享数据的
+现在（要讲的）是共享数据的
 different threads so this is the shared
 
 991
@@ -4460,7 +4497,7 @@ handles the shared table of which URLs
 
 1001
 00:43:47,900 --> 00:43:49,849
-记录已爬取的URL
+这个表格记录了已爬取的URL
 have been crawled correctly so this code
 
 1002
@@ -4470,12 +4507,12 @@ still has this table of URLs and that's
 
 1003
 00:43:53,809 --> 00:43:59,349
-即F.fetched
+即 f.fetched
 this F dot fetched this F dot fetch
 
 1004
 00:43:59,349 --> 00:44:06,130
-在第43行 但这个表格
+在第43行 这个表格
 map at line 43 but this this table is
 
 1005
@@ -4495,17 +4532,17 @@ threads are making or executing inside
 
 1008
 00:44:14,890 --> 00:44:16,900
-函数ConcurrentMutex内 所以我们仍然
+函数 ConcurrentMutex 内 所以我们仍然
 ConcurrentMutex and so we still have
 
 1009
 00:44:16,900 --> 00:44:18,609
-有ConcurrentMutex的树结构
+有 ConcurrentMutex 的树结构
 this sort of tree of ConcurrentMutexes
 
 1010
 00:44:18,609 --> 00:44:20,619
-来探索网络图的不同部分
+来探索 web graph 的不同部分
 that's exploring different parts of the
 
 1011
@@ -5558,7 +5595,7 @@ yeah for certainty C++ and in C you
 
 1221
 00:54:43,880 --> 00:54:45,440
-你可能需要看Pthreads
+你可能需要看 pthreads
 want to look at something called P
 
 1222
@@ -5573,7 +5610,7 @@ they're not really part of the language
 
 1224
 00:54:48,650 --> 00:54:51,710
-叫做Pthreads 它有
+叫做 pthreads 它有
 called P threads which they have these
 
 1225
