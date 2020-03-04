@@ -4052,17 +4052,17 @@ when I call recursive crawl and it
 
 919
 00:39:45,770 --> 00:39:47,330
-在它返回后，它又抓取了很多页面
+它又抓取了很多页面
 fetches a bunch of pages after it
 
 920
 00:39:47,330 --> 00:39:49,970
-
-returns I want to be where you know the
+在它返回后，我需要意识到
+returns I want to be aware you know the
 
 921
 00:39:49,970 --> 00:39:52,340
-抓取实例的外面需要意识到
+你知道，在抓取实例的外面，需要意识到
 outer crawl instance needs to be aware
 
 922
