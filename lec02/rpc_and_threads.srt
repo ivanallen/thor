@@ -3192,767 +3192,897 @@ right and the deadlocks can be solved
 
 735
 00:31:45,160 --> 00:31:47,600
-
+但常规解决死锁的方法
 but the usual solutions to deadlocks
 
 736
 00:31:47,600 --> 00:31:52,370
+需要把锁拿到实现的外面来
 requires lifting the locks out of out of
 
 737
 00:31:52,370 --> 00:31:54,290
+放到调用代码的地方（注：把函数里面的锁，移到外面）
 the implementations up into the calling
 
 738
 00:31:54,290 --> 00:31:56,000
+后面有机会我们会讲到它的
 code I will talk about that some point
 
 739
 00:31:56,000 --> 00:31:59,180
+不过对于隐藏锁细节的代码来说
 but it's not a it's a good idea to hide
 
 740
 00:31:59,180 --> 00:32:00,710
+这是个不太好的方法
 the locks but it's not always a good
 
 741
 00:32:00,710 --> 00:32:11,600
+okay, 所以你使用多线程的问题之一
 idea all right okay so one problem you
 
 742
 00:32:11,600 --> 00:32:14,060
+就是这些 race
 run into with threads is these races and
 
 743
 00:32:14,060 --> 00:32:16,370
+通常你都使用锁来解决 race 问题
 generally you solve them with locks okay
 
 744
 00:32:16,370 --> 00:32:18,020
+okay，事实上，还有 2 个大的策略
 or actually there's two big strategies
 
 745
 00:32:18,020 --> 00:32:19,430
+其中之一是你需要解决
 one is you figure out some locking
 
 746
-00:32:19,430 --> 00:32:22,330
-strategy for making access to the data
-
-747
-00:32:22,330 --> 00:32:25,180
-single thread one thread at a time or
+00:32:19,430 --> 00:32:25,180
+同时访问数据的加锁策略
+strategy for making access to the data single thread one thread at a time or
 
 748
 00:32:25,180 --> 00:32:29,170
+另一个方案是你可以不使用共享数据
 you fix your code to not share data
 
 749
 00:32:29,170 --> 00:32:32,420
+如果可以的话，这种方法会更好
 if you can do that it's that's probably
 
 750
 00:32:32,420 --> 00:32:35,540
+因为这会降低复杂性
 better because it's less complex all
 
 751
 00:32:35,540 --> 00:32:38,330
+好，现在来看另一个话题 coordination(协作)
 right so another issue that shows up
 
 752
 00:32:38,330 --> 00:32:40,100
+它和领导者线程有关
 with leads threads is called
 
 753
-00:32:40,100 --> 00:32:44,780
-coordination when we're doing locking
-
-754
-00:32:44,780 --> 00:32:46,670
-the different threads involved probably
+00:32:40,100 --> 00:32:46,670
+当我们正在执行涉及到多线程情况下的加锁时
+coordination when we're doing locking the different threads involved
 
 755
 00:32:46,670 --> 00:32:48,530
-have no idea that the other ones exist
+可能并不知道其它线程也在加锁
+probably have no idea that the other ones exist
 
 756
-00:32:48,530 --> 00:32:49,820
-they just want to like be able to get
-
-757
-00:32:49,820 --> 00:32:51,650
-out the data without anybody else
+00:32:48,530 --> 00:32:51,650
+他们只是想在没有人干涉的情况下拿到数据
+they just want to like be able to get out the data without anybody else interfering
 
 758
 00:32:51,650 --> 00:32:53,960
-interfering but there are also cases
+但也有一些情况
+but there are also cases
 
 759
 00:32:53,960 --> 00:32:55,220
+你确实就是故意的想让不同的线程之间
 where you need where you do
 
 760
 00:32:55,220 --> 00:32:56,870
+互相受到制约
 intentionally want different threads to
 
 761
 00:32:56,870 --> 00:32:58,370
+我就是想等着你
 interact I want to wait for you
 
 762
 00:32:58,370 --> 00:32:59,930
+比如你生产某些数据
 maybe you're producing some data you
 
 763
 00:32:59,930 --> 00:33:01,550
+但是你又和我不是同一个线程
 know you're a different thread than me
 
 764
 00:33:01,550 --> 00:33:03,140
+你生产数据
 you're you're producing data I'm gonna
 
 765
 00:33:03,140 --> 00:33:05,900
+我想在你生产完数据前一直等待
 wait until you've generated the data
 
 766
 00:33:05,900 --> 00:33:09,980
+直到你完成后，我再去读取
 before I read it right or you launch a
 
 767
 00:33:09,980 --> 00:33:11,180
+或者是你启动了一堆线程去抓取 web 页面
 bunch of threads to say you crawl the
 
 768
 00:33:11,180 --> 00:33:12,440
+然后需要等待所有线程都执行结束
 web and you want to wait for all those
 
 769
 00:33:12,440 --> 00:33:14,180
+所以当我们想
 fits to finish so there's times when we
 
 770
-00:33:14,180 --> 00:33:16,970
-intentionally want different to us to
-
-771
-00:33:16,970 --> 00:33:18,260
-interact with each other to wait for
-
-772
-00:33:18,260 --> 00:33:18,770
-each other
+00:33:14,180 --> 00:33:18,770
+特意的互相等待的时候
+intentionally want different to us to interact with each other to wait for each other
 
 773
 00:33:18,770 --> 00:33:23,320
+这种情况通常就称为 coordination (协作)
 and that's usually called coordination
 
 774
 00:33:23,440 --> 00:33:26,630
+你要是做完了咱们的教程的话
 and there's a bunch of as you probably
 
 775
 00:33:26,630 --> 00:33:28,250
+就能知道很多了
 know from having done the tutorial
 
 776
 00:33:28,250 --> 00:33:31,220
+Go 中有很多技术来做实现
 there's a bunch of techniques in go for
 
 777
 00:33:31,220 --> 00:33:34,299
+比如 channel (通道)
 doing this like channels
 
 778
 00:33:34,299 --> 00:33:37,029
+channel 是一种用于发数据从这个线程
 which are really about sending data from
 
 779
 00:33:37,029 --> 00:33:38,950
+发送到另一个线程的工具
 one thread to another and breeding but
 
 780
 00:33:38,950 --> 00:33:42,039
+也有一些其它工具
 they did to be sent there's also other
 
 781
 00:33:42,039 --> 00:33:45,239
+它更多的用于特殊的目的
 stuff that more special purpose things
 
 782
 00:33:45,239 --> 00:33:48,940
+比如有个东西叫 condition variables (条件变量)
 like there's a idea called condition
 
 783
 00:33:48,940 --> 00:33:51,549
+这东西很牛逼
 variables which is great if there's some
 
 784
 00:33:51,549 --> 00:33:53,229
+如果有些线程在那里等着（马儿不走了）
 thread out there and you want to kick it
 
 785
 00:33:53,229 --> 00:33:54,489
+你想周期性的“踢”它一下（类似马儿，抽它一下）
 period you're not sure if the other
 
 786
 00:33:54,489 --> 00:33:55,839
+但你不确定哪些线程是否正在等待你
 threads even waiting for you but if it
 
 787
 00:33:55,839 --> 00:33:57,459
+如果它在等你，你就踢它一下
 is waiting for you you just like to give
 
 788
 00:33:57,459 --> 00:33:59,499
+这样它就知道它需要
 it a kick so it can well know that it
 
 789
 00:33:59,499 --> 00:34:01,509
+继续做它应该要做的事情
 should continue whatever it's doing and
 
 790
 00:34:01,509 --> 00:34:06,279
+还有一个工具 WaitGroup
 then there's wait group which is
 
 791
 00:34:06,279 --> 00:34:08,260
+相当牛逼
 particularly good for launching a a
 
 792
 00:34:08,260 --> 00:34:10,449
+常用于启动已知数据的 goroutine
 known number of go routines and then
 
 793
 00:34:10,449 --> 00:34:14,469
-waiting for them Dolph to finish and a
+然后等待它们结束
+waiting for them end off to finish and a
 
 794
 00:34:14,469 --> 00:34:16,059
+线程最终的致命错误是死锁
 final piece of damage that comes up with
 
 795
 00:34:16,059 --> 00:34:23,619
-threads deadlock the deadlock refers to
+死锁是一个一般性问题
+threads deadlock the deadlock refers to the general problem 
 
 796
-00:34:23,619 --> 00:34:25,929
-the general problem that you sometimes
-
-797
-00:34:25,929 --> 00:34:29,219
-run into where one thread
+00:34:23,619 --> 00:34:29,219
+有时你运行到线程中的某个位置
+that you sometimes run into where one thread
 
 798
-00:34:29,219 --> 00:34:32,829
-you know thread this thread is waiting
-
-799
-00:34:32,829 --> 00:34:35,859
-for thread two to produce something so
+00:34:29,219 --> 00:34:35,859
+这个线程（T1)正在等待另外一个线程(T2)生产的数据
+you know thread this thread is waiting for thread 2 to produce something so
 
 800
 00:34:35,859 --> 00:34:37,750
+我来画个箭头
 you know it's draw an arrow to say
 
 801
 00:34:37,750 --> 00:34:41,168
-thread one is waiting for thread two you
+表示 T1 正在等待 T2
+thread one is waiting for thread 2 you
 
 802
-00:34:41,168 --> 00:34:42,279
-know for example thread one may be
-
-803
-00:34:42,279 --> 00:34:43,989
-waiting for thread two to release a lock
+00:34:41,168 --> 00:34:43,989
+线程 T1 可能正在等待 T2 释放锁
+know for example thread one may be waiting for thread two to release a lock
 
 804
 00:34:43,989 --> 00:34:46,690
+或是向 channel 上发数据
 or to send something on the channel or
 
 805
 00:34:46,690 --> 00:34:48,279
+又或是等着 T2 给 WaitGroup 计数减 1
 to you know decrement something in a
 
 806
 00:34:48,279 --> 00:34:51,579
+然而不幸的是
 wait group however unfortunately maybe T
 
 807
 00:34:51,579 --> 00:34:55,210
+T2 也可能正在等着 T1 做一些事情
 two is waiting for thread thread one to
 
 808
-00:34:55,210 --> 00:34:57,900
-do something and this is particularly
-
-809
-00:34:57,900 --> 00:35:00,069
-common in the case of locks its thread
+00:34:55,210 --> 00:35:00,069 
+在锁中这种情况特别常见
+do something and this is particularly common in the case of locks
 
 810
 00:35:00,069 --> 00:35:01,839
-one acquires lock a and thread to
+T1 在请求锁 A
+its thread one acquires lock A and thread two
 
 811
 00:35:01,839 --> 00:35:05,740
-acquire lock be so thread one is
+T2 在请求锁 B
+acquire lock B so thread one is
 
 812
 00:35:05,740 --> 00:35:07,690
-acquired lock a throw two is required
+应该这样，T1 持有锁 A, T2 持有锁 B
+acquired lock A thread two is aquired
 
 813
 00:35:07,690 --> 00:35:11,230
+然后下一步，T1 也需要请求锁 B
 lot B and then next thread one needs to
 
 814
-00:35:11,230 --> 00:35:14,589
-lock B also that is hold two locks which
-
-815
-00:35:14,589 --> 00:35:15,910
-sometimes shows up and it just so
+00:35:11,230 --> 00:35:15,910
+它需要同时持有 2 把锁
+lock B also that is hold two locks which sometimes shows up
 
 816
 00:35:15,910 --> 00:35:17,289
-happens that thread two needs to hold
+刚好 T2 也需要请求锁 A
+and it just so happens that thread two needs to hold
 
 817
 00:35:17,289 --> 00:35:19,990
-block hey that's a deadlock all right at
+这就死锁了
+lock A that's a deadlock all right at
 
 818
 00:35:19,990 --> 00:35:21,490
+这至少需要他们都能抢到第一把锁
 least grab their first lock and then
 
 819
 00:35:21,490 --> 00:35:23,410
+然后继续执行到他们需要第二把锁的位置
 proceed down to where they need their
 
 820
 00:35:23,410 --> 00:35:24,520
+现在它们都在永远互相等待着对方
 second lock and now they're waiting for
 
 821
 00:35:24,520 --> 00:35:26,740
+它们都无法继续进行下去
 each other forever right neither can
 
 822
 00:35:26,740 --> 00:35:28,779
+也没有人能释放掉刚拿到的锁
 proceed neither then can release the
 
 823
 00:35:28,779 --> 00:35:33,569
+通常什么都不会发生
 lock and usually just nothing happens so
 
 824
 00:35:33,569 --> 00:35:36,190
+所以如果你的程序像机器一样停下来
 if your program just kind of grinds to a
 
 825
 00:35:36,190 --> 00:35:37,420
+什么也不干的时候
 halt and doesn't seem to be doing
 
 826
 00:35:37,420 --> 00:35:40,000
+但是又没有 crash 掉，那就是死锁了
 anything but didn't crash deadlock is
 
 827
 00:35:40,000 --> 00:35:42,960
+你应该要好好查查
 it's one thing to check
 
 828
 00:35:43,799 --> 00:35:48,339
-okay all right let's look at the web
-
-829
-00:35:48,339 --> 00:35:53,859
-crawler from the tutorial as an example
+okay，让我们看看教程里的 web 爬虫
+okay all right let's look at the web crawler from the tutorial
 
 830
 00:35:53,859 --> 00:36:00,430
-of some of this threading stuff I have a
+这是一个使用多线程的例子
+as an example of some of this threading stuff I have a
 
 831
 00:36:00,430 --> 00:36:03,730
-couple of two solutions and different
+我这里有 2 种不同风格的方案
+couple of two solutions in different
 
 832
 00:36:03,730 --> 00:36:07,630
+呃，实际上应该是有 3 种
 styles are really three solutions in
 
 833
 00:36:07,630 --> 00:36:09,430
+不同风格的方案里
 different styles to allow us to talk a
 
 834
 00:36:09,430 --> 00:36:10,779
+咱们可以谈谈多线程编程里的一些细节
 bit about the details of some of this
 
 835
 00:36:10,779 --> 00:36:13,539
+首先
 thread programming so first of all you
 
 836
 00:36:13,539 --> 00:36:16,119
+你们可能知道
 all probably know web crawler its job is
 
 837
 00:36:16,119 --> 00:36:18,490
+爬虫就是你给它一个 URL 让它开始运行
 you give it the URL of a page that it
 
 838
 00:36:18,490 --> 00:36:20,470
+在 web 页面里
 starts at and you know many web pages
 
 839
 00:36:20,470 --> 00:36:23,109
+包含有许多链接指向了其它的页面
 have links to other pages so what a web
 
 840
 00:36:23,109 --> 00:36:24,849
+所以 web 爬虫要做的就是
 crawler is trying to do is if that's the
 
 841
-00:36:24,849 --> 00:36:27,609
-first page extract all the URLs that
-
-842
-00:36:27,609 --> 00:36:29,529
-were mentioned that pages links you know
+00:36:24,849 --> 00:36:29,529
+把这些链接指向的页面提取出来
+first page extract all the URLs that were mentioned that pages links
 
 843
 00:36:29,529 --> 00:36:32,049
-fetch the pages they point to look at
+抓取这些页面后
+you know fetch the pages they point to look at
 
 844
 00:36:32,049 --> 00:36:33,730
-all those pages for the ules are all
+再检查所有这些页面里的 url
+all those pages for the urls are all
 
 845
 00:36:33,730 --> 00:36:35,740
+然后继续抓取这些 url 指向的页面
 those but all urls that they refer to
 
 846
 00:36:35,740 --> 00:36:38,380
+它应该要能够停止
 and keep on going until it's fetched all
 
 847
 00:36:38,380 --> 00:36:41,230
+比如直到 web 中所有的页面被抓取完
 the pages in the web let's just say and
 
 848
 00:36:41,230 --> 00:36:45,490
+另外
 then it should stop in addition the the
 
 849
 00:36:45,490 --> 00:36:52,150
+网页构成的 graph 和 URL 存在环
 graph of pages and URLs is cyclic that
 
 850
 00:36:52,150 --> 00:36:53,380
+如果你不关心的话
 is if you're not careful
 
 851
 00:36:53,380 --> 00:36:55,420
+um 你的爬虫可能会结束
 um you may end up following if you don't
 
 852
 00:36:55,420 --> 00:36:57,099
+但是如果你忘记了已经抓取了这个 web 页面
 remember oh I've already fetched this
 
 853
 00:36:57,099 --> 00:36:59,019
+你可能会永远无休止的
 web page already you may end up
 
 854
 00:36:59,019 --> 00:37:01,450
+在循环中进行下去
 following cycles forever and you know
 
 855
 00:37:01,450 --> 00:37:03,579
+你的爬虫永远无法结束
 your crawler will never finish so one of
 
 856
 00:37:03,579 --> 00:37:05,559
+所以爬虫的工作之一就是需要记住
 the jobs of the crawler is to remember
 
 857
 00:37:05,559 --> 00:37:08,140
+它抓取过的页面
 the set of pages that is already crawled
 
 858
 00:37:08,140 --> 00:37:10,779
+或是已经开始抓取的页面
 or already even started a fetch for and
 
 859
 00:37:10,779 --> 00:37:15,819
+对于任何正在抓取中的页面
 to not start a second fetch for any page
 
 860
 00:37:15,819 --> 00:37:17,200
+都不应该有第二次抓取
 that it's already started fetching on
 
 861
 00:37:17,200 --> 00:37:18,849
+你可以想象
 and you can think of that as sort of
 
 862
 00:37:18,849 --> 00:37:21,759
+它是一个树结构
 imposing a tree structure finding a sort
 
 863
 00:37:21,759 --> 00:37:25,269
+这个树结构是一个
 of tree shaped subset of the cyclic
 
 864
 00:37:25,269 --> 00:37:31,809
+包含了环的实际网页 graph 的子集
 graph of actual web pages okay so we
 
 865
 00:37:31,809 --> 00:37:33,430
+我们想避开环
 want to avoid cycles we want to be able
 
 866
 00:37:33,430 --> 00:37:37,059
+不想抓取同一个页面 2 次
 to not fetch a page twice it also it
 
 867
 00:37:37,059 --> 00:37:38,289
+另外，实践证明抓取一个 web 页面
 turns out that it just takes a long time
 
 868
 00:37:38,289 --> 00:37:40,089
-to fetch a web page but it's good
+需要花点时间
+to fetch a web page but the
 
 869
 00:37:40,089 --> 00:37:42,160
+但是服务器又很慢
 servers are slow and because the network
 
 870
 00:37:42,160 --> 00:37:46,960
+因为网络有较长的延迟
 has a long speed of light latency and so
 
 871
 00:37:46,960 --> 00:37:48,670
+所以你完全不会想一次只抓取一个页面
 you definitely don't want to fetch pages
 
 872
 00:37:48,670 --> 00:37:50,289
+除非你想让你的爬虫运行个数年
 one at a time unless you want to crawl
 
 873
 00:37:50,289 --> 00:37:54,190
+如果你同时抓取许多页面的话
 to take many years so it pays enormous
 
 874
 00:37:54,190 --> 00:37:56,030
-lead to fetch many pages that same
+这个成本太高了
+to fetch many pages at the same time
 
 875
 00:37:56,030 --> 00:37:57,980
+我会达到某些限制
 I'm up to some limit right you want to
 
 876
 00:37:57,980 --> 00:37:59,480
+你想使用并行化的方式
 keep on increasing the number of pages
 
 877
 00:37:59,480 --> 00:38:01,490
+持续的增加抓取页面的数量
 you fetch in parallel until the
 
 878
 00:38:01,490 --> 00:38:03,140
+直到达到呑吐极限
 throughput you're getting in pages per
 
 879
 00:38:03,140 --> 00:38:05,690
+也就是每秒你抓取的页面数量
 second stops increasing that is running
 
 880
 00:38:05,690 --> 00:38:07,910
+不在增加为止，也就是并发数的增加
 increase the concurrency until you run
 
 881
 00:38:07,910 --> 00:38:11,300
+这时候也耗尽了网络带宽
 out of network capacity so we want to be
 
 882
 00:38:11,300 --> 00:38:12,500
+所以，我们希望利用并行化的方式抓取
 able to launch multiple fetches in
 
 883
 00:38:12,500 --> 00:38:15,980
+最后一个挑战
 parallel and a final challenge which is
 
 884
 00:38:15,980 --> 00:38:17,900
+有时候也是最难解决的问题
 sometimes the hardest thing to solve is
 
 885
 00:38:17,900 --> 00:38:19,400
+当爬虫运行结束
 to know when the crawl is finished
 
 886
 00:38:19,400 --> 00:38:21,620
+一旦我们已经抓取了所有的页面
 and once we've crawled all the pages we
 
 887
 00:38:21,620 --> 00:38:24,110
+就需要停止爬虫
 want to stop and say we're done but we
 
 888
 00:38:24,110 --> 00:38:25,370
+但是我确实需要写一些代码
 actually need to write the code to
 
 889
 00:38:25,370 --> 00:38:27,110
+来表明：啊哈
 realize aha
 
 890
 00:38:27,110 --> 00:38:29,840
+所有的页面都已经抓取了
 we've crawled every single page and for
 
 891
 00:38:29,840 --> 00:38:32,480
+我已经想出了一些方案
 some solutions I've tried figuring out
 
 892
 00:38:32,480 --> 00:38:33,890
+什么时候结束被证明是
 when you're done has turned out to be
 
 893
 00:38:33,890 --> 00:38:38,420
+最难的一部分
 the hardest part all right so my first
 
 894
 00:38:38,420 --> 00:38:40,730
+所以我的第一个爬虫是一个串行化的爬虫
 crawler is this serial crawler here and
 
 895
 00:38:40,730 --> 00:38:43,400
+顺便说一下，课程表里的 crawler.go 文件中的
 by the way this code is available on the
 
 896
 00:38:43,400 --> 00:38:45,980
-website under crawler go on the schedule
+这段代码是可以用的
+website under crawler dot go on the schedule
 
 897
 00:38:45,980 --> 00:38:48,500
-you won't look at it this wrist calls a
+后面你会看到它的
+you will look at it this wrist calls a
 
 898
 00:38:48,500 --> 00:38:53,240
+这个串行爬虫在网页 graph 中
 serial crawler it effectively performs a
 
 899
 00:38:53,240 --> 00:38:58,120
+进行深度优先搜索
 depth-first search into the web graph
 
 900
 00:38:58,120 --> 00:39:02,870
+有件比较有意思的事情
 and there is sort of one moderately
 
 901
 00:39:02,870 --> 00:39:04,490
+它会使用一个 map 类型的变量 fetched 
 interesting thing about it it keeps this
 
 902
 00:39:04,490 --> 00:39:06,650
+它只是被当作一个 set 使用
 map called fetched which is basically
 
 903
 00:39:06,650 --> 00:39:08,630
+目的就是为了记住
 using as a set in order to remember
 
 904
 00:39:08,630 --> 00:39:11,210
+它所抓取过的页面
 which pages it's crawled and that's like
 
 905
 00:39:11,210 --> 00:39:12,830
+这是最有意思的部分
 the only interesting part of this you
 
 906
 00:39:12,830 --> 00:39:16,250
+在 18 行你给它一个 URL
 give it a URL that at line 18 if it's
 
 907
 00:39:16,250 --> 00:39:17,920
+如果这个 URL 已经被抓取过它就直接 return
 already fetched the URL it just returns
 
 908
 00:39:17,920 --> 00:39:20,210
+如果没有被抓取过
 if it doesn't fetch the URL it first
 
 909
 00:39:20,210 --> 00:39:22,420
+首先它要把这个 URL 记下
 remembers that it is now fetched it
 
 910
 00:39:22,420 --> 00:39:26,060
+然后开始抓取，fetcher 会真正开始抓取页面
 actually gets fetches that page and
 
 911
 00:39:26,060 --> 00:39:27,650
+然后提取页面中的 URL
 extracts the URLs that are in the page
 
 912
 00:39:27,650 --> 00:39:29,540
+接下来迭代所有的 URL
 with the fetcher and then iterates over
 
 913
 00:39:29,540 --> 00:39:33,430
+然后递归的调用它自己
 the URLs in that page and calls itself
 
 914
 00:39:33,430 --> 00:39:35,660
+对于所有的页面
 for every one of those pages and it
 
 915
 00:39:35,660 --> 00:39:38,060
+它会把这些页面传递给自己
 passes to itself the way it it really
 
 916
 00:39:38,060 --> 00:39:40,010
+它只有一个表格
 has just a one table there's only one
 
 917
 00:39:40,010 --> 00:39:43,070
+一个 fetched map
 fetched map of course because you know
 
 918
 00:39:43,070 --> 00:39:45,770
+当我调用递归的抓取的时候
 when I call recursive crawl and it
 
 919
 00:39:45,770 --> 00:39:47,330
+在它返回后，它又抓取了很多页面
 fetches a bunch of pages after it
 
 920
 00:39:47,330 --> 00:39:49,970
+
 returns I want to be where you know the
 
 921
 00:39:49,970 --> 00:39:52,340
+抓取实例的外面需要意识到
 outer crawl instance needs to be aware
 
 922
 00:39:52,340 --> 00:39:53,960
+某些页面是已经抓取过的
 that certain pages are already fetched
 
 923
 00:39:53,960 --> 00:39:56,330
+所以我们十分依赖于
 so we depend very much on the fetched
 
 924
 00:39:56,330 --> 00:39:58,250
+在函数里传递的 fetched 对象
 map being passed between the functions
 
 925
 00:39:58,250 --> 00:40:01,970
+map 使用引用而不是拷贝
 by reference instead of by copying so it
 
 926
