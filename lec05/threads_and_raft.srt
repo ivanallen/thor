@@ -1,0 +1,6804 @@
+1
+00:00:00,520 --> 00:00:02,710
+Today the TAS are going to be giving a
+
+2
+00:00:02,710 --> 00:00:06,220
+lecture on concurrency and go basically
+
+3
+00:00:06,220 --> 00:00:07,860
+this lecture is going to be full of
+
+4
+00:00:07,860 --> 00:00:10,510
+design patterns and practical tips to
+
+5
+00:00:10,510 --> 00:00:13,629
+help you with the labs we're going to be
+
+6
+00:00:13,629 --> 00:00:15,490
+covering briefly the code memory model
+
+7
+00:00:15,490 --> 00:00:17,170
+the reading which we went over and then
+
+8
+00:00:17,170 --> 00:00:18,820
+spend most of the lecture talking about
+
+9
+00:00:18,820 --> 00:00:20,200
+concurrency primitives and go
+
+10
+00:00:20,200 --> 00:00:22,660
+concurrency patterns and go how you do
+
+11
+00:00:22,660 --> 00:00:24,190
+things that you will need to do in the
+
+12
+00:00:24,190 --> 00:00:26,230
+labs and then finally we'll talk through
+
+13
+00:00:26,230 --> 00:00:27,970
+some debugging tips and techniques and
+
+14
+00:00:27,970 --> 00:00:29,410
+show you some interesting tools that you
+
+15
+00:00:29,410 --> 00:00:31,000
+might want to use when debugging the
+
+16
+00:00:31,000 --> 00:00:34,570
+labs so very briefly on the go memory
+
+17
+00:00:34,570 --> 00:00:36,640
+model on the reading so why did we
+
+18
+00:00:36,640 --> 00:00:38,829
+assign this reading well the goal was to
+
+19
+00:00:38,829 --> 00:00:40,870
+give you some concrete examples of
+
+20
+00:00:40,870 --> 00:00:43,149
+correct ways to write threaded code and
+
+21
+00:00:43,149 --> 00:00:45,340
+go so the document like in the second
+
+22
+00:00:45,340 --> 00:00:46,360
+half of the document has some examples
+
+23
+00:00:46,360 --> 00:00:48,460
+of correct code and an incorrect code and
+
+24
+00:00:48,460 --> 00:00:51,130
+how it can go wrong so one thing you
+
+25
+00:00:51,130 --> 00:00:52,809
+might have noticed in the document is
+
+26
+00:00:52,809 --> 00:00:54,790
+early on it says if you need to read and
+
+27
+00:00:54,790 --> 00:00:56,290
+understand this you're being too clever
+
+28
+00:00:56,290 --> 00:00:58,590
+and we think that that's good advice so
+
+29
+00:00:58,590 --> 00:01:01,420
+focus on how to write correct code don't
+
+30
+00:01:01,420 --> 00:01:03,309
+focus way too much on the happens before
+
+31
+00:01:03,309 --> 00:01:04,959
+relation and being able to reason about
+
+32
+00:01:04,959 --> 00:01:06,819
+exactly why incorrect code is't correct
+
+33
+00:01:06,819 --> 00:01:08,319
+like we don't really care we just want
+
+34
+00:01:08,319 --> 00:01:09,369
+to be able to write correct code and
+
+35
+00:01:09,369 --> 00:01:10,439
+call it a day
+
+36
+00:01:10,439 --> 00:01:13,959
+one question that came up in the lecture
+
+37
+00:01:13,959 --> 00:01:16,539
+questions was like talking about
+
+38
+00:01:16,539 --> 00:01:18,459
+goroutines in relation to performance
+
+39
+00:01:18,459 --> 00:01:20,799
+and so we just wanted to say that
+
+40
+00:01:20,799 --> 00:01:22,479
+goroutines and like in general
+
+41
+00:01:22,479 --> 00:01:24,909
+concurrency can be used for a couple
+
+42
+00:01:24,909 --> 00:01:26,799
+different reasons and the reason we use
+
+43
+00:01:26,799 --> 00:01:28,990
+concurrency in the labs is not
+
+44
+00:01:28,990 --> 00:01:30,909
+necessarily for performance like we're
+
+45
+00:01:30,909 --> 00:01:33,310
+not going for parallelism using multiple
+
+46
+00:01:33,310 --> 00:01:34,840
+cores on a single machine in order to be
+
+47
+00:01:34,840 --> 00:01:36,310
+able to do more work on the CPU
+
+48
+00:01:36,310 --> 00:01:38,109
+concurrency gets us something else
+
+49
+00:01:38,109 --> 00:01:40,420
+besides performance through parallelism
+
+50
+00:01:40,420 --> 00:01:42,639
+it can get us better expressivity
+
+51
+00:01:42,639 --> 00:01:43,899
+like we want to write down some ideas
+
+52
+00:01:43,899 --> 00:01:46,419
+and it happens to be that writing down
+
+53
+00:01:46,419 --> 00:01:48,669
+code that uses threads is a clean way of
+
+54
+00:01:48,669 --> 00:01:51,399
+expressing those ideas and so the
+
+55
+00:01:51,399 --> 00:01:52,959
+takeaway from that is when you use
+
+56
+00:01:52,959 --> 00:01:55,929
+threads in lab 2 and Beyond don't try to
+
+57
+00:01:55,929 --> 00:01:57,340
+do fancy things you might do if you're
+
+58
+00:01:57,340 --> 00:01:59,169
+going for performance especially CPU
+
+59
+00:01:59,169 --> 00:02:00,819
+performance like we don't care to do
+
+60
+00:02:00,819 --> 00:02:02,439
+things like using fine-grained locking
+
+61
+00:02:02,439 --> 00:02:06,099
+or other techniques use basically write
+
+62
+00:02:06,099 --> 00:02:08,348
+code that's easy to reason about use big
+
+63
+00:02:08,348 --> 00:02:10,360
+locks to protect large critical sections
+
+64
+00:02:10,360 --> 00:02:12,340
+and just like don't worry about
+
+65
+00:02:12,340 --> 00:02:13,900
+performance in the sense of CPU
+
+66
+00:02:13,900 --> 00:02:16,410
+performance
+
+67
+00:02:16,540 --> 00:02:18,799
+so with that that's all we're going to
+
+68
+00:02:18,799 --> 00:02:20,360
+say about the memory model and spend
+
+69
+00:02:20,360 --> 00:02:22,030
+most of this lecture just talking about
+
+70
+00:02:22,030 --> 00:02:25,580
+go code and go concurrency patterns and
+
+71
+00:02:25,580 --> 00:02:27,260
+as we go through these examples feel
+
+72
+00:02:27,260 --> 00:02:28,640
+free to ask any questions about what's
+
+73
+00:02:28,640 --> 00:02:29,810
+on the screen or anything else you might
+
+74
+00:02:29,810 --> 00:02:32,750
+think about so I'm going to start off
+
+75
+00:02:32,750 --> 00:02:34,970
+talking about concurrency primitives and
+
+76
+00:02:34,970 --> 00:02:37,879
+go so the first thing is closures this
+
+77
+00:02:37,879 --> 00:02:38,810
+is something that will almost certainly
+
+78
+00:02:38,810 --> 00:02:41,870
+be helpful in the labs and this is
+
+79
+00:02:41,870 --> 00:02:44,360
+related to goroutines so here's this
+
+80
+00:02:44,360 --> 00:02:46,430
+example program on the screen and what
+
+81
+00:02:46,430 --> 00:02:48,470
+it does is the main function declares a
+
+82
+00:02:48,470 --> 00:02:50,239
+bunch of variables and then spawns this
+
+83
+00:02:50,239 --> 00:02:51,560
+goroutine in here with this go
+
+84
+00:02:51,560 --> 00:02:53,390
+statement and we noticed that the score
+
+85
+00:02:53,390 --> 00:02:55,310
+routine is not taking it as an argument
+
+86
+00:02:55,310 --> 00:02:57,650
+a function call to some function defined
+
+87
+00:02:57,650 --> 00:02:59,180
+elsewhere but this anonymous function
+
+88
+00:02:59,180 --> 00:03:01,400
+just defined in line here so this is a
+
+89
+00:03:01,400 --> 00:03:02,780
+handy pattern this is something called a
+
+90
+00:03:02,780 --> 00:03:04,760
+closure and one neat thing about this is
+
+91
+00:03:04,760 --> 00:03:06,829
+that this function that's defined here
+
+92
+00:03:06,829 --> 00:03:08,480
+can refer to variables from the
+
+93
+00:03:08,480 --> 00:03:10,609
+enclosing scope so for example this
+
+94
+00:03:10,609 --> 00:03:12,709
+function can mutate this variable a
+
+95
+00:03:12,709 --> 00:03:15,650
+that's defined up here or refer to this
+
+96
+00:03:15,650 --> 00:03:19,549
+wait group that's defined up here so
+
+97
+00:03:19,549 --> 00:03:23,480
+if we go run this example it does what
+
+98
+00:03:23,480 --> 00:03:24,139
+you think it does
+
+99
+00:03:24,139 --> 00:03:27,980
+the wait group dot done here let's the
+
+100
+00:03:27,980 --> 00:03:29,419
+main thread continue past this point it
+
+101
+00:03:29,419 --> 00:03:30,680
+prints out this variable which has been
+
+102
+00:03:30,680 --> 00:03:32,329
+mutated by this concurrently running
+
+103
+00:03:32,329 --> 00:03:34,400
+thread that finished before this wait
+
+104
+00:03:34,400 --> 00:03:38,690
+happened so this is a useful pattern to
+
+105
+00:03:38,690 --> 00:03:41,750
+be able to use one like the reason we're
+
+106
+00:03:41,750 --> 00:03:46,549
+pointing this out is because you might
+
+107
+00:03:46,549 --> 00:03:47,720
+have code that looks like this in your
+
+108
+00:03:47,720 --> 00:03:50,090
+labs very similar to the previous
+
+109
+00:03:50,090 --> 00:03:52,190
+example except this is code that is
+
+110
+00:03:52,190 --> 00:03:53,630
+spawning a bunch of threads in a loop
+
+111
+00:03:53,630 --> 00:03:55,970
+this is useful for example when you want
+
+112
+00:03:55,970 --> 00:03:58,280
+to send rpcs in parallel right so
+
+113
+00:03:58,280 --> 00:04:00,919
+like in lab two if you have a candidate
+
+114
+00:04:00,919 --> 00:04:02,540
+asking for votes you want to ask for
+
+115
+00:04:02,540 --> 00:04:04,250
+votes from all the followers in parallel
+
+116
+00:04:04,250 --> 00:04:06,169
+not one after the other because the RPC
+
+117
+00:04:06,169 --> 00:04:07,459
+is a blocking operation that might take
+
+118
+00:04:07,459 --> 00:04:09,470
+some time or similarly the leader might
+
+119
+00:04:09,470 --> 00:04:10,910
+want to send append entries to all the
+
+120
+00:04:10,910 --> 00:04:12,470
+followers you want to do it in parallel
+
+121
+00:04:12,470 --> 00:04:14,540
+not in series and so threads are a clean
+
+122
+00:04:14,540 --> 00:04:17,060
+way to express this idea and so you
+
+123
+00:04:17,060 --> 00:04:18,440
+might have code that looks kind of like
+
+124
+00:04:18,440 --> 00:04:20,630
+this at a high level in a for loop you
+
+125
+00:04:20,630 --> 00:04:23,750
+spawn a bunch of goroutines one thing
+
+126
+00:04:23,750 --> 00:04:24,860
+to be careful about here this is
+
+127
+00:04:24,860 --> 00:04:26,090
+something that was talked about in a
+
+128
+00:04:26,090 --> 00:04:27,460
+previous lecture
+
+129
+00:04:27,460 --> 00:04:31,060
+is identifier capture and goroutines and
+
+130
+00:04:31,060 --> 00:04:33,250
+mutation of that identifier in the outer
+
+131
+00:04:33,250 --> 00:04:35,080
+scope so we see here that we have this
+
+132
+00:04:35,080 --> 00:04:37,000
+i that's being mutated by this for
+
+133
+00:04:37,000 --> 00:04:39,009
+loop and then we want to use that value
+
+134
+00:04:39,009 --> 00:04:41,440
+inside this goroutine and the way
+
+135
+00:04:41,440 --> 00:04:42,610
+we do that like the correct way of
+
+136
+00:04:42,610 --> 00:04:44,940
+writing this code is to pass this value i
+
+137
+00:04:44,940 --> 00:04:46,720
+as an argument to this function and
+
+138
+00:04:46,720 --> 00:04:49,300
+this function or you can rename it to X
+
+139
+00:04:49,300 --> 00:04:50,949
+inside here and then use the value
+
+140
+00:04:50,949 --> 00:04:53,220
+inside and so if we run this program
+
+141
+00:04:53,220 --> 00:04:55,630
+so here I've kind of stubbed out to send
+
+142
+00:04:55,630 --> 00:04:57,039
+our RPC thing was actually just prints
+
+143
+00:04:57,039 --> 00:04:59,680
+out the index this I might be like the
+
+144
+00:04:59,680 --> 00:05:01,449
+index of the follower trying to send an
+
+145
+00:05:01,449 --> 00:05:04,449
+RPC to here prints out the numbers 0
+
+146
+00:05:04,449 --> 00:05:06,130
+through 4 in some order so this is what
+
+147
+00:05:06,130 --> 00:05:07,840
+we want like send our PCs to all the
+
+148
+00:05:07,840 --> 00:05:09,639
+followers the reason we're showing you
+
+149
+00:05:09,639 --> 00:05:11,229
+this code is because there's a variation
+
+150
+00:05:11,229 --> 00:05:13,750
+of this code which looks really similar
+
+151
+00:05:13,750 --> 00:05:15,370
+and maybe intuitively you might think it
+
+152
+00:05:15,370 --> 00:05:16,539
+does the right thing but in fact it
+
+153
+00:05:16,539 --> 00:05:18,310
+doesn't so in this code the only thing
+
+154
+00:05:18,310 --> 00:05:21,520
+that's changed is we've gotten rid of
+
+155
+00:05:21,520 --> 00:05:23,470
+this argument here that we're explicitly
+
+156
+00:05:23,470 --> 00:05:26,440
+passing and instead we're letting this I
+
+157
+00:05:26,440 --> 00:05:29,289
+refer to the i from the outer scope so
+
+158
+00:05:29,289 --> 00:05:30,250
+you might think that when you run this
+
+159
+00:05:30,250 --> 00:05:33,580
+it does the same thing but in fact in
+
+160
+00:05:33,580 --> 00:05:35,849
+this particular run it printed 4 5 5 5 5
+
+161
+00:05:35,849 --> 00:05:39,580
+so this would do the wrong thing and the
+
+162
+00:05:39,580 --> 00:05:41,500
+reason for this is that this I is being
+
+163
+00:05:41,500 --> 00:05:43,750
+mutated by this outer scope and by the
+
+164
+00:05:43,750 --> 00:05:45,190
+time this goroutine ends up actually
+
+165
+00:05:45,190 --> 00:05:47,260
+executing this line well the for loop
+
+166
+00:05:47,260 --> 00:05:49,599
+has already changed the value of I so
+
+167
+00:05:49,599 --> 00:05:52,449
+this doesn't do the right thing so at a
+
+168
+00:05:52,449 --> 00:05:54,940
+high level if you're spawning goroutines
+
+169
+00:05:54,940 --> 00:05:57,520
+in a loop just make sure that you use
+
+170
+00:05:57,520 --> 00:06:00,460
+this pattern here and everything will
+
+171
+00:06:00,460 --> 00:06:03,060
+work right any questions about that
+
+172
+00:06:03,060 --> 00:06:05,080
+so it's just like a small gotcha but
+
+173
+00:06:05,080 --> 00:06:06,099
+we've seen this a whole bunch of times
+
+174
+00:06:06,099 --> 00:06:07,180
+in office hours so I just wanted to
+
+175
+00:06:07,180 --> 00:06:10,720
+point this out all right so moving on to
+
+176
+00:06:10,720 --> 00:06:13,419
+other patterns that you might want to
+
+177
+00:06:13,419 --> 00:06:17,500
+use in your code oftentimes you want
+
+178
+00:06:17,500 --> 00:06:19,300
+code that periodically does something a
+
+179
+00:06:19,300 --> 00:06:22,389
+very simple way to do that is to have a
+
+180
+00:06:22,389 --> 00:06:24,729
+separate function that in an infinite
+
+181
+00:06:24,729 --> 00:06:26,949
+loop does something in this case we're
+
+182
+00:06:26,949 --> 00:06:29,470
+just printing out tick and then use this
+
+183
+00:06:29,470 --> 00:06:31,240
+time dot sleep to wait for a certain
+
+184
+00:06:31,240 --> 00:06:34,419
+amount of time so very simple pattern
+
+185
+00:06:34,419 --> 00:06:34,750
+here
+
+186
+00:06:34,750 --> 00:06:36,070
+you don't need anything fancier than
+
+187
+00:06:36,070 --> 00:06:39,270
+this to do something periodically
+
+188
+00:06:41,400 --> 00:06:43,750
+one modification of this that you might
+
+189
+00:06:43,750 --> 00:06:44,980
+want is you want to do something
+
+190
+00:06:44,980 --> 00:06:47,470
+periodically until something happens for
+
+191
+00:06:47,470 --> 00:06:49,270
+example you might want to start up a
+
+192
+00:06:49,270 --> 00:06:51,280
+raft here and then periodically send
+
+193
+00:06:51,280 --> 00:06:54,850
+heartbeats but when we call dot kill on
+
+194
+00:06:54,850 --> 00:06:56,800
+the raft instance you want to actually
+
+195
+00:06:56,800 --> 00:06:58,180
+shut down all these goroutines so you
+
+196
+00:06:58,180 --> 00:06:59,320
+don't have all these random goroutines
+
+197
+00:06:59,320 --> 00:07:01,780
+still running in the background and so
+
+198
+00:07:01,780 --> 00:07:03,010
+the pattern for that looks something
+
+199
+00:07:03,010 --> 00:07:08,200
+like this you have a goroutine that will
+
+200
+00:07:08,200 --> 00:07:10,750
+run in an infinite loop and do something
+
+201
+00:07:10,750 --> 00:07:13,240
+and then wait for a little bit and then
+
+202
+00:07:13,240 --> 00:07:14,140
+you can just have a shared variable
+
+203
+00:07:14,140 --> 00:07:16,570
+between whatever control thread is going
+
+204
+00:07:16,570 --> 00:07:18,070
+to decide whether this goroutine should
+
+205
+00:07:18,070 --> 00:07:20,170
+die or not so in this example we have
+
+206
+00:07:20,170 --> 00:07:21,670
+this variable done that's a global
+
+207
+00:07:21,670 --> 00:07:23,560
+variable and what main does is it waits
+
+208
+00:07:23,560 --> 00:07:26,980
+for while and sets done to true and in
+
+209
+00:07:26,980 --> 00:07:28,630
+this goroutine that's ticking and doing
+
+210
+00:07:28,630 --> 00:07:31,000
+work periodically we're just checking
+
+211
+00:07:31,000 --> 00:07:32,650
+the value of done and if done is set
+
+212
+00:07:32,650 --> 00:07:34,240
+then we terminate the square-root eeen
+
+213
+00:07:34,240 --> 00:07:38,110
+and here since done is a shared variable
+
+214
+00:07:38,110 --> 00:07:40,180
+being mutated and read by multiple
+
+215
+00:07:40,180 --> 00:07:41,680
+threads we need to make sure that we
+
+216
+00:07:41,680 --> 00:07:44,620
+guard the use of this with a lock so
+
+217
+00:07:44,620 --> 00:07:45,940
+that's where this mute outlaw can mute
+
+218
+00:07:45,940 --> 00:07:49,060
+it unlock comes in for the purpose of
+
+219
+00:07:49,060 --> 00:07:50,200
+the labs you can actually write
+
+220
+00:07:50,200 --> 00:07:51,340
+something a little bit simpler than this
+
+221
+00:07:51,340 --> 00:07:55,480
+so we have this method rf.kill on your
+
+222
+00:07:55,480 --> 00:07:57,310
+raft instance so you might have code
+
+223
+00:07:57,310 --> 00:07:58,480
+that looks a little bit more like this
+
+224
+00:07:58,480 --> 00:08:01,240
+so while you're wrapped instance is not
+
+225
+00:08:01,240 --> 00:08:02,680
+dead you want to periodically do some
+
+226
+00:08:02,680 --> 00:08:10,560
+work any questions about that so far
+
+227
+00:08:10,560 --> 00:08:13,800
+yeah question
+
+228
+00:08:21,779 --> 00:08:25,359
+does using the locking mechanisms for
+
+229
+00:08:25,359 --> 00:08:30,249
+channels make it so that any right
+
+230
+00:08:30,249 --> 00:08:32,919
+stunts any variables and those functions
+
+231
+00:08:32,919 --> 00:08:36,159
+are to be observed by the fencer would
+
+232
+00:08:36,159 --> 00:08:41,219
+you need to send done across the channel
+
+233
+00:08:41,759 --> 00:08:44,198
+okay so let me try to simplify the
+
+234
+00:08:44,198 --> 00:08:45,670
+question a bit I think the question is
+
+235
+00:08:45,670 --> 00:08:47,829
+do you need to use locks here can you
+
+236
+00:08:47,829 --> 00:08:51,370
+use channels instead and are and can you
+
+237
+00:08:51,370 --> 00:08:52,689
+get away with not using locks and like
+
+238
+00:08:52,689 --> 00:08:53,680
+what's the difference between nothing
+
+239
+00:08:53,680 --> 00:08:55,360
+versus channels vs locks is that
+
+240
+00:08:55,360 --> 00:09:08,620
+basically what you're asking I think the
+
+241
+00:09:08,620 --> 00:09:10,959
+question is this done does it not need
+
+242
+00:09:10,959 --> 00:09:12,910
+to be sent across a channel does just
+
+243
+00:09:12,910 --> 00:09:15,100
+using these locks ensure that this read
+
+244
+00:09:15,100 --> 00:09:18,009
+here observes the write done by a thread
+
+245
+00:09:18,009 --> 00:09:21,459
+okay so the answer is yes basically at a
+
+246
+00:09:21,459 --> 00:09:23,889
+high level if you want to ensure cross
+
+247
+00:09:23,889 --> 00:09:25,389
+thread communication make sure you use
+
+248
+00:09:25,389 --> 00:09:27,430
+go synchronization primitives whether
+
+249
+00:09:27,430 --> 00:09:30,069
+it's channels or locks and condition
+
+250
+00:09:30,069 --> 00:09:33,370
+variables and so here because of the use
+
+251
+00:09:33,370 --> 00:09:35,500
+of locks after this thread writes done
+
+252
+00:09:35,500 --> 00:09:38,350
+and does unlock the next lock that
+
+253
+00:09:38,350 --> 00:09:40,689
+happens is guaranteed to observe the
+
+254
+00:09:40,689 --> 00:09:42,879
+writes done before that before this
+
+255
+00:09:42,879 --> 00:09:44,559
+unlock happened so you have this write
+
+256
+00:09:44,559 --> 00:09:46,360
+happened and this unlock happened then
+
+257
+00:09:46,360 --> 00:09:48,129
+one of these locks happens and then the
+
+258
+00:09:48,129 --> 00:09:49,779
+next done will be guaranteed to observe
+
+259
+00:09:49,779 --> 00:09:55,589
+that write of true question
+
+260
+00:10:02,750 --> 00:10:05,570
+that's a good question in this
+
+261
+00:10:05,570 --> 00:10:07,370
+particular code it doesn't matter but it
+
+262
+00:10:07,370 --> 00:10:08,960
+would be cleaner to do it so the
+
+263
+00:10:08,960 --> 00:10:10,910
+question is why don't we do mu dot
+
+264
+00:10:10,910 --> 00:10:14,090
+unlock here before returning and the
+
+265
+00:10:14,090 --> 00:10:16,160
+answer is in here there's no more like
+
+266
+00:10:16,160 --> 00:10:17,540
+the program's done so it doesn't
+
+267
+00:10:17,540 --> 00:10:18,830
+actually end up mattering but you're
+
+268
+00:10:18,830 --> 00:10:21,230
+right that like in general we would want
+
+269
+00:10:21,230 --> 00:10:23,570
+to ensure that we unlock before we
+
+270
+00:10:23,570 --> 00:10:27,580
+return yeah thanks for pointing that out
+
+271
+00:10:41,529 --> 00:10:43,520
+so I'm not sure entirely what the
+
+272
+00:10:43,520 --> 00:10:44,930
+question is but maybe something like can
+
+273
+00:10:44,930 --> 00:10:46,760
+both of these acquire the lock at the
+
+274
+00:10:46,760 --> 00:11:00,740
+same time is that the question and we'll
+
+275
+00:11:00,740 --> 00:11:03,080
+talk a little bit more about locks in
+
+276
+00:11:03,080 --> 00:11:04,580
+just a moment but at a high level the
+
+277
+00:11:04,580 --> 00:11:07,910
+semantics of a lock are the lock is
+
+278
+00:11:07,910 --> 00:11:09,589
+either held by somebody or not held by
+
+279
+00:11:09,589 --> 00:11:11,120
+somebody and if it's not held by
+
+280
+00:11:11,120 --> 00:11:12,860
+somebody then if someone calls lock they
+
+281
+00:11:12,860 --> 00:11:14,330
+have the chance to acquire the lock and
+
+282
+00:11:14,330 --> 00:11:17,000
+if before they call unlock somebody else
+
+283
+00:11:17,000 --> 00:11:18,980
+calls lock that other thread is going to
+
+284
+00:11:18,980 --> 00:11:20,959
+be blocked until the unlock happens then
+
+285
+00:11:20,959 --> 00:11:22,910
+the lock is free again so at a high
+
+286
+00:11:22,910 --> 00:11:25,000
+level between the lock and the unlock
+
+287
+00:11:25,000 --> 00:11:27,830
+for any particular lock like any only a
+
+288
+00:11:27,830 --> 00:11:29,149
+single thread can be executing what's
+
+289
+00:11:29,149 --> 00:11:30,380
+called a critical section between the
+
+290
+00:11:30,380 --> 00:11:35,029
+lock and unlock regions any other
+
+291
+00:11:35,029 --> 00:11:37,420
+questions
+
+292
+00:12:02,899 --> 00:12:05,759
+so the question is related to timing
+
+293
+00:12:05,759 --> 00:12:08,009
+like when you set done equals true and
+
+294
+00:12:08,009 --> 00:12:09,930
+then you unlock you have no guarantee in
+
+295
+00:12:09,930 --> 00:12:11,970
+terms of real time like when periodic
+
+296
+00:12:11,970 --> 00:12:13,440
+will end up being scheduled and observe
+
+297
+00:12:13,440 --> 00:12:14,639
+this right and actually end up
+
+298
+00:12:14,639 --> 00:12:17,490
+terminating and so yes if you want to
+
+299
+00:12:17,490 --> 00:12:19,380
+mean to actually ensure that periodic
+
+300
+00:12:19,380 --> 00:12:20,940
+has exited for some particular reason
+
+301
+00:12:20,940 --> 00:12:22,769
+then you could write some code that
+
+302
+00:12:22,769 --> 00:12:24,089
+communicates back from periodic
+
+303
+00:12:24,089 --> 00:12:25,740
+acknowledging this but in this
+
+304
+00:12:25,740 --> 00:12:27,240
+particular case like the only reason we
+
+305
+00:12:27,240 --> 00:12:28,560
+have the sleep here is just to
+
+306
+00:12:28,560 --> 00:12:35,790
+demonstrate that the sleep here is just
+
+307
+00:12:35,790 --> 00:12:37,319
+to demonstrate that tick prints for a
+
+308
+00:12:37,319 --> 00:12:39,569
+while and then periodic as indeed cancel
+
+309
+00:12:39,569 --> 00:12:41,040
+it because it stops being printed before
+
+310
+00:12:41,040 --> 00:12:44,310
+I get my shell prompt back and in
+
+311
+00:12:44,310 --> 00:12:45,660
+general for a lot of these background
+
+312
+00:12:45,660 --> 00:12:47,130
+threads like you can just say that you
+
+313
+00:12:47,130 --> 00:12:48,180
+want to kill them and it doesn't matter
+
+314
+00:12:48,180 --> 00:12:49,889
+if they're killed within 1 second or
+
+315
+00:12:49,889 --> 00:12:51,329
+within 2 seconds or one exactly go
+
+316
+00:12:51,329 --> 00:12:52,889
+schedules it because this thread is
+
+317
+00:12:52,889 --> 00:12:54,839
+going to just observe this right to done
+
+318
+00:12:54,839 --> 00:12:56,490
+and then exit do no more works it
+
+319
+00:12:56,490 --> 00:12:58,380
+doesn't really matter and also another
+
+320
+00:12:58,380 --> 00:13:00,959
+thing in go is that if you spawn a bunch
+
+321
+00:13:00,959 --> 00:13:02,160
+of goroutines one of them is the main
+
+322
+00:13:02,160 --> 00:13:04,889
+goroutine this one here and the way go
+
+323
+00:13:04,889 --> 00:13:06,510
+works is that if the main goroutine
+
+324
+00:13:06,510 --> 00:13:08,550
+exits the whole program terminates and
+
+325
+00:13:08,550 --> 00:13:11,779
+all goroutines are terminated
+
+326
+00:13:27,950 --> 00:13:31,200
+that's a great question okay so I think
+
+327
+00:13:31,200 --> 00:13:32,340
+the question is something like why do
+
+328
+00:13:32,340 --> 00:13:33,690
+you need locks at all like can you just
+
+329
+00:13:33,690 --> 00:13:36,300
+delete all the locks and then like
+
+330
+00:13:36,300 --> 00:13:37,980
+looking at this code it looks like okay
+
+331
+00:13:37,980 --> 00:13:39,780
+main does a right to true at some point
+
+332
+00:13:39,780 --> 00:13:41,760
+and periodic is repeatedly reading it so
+
+333
+00:13:41,760 --> 00:13:43,020
+at some point it should observe this
+
+334
+00:13:43,020 --> 00:13:45,870
+read right well it turns out that like
+
+335
+00:13:45,870 --> 00:13:48,090
+this is why go has this fancy memory
+
+336
+00:13:48,090 --> 00:13:49,560
+model and you have this whole thing on
+
+337
+00:13:49,560 --> 00:13:51,000
+that happens before relation the
+
+338
+00:13:51,000 --> 00:13:53,070
+compiler is allowed to take this code
+
+339
+00:13:53,070 --> 00:13:55,890
+and emit a kind of low-level machine
+
+340
+00:13:55,890 --> 00:13:57,240
+code that does something a little bit
+
+341
+00:13:57,240 --> 00:13:58,080
+different than what you intuitively
+
+342
+00:13:58,080 --> 00:14:00,660
+thought would happen here and we can
+
+343
+00:14:00,660 --> 00:14:02,640
+talk about that in detail offline after
+
+344
+00:14:02,640 --> 00:14:05,850
+the lecture and office hours but at a
+
+345
+00:14:05,850 --> 00:14:07,110
+high level I think one rule you can
+
+346
+00:14:07,110 --> 00:14:09,090
+follow is if you have accesses to shared
+
+347
+00:14:09,090 --> 00:14:10,710
+variables and you want to be able to
+
+348
+00:14:10,710 --> 00:14:12,060
+observe them across different threads
+
+349
+00:14:12,060 --> 00:14:14,460
+you need to be holding a lock before you
+
+350
+00:14:14,460 --> 00:14:15,960
+read or write those shared variables in
+
+351
+00:14:15,960 --> 00:14:18,270
+this particular case I think the go
+
+352
+00:14:18,270 --> 00:14:19,650
+compiler would be allowed to optimize
+
+353
+00:14:19,650 --> 00:14:21,540
+this to like lift the read of done
+
+354
+00:14:21,540 --> 00:14:24,480
+outside the four so read this shared
+
+355
+00:14:24,480 --> 00:14:27,390
+variable once and then if done is false
+
+356
+00:14:27,390 --> 00:14:29,610
+then set like make the inside be an
+
+357
+00:14:29,610 --> 00:14:32,580
+infinite loop because like now the way
+
+358
+00:14:32,580 --> 00:14:34,530
+this thread is written it had uses no
+
+359
+00:14:34,530 --> 00:14:35,820
+synchronization primitives there's no
+
+360
+00:14:35,820 --> 00:14:37,680
+mutex lock or unlock no channel sends or
+
+361
+00:14:37,680 --> 00:14:39,150
+receives and so it's actually not
+
+362
+00:14:39,150 --> 00:14:41,130
+guaranteed to observe any mutations done
+
+363
+00:14:41,130 --> 00:14:43,190
+by other concurrently running threads
+
+364
+00:14:43,190 --> 00:14:45,690
+and if you look on Piazza I've actually
+
+365
+00:14:45,690 --> 00:14:47,730
+like written a particular go program
+
+366
+00:14:47,730 --> 00:14:49,590
+that is optimized in the unintuitive way
+
+367
+00:14:49,590 --> 00:14:50,940
+like it'll produce code that does an
+
+368
+00:14:50,940 --> 00:14:52,140
+infinite loop even though looking at it
+
+369
+00:14:52,140 --> 00:14:54,390
+like you might think that oh the obvious
+
+370
+00:14:54,390 --> 00:14:56,220
+way to compile this code will produce
+
+371
+00:14:56,220 --> 00:15:00,030
+something that terminates yeah so the
+
+372
+00:15:00,030 --> 00:15:02,850
+memory model is pretty fancy and it's
+
+373
+00:15:02,850 --> 00:15:04,560
+really hard to think about why exactly
+
+374
+00:15:04,560 --> 00:15:06,240
+incorrect programs are incorrect but if
+
+375
+00:15:06,240 --> 00:15:08,880
+you follow some general rules like whole
+
+376
+00:15:08,880 --> 00:15:10,080
+blocks before you mutate shared
+
+377
+00:15:10,080 --> 00:15:11,520
+variables then you can avoid thinking
+
+378
+00:15:11,520 --> 00:15:14,990
+about some of these nasty issues
+
+379
+00:15:15,290 --> 00:15:19,200
+any other questions all right so let's
+
+380
+00:15:19,200 --> 00:15:21,680
+talk a little bit more about mutexes now
+
+381
+00:15:21,680 --> 00:15:25,020
+so why do you need mutex is at a high
+
+382
+00:15:25,020 --> 00:15:28,200
+level whenever you have concurrent
+
+383
+00:15:28,200 --> 00:15:30,090
+access but by different threads to some
+
+384
+00:15:30,090 --> 00:15:32,819
+shared data you want to ensure that
+
+385
+00:15:32,819 --> 00:15:35,759
+reads and writes of that data are atomic
+
+386
+00:15:35,759 --> 00:15:38,669
+so here's one example of program that
+
+387
+00:15:38,669 --> 00:15:40,529
+declares a counter and then spawns a
+
+388
+00:15:40,529 --> 00:15:40,949
+goroutine
+
+389
+00:15:40,949 --> 00:15:42,449
+actually spawns a thousand goroutines
+
+390
+00:15:42,449 --> 00:15:44,339
+that each update the counter value and
+
+391
+00:15:44,339 --> 00:15:46,649
+increment it by one and you might think
+
+392
+00:15:46,649 --> 00:15:48,209
+that looking at this intuitively when I
+
+393
+00:15:48,209 --> 00:15:49,439
+print out the value of the counter at
+
+394
+00:15:49,439 --> 00:15:51,929
+the end it should print a thousand but
+
+395
+00:15:51,929 --> 00:15:53,699
+it turns out that we missed some of the
+
+396
+00:15:53,699 --> 00:15:55,589
+updates here and in this particular case
+
+397
+00:15:55,589 --> 00:15:59,189
+it only printed 947 so what's going on
+
+398
+00:15:59,189 --> 00:16:03,059
+here is that this update here is not
+
+399
+00:16:03,059 --> 00:16:05,009
+really protected in any way and so these
+
+400
+00:16:05,009 --> 00:16:06,749
+threads running concurrently can read
+
+401
+00:16:06,749 --> 00:16:08,489
+the value of counter and update it and
+
+402
+00:16:08,489 --> 00:16:11,669
+clobber other threads updates of this
+
+403
+00:16:11,669 --> 00:16:13,410
+value like basically we want to ensure
+
+404
+00:16:13,410 --> 00:16:16,109
+that this entire section here happens
+
+405
+00:16:16,109 --> 00:16:18,389
+atomically and so the way you make
+
+406
+00:16:18,389 --> 00:16:22,439
+blocks of code run atomically are by
+
+407
+00:16:22,439 --> 00:16:25,350
+using locks and so in this code example
+
+408
+00:16:25,350 --> 00:16:29,039
+we've fixed this bug we create a lock
+
+409
+00:16:29,039 --> 00:16:30,959
+and then all these goroutines that
+
+410
+00:16:30,959 --> 00:16:33,389
+modify this counter value first grab the
+
+411
+00:16:33,389 --> 00:16:36,059
+lock then update the counter value and
+
+412
+00:16:36,059 --> 00:16:37,799
+then unlock and we see that we're using
+
+413
+00:16:37,799 --> 00:16:39,989
+this defer keyword here what this does
+
+414
+00:16:39,989 --> 00:16:42,989
+is basically the same as putting this
+
+415
+00:16:42,989 --> 00:16:45,479
+code down here so we grab a lock do some
+
+416
+00:16:45,479 --> 00:16:47,519
+update then unlock defer is just a nice
+
+417
+00:16:47,519 --> 00:16:51,539
+way of remembering to do this you might
+
+418
+00:16:51,539 --> 00:16:53,339
+forget to write the unlock later and so
+
+419
+00:16:53,339 --> 00:16:54,989
+what defer does is it you can think of
+
+420
+00:16:54,989 --> 00:16:56,909
+it as like scheduling this to run at the
+
+421
+00:16:56,909 --> 00:16:59,429
+end of the current function body and so
+
+422
+00:16:59,429 --> 00:17:00,689
+this is a really common pattern you'll
+
+423
+00:17:00,689 --> 00:17:02,999
+see for example in your RPC handlers for
+
+424
+00:17:02,999 --> 00:17:05,398
+the lab so oftentimes RPC handlers will
+
+425
+00:17:05,398 --> 00:17:08,220
+manipulate either read or write data on
+
+426
+00:17:08,220 --> 00:17:10,378
+the Raft structure right and those
+
+427
+00:17:10,378 --> 00:17:12,000
+updates should be synchronized with
+
+428
+00:17:12,000 --> 00:17:13,919
+other concurrently happening updates and
+
+429
+00:17:13,919 --> 00:17:15,839
+so oftentimes the pattern for RPC
+
+430
+00:17:15,839 --> 00:17:17,039
+handles would be like grab the lock
+
+431
+00:17:17,039 --> 00:17:19,049
+differ unlock and then go do some work
+
+432
+00:17:19,049 --> 00:17:26,929
+inside so we can see if we run this code
+
+433
+00:17:26,929 --> 00:17:29,610
+it produces the expected results so it
+
+434
+00:17:29,610 --> 00:17:30,960
+prints out a thousand and we haven't
+
+435
+00:17:30,960 --> 00:17:34,559
+lost any of these updates and so what at
+
+436
+00:17:34,559 --> 00:17:36,000
+a high level what a lock or a mutex can
+
+437
+00:17:36,000 --> 00:17:38,610
+do is guarantee mutual exclusion for a
+
+438
+00:17:38,610 --> 00:17:40,379
+region of code which we call a critical
+
+439
+00:17:40,379 --> 00:17:41,820
+section so in here this is the critical
+
+440
+00:17:41,820 --> 00:17:43,740
+section and it ensures that none of
+
+441
+00:17:43,740 --> 00:17:45,480
+these critical sections execute
+
+442
+00:17:45,480 --> 00:17:46,260
+concurrently with
+
+443
+00:17:46,260 --> 00:17:47,820
+ones they're all serialized happened one
+
+444
+00:17:47,820 --> 00:17:51,350
+after another question
+
+445
+00:18:00,600 --> 00:18:03,100
+yes so this is a good observation this
+
+446
+00:18:03,100 --> 00:18:04,270
+particular could is actually not
+
+447
+00:18:04,270 --> 00:18:05,650
+guaranteed to produce a thousand
+
+448
+00:18:05,650 --> 00:18:07,390
+depending on how thread scheduling end
+
+449
+00:18:07,390 --> 00:18:08,950
+up ends up happening because all the
+
+450
+00:18:08,950 --> 00:18:10,960
+main goroutine does is it waits for one
+
+451
+00:18:10,960 --> 00:18:12,430
+second which is some arbitrary unit of
+
+452
+00:18:12,430 --> 00:18:14,080
+time and then it prints out the value of
+
+453
+00:18:14,080 --> 00:18:15,970
+the counter I just want to keep this
+
+454
+00:18:15,970 --> 00:18:17,530
+example as simple as possible a
+
+455
+00:18:17,530 --> 00:18:18,850
+different way to write this code that
+
+456
+00:18:18,850 --> 00:18:20,590
+would be guaranteed to print a thousand
+
+457
+00:18:20,590 --> 00:18:22,720
+would be to have the main goroutine wait
+
+458
+00:18:22,720 --> 00:18:24,370
+for all these thousand threads to finish
+
+459
+00:18:24,370 --> 00:18:25,300
+so you could do this using a wait
+
+460
+00:18:25,300 --> 00:18:26,890
+group for example but we didn't want to
+
+461
+00:18:26,890 --> 00:18:28,330
+put two synchronization primitives like
+
+462
+00:18:28,330 --> 00:18:29,830
+wait groups and mutex is in the same
+
+463
+00:18:29,830 --> 00:18:31,420
+example so that's why we're at this code
+
+464
+00:18:31,420 --> 00:18:33,100
+that is like technically incorrect but I
+
+465
+00:18:33,100 --> 00:18:34,420
+think it still demonstrates the point of
+
+466
+00:18:34,420 --> 00:18:43,420
+locks any other questions great so at a
+
+467
+00:18:43,420 --> 00:18:44,890
+very high level you can think of locks
+
+468
+00:18:44,890 --> 00:18:46,930
+is like you grab the lock you mutate the
+
+469
+00:18:46,930 --> 00:18:49,390
+shared data and then you unlock so does
+
+470
+00:18:49,390 --> 00:18:52,270
+this pattern always work well turns out
+
+471
+00:18:52,270 --> 00:18:57,310
+that that's like a useful starting point
+
+472
+00:18:57,310 --> 00:18:58,750
+for how to think about locks but it's
+
+473
+00:18:58,750 --> 00:19:01,180
+not really the complete story so here's
+
+474
+00:19:01,180 --> 00:19:03,490
+some code this doesn't fit on the screen
+
+475
+00:19:03,490 --> 00:19:04,780
+but I'll explain it to you we can scroll
+
+476
+00:19:04,780 --> 00:19:06,550
+through it it basically implements a
+
+477
+00:19:06,550 --> 00:19:08,830
+bank at a high level so I have Alice and
+
+478
+00:19:08,830 --> 00:19:10,150
+Bob who both start out with some
+
+479
+00:19:10,150 --> 00:19:12,430
+balances and then I keep track of what
+
+480
+00:19:12,430 --> 00:19:14,410
+the total balances like the total amount
+
+481
+00:19:14,410 --> 00:19:16,240
+of money I store in my bank and then I'm
+
+482
+00:19:16,240 --> 00:19:18,010
+going to spawn to goroutines that will
+
+483
+00:19:18,010 --> 00:19:19,330
+transfer money back and forth between
+
+484
+00:19:19,330 --> 00:19:21,500
+our Alice and Bob so this one
+
+485
+00:19:21,500 --> 00:19:23,730
+goroutine that a thousand times will
+
+486
+00:19:23,730 --> 00:19:26,470
+reduce one from Alice and send it to Bob
+
+487
+00:19:26,470 --> 00:19:28,840
+and concurrently running I have this
+
+488
+00:19:28,840 --> 00:19:30,130
+other goroutine that in a loop will
+
+489
+00:19:30,130 --> 00:19:31,900
+reduce one from Bob and send it to Alice
+
+490
+00:19:31,900 --> 00:19:35,350
+and notice that I have this mutex here
+
+491
+00:19:35,350 --> 00:19:38,140
+and whenever I manipulate these shared
+
+492
+00:19:38,140 --> 00:19:39,520
+variables between these two different
+
+493
+00:19:39,520 --> 00:19:39,790
+threads
+
+494
+00:19:39,790 --> 00:19:42,180
+I'm always locking the mutex and this
+
+495
+00:19:42,180 --> 00:19:44,890
+update only happens while this lock is
+
+496
+00:19:44,890 --> 00:19:49,240
+held right and so is this code correct
+
+497
+00:19:49,240 --> 00:19:53,920
+or incorrect there actually isn't really
+
+498
+00:19:53,920 --> 00:19:55,120
+a straightforward answer to that
+
+499
+00:19:55,120 --> 00:19:57,520
+question it depends on like what are the
+
+500
+00:19:57,520 --> 00:19:59,710
+semantics of my bank like what behavior
+
+501
+00:19:59,710 --> 00:20:03,010
+do I expect so I'm going to introduce
+
+502
+00:20:03,010 --> 00:20:04,270
+another thread here I'll call this one
+
+503
+00:20:04,270 --> 00:20:06,130
+the audit thread and what this is going
+
+504
+00:20:06,130 --> 00:20:07,540
+to do is every once in a while I'll
+
+505
+00:20:07,540 --> 00:20:09,040
+check it check the sum of all the
+
+506
+00:20:09,040 --> 00:20:10,840
+accounts in my bank and make sure that
+
+507
+00:20:10,840 --> 00:20:12,400
+the sum is the same as what it started
+
+508
+00:20:12,400 --> 00:20:13,110
+out as
+
+509
+00:20:13,110 --> 00:20:14,460
+right click if I only allow transfers
+
+510
+00:20:14,460 --> 00:20:15,900
+within my bank the total amount should
+
+511
+00:20:15,900 --> 00:20:18,299
+never change so now given this other
+
+512
+00:20:18,299 --> 00:20:20,130
+thread so what this does is it grabs the
+
+513
+00:20:20,130 --> 00:20:22,679
+lock then sums up Alice Plus Bob and
+
+514
+00:20:22,679 --> 00:20:24,330
+compares it to the total and if it
+
+515
+00:20:24,330 --> 00:20:25,980
+doesn't match then it says that though
+
+516
+00:20:25,980 --> 00:20:27,480
+I've observed some violation that my
+
+517
+00:20:27,480 --> 00:20:34,320
+total is no longer what it should be if
+
+518
+00:20:34,320 --> 00:20:36,510
+I run this code I actually see that a
+
+519
+00:20:36,510 --> 00:20:37,380
+whole bunch of times
+
+520
+00:20:37,380 --> 00:20:39,720
+this concurrently running thread does
+
+521
+00:20:39,720 --> 00:20:41,490
+indeed observe that Alice Plus Bob is
+
+522
+00:20:41,490 --> 00:20:43,710
+not equal to the overall sum so what
+
+523
+00:20:43,710 --> 00:20:45,750
+went wrong here like we're following our
+
+524
+00:20:45,750 --> 00:20:47,910
+basic rule of whenever we're accessing
+
+525
+00:20:47,910 --> 00:20:49,500
+data that's shared between threads we
+
+526
+00:20:49,500 --> 00:20:52,320
+grab a lock it is indeed true that no
+
+527
+00:20:52,320 --> 00:20:54,140
+updates to these shared variables happen
+
+528
+00:20:54,140 --> 00:21:15,540
+while the lock is not held exactly so
+
+529
+00:21:15,540 --> 00:21:16,919
+let me repeat that for everybody to hear
+
+530
+00:21:16,919 --> 00:21:19,559
+what we intended here was for this
+
+531
+00:21:19,559 --> 00:21:21,510
+decrement and increment to happen
+
+532
+00:21:21,510 --> 00:21:23,520
+atomically but instead of what we ended
+
+533
+00:21:23,520 --> 00:21:25,590
+up writing was code that decrement
+
+534
+00:21:25,590 --> 00:21:27,120
+atomically and then increments
+
+535
+00:21:27,120 --> 00:21:28,919
+atomically and so in this particular
+
+536
+00:21:28,919 --> 00:21:30,960
+code actually like we won't lose money
+
+537
+00:21:30,960 --> 00:21:32,730
+in the long term like if we let these
+
+538
+00:21:32,730 --> 00:21:34,020
+threads run and then wait till they
+
+539
+00:21:34,020 --> 00:21:36,030
+finish and then check the total it will
+
+540
+00:21:36,030 --> 00:21:37,830
+indeed be what it started out as but
+
+541
+00:21:37,830 --> 00:21:39,540
+while these are running since this
+
+542
+00:21:39,540 --> 00:21:41,850
+entire block of code is not atomic we
+
+543
+00:21:41,850 --> 00:21:44,179
+can temporarily observe these violations
+
+544
+00:21:44,179 --> 00:21:46,890
+and so at a higher level the way should
+
+545
+00:21:46,890 --> 00:21:49,260
+think about locking is not just like
+
+546
+00:21:49,260 --> 00:21:51,660
+locks are to protect access to shared
+
+547
+00:21:51,660 --> 00:21:53,640
+data but locks are meant to protect
+
+548
+00:21:53,640 --> 00:21:55,950
+invariants you have some shared data
+
+549
+00:21:55,950 --> 00:21:57,390
+that multiple people might access and
+
+550
+00:21:57,390 --> 00:21:58,770
+there's some properties that hold on
+
+551
+00:21:58,770 --> 00:22:00,809
+that shared data like for example here I
+
+552
+00:22:00,809 --> 00:22:02,669
+is the programmer decided that I want
+
+553
+00:22:02,669 --> 00:22:04,320
+this property that alice + Bob should
+
+554
+00:22:04,320 --> 00:22:05,760
+equal some constant and that should
+
+555
+00:22:05,760 --> 00:22:07,530
+always be that way I want that property
+
+556
+00:22:07,530 --> 00:22:09,240
+to hold but then it may be the case that
+
+557
+00:22:09,240 --> 00:22:10,140
+different threads running concurrently
+
+558
+00:22:10,140 --> 00:22:12,390
+are making changes to this data and
+
+559
+00:22:12,390 --> 00:22:14,610
+might temporarily break this invariant
+
+560
+00:22:14,610 --> 00:22:16,650
+here right like here when I decrement
+
+561
+00:22:16,650 --> 00:22:19,140
+from Alice temporarily the sum Alice
+
+562
+00:22:19,140 --> 00:22:20,760
+Plus Bob has changed but then this
+
+563
+00:22:20,760 --> 00:22:22,559
+thread eventually ends up restoring this
+
+564
+00:22:22,559 --> 00:22:25,230
+invariant here and so locks are meant to
+
+565
+00:22:25,230 --> 00:22:26,000
+protect and vary
+
+566
+00:22:26,000 --> 00:22:27,950
+at a high level you grab a lock then you
+
+567
+00:22:27,950 --> 00:22:29,240
+do some work that might temporarily
+
+568
+00:22:29,240 --> 00:22:31,370
+break the invariant but then you restore
+
+569
+00:22:31,370 --> 00:22:32,809
+the invariant before you release the
+
+570
+00:22:32,809 --> 00:22:34,279
+lock so nobody can observe these in
+
+571
+00:22:34,279 --> 00:22:36,409
+progress updates and so the correct way
+
+572
+00:22:36,409 --> 00:22:38,450
+to write this code is to actually have
+
+573
+00:22:38,450 --> 00:22:39,799
+less use of lock and unlock
+
+574
+00:22:39,799 --> 00:22:41,809
+we have lock then we do a bunch of work
+
+575
+00:22:41,809 --> 00:22:43,759
+and then we unlock and when you run this
+
+576
+00:22:43,759 --> 00:22:48,259
+code we see no more printouts like this
+
+577
+00:22:48,259 --> 00:22:50,389
+that we never have this audit thread
+
+578
+00:22:50,389 --> 00:22:52,490
+observe that the total is not what it
+
+579
+00:22:52,490 --> 00:22:55,580
+should be all right so that's the right
+
+580
+00:22:55,580 --> 00:22:58,970
+way to think about locking at kind of a
+
+581
+00:22:58,970 --> 00:23:00,679
+high level you can think about it as
+
+582
+00:23:00,679 --> 00:23:02,299
+make sure you grab locks when every
+
+583
+00:23:02,299 --> 00:23:03,769
+access shared data like that is a rule
+
+584
+00:23:03,769 --> 00:23:06,769
+but another important rule is locks
+
+585
+00:23:06,769 --> 00:23:09,200
+protect invariants so grab a lock
+
+586
+00:23:09,200 --> 00:23:10,789
+manipulate things in a way that might
+
+587
+00:23:10,789 --> 00:23:12,049
+break the invariants but restore them
+
+588
+00:23:12,049 --> 00:23:15,490
+afterwards and then release the lock
+
+589
+00:23:15,490 --> 00:23:17,330
+another way you can think about it is
+
+590
+00:23:17,330 --> 00:23:19,279
+locks can make regions of code atomic
+
+591
+00:23:19,279 --> 00:23:21,139
+not just like single statements or
+
+592
+00:23:21,139 --> 00:23:26,059
+single updates to shared variables any
+
+593
+00:23:26,059 --> 00:23:30,860
+questions about that great so the next
+
+594
+00:23:30,860 --> 00:23:32,840
+synchronization primitive we're going to
+
+595
+00:23:32,840 --> 00:23:34,100
+talk about it something called condition
+
+596
+00:23:34,100 --> 00:23:37,070
+variables and this is it seems like
+
+597
+00:23:37,070 --> 00:23:38,210
+there's been a source of confusion from
+
+598
+00:23:38,210 --> 00:23:39,379
+lab one where we mentioned condition
+
+599
+00:23:39,379 --> 00:23:40,700
+variables but didn't quite explain them
+
+600
+00:23:40,700 --> 00:23:41,600
+so we're going to take the time to
+
+601
+00:23:41,600 --> 00:23:43,549
+explain them to you now and we're going
+
+602
+00:23:43,549 --> 00:23:45,470
+to do that in the context of an example
+
+603
+00:23:45,470 --> 00:23:47,649
+that you should all be familiar with
+
+604
+00:23:47,649 --> 00:23:51,110
+counting votes so remember in lab 2a you
+
+605
+00:23:51,110 --> 00:23:53,029
+have this pattern where whenever a Raft
+
+606
+00:23:53,029 --> 00:23:54,889
+peer becomes a candidate it wants to
+
+607
+00:23:54,889 --> 00:23:56,360
+send out vote requests all of its
+
+608
+00:23:56,360 --> 00:23:58,879
+followers and eventually the followers
+
+609
+00:23:58,879 --> 00:24:01,490
+come back to the candidate and say yes
+
+610
+00:24:01,490 --> 00:24:02,870
+or no like whether or not the candidate
+
+611
+00:24:02,870 --> 00:24:04,610
+got the vote right and one way we could
+
+612
+00:24:04,610 --> 00:24:06,679
+write this code is have the candidate in
+
+613
+00:24:06,679 --> 00:24:09,049
+serial ask peer number one peer number
+
+614
+00:24:09,049 --> 00:24:10,580
+two peer number three and so on but
+
+615
+00:24:10,580 --> 00:24:12,409
+that's bad right because we want the
+
+616
+00:24:12,409 --> 00:24:14,090
+candidate ask all the peers in parallel
+
+617
+00:24:14,090 --> 00:24:15,529
+so it can quickly win the election when
+
+618
+00:24:15,529 --> 00:24:17,029
+possible and then there's some other
+
+619
+00:24:17,029 --> 00:24:19,159
+complexities there like when we ask all
+
+620
+00:24:19,159 --> 00:24:21,409
+the peers in parallel we don't want to
+
+621
+00:24:21,409 --> 00:24:22,909
+wait so we get a response from all of
+
+622
+00:24:22,909 --> 00:24:24,289
+them before making up our mind right
+
+623
+00:24:24,289 --> 00:24:25,909
+because if a candidate gets a majority
+
+624
+00:24:25,909 --> 00:24:27,769
+of votes like it doesn't need to wait
+
+625
+00:24:27,769 --> 00:24:29,210
+till it hears back from everybody else
+
+626
+00:24:29,210 --> 00:24:31,490
+so this code is kind of complicated in
+
+627
+00:24:31,490 --> 00:24:34,929
+some ways and so here here's a kind of
+
+628
+00:24:34,929 --> 00:24:37,039
+stubbed out version of what that vote
+
+629
+00:24:37,039 --> 00:24:39,110
+counting code might look like
+
+630
+00:24:39,110 --> 00:24:40,250
+with a little bit of infrastructure to
+
+631
+00:24:40,250 --> 00:24:41,779
+make it actually run and so here have
+
+632
+00:24:41,779 --> 00:24:43,399
+this mean goroutine that sets count
+
+633
+00:24:43,399 --> 00:24:44,929
+which is like the number of yes votes I
+
+634
+00:24:44,929 --> 00:24:47,570
+got to zero and finish to zero finished
+
+635
+00:24:47,570 --> 00:24:48,860
+as the number of responses I've gotten
+
+636
+00:24:48,860 --> 00:24:50,779
+in total and the idea is I want to send
+
+637
+00:24:50,779 --> 00:24:52,669
+out vote requests in parallel and keep
+
+638
+00:24:52,669 --> 00:24:54,409
+track of how many yeses I've got and how
+
+639
+00:24:54,409 --> 00:24:55,850
+many responses I've gotten in general
+
+640
+00:24:55,850 --> 00:24:58,250
+and then once I know whether I've won
+
+641
+00:24:58,250 --> 00:24:59,720
+the election or whether I know that I've
+
+642
+00:24:59,720 --> 00:25:01,940
+lost the election then I can determine
+
+643
+00:25:01,940 --> 00:25:03,890
+that and move on and like the real raft
+
+644
+00:25:03,890 --> 00:25:05,179
+code you actually do whatever you need
+
+645
+00:25:05,179 --> 00:25:07,850
+to do don't step up to a leader or to
+
+646
+00:25:07,850 --> 00:25:10,039
+step down to a follower after you have
+
+647
+00:25:10,039 --> 00:25:12,769
+the result from this and so looking at
+
+648
+00:25:12,769 --> 00:25:15,049
+this code here I'm going to in parallel
+
+649
+00:25:15,049 --> 00:25:17,480
+spawn say I have ten peers in parallel
+
+650
+00:25:17,480 --> 00:25:18,740
+spawn ten goroutines
+
+651
+00:25:18,740 --> 00:25:20,899
+here I pass in this closure here and I'm
+
+652
+00:25:20,899 --> 00:25:23,269
+gonna do is request a vote and then if I
+
+653
+00:25:23,269 --> 00:25:24,860
+get the vote I'm going to increment the
+
+654
+00:25:24,860 --> 00:25:26,630
+count by one and then I'm also going to
+
+655
+00:25:26,630 --> 00:25:28,429
+increment this finished by one so like
+
+656
+00:25:28,429 --> 00:25:30,230
+this is a number of yeses this is total
+
+657
+00:25:30,230 --> 00:25:32,210
+number of responses I've gotten and then
+
+658
+00:25:32,210 --> 00:25:34,309
+outside here in the main goroutine what
+
+659
+00:25:34,309 --> 00:25:35,450
+I'm doing is keeping track of this
+
+660
+00:25:35,450 --> 00:25:36,860
+condition I'm waiting for this condition
+
+661
+00:25:36,860 --> 00:25:38,750
+to become true that either I have enough
+
+662
+00:25:38,750 --> 00:25:40,490
+yes votes that I've won the election or
+
+663
+00:25:40,490 --> 00:25:42,440
+I've heard back from enough peers and I
+
+664
+00:25:42,440 --> 00:25:44,210
+know that I've lost and so I'm just
+
+665
+00:25:44,210 --> 00:25:47,029
+going to in a in a loop check to see and
+
+666
+00:25:47,029 --> 00:25:49,429
+wait until count is greater than or
+
+667
+00:25:49,429 --> 00:25:51,559
+equal to five or wait until finished is
+
+668
+00:25:51,559 --> 00:25:53,330
+equal to ten and then after that's the
+
+669
+00:25:53,330 --> 00:25:54,950
+case I can either determine that I've
+
+670
+00:25:54,950 --> 00:25:56,840
+lost drive one so does anybody see any
+
+671
+00:25:56,840 --> 00:25:58,669
+problems with this code given what we
+
+672
+00:25:58,669 --> 00:26:03,130
+just talked about about mutexes yes
+
+673
+00:26:04,770 --> 00:26:06,430
+yeah exactly
+
+674
+00:26:06,430 --> 00:26:07,990
+countin finished aren't protected by
+
+675
+00:26:07,990 --> 00:26:10,120
+mutexes so one thing we certainly need
+
+676
+00:26:10,120 --> 00:26:13,420
+to fix here is that whenever we have
+
+677
+00:26:13,420 --> 00:26:15,010
+shared variables we need to protect
+
+678
+00:26:15,010 --> 00:26:17,500
+access with new taxes and so that's not
+
+679
+00:26:17,500 --> 00:26:21,040
+too bad to fix here I declare mutex
+
+680
+00:26:21,040 --> 00:26:23,110
+that's accessible by everybody and then
+
+681
+00:26:23,110 --> 00:26:25,480
+in the goroutines I'm launching in
+
+682
+00:26:25,480 --> 00:26:27,550
+parallel to request votes I'm going to
+
+683
+00:26:27,550 --> 00:26:29,320
+and this this pattern here is pretty
+
+684
+00:26:29,320 --> 00:26:30,940
+important I'm going to first request a
+
+685
+00:26:30,940 --> 00:26:33,130
+vote while I'm not holding the lock and
+
+686
+00:26:33,130 --> 00:26:34,420
+then after wear that I'm going to grab
+
+687
+00:26:34,420 --> 00:26:35,770
+the lock and then update these shared
+
+688
+00:26:35,770 --> 00:26:40,330
+variables and then outside I have the
+
+689
+00:26:40,330 --> 00:26:41,830
+same patterns as before except I make
+
+690
+00:26:41,830 --> 00:26:43,780
+sure to lock and unlock between reading
+
+691
+00:26:43,780 --> 00:26:45,730
+these shared variables so in an infinite
+
+692
+00:26:45,730 --> 00:26:48,280
+loop I grab the lock and check to see if
+
+693
+00:26:48,280 --> 00:26:49,810
+the results of the election have been
+
+694
+00:26:49,810 --> 00:26:51,760
+determined by this point and if not I'm
+
+695
+00:26:51,760 --> 00:26:52,840
+going to keep running in this infinite
+
+696
+00:26:52,840 --> 00:26:57,820
+loop otherwise I'll unlock and then do
+
+697
+00:26:57,820 --> 00:27:01,000
+what I need to do outside of here and so
+
+698
+00:27:01,000 --> 00:27:09,430
+if I run this example whoops it seems to
+
+699
+00:27:09,430 --> 00:27:12,850
+work and this is actually like a correct
+
+700
+00:27:12,850 --> 00:27:14,770
+implementation it does the right thing
+
+701
+00:27:14,770 --> 00:27:16,960
+but there's some problems with it so can
+
+702
+00:27:16,960 --> 00:27:18,370
+anybody recognize any problems with this
+
+703
+00:27:18,370 --> 00:27:22,990
+implementation I'll give you a hint this
+
+704
+00:27:22,990 --> 00:27:26,430
+code is not as nice as it could be
+
+705
+00:27:32,410 --> 00:27:35,060
+so not quite it's going to wait for
+
+706
+00:27:35,060 --> 00:27:37,070
+exactly the right amount of time the
+
+707
+00:27:37,070 --> 00:27:39,170
+issue here is that it's busy waiting
+
+708
+00:27:39,170 --> 00:27:41,870
+what it's doing is in a very tight loop
+
+709
+00:27:41,870 --> 00:27:43,520
+it's grabbing the lock checking this
+
+710
+00:27:43,520 --> 00:27:45,710
+condition unlocking grabbing this lock
+
+711
+00:27:45,710 --> 00:27:47,090
+checking this condition unlocking and
+
+712
+00:27:47,090 --> 00:27:49,430
+it's going to burn up 100% CPU on one
+
+713
+00:27:49,430 --> 00:27:51,620
+core while it's doing this so this code
+
+714
+00:27:51,620 --> 00:27:54,020
+is correct but it's like at a high level
+
+715
+00:27:54,020 --> 00:27:55,970
+we don't care about efficiency like CPU
+
+716
+00:27:55,970 --> 00:27:57,620
+efficiency for the purpose of the labs
+
+717
+00:27:57,620 --> 00:27:59,840
+but if you're using a hundred percent of
+
+718
+00:27:59,840 --> 00:28:01,250
+one core you might actually slow down
+
+719
+00:28:01,250 --> 00:28:02,660
+the rest of your program enough that it
+
+720
+00:28:02,660 --> 00:28:05,120
+won't make progress and so that's why
+
+721
+00:28:05,120 --> 00:28:06,710
+this pattern is bad that we're burning
+
+722
+00:28:06,710 --> 00:28:08,570
+up a hundred percent CPU waiting for
+
+723
+00:28:08,570 --> 00:28:10,760
+some condition to become true right so
+
+724
+00:28:10,760 --> 00:28:12,110
+does anybody have any ideas for how we
+
+725
+00:28:12,110 --> 00:28:18,080
+could fix this so here's one simple
+
+726
+00:28:18,080 --> 00:28:18,770
+solution
+
+727
+00:28:18,770 --> 00:28:23,150
+I will change a single line of code all
+
+728
+00:28:23,150 --> 00:28:25,280
+I've added here is wait for 50
+
+729
+00:28:25,280 --> 00:28:28,670
+milliseconds and so this is a correct
+
+730
+00:28:28,670 --> 00:28:30,560
+transformation of that program and it
+
+731
+00:28:30,560 --> 00:28:32,030
+kind of seems to solve the problem right
+
+732
+00:28:32,030 --> 00:28:33,620
+like before I was burning up a hundred
+
+733
+00:28:33,620 --> 00:28:36,380
+percent CPU now only once every 50
+
+734
+00:28:36,380 --> 00:28:37,580
+milliseconds I'm going to briefly wake
+
+735
+00:28:37,580 --> 00:28:39,770
+up check this condition and go back to
+
+736
+00:28:39,770 --> 00:28:40,220
+sleep
+
+737
+00:28:40,220 --> 00:28:43,070
+if it doesn't hold and so this is like
+
+738
+00:28:43,070 --> 00:28:46,310
+basically a working solution any
+
+739
+00:28:46,310 --> 00:28:51,680
+questions so this kind of sort of works
+
+740
+00:28:51,680 --> 00:28:53,210
+but one thing you should always be aware
+
+741
+00:28:53,210 --> 00:28:55,880
+of whenever you write code is magic
+
+742
+00:28:55,880 --> 00:28:58,370
+constants why is this 50 milliseconds
+
+743
+00:28:58,370 --> 00:29:00,140
+why not a different number like whenever
+
+744
+00:29:00,140 --> 00:29:01,280
+you have an arbitrary number in your
+
+745
+00:29:01,280 --> 00:29:02,810
+code it's a sign that you're doing
+
+746
+00:29:02,810 --> 00:29:04,640
+something that's not quite right or not
+
+747
+00:29:04,640 --> 00:29:07,010
+quite as clean as it could be and so it
+
+748
+00:29:07,010 --> 00:29:08,240
+turns out that there's a concurrency
+
+749
+00:29:08,240 --> 00:29:10,310
+primitive designed to solve exactly this
+
+750
+00:29:10,310 --> 00:29:12,800
+problem of I have some threads running
+
+751
+00:29:12,800 --> 00:29:15,320
+concurrently that are making updates to
+
+752
+00:29:15,320 --> 00:29:17,060
+some shared data and then I have another
+
+753
+00:29:17,060 --> 00:29:19,250
+thread that's waiting for some property
+
+754
+00:29:19,250 --> 00:29:21,080
+some condition on that shared data to
+
+755
+00:29:21,080 --> 00:29:22,730
+become true and until that condition
+
+756
+00:29:22,730 --> 00:29:24,170
+becomes true the thread is just going to
+
+757
+00:29:24,170 --> 00:29:26,660
+wait there's a tool designed exactly to
+
+758
+00:29:26,660 --> 00:29:28,250
+solve this problem and that's a tool
+
+759
+00:29:28,250 --> 00:29:33,860
+called a condition variable and the way
+
+760
+00:29:33,860 --> 00:29:36,980
+you use a condition variable is the
+
+761
+00:29:36,980 --> 00:29:38,960
+pattern basically looks like this so we
+
+762
+00:29:38,960 --> 00:29:40,790
+have our lock from earlier condition
+
+763
+00:29:40,790 --> 00:29:43,399
+variables are associated with locks so
+
+764
+00:29:43,399 --> 00:29:46,729
+we have some shared data some a lock
+
+765
+00:29:46,729 --> 00:29:48,440
+that protects that shared data and then
+
+766
+00:29:48,440 --> 00:29:49,999
+we have this condition variable that is
+
+767
+00:29:49,999 --> 00:29:51,409
+given a pointer to the lock when it's
+
+768
+00:29:51,409 --> 00:29:53,149
+initialized and we're going to use this
+
+769
+00:29:53,149 --> 00:29:54,649
+condition variable for kind of
+
+770
+00:29:54,649 --> 00:29:56,659
+coordinating when a certain condition
+
+771
+00:29:56,659 --> 00:29:58,580
+some property on that shared data when
+
+772
+00:29:58,580 --> 00:30:02,059
+that becomes true and the way we modify
+
+773
+00:30:02,059 --> 00:30:05,210
+our code is like we have two places one
+
+774
+00:30:05,210 --> 00:30:07,339
+we're making changes to that data which
+
+775
+00:30:07,339 --> 00:30:08,989
+might make the condition become true and
+
+776
+00:30:08,989 --> 00:30:10,309
+then we have another place where we're
+
+777
+00:30:10,309 --> 00:30:11,570
+waiting for that condition to become
+
+778
+00:30:11,570 --> 00:30:14,210
+true and the general pattern is whenever
+
+779
+00:30:14,210 --> 00:30:17,719
+we do something that changes the data we
+
+780
+00:30:17,719 --> 00:30:20,719
+call a conduct broadcast and we do this
+
+781
+00:30:20,719 --> 00:30:22,789
+while holding the lock and then on the
+
+782
+00:30:22,789 --> 00:30:24,080
+other side where we're waiting for some
+
+783
+00:30:24,080 --> 00:30:25,429
+condition on that share data to become
+
+784
+00:30:25,429 --> 00:30:28,669
+true we call cond dot wait and so what
+
+785
+00:30:28,669 --> 00:30:30,710
+this does is like let's think about what
+
+786
+00:30:30,710 --> 00:30:32,059
+happens in the mean thread for a moment
+
+787
+00:30:32,059 --> 00:30:34,070
+the main thread grabs the lock it checks
+
+788
+00:30:34,070 --> 00:30:36,169
+this condition suppose it's false it
+
+789
+00:30:36,169 --> 00:30:38,899
+calls cond dow wait what this will do is
+
+790
+00:30:38,899 --> 00:30:40,489
+it will atomically you can think of it
+
+791
+00:30:40,489 --> 00:30:42,409
+as it'll release the lock in order to
+
+792
+00:30:42,409 --> 00:30:44,359
+let other people make progress and it'll
+
+793
+00:30:44,359 --> 00:30:46,549
+add its thread like it'll add itself to
+
+794
+00:30:46,549 --> 00:30:48,799
+a like list of people who are waiting on
+
+795
+00:30:48,799 --> 00:30:50,960
+this condition variable then
+
+796
+00:30:50,960 --> 00:30:52,789
+concurrently one of these threads might
+
+797
+00:30:52,789 --> 00:30:54,649
+be able to acquire the lock after it's
+
+798
+00:30:54,649 --> 00:30:56,719
+gotten a vote and then it manipulates
+
+799
+00:30:56,719 --> 00:30:58,009
+these variables and then it calls
+
+800
+00:30:58,009 --> 00:31:00,769
+cond dot broadcast what that does is it
+
+801
+00:31:00,769 --> 00:31:03,080
+wakes up whoever's waiting on the
+
+802
+00:31:03,080 --> 00:31:05,119
+condition variable and so once this
+
+803
+00:31:05,119 --> 00:31:08,960
+thread unlocks the mutex this one what
+
+804
+00:31:08,960 --> 00:31:10,700
+do we want as it's returning from wait
+
+805
+00:31:10,700 --> 00:31:13,219
+we'll reacquire the mutex and then
+
+806
+00:31:13,219 --> 00:31:15,080
+return to the top of this for loop which
+
+807
+00:31:15,080 --> 00:31:18,229
+is checking this condition so this
+
+808
+00:31:18,229 --> 00:31:20,539
+broadcast wakes up whoever's waiting at
+
+809
+00:31:20,539 --> 00:31:25,399
+this wait and so this avoids having to
+
+810
+00:31:25,399 --> 00:31:27,349
+have that time dot sleep for some
+
+811
+00:31:27,349 --> 00:31:29,119
+arbitrary amount of time like this
+
+812
+00:31:29,119 --> 00:31:30,589
+thread that's waiting for some condition
+
+813
+00:31:30,589 --> 00:31:32,960
+to become true only gets woken up when
+
+814
+00:31:32,960 --> 00:31:34,519
+something changes that might make that
+
+815
+00:31:34,519 --> 00:31:36,109
+condition become true right like if you
+
+816
+00:31:36,109 --> 00:31:37,580
+think about these threads if they're
+
+817
+00:31:37,580 --> 00:31:40,129
+very slow and they don't call cond dot
+
+818
+00:31:40,129 --> 00:31:42,200
+broadcast for a long time this one will
+
+819
+00:31:42,200 --> 00:31:43,489
+just be waiting it won't be like
+
+820
+00:31:43,489 --> 00:31:44,839
+periodically waking up and checking some
+
+821
+00:31:44,839 --> 00:31:46,849
+condition that can't have changed
+
+822
+00:31:46,849 --> 00:31:48,499
+because nobody else manipulated their
+
+823
+00:31:48,499 --> 00:31:52,190
+shared data so any questions about this
+
+824
+00:31:52,190 --> 00:31:55,269
+pattern yeah
+
+825
+00:32:16,160 --> 00:32:17,810
+so that's a great question I think
+
+826
+00:32:17,810 --> 00:32:19,130
+you're referring to something called the
+
+827
+00:32:19,130 --> 00:32:21,950
+lost wake up problem and this is a topic
+
+828
+00:32:21,950 --> 00:32:23,180
+in operating systems and we won't talk
+
+829
+00:32:23,180 --> 00:32:24,710
+about it in detail now there feel free
+
+830
+00:32:24,710 --> 00:32:26,600
+to ask me after lecture but at a high
+
+831
+00:32:26,600 --> 00:32:28,100
+level you can avoid funny race
+
+832
+00:32:28,100 --> 00:32:29,360
+conditions that might happen between
+
+833
+00:32:29,360 --> 00:32:31,340
+wait and broadcast by following the
+
+834
+00:32:31,340 --> 00:32:32,720
+particular pattern I'm showing here and
+
+835
+00:32:32,720 --> 00:32:33,980
+I'll show you an abstracted version of
+
+836
+00:32:33,980 --> 00:32:36,650
+this pattern in a moment basically the
+
+837
+00:32:36,650 --> 00:32:39,350
+pattern is for the side that might make
+
+838
+00:32:39,350 --> 00:32:41,180
+changes that will change the outcome of
+
+839
+00:32:41,180 --> 00:32:44,560
+the condition test you always lock then
+
+840
+00:32:44,560 --> 00:32:47,390
+manipulate the data then call broadcast
+
+841
+00:32:47,390 --> 00:32:49,460
+and call unlock afterwards so the
+
+842
+00:32:49,460 --> 00:32:51,140
+broadcast must be called while holding
+
+843
+00:32:51,140 --> 00:32:53,270
+the lock similarly when you're checking
+
+844
+00:32:53,270 --> 00:32:55,490
+the condition you grab the lock then
+
+845
+00:32:55,490 --> 00:32:56,930
+you're always checking the condition in
+
+846
+00:32:56,930 --> 00:32:59,480
+a loop and then inside so when that
+
+847
+00:32:59,480 --> 00:33:01,790
+condition is false you call Condit wait
+
+848
+00:33:01,790 --> 00:33:03,590
+this is only called while you're holding
+
+849
+00:33:03,590 --> 00:33:05,750
+the lock and it atomically releases the
+
+850
+00:33:05,750 --> 00:33:07,520
+lock and kind of schedule like puts
+
+851
+00:33:07,520 --> 00:33:09,110
+itself in a list of waiting threads and
+
+852
+00:33:09,110 --> 00:33:12,140
+then as waits returning so as we like
+
+853
+00:33:12,140 --> 00:33:13,640
+return from this wait call and then go
+
+854
+00:33:13,640 --> 00:33:15,080
+back to the top of this for loop it will
+
+855
+00:33:15,080 --> 00:33:16,850
+reacquire the lock so this check will
+
+856
+00:33:16,850 --> 00:33:18,320
+only happen while holding the lock and
+
+857
+00:33:18,320 --> 00:33:19,820
+then so outside of this we still have
+
+858
+00:33:19,820 --> 00:33:21,620
+the lock here and we unlock after we're
+
+859
+00:33:21,620 --> 00:33:24,040
+done doing whatever we need to do here
+
+860
+00:33:24,040 --> 00:33:26,180
+at a high level this pattern looks like
+
+861
+00:33:26,180 --> 00:33:28,610
+this so we have one thread or some
+
+862
+00:33:28,610 --> 00:33:29,780
+number of threads doing something that
+
+863
+00:33:29,780 --> 00:33:31,310
+might affect the condition so they're
+
+864
+00:33:31,310 --> 00:33:33,530
+going to grab a lock do the thing call
+
+865
+00:33:33,530 --> 00:33:36,170
+broadcast then call unlock and on the
+
+866
+00:33:36,170 --> 00:33:37,340
+other side we have some thread that's
+
+867
+00:33:37,340 --> 00:33:38,570
+waiting for some condition to become
+
+868
+00:33:38,570 --> 00:33:40,460
+true the pattern there it looks like we
+
+869
+00:33:40,460 --> 00:33:42,590
+grab the lock then in a while loop while
+
+870
+00:33:42,590 --> 00:33:44,900
+the condition is false we wait and so
+
+871
+00:33:44,900 --> 00:33:46,610
+then we know that when we get past this
+
+872
+00:33:46,610 --> 00:33:48,290
+while loop now the condition is true and
+
+873
+00:33:48,290 --> 00:33:50,000
+we're holding the lock and we can do
+
+874
+00:33:50,000 --> 00:33:51,560
+whatever we need to do here and then
+
+875
+00:33:51,560 --> 00:33:54,680
+finally we call unlock so we can talk
+
+876
+00:33:54,680 --> 00:33:55,790
+about all the things that might go wrong
+
+877
+00:33:55,790 --> 00:33:57,710
+if you violate one of these rules like
+
+878
+00:33:57,710 --> 00:33:59,150
+after lecture if you're interested but
+
+879
+00:33:59,150 --> 00:34:00,530
+at a high level if you follow this
+
+880
+00:34:00,530 --> 00:34:02,000
+pattern then you won't need to deal with
+
+881
+00:34:02,000 --> 00:34:07,690
+those issues so any questions about that
+
+882
+00:34:08,889 --> 00:34:11,889
+yeah
+
+883
+00:34:14,050 --> 00:34:15,949
+so that's a great question
+
+884
+00:34:15,949 --> 00:34:17,989
+when do you use broadcast versus when do
+
+885
+00:34:17,989 --> 00:34:19,580
+use signals so converse have three
+
+886
+00:34:19,580 --> 00:34:21,320
+methods on them one is wait for the
+
+887
+00:34:21,320 --> 00:34:23,179
+waiting side and then on the other side
+
+888
+00:34:23,179 --> 00:34:25,460
+you can use signal or broadcast and the
+
+889
+00:34:25,460 --> 00:34:27,710
+semantics of those are signal wait wakes
+
+890
+00:34:27,710 --> 00:34:30,110
+up exactly one waiter like one thread
+
+891
+00:34:30,110 --> 00:34:30,800
+that may be waiting
+
+892
+00:34:30,800 --> 00:34:32,810
+whereas broadcast wakes up everybody
+
+893
+00:34:32,810 --> 00:34:34,010
+who's waiting and they'll all reach out
+
+894
+00:34:34,010 --> 00:34:35,570
+like they'll all try to grab the law can
+
+895
+00:34:35,570 --> 00:34:37,370
+recheck the condition and only one of
+
+896
+00:34:37,370 --> 00:34:38,780
+them will proceed because only one of
+
+897
+00:34:38,780 --> 00:34:39,980
+them will hold lock until it gets
+
+898
+00:34:39,980 --> 00:34:42,170
+past this point I think for the purpose
+
+899
+00:34:42,170 --> 00:34:44,120
+of this class always use broadcast never
+
+900
+00:34:44,120 --> 00:34:45,590
+use signal if you follow this pattern
+
+901
+00:34:45,590 --> 00:34:46,880
+and just like don't use signal and
+
+902
+00:34:46,880 --> 00:34:48,739
+always use broadcast your code will work
+
+903
+00:34:48,739 --> 00:34:51,770
+I think you can stick think of signal as
+
+904
+00:34:51,770 --> 00:34:54,050
+something used for efficiency and we
+
+905
+00:34:54,050 --> 00:34:55,489
+don't really care about that level of
+
+906
+00:34:55,489 --> 00:34:57,170
+CPU efficiency in the labs for this
+
+907
+00:34:57,170 --> 00:34:59,350
+class
+
+908
+00:35:00,280 --> 00:35:06,260
+any more questions ok so the final topic
+
+909
+00:35:06,260 --> 00:35:07,880
+we're going to cover in terms of go
+
+910
+00:35:07,880 --> 00:35:10,640
+concurrency primitives is channels so
+
+911
+00:35:10,640 --> 00:35:12,620
+two high level channels are like a queue
+
+912
+00:35:12,620 --> 00:35:14,900
+like synchronization primitive but they
+
+913
+00:35:14,900 --> 00:35:18,250
+don't behave quite like cues in the
+
+914
+00:35:18,250 --> 00:35:22,130
+intuitive sense like I think some people
+
+915
+00:35:22,130 --> 00:35:23,780
+think of channels is like there's this
+
+916
+00:35:23,780 --> 00:35:25,370
+data structure we can sticks that stick
+
+917
+00:35:25,370 --> 00:35:26,840
+things in and eventually someone will
+
+918
+00:35:26,840 --> 00:35:28,340
+pull those things out but in fact
+
+919
+00:35:28,340 --> 00:35:31,190
+channels have no queuing capacity they
+
+920
+00:35:31,190 --> 00:35:34,580
+have no internal storage basically
+
+921
+00:35:34,580 --> 00:35:36,530
+channels are synchronous if you have to
+
+922
+00:35:36,530 --> 00:35:37,700
+goroutines that are going to send and
+
+923
+00:35:37,700 --> 00:35:39,350
+receive on a channel if someone tries to
+
+924
+00:35:39,350 --> 00:35:41,060
+send on the channel while nobody's
+
+925
+00:35:41,060 --> 00:35:43,190
+receiving that thread will block until
+
+926
+00:35:43,190 --> 00:35:45,860
+somebody's ready to receive and at that
+
+927
+00:35:45,860 --> 00:35:47,660
+point synchronously it will exchange
+
+928
+00:35:47,660 --> 00:35:50,300
+that data over to the receiver and the
+
+929
+00:35:50,300 --> 00:35:51,740
+same is true the other direction if
+
+930
+00:35:51,740 --> 00:35:53,030
+someone tries to receive from a channel
+
+931
+00:35:53,030 --> 00:35:54,920
+while nobody's sending that receive will
+
+932
+00:35:54,920 --> 00:35:56,690
+block until there's another goroutine
+
+933
+00:35:56,690 --> 00:35:58,310
+that's about to send on the channel and
+
+934
+00:35:58,310 --> 00:36:00,800
+that send will happen synchronously so
+
+935
+00:36:00,800 --> 00:36:01,970
+here's a little demo program that
+
+936
+00:36:01,970 --> 00:36:04,670
+demonstrates this here I have a I
+
+937
+00:36:04,670 --> 00:36:06,440
+declare channel and then I spawn a go
+
+938
+00:36:06,440 --> 00:36:08,750
+routine that waits for a second and then
+
+939
+00:36:08,750 --> 00:36:11,600
+sent and then receives from a channel
+
+940
+00:36:11,600 --> 00:36:14,870
+and then in my main goroutine I keep
+
+941
+00:36:14,870 --> 00:36:16,640
+track of the time then I send on the
+
+942
+00:36:16,640 --> 00:36:17,780
+channel so I just put some dummy data
+
+943
+00:36:17,780 --> 00:36:19,370
+into the channel and then I'm going to
+
+944
+00:36:19,370 --> 00:36:22,900
+print out how long the send took
+
+945
+00:36:25,569 --> 00:36:29,329
+and if you think of channels as cues
+
+946
+00:36:29,329 --> 00:36:31,579
+with internal storage capacity you might
+
+947
+00:36:31,579 --> 00:36:32,960
+think of this thing as completing very
+
+948
+00:36:32,960 --> 00:36:35,299
+fast but that's not how channels work
+
+949
+00:36:35,299 --> 00:36:38,240
+this send is going to block until this
+
+950
+00:36:38,240 --> 00:36:39,740
+receive happens and this one happened
+
+951
+00:36:39,740 --> 00:36:41,150
+till this one second is the elapsed and
+
+952
+00:36:41,150 --> 00:36:42,950
+so from here to here
+
+953
+00:36:42,950 --> 00:36:44,939
+we're actually blocked in the main
+
+954
+00:36:44,939 --> 00:36:48,319
+goroutine for one whole second alright so
+
+955
+00:36:48,319 --> 00:36:50,150
+don't think of channels as queues think
+
+956
+00:36:50,150 --> 00:36:51,680
+of them as this synchronous like the
+
+957
+00:36:51,680 --> 00:36:55,180
+synchronous communication mechanism
+
+958
+00:36:55,420 --> 00:36:57,589
+another example that'll make this really
+
+959
+00:36:57,589 --> 00:36:59,660
+obvious is here we have a goroutine that
+
+960
+00:36:59,660 --> 00:37:01,400
+creates a channel then sends on the
+
+961
+00:37:01,400 --> 00:37:02,690
+channel and tries receiving from it
+
+962
+00:37:02,690 --> 00:37:04,220
+doesn't anybody know what'll happen when
+
+963
+00:37:04,220 --> 00:37:05,150
+I try running this
+
+964
+00:37:05,150 --> 00:37:10,510
+I think the file name might give it away
+
+965
+00:37:15,880 --> 00:37:18,289
+yeah exactly the send is going to block
+
+966
+00:37:18,289 --> 00:37:19,640
+till somebody's ready to receive but
+
+967
+00:37:19,640 --> 00:37:22,730
+there is no receiver and go actually
+
+968
+00:37:22,730 --> 00:37:24,200
+detects this condition if all your
+
+969
+00:37:24,200 --> 00:37:25,609
+threads are sleeping it to text this is
+
+970
+00:37:25,609 --> 00:37:27,619
+a deadlock condition and it'll actually
+
+971
+00:37:27,619 --> 00:37:29,299
+crash but you can have more subtle bugs
+
+972
+00:37:29,299 --> 00:37:31,430
+where if you have some other thread like
+
+973
+00:37:31,430 --> 00:37:36,890
+off doing something if I spawn this go
+
+974
+00:37:36,890 --> 00:37:38,660
+routine that you know for loop does
+
+975
+00:37:38,660 --> 00:37:41,839
+nothing and I try running this program
+
+976
+00:37:41,839 --> 00:37:44,059
+again now it goes deadlock detector
+
+977
+00:37:44,059 --> 00:37:45,260
+won't notice that all threads are not
+
+978
+00:37:45,260 --> 00:37:46,609
+doing any use will work like there's one
+
+979
+00:37:46,609 --> 00:37:48,529
+thread running it's just this is never
+
+980
+00:37:48,529 --> 00:37:50,000
+receiving and we can tell by looking at
+
+981
+00:37:50,000 --> 00:37:51,260
+this program that it'll never terminate
+
+982
+00:37:51,260 --> 00:37:54,920
+but here it just looks like it hangs so
+
+983
+00:37:54,920 --> 00:37:56,359
+if you're not careful with channels you
+
+984
+00:37:56,359 --> 00:37:58,670
+can get these subtle bugs where you have
+
+985
+00:37:58,670 --> 00:38:05,599
+double X as a result yeah yeah exactly
+
+986
+00:38:05,599 --> 00:38:07,670
+there's no data nobody's sending on this
+
+987
+00:38:07,670 --> 00:38:08,900
+channel so this is gonna block here it's
+
+988
+00:38:08,900 --> 00:38:11,770
+never gonna get to this line
+
+989
+00:38:19,470 --> 00:38:22,020
+yeah so channels as you pointed out
+
+990
+00:38:22,020 --> 00:38:23,760
+can't really be used just within a
+
+991
+00:38:23,760 --> 00:38:25,020
+single goroutine it doesn't really make
+
+992
+00:38:25,020 --> 00:38:27,270
+sense because in order to send or in
+
+993
+00:38:27,270 --> 00:38:28,890
+order to receive there has to be another
+
+994
+00:38:28,890 --> 00:38:30,780
+goroutine doing the opposite action at
+
+995
+00:38:30,780 --> 00:38:32,700
+the same time so if there isn't you're
+
+996
+00:38:32,700 --> 00:38:34,080
+just gonna block forever and then that
+
+997
+00:38:34,080 --> 00:38:35,880
+chant but thread will no longer do any
+
+998
+00:38:35,880 --> 00:38:44,400
+useful work yeah sends wait for receives
+
+999
+00:38:44,400 --> 00:38:45,750
+receives wait for signs and it happens
+
+1000
+00:38:45,750 --> 00:38:47,070
+synchronously once there's both the
+
+1001
+00:38:47,070 --> 00:38:53,010
+sender and receiver present what I
+
+1002
+00:38:53,010 --> 00:38:54,570
+talked about so far is unbuffered
+
+1003
+00:38:54,570 --> 00:38:56,280
+channels I was going to avoid talking
+
+1004
+00:38:56,280 --> 00:38:57,630
+about buffered channels because there
+
+1005
+00:38:57,630 --> 00:38:58,620
+are very few problems that they're
+
+1006
+00:38:58,620 --> 00:39:00,600
+actually useful for solving so buffered
+
+1007
+00:39:00,600 --> 00:39:04,680
+channels can take in a capacity and then
+
+1008
+00:39:04,680 --> 00:39:07,350
+you can think of it as it's just switch
+
+1009
+00:39:07,350 --> 00:39:09,870
+this to so here's a buffered channel
+
+1010
+00:39:09,870 --> 00:39:11,850
+with a capacity of one this program does
+
+1011
+00:39:11,850 --> 00:39:14,630
+terminate because buffered channels are
+
+1012
+00:39:14,630 --> 00:39:16,740
+like they have some internal storage
+
+1013
+00:39:16,740 --> 00:39:18,690
+space and until that space fills up
+
+1014
+00:39:18,690 --> 00:39:20,520
+sends are non blocking because they can
+
+1015
+00:39:20,520 --> 00:39:21,750
+just put that data in the internal
+
+1016
+00:39:21,750 --> 00:39:23,700
+storage space but once the channel does
+
+1017
+00:39:23,700 --> 00:39:26,290
+fill up then it does behave like a
+
+1018
+00:39:26,290 --> 00:39:28,050
+non-buffer channel in the sense that further
+
+1019
+00:39:28,050 --> 00:39:30,000
+sends will block until there's a receive
+
+1020
+00:39:30,000 --> 00:39:34,320
+to make space in the channel but I think
+
+1021
+00:39:34,320 --> 00:39:35,760
+at a high level we should avoid buffered
+
+1022
+00:39:35,760 --> 00:39:37,020
+channels because they basically don't
+
+1023
+00:39:37,020 --> 00:39:39,750
+solve any problems and another path and
+
+1024
+00:39:39,750 --> 00:39:40,650
+other things should be thinking about is
+
+1025
+00:39:40,650 --> 00:39:41,580
+whenever you to make up arbitrary
+
+1026
+00:39:41,580 --> 00:39:43,260
+numbers like this one here to make your
+
+1027
+00:39:43,260 --> 00:39:44,280
+code work you're probably doing
+
+1028
+00:39:44,280 --> 00:39:48,020
+something wrong yeah
+
+1029
+00:40:00,509 --> 00:40:02,559
+so I think this is a question about
+
+1030
+00:40:02,559 --> 00:40:04,029
+terminology like what exactly does
+
+1031
+00:40:04,029 --> 00:40:05,319
+deadlock mean into this count as a
+
+1032
+00:40:05,319 --> 00:40:06,700
+deadlock like yes this counts as a
+
+1033
+00:40:06,700 --> 00:40:08,109
+deadlock like no useful progress will be
+
+1034
+00:40:08,109 --> 00:40:10,299
+made here like this these threads are
+
+1035
+00:40:10,299 --> 00:40:12,420
+just stuck forever
+
+1036
+00:40:12,420 --> 00:40:16,839
+any other questions so what our channel
+
+1037
+00:40:16,839 --> 00:40:18,640
+is useful for I think channels are
+
+1038
+00:40:18,640 --> 00:40:20,200
+useful for a small set of things like
+
+1039
+00:40:20,200 --> 00:40:23,109
+for example I think for producer
+
+1040
+00:40:23,109 --> 00:40:25,329
+consumer queues sort of situations like
+
+1041
+00:40:25,329 --> 00:40:26,890
+here I have a program that makes a
+
+1042
+00:40:26,890 --> 00:40:28,269
+channel and this spawns a bunch of
+
+1043
+00:40:28,269 --> 00:40:29,650
+goroutines that are going to be doing
+
+1044
+00:40:29,650 --> 00:40:31,059
+some work like say they're competing
+
+1045
+00:40:31,059 --> 00:40:33,309
+some result in producing some data and I
+
+1046
+00:40:33,309 --> 00:40:34,719
+have a bunch of these goroutines
+
+1047
+00:40:34,719 --> 00:40:36,249
+running in parallel and I want to
+
+1048
+00:40:36,249 --> 00:40:37,989
+collect all that data as it comes in and
+
+1049
+00:40:37,989 --> 00:40:38,799
+do something with it
+
+1050
+00:40:38,799 --> 00:40:40,569
+so this do work thing just like waits
+
+1051
+00:40:40,569 --> 00:40:42,160
+for a bit and produces a random number
+
+1052
+00:40:42,160 --> 00:40:43,839
+and in the main goroutine I'm going to
+
+1053
+00:40:43,839 --> 00:40:45,700
+continuously receive on this channel and
+
+1054
+00:40:45,700 --> 00:40:47,769
+print it out like this is a great use of
+
+1055
+00:40:47,769 --> 00:40:50,710
+channels another good use of channels is
+
+1056
+00:40:50,710 --> 00:40:52,630
+to achieve something similar to what
+
+1057
+00:40:52,630 --> 00:40:56,079
+wait groups do so rather than use a wait
+
+1058
+00:40:56,079 --> 00:40:57,519
+group suppose I want to spawn a bunch of
+
+1059
+00:40:57,519 --> 00:40:58,930
+threads and wait till they're all done
+
+1060
+00:40:58,930 --> 00:41:01,150
+doing something one way to do that is to
+
+1061
+00:41:01,150 --> 00:41:03,279
+create a channel and then I spawn a
+
+1062
+00:41:03,279 --> 00:41:04,390
+bunch of threads and know how many
+
+1063
+00:41:04,390 --> 00:41:06,549
+threads I've spawned so five goroutines
+
+1064
+00:41:06,549 --> 00:41:07,809
+created here they're going to do
+
+1065
+00:41:07,809 --> 00:41:09,369
+something and then send on this channel
+
+1066
+00:41:09,369 --> 00:41:11,619
+when they're done and then in the main
+
+1067
+00:41:11,619 --> 00:41:13,809
+goroutine I can just receive from that
+
+1068
+00:41:13,809 --> 00:41:15,400
+channel the same number of times and
+
+1069
+00:41:15,400 --> 00:41:19,619
+this has the same effect as a wait group
+
+1070
+00:41:22,840 --> 00:41:31,330
+so question so what exactly is the
+
+1071
+00:41:31,330 --> 00:41:33,660
+question
+
+1072
+00:41:33,840 --> 00:41:36,939
+[Music]
+
+1073
+00:41:37,510 --> 00:41:39,980
+so the question is here could you use a
+
+1074
+00:41:39,980 --> 00:41:41,630
+buffered channel with a capacity of five
+
+1075
+00:41:41,630 --> 00:41:43,130
+because you're waiting for five receives
+
+1076
+00:41:43,130 --> 00:41:45,470
+I think in this particular case yes that
+
+1077
+00:41:45,470 --> 00:41:47,570
+would have the equivalent effect but I
+
+1078
+00:41:47,570 --> 00:41:49,280
+think there's not really a reason to do
+
+1079
+00:41:49,280 --> 00:41:50,020
+that
+
+1080
+00:41:50,020 --> 00:41:52,220
+and I think at a high level in your code
+
+1081
+00:41:52,220 --> 00:41:53,660
+you should avoid buffer channels and
+
+1082
+00:41:53,660 --> 00:41:55,490
+also maybe even channels unless you
+
+1083
+00:41:55,490 --> 00:41:57,040
+think very hard about what you're doing
+
+1084
+00:41:57,040 --> 00:42:08,000
+yeah so what is a wait group I think
+
+1085
+00:42:08,000 --> 00:42:09,500
+we covered this in a previous lecture
+
+1086
+00:42:09,500 --> 00:42:11,830
+and I talked about it very briefly today
+
+1087
+00:42:11,830 --> 00:42:14,990
+but I do have an example of wait
+
+1088
+00:42:14,990 --> 00:42:18,950
+groups so a wait group is a yet
+
+1089
+00:42:18,950 --> 00:42:20,150
+another synchronization primitive
+
+1090
+00:42:20,150 --> 00:42:21,680
+provided by go in the sync package and
+
+1091
+00:42:21,680 --> 00:42:24,350
+it kind of does what his name advertises
+
+1092
+00:42:24,350 --> 00:42:25,700
+like it lets you wait for a certain
+
+1093
+00:42:25,700 --> 00:42:27,260
+number of threads to be done the way it
+
+1094
+00:42:27,260 --> 00:42:29,120
+works is you call wait group dot add
+
+1095
+00:42:29,120 --> 00:42:31,730
+and that basically increments some
+
+1096
+00:42:31,730 --> 00:42:33,470
+internal counter and then when you call
+
+1097
+00:42:33,470 --> 00:42:35,690
+wait group dot wait it waits till
+
+1098
+00:42:35,690 --> 00:42:38,360
+done has been called as many times as add
+
+1099
+00:42:38,360 --> 00:42:42,530
+was called so this code is basically the
+
+1100
+00:42:42,530 --> 00:42:43,940
+same as the code I just showed you that
+
+1101
+00:42:43,940 --> 00:42:45,860
+was using a channel except this is using
+
+1102
+00:42:45,860 --> 00:42:47,120
+wait group they have the exact same
+
+1103
+00:42:47,120 --> 00:42:52,390
+effect you can use either one yeah
+
+1104
+00:43:01,940 --> 00:43:04,710
+so the question here is about race
+
+1105
+00:43:04,710 --> 00:43:06,740
+conditions I think like what happens if
+
+1106
+00:43:06,740 --> 00:43:09,780
+this add doesn't happen fast enough
+
+1107
+00:43:09,780 --> 00:43:11,460
+before this wait happens or something
+
+1108
+00:43:11,460 --> 00:43:13,800
+like that well so here notice that the
+
+1109
+00:43:13,800 --> 00:43:15,750
+pattern here is we call wait group
+
+1110
+00:43:15,750 --> 00:43:19,110
+data outside of this goroutine and it's
+
+1111
+00:43:19,110 --> 00:43:21,240
+called before spawning this goroutine
+
+1112
+00:43:21,240 --> 00:43:24,060
+so this happens first this happens next
+
+1113
+00:43:24,060 --> 00:43:26,910
+and so we'll never have the situation
+
+1114
+00:43:26,910 --> 00:43:29,910
+we're done happens after this add happens
+
+1115
+00:43:29,910 --> 00:43:51,450
+for this particular routine how's this
+
+1116
+00:43:51,450 --> 00:43:54,240
+implemented by the compiler and I will
+
+1117
+00:43:54,240 --> 00:43:55,500
+not talk about that now but talk to me
+
+1118
+00:43:55,500 --> 00:43:57,840
+after class or in office hours but I
+
+1119
+00:43:57,840 --> 00:43:59,220
+think for the purposes class like you
+
+1120
+00:43:59,220 --> 00:44:00,570
+need to know the API for these things
+
+1121
+00:44:00,570 --> 00:44:04,650
+not the implementation all right and so
+
+1122
+00:44:04,650 --> 00:44:07,710
+I think that's basically all I have on
+
+1123
+00:44:07,710 --> 00:44:12,330
+go concurrency primitives so one final
+
+1124
+00:44:12,330 --> 00:44:13,920
+thought is on channels like channels are
+
+1125
+00:44:13,920 --> 00:44:15,390
+good for a specific set of things like I
+
+1126
+00:44:15,390 --> 00:44:16,530
+just showed you the producer consumer
+
+1127
+00:44:16,530 --> 00:44:17,910
+queue or like implementing something
+
+1128
+00:44:17,910 --> 00:44:19,350
+like wait groups but I think when you
+
+1129
+00:44:19,350 --> 00:44:21,420
+try to do fancier things with them like
+
+1130
+00:44:21,420 --> 00:44:24,330
+if you want to say like kick another go
+
+1131
+00:44:24,330 --> 00:44:25,620
+routine that may or may not be waiting
+
+1132
+00:44:25,620 --> 00:44:27,390
+for you to be like woken up that's a
+
+1133
+00:44:27,390 --> 00:44:28,650
+kind of tricky thing to do with channels
+
+1134
+00:44:28,650 --> 00:44:30,180
+there's also a bunch of other ways to
+
+1135
+00:44:30,180 --> 00:44:31,560
+shoot yourself in the foot with them I'm
+
+1136
+00:44:31,560 --> 00:44:33,090
+going to avoid showing you examples of
+
+1137
+00:44:33,090 --> 00:44:35,190
+bad code with channels just because it's
+
+1138
+00:44:35,190 --> 00:44:37,860
+not useful to see but I personally avoid
+
+1139
+00:44:37,860 --> 00:44:39,330
+using channels for the most part and
+
+1140
+00:44:39,330 --> 00:44:42,060
+just use shared memory and mutexes and
+
+1141
+00:44:42,060 --> 00:44:43,380
+condition variables and set and I
+
+1142
+00:44:43,380 --> 00:44:44,700
+personally find those much easier to
+
+1143
+00:44:44,700 --> 00:44:48,000
+reason about so feel free to use
+
+1144
+00:44:48,000 --> 00:44:49,590
+channels for when they make sense but if
+
+1145
+00:44:49,590 --> 00:44:51,030
+anything looks especially awkward to do
+
+1146
+00:44:51,030 --> 00:44:52,680
+with channels like just use mutexes and
+
+1147
+00:44:52,680 --> 00:44:53,700
+condition variables and they're probably
+
+1148
+00:44:53,700 --> 00:44:56,930
+a better tool yeah
+
+1149
+00:45:02,599 --> 00:45:04,799
+so the question is with the difference
+
+1150
+00:45:04,799 --> 00:45:06,089
+between this producer-consumer pattern
+
+1151
+00:45:06,089 --> 00:45:07,769
+here in a thread-safe FIFO I think
+
+1152
+00:45:07,769 --> 00:45:09,660
+they're kind of equivalent like you
+
+1153
+00:45:09,660 --> 00:45:11,339
+could do this with the thread-safe FIFO
+
+1154
+00:45:11,339 --> 00:45:14,240
+and it like that is basically what a
+
+1155
+00:45:14,240 --> 00:45:35,549
+like buffered channel is roughly if
+
+1156
+00:45:35,549 --> 00:45:37,140
+you're in queueing things in
+
+1157
+00:45:37,140 --> 00:45:38,640
+dequeueing things like if you want this
+
+1158
+00:45:38,640 --> 00:45:40,289
+line to finish and have this thread go
+
+1159
+00:45:40,289 --> 00:45:41,730
+do something else while that data sits
+
+1160
+00:45:41,730 --> 00:45:43,929
+there in a queue rather than this
+
+1161
+00:45:43,929 --> 00:45:45,630
+goroutine waiting to send it then a
+
+1162
+00:45:45,630 --> 00:45:48,960
+buffered channel might make sense but I
+
+1163
+00:45:48,960 --> 00:45:50,130
+think at least in the lab you will not
+
+1164
+00:45:50,130 --> 00:45:53,849
+have a pattern like that all right so
+
+1165
+00:45:53,849 --> 00:45:56,549
+next Fabian's going to talk about more
+
+1166
+00:45:56,549 --> 00:46:05,630
+rapidly related stuff do you need this
+
+1167
+00:46:13,630 --> 00:46:16,639
+all right can you all hear me is this
+
+1168
+00:46:16,639 --> 00:46:24,709
+working yeah all right so yeah basically
+
+1169
+00:46:24,709 --> 00:46:27,409
+I'm going to show you two bugs that we
+
+1170
+00:46:27,409 --> 00:46:29,449
+commonly see in people's raft
+
+1171
+00:46:29,449 --> 00:46:30,829
+implementations there's a lot of bugs
+
+1172
+00:46:30,829 --> 00:46:32,899
+that are pretty common but I'm just
+
+1173
+00:46:32,899 --> 00:46:35,989
+going to focus on two of them so in this
+
+1174
+00:46:35,989 --> 00:46:38,869
+first example we sort of have a start of
+
+1175
+00:46:38,869 --> 00:46:41,269
+a raft implementation for that's sort of
+
+1176
+00:46:41,269 --> 00:46:43,069
+like what you might see for to a just
+
+1177
+00:46:43,069 --> 00:46:43,969
+the beginnings of one
+
+1178
+00:46:43,969 --> 00:46:48,019
+so in our raft state we have primarily
+
+1179
+00:46:48,019 --> 00:46:50,239
+the current status of the raft pier
+
+1180
+00:46:50,239 --> 00:46:52,219
+either follower candidate or leader and
+
+1181
+00:46:52,219 --> 00:46:54,199
+we have these two state variables that
+
+1182
+00:46:54,199 --> 00:46:55,519
+were keeping track of the current term
+
+1183
+00:46:55,519 --> 00:46:58,179
+and who we voted for in the current term
+
+1184
+00:46:58,179 --> 00:47:01,159
+so I'm I want us to focus though on
+
+1185
+00:47:01,159 --> 00:47:04,099
+these two functions AttemptElection and
+
+1186
+00:47:04,099 --> 00:47:07,699
+CallRequestVote so in AttemptElection we're
+
+1187
+00:47:07,699 --> 00:47:10,689
+just going to set our state to candidate
+
+1188
+00:47:10,689 --> 00:47:13,339
+increment our current term vote for
+
+1189
+00:47:13,339 --> 00:47:15,109
+ourselves and then start sending out
+
+1190
+00:47:15,109 --> 00:47:17,449
+request votes to all of our raft peers
+
+1191
+00:47:17,449 --> 00:47:19,999
+and so this is similar to some of the
+
+1192
+00:47:19,999 --> 00:47:23,719
+patterns that Anish showed where we're
+
+1193
+00:47:23,719 --> 00:47:25,219
+going to loop through our peers and then
+
+1194
+00:47:25,219 --> 00:47:28,339
+for each one in a goroutines separately
+
+1195
+00:47:28,339 --> 00:47:30,439
+call this CallRequestVote function in
+
+1196
+00:47:30,439 --> 00:47:32,599
+order to actually send an RPC to that
+
+1197
+00:47:32,599 --> 00:47:33,519
+peer
+
+1198
+00:47:33,519 --> 00:47:36,829
+alright so in CallRequestVote we're
+
+1199
+00:47:36,829 --> 00:47:40,279
+going to acquire the lock prepare
+
+1200
+00:47:40,279 --> 00:47:42,649
+arguments for our request vote RPC call
+
+1201
+00:47:42,649 --> 00:47:44,689
+based on by setting it to the current
+
+1202
+00:47:44,689 --> 00:47:47,689
+term and then actually perform the RPC
+
+1203
+00:47:47,689 --> 00:47:49,969
+call over here and finally based on the
+
+1204
+00:47:49,969 --> 00:47:54,079
+response we will reply back to this this
+
+1205
+00:47:54,079 --> 00:47:55,789
+AttemptElection function and the
+
+1206
+00:47:55,789 --> 00:47:56,929
+AttemptElection function eventually
+
+1207
+00:47:56,929 --> 00:47:58,699
+should tally up the votes to see if it
+
+1208
+00:47:58,699 --> 00:48:00,139
+got a majority of the votes and can
+
+1209
+00:48:00,139 --> 00:48:04,219
+become leader so what happens when we
+
+1210
+00:48:04,219 --> 00:48:06,439
+run this code so in theory what we might
+
+1211
+00:48:06,439 --> 00:48:08,839
+expect to happen is for so there's
+
+1212
+00:48:08,839 --> 00:48:10,099
+going to be some code that's going to
+
+1213
+00:48:10,099 --> 00:48:11,779
+spawn a few graph spears and actually
+
+1214
+00:48:11,779 --> 00:48:13,959
+try to attempt elections on them and
+
+1215
+00:48:13,959 --> 00:48:18,109
+what should happen are we just start
+
+1216
+00:48:18,109 --> 00:48:19,609
+collecting votes from other peers and
+
+1217
+00:48:19,609 --> 00:48:21,139
+then we're not actually going to tally
+
+1218
+00:48:21,139 --> 00:48:21,650
+them up
+
+1219
+00:48:21,650 --> 00:48:24,259
+but hopefully nothing weird goes wrong
+
+1220
+00:48:24,259 --> 00:48:26,029
+but actually something is going to go
+
+1221
+00:48:26,029 --> 00:48:29,299
+wrong here and we actually activated
+
+1222
+00:48:29,299 --> 00:48:31,579
+goes deadlock detector and somehow we
+
+1223
+00:48:31,579 --> 00:48:33,859
+ran into a deadlock so let's see what
+
+1224
+00:48:33,859 --> 00:48:37,400
+happened for now let's focus on what's
+
+1225
+00:48:37,400 --> 00:48:40,999
+going on with the server zero so server
+
+1226
+00:48:40,999 --> 00:48:42,769
+zero it says it starts attempting an
+
+1227
+00:48:42,769 --> 00:48:45,470
+election at term one that's just
+
+1228
+00:48:45,470 --> 00:48:47,029
+starting the AttemptElection function
+
+1229
+00:48:47,029 --> 00:48:49,039
+it will acquire the lock set some of the
+
+1230
+00:48:49,039 --> 00:48:50,749
+set some stuff up for performing the
+
+1231
+00:48:50,749 --> 00:48:57,049
+election and then unlock then it's going
+
+1232
+00:48:57,049 --> 00:48:59,599
+to send out a request vote RPC to server
+
+1233
+00:48:59,599 --> 00:49:03,769
+two it finishes processing that request
+
+1234
+00:49:03,769 --> 00:49:05,150
+vote RPC over here so we're just
+
+1235
+00:49:05,150 --> 00:49:07,009
+printing right before and after we
+
+1236
+00:49:07,009 --> 00:49:09,799
+actually send out the RPC and then it
+
+1237
+00:49:09,799 --> 00:49:11,930
+sends out a request vote RPC to server
+
+1238
+00:49:11,930 --> 00:49:14,089
+one but after that it never we never
+
+1239
+00:49:14,089 --> 00:49:15,680
+actually see it finish sending the
+
+1240
+00:49:15,680 --> 00:49:18,849
+request vote RPC so it's actually stuck
+
+1241
+00:49:18,849 --> 00:49:21,680
+in this function call waiting for the
+
+1242
+00:49:21,680 --> 00:49:24,319
+RPC response from server 1 all right now
+
+1243
+00:49:24,319 --> 00:49:25,849
+let's look at what's everyone's doing so
+
+1244
+00:49:25,849 --> 00:49:27,920
+it's it's pretty much the same thing it
+
+1245
+00:49:27,920 --> 00:49:29,420
+sends a request vote I received a server
+
+1246
+00:49:29,420 --> 00:49:32,869
+two that that succeeds it finishes
+
+1247
+00:49:32,869 --> 00:49:34,430
+processing that request vote the
+
+1248
+00:49:34,430 --> 00:49:36,349
+response from server 2 then it sends
+
+1249
+00:49:36,349 --> 00:49:39,680
+this RPC to zero and now what's actually
+
+1250
+00:49:39,680 --> 00:49:41,989
+happening is 0 & 1 are sort of waiting
+
+1251
+00:49:41,989 --> 00:49:43,700
+for the RPC responses from each other
+
+1252
+00:49:43,700 --> 00:49:45,559
+they both sent out an RPC call but not
+
+1253
+00:49:45,559 --> 00:49:48,769
+yet got the response yet and that's
+
+1254
+00:49:48,769 --> 00:49:50,269
+actually sort of the cause of our
+
+1255
+00:49:50,269 --> 00:49:53,630
+deadlock so really what's the reason
+
+1256
+00:49:53,630 --> 00:49:54,890
+that we're dead locking is because we're
+
+1257
+00:49:54,890 --> 00:49:57,730
+holding this lock through our RPC calls
+
+1258
+00:49:57,730 --> 00:49:59,809
+over here in the core requests vote
+
+1259
+00:49:59,809 --> 00:50:02,390
+function we acquire our mutex associated
+
+1260
+00:50:02,390 --> 00:50:04,999
+with our raft peer and we only unlock at
+
+1261
+00:50:04,999 --> 00:50:06,499
+the end of this function so throughout
+
+1262
+00:50:06,499 --> 00:50:07,819
+this entire function we're holding the
+
+1263
+00:50:07,819 --> 00:50:10,910
+lock including when we try to contact
+
+1264
+00:50:10,910 --> 00:50:17,239
+our peer to get the vote and later when
+
+1265
+00:50:17,239 --> 00:50:22,579
+we handle this request vote RPC we
+
+1266
+00:50:22,579 --> 00:50:24,499
+actually only see it at the beginning of
+
+1267
+00:50:24,499 --> 00:50:26,599
+this function in the handler we're also
+
+1268
+00:50:26,599 --> 00:50:28,160
+trying to acquire the lock but we never
+
+1269
+00:50:28,160 --> 00:50:29,630
+actually succeed in acquiring the lock
+
+1270
+00:50:29,630 --> 00:50:31,579
+so just to make this a little bit more
+
+1271
+00:50:31,579 --> 00:50:34,279
+clear the the sort of order of
+
+1272
+00:50:34,279 --> 00:50:35,420
+operations
+
+1273
+00:50:35,420 --> 00:50:39,700
+is happening is in CallRequestVote
+
+1274
+00:50:39,700 --> 00:50:42,710
+server zero is first going to acquire
+
+1275
+00:50:42,710 --> 00:50:47,510
+the lock and send an RPC call to server
+
+1276
+00:50:47,510 --> 00:50:51,040
+one and then simultaneously and
+
+1277
+00:50:51,040 --> 00:50:53,089
+separately server one is going to do the
+
+1278
+00:50:53,089 --> 00:50:54,319
+same thing it's going to enter its call
+
+1279
+00:50:54,319 --> 00:50:56,089
+request vote function acquire the lock
+
+1280
+00:50:56,089 --> 00:51:01,809
+and send this RPC call to server zero
+
+1281
+00:51:01,809 --> 00:51:05,210
+now in server zeros handler and server
+
+1282
+00:51:05,210 --> 00:51:07,220
+ones handler they're trying to acquire
+
+1283
+00:51:07,220 --> 00:51:10,700
+the lock but they can't because they
+
+1284
+00:51:10,700 --> 00:51:11,990
+already are acquiring the lock and
+
+1285
+00:51:11,990 --> 00:51:13,220
+trying to send the RPC call to each
+
+1286
+00:51:13,220 --> 00:51:15,319
+other and that that's actually what's
+
+1287
+00:51:15,319 --> 00:51:18,920
+leading to the deadlock situation so to
+
+1288
+00:51:18,920 --> 00:51:21,440
+solve this basically we want you to not
+
+1289
+00:51:21,440 --> 00:51:23,480
+hold locks through RPC calls and that's
+
+1290
+00:51:23,480 --> 00:51:27,710
+the solution to this problem in fact we
+
+1291
+00:51:27,710 --> 00:51:29,420
+don't need the lock here at all instead
+
+1292
+00:51:29,420 --> 00:51:32,210
+of trying to read the current term when
+
+1293
+00:51:32,210 --> 00:51:34,869
+we enter this CallRequestVote function
+
+1294
+00:51:34,869 --> 00:51:38,319
+we can pass this as an argument here
+
+1295
+00:51:38,319 --> 00:51:42,770
+save the term when we had acquired the
+
+1296
+00:51:42,770 --> 00:51:44,720
+lock earlier in this AttemptElection
+
+1297
+00:51:44,720 --> 00:51:47,450
+and just passed this as a as a variable
+
+1298
+00:51:47,450 --> 00:51:48,890
+to CallRequestVote so that actually
+
+1299
+00:51:48,890 --> 00:51:51,950
+removes the need to acquire the lock at
+
+1300
+00:51:51,950 --> 00:51:55,730
+all in CallRequestVote alternatively
+
+1301
+00:51:55,730 --> 00:51:58,010
+we could lock while we're preparing the
+
+1302
+00:51:58,010 --> 00:51:59,569
+arguments and then unlock before
+
+1303
+00:51:59,569 --> 00:52:01,849
+actually performing the call and then if
+
+1304
+00:52:01,849 --> 00:52:04,250
+we need to to process the reply we could
+
+1305
+00:52:04,250 --> 00:52:05,839
+lock again afterwards so it's just make
+
+1306
+00:52:05,839 --> 00:52:08,059
+sure to unlock before making it
+
+1307
+00:52:08,059 --> 00:52:10,520
+obviously call and then if you need to
+
+1308
+00:52:10,520 --> 00:52:14,750
+you can acquire the lock again so now if
+
+1309
+00:52:14,750 --> 00:52:20,329
+I save this then so it's still
+
+1310
+00:52:20,329 --> 00:52:21,559
+activating the deadlock detector but
+
+1311
+00:52:21,559 --> 00:52:23,119
+that's actually just because we're not
+
+1312
+00:52:23,119 --> 00:52:25,490
+doing anything at the end but now it's
+
+1313
+00:52:25,490 --> 00:52:26,150
+actually working
+
+1314
+00:52:26,150 --> 00:52:28,309
+we finished sending the request votes on
+
+1315
+00:52:28,309 --> 00:52:29,599
+both sides and all the operations that
+
+1316
+00:52:29,599 --> 00:52:32,690
+we wanted to complete are complete all
+
+1317
+00:52:32,690 --> 00:52:37,150
+right any questions about this example
+
+1318
+00:52:42,180 --> 00:52:45,569
+yeah so not it's sort of so you might
+
+1319
+00:52:45,569 --> 00:52:47,579
+need to use locks when you are preparing
+
+1320
+00:52:47,579 --> 00:52:49,140
+the arguments or processing the response
+
+1321
+00:52:49,140 --> 00:52:50,630
+but yeah you shouldn't hold a lock
+
+1322
+00:52:50,630 --> 00:52:52,890
+through the RPC call while you're
+
+1323
+00:52:52,890 --> 00:52:54,420
+waiting for the other peer to respond
+
+1324
+00:52:54,420 --> 00:52:56,490
+and there's actually another reason to
+
+1325
+00:52:56,490 --> 00:52:58,170
+that in addition to deadlock the other
+
+1326
+00:52:58,170 --> 00:53:00,569
+problem is that in some tests we're
+
+1327
+00:53:00,569 --> 00:53:03,480
+going to sort of have this unreliable
+
+1328
+00:53:03,480 --> 00:53:05,130
+network that could delay some of your
+
+1329
+00:53:05,130 --> 00:53:08,099
+RPC messages potentially by like 50
+
+1330
+00:53:08,099 --> 00:53:11,059
+milliseconds and in that case if you
+
+1331
+00:53:11,059 --> 00:53:13,950
+hold the lock through an RPC call then
+
+1332
+00:53:13,950 --> 00:53:15,599
+any other operation that you try to do
+
+1333
+00:53:15,599 --> 00:53:17,730
+during that 50 milliseconds won't be
+
+1334
+00:53:17,730 --> 00:53:19,410
+able to complete until that RPC response
+
+1335
+00:53:19,410 --> 00:53:22,230
+is received so that that's another issue
+
+1336
+00:53:22,230 --> 00:53:23,670
+that you might run into if you hold the
+
+1337
+00:53:23,670 --> 00:53:25,770
+lock so it's both to make things more
+
+1338
+00:53:25,770 --> 00:53:27,420
+efficient and to avoid these potential
+
+1339
+00:53:27,420 --> 00:53:30,380
+deadlock situations
+
+1340
+00:53:37,400 --> 00:53:41,990
+all right so just one more example this
+
+1341
+00:53:41,990 --> 00:53:45,290
+is again using a similar draft
+
+1342
+00:53:45,290 --> 00:53:47,000
+implementation so again in our raft
+
+1343
+00:53:47,000 --> 00:53:48,320
+state we're going to be keeping track of
+
+1344
+00:53:48,320 --> 00:53:49,730
+whether a fuller candidate leader and
+
+1345
+00:53:49,730 --> 00:53:52,820
+then also these two state variables in
+
+1346
+00:53:52,820 --> 00:53:54,680
+this example I want you to focus on this
+
+1347
+00:53:54,680 --> 00:53:57,590
+AttemptElection function so now we've
+
+1348
+00:53:57,590 --> 00:53:59,360
+first implemented the change that I just
+
+1349
+00:53:59,360 --> 00:54:02,000
+showed you to store the term here and
+
+1350
+00:54:02,000 --> 00:54:04,550
+pass it as a variable to our function
+
+1351
+00:54:04,550 --> 00:54:06,800
+that collects the request votes but
+
+1352
+00:54:06,800 --> 00:54:07,910
+additionally we've implemented some
+
+1353
+00:54:07,910 --> 00:54:10,850
+functionality to add up the votes so
+
+1354
+00:54:10,850 --> 00:54:12,950
+what we'll do is we'll create a local
+
+1355
+00:54:12,950 --> 00:54:16,250
+variable to count the votes and whenever
+
+1356
+00:54:16,250 --> 00:54:18,500
+we get a vote if the vote was not
+
+1357
+00:54:18,500 --> 00:54:19,040
+granted
+
+1358
+00:54:19,040 --> 00:54:20,840
+we'll return immediately from this go
+
+1359
+00:54:20,840 --> 00:54:22,820
+routine where we're processing the boat
+
+1360
+00:54:22,820 --> 00:54:25,940
+otherwise we'll acquire the lock before
+
+1361
+00:54:25,940 --> 00:54:28,520
+editing this shared local variable to
+
+1362
+00:54:28,520 --> 00:54:31,100
+count up the votes and then if we did
+
+1363
+00:54:31,100 --> 00:54:32,480
+not get a majority of the votes will
+
+1364
+00:54:32,480 --> 00:54:34,790
+return immediately otherwise we'll make
+
+1365
+00:54:34,790 --> 00:54:38,990
+ourselves the leader so as with the
+
+1366
+00:54:38,990 --> 00:54:42,440
+other example I mean initially if you
+
+1367
+00:54:42,440 --> 00:54:43,880
+look at this if I look at this like it
+
+1368
+00:54:43,880 --> 00:54:45,800
+seems reasonable but let's see if
+
+1369
+00:54:45,800 --> 00:54:50,540
+anything can go wrong all right so this
+
+1370
+00:54:50,540 --> 00:54:53,360
+is the log output from one run and one
+
+1371
+00:54:53,360 --> 00:54:54,860
+thing you might notice is that we've
+
+1372
+00:54:54,860 --> 00:54:57,290
+actually elected two leaders on the same
+
+1373
+00:54:57,290 --> 00:54:59,660
+term so server zero
+
+1374
+00:54:59,660 --> 00:55:03,620
+it was elected made itself a leader on
+
+1375
+00:55:03,620 --> 00:55:06,860
+term two and server one did as well it's
+
+1376
+00:55:06,860 --> 00:55:08,480
+okay to have a leader elected on
+
+1377
+00:55:08,480 --> 00:55:09,740
+different terms but here where we have
+
+1378
+00:55:09,740 --> 00:55:11,090
+one on the same term that that should
+
+1379
+00:55:11,090 --> 00:55:13,250
+never happen alright so how did this
+
+1380
+00:55:13,250 --> 00:55:15,950
+actually come up so let's start from the
+
+1381
+00:55:15,950 --> 00:55:18,710
+top so at the beginning server zero
+
+1382
+00:55:18,710 --> 00:55:20,210
+actually attempted an election at term
+
+1383
+00:55:20,210 --> 00:55:23,600
+one not turn two and it got its votes
+
+1384
+00:55:23,600 --> 00:55:27,020
+from both of the other peers but for
+
+1385
+00:55:27,020 --> 00:55:28,400
+whatever reason perhaps because those
+
+1386
+00:55:28,400 --> 00:55:30,680
+reply messages from those peers were
+
+1387
+00:55:30,680 --> 00:55:34,660
+delayed it didn't actually process its
+
+1388
+00:55:34,660 --> 00:55:38,150
+process those votes until later and in
+
+1389
+00:55:38,150 --> 00:55:40,400
+between receiving it like in between
+
+1390
+00:55:40,400 --> 00:55:42,830
+attempting the election and finishing
+
+1391
+00:55:42,830 --> 00:55:45,230
+the election server one also decided to
+
+1392
+00:55:45,230 --> 00:55:47,020
+attempt an election perhaps because
+
+1393
+00:55:47,020 --> 00:55:49,880
+because of server zero was delayed so
+
+1394
+00:55:49,880 --> 00:55:50,810
+much server one might
+
+1395
+00:55:50,810 --> 00:55:52,730
+actually ran into the election timeout
+
+1396
+00:55:52,730 --> 00:55:54,530
+and then started its own election and it
+
+1397
+00:55:54,530 --> 00:55:57,710
+started it on term 2 because it couldn't
+
+1398
+00:55:57,710 --> 00:55:59,090
+have been termed 1 because it already
+
+1399
+00:55:59,090 --> 00:56:01,820
+voted for server 0 on on term 1 over
+
+1400
+00:56:01,820 --> 00:56:03,550
+here
+
+1401
+00:56:03,550 --> 00:56:08,180
+okay so then server 1 sends out its own
+
+1402
+00:56:08,180 --> 00:56:11,390
+request votes 2 servers 2 and 0 at term
+
+1403
+00:56:11,390 --> 00:56:14,120
+2 and now we see that server two votes
+
+1404
+00:56:14,120 --> 00:56:16,100
+for server 1 that's fine but server 0
+
+1405
+00:56:16,100 --> 00:56:18,050
+also votes for server 1 this is actually
+
+1406
+00:56:18,050 --> 00:56:21,620
+also fine because server one is asking
+
+1407
+00:56:21,620 --> 00:56:25,850
+server 0 for a vote on a higher term and
+
+1408
+00:56:25,850 --> 00:56:28,550
+so what server 0 should do is if you
+
+1409
+00:56:28,550 --> 00:56:33,350
+remember from the spec it should set its
+
+1410
+00:56:33,350 --> 00:56:35,330
+current term to that term in the request
+
+1411
+00:56:35,330 --> 00:56:37,400
+for RPC message to term 2 and also
+
+1412
+00:56:37,400 --> 00:56:39,380
+revert itself to a follower instead of a
+
+1413
+00:56:39,380 --> 00:56:43,100
+candidate alright finally so the real
+
+1414
+00:56:43,100 --> 00:56:44,540
+problem is that on this line where
+
+1415
+00:56:44,540 --> 00:56:47,450
+server 0 although it really got enough
+
+1416
+00:56:47,450 --> 00:56:49,340
+votes on term 1 it made itself a leader
+
+1417
+00:56:49,340 --> 00:56:53,240
+on term - so the reason so one
+
+1418
+00:56:53,240 --> 00:56:55,250
+explanation for why this is happening is
+
+1419
+00:56:55,250 --> 00:56:57,830
+because in between where we set up the
+
+1420
+00:56:57,830 --> 00:57:00,020
+election our attempt for the election
+
+1421
+00:57:00,020 --> 00:57:02,950
+and where we actually process the votes
+
+1422
+00:57:02,950 --> 00:57:05,510
+some other things are happening input in
+
+1423
+00:57:05,510 --> 00:57:07,220
+this case we're actually voting for
+
+1424
+00:57:07,220 --> 00:57:11,000
+someone else in between and so we're no
+
+1425
+00:57:11,000 --> 00:57:12,680
+longer on term 1 where we thought we
+
+1426
+00:57:12,680 --> 00:57:14,630
+started the election we're now on term 2
+
+1427
+00:57:14,630 --> 00:57:17,350
+and so we just need a double check that
+
+1428
+00:57:17,350 --> 00:57:19,610
+because we don't have the lock while
+
+1429
+00:57:19,610 --> 00:57:21,350
+we're performing the RPC calls which is
+
+1430
+00:57:21,350 --> 00:57:23,300
+important for its own reasons now some
+
+1431
+00:57:23,300 --> 00:57:24,740
+things might have changed and we need to
+
+1432
+00:57:24,740 --> 00:57:26,830
+double check that what we assume is true
+
+1433
+00:57:26,830 --> 00:57:28,880
+when we're setting ourselves to the
+
+1434
+00:57:28,880 --> 00:57:32,390
+leader is still true so one way to solve
+
+1435
+00:57:32,390 --> 00:57:34,010
+this that there's a few different ways
+
+1436
+00:57:34,010 --> 00:57:35,210
+like to solve this like you could
+
+1437
+00:57:35,210 --> 00:57:36,830
+imagine not voting for others while
+
+1438
+00:57:36,830 --> 00:57:38,150
+we're in the middle of attempting an
+
+1439
+00:57:38,150 --> 00:57:39,950
+election but in this case the simplest
+
+1440
+00:57:39,950 --> 00:57:42,980
+way to solve this at least in this
+
+1441
+00:57:42,980 --> 00:57:45,170
+implementation is to just double check
+
+1442
+00:57:45,170 --> 00:57:46,730
+that we're still on the same term and
+
+1443
+00:57:46,730 --> 00:57:48,020
+we're still a candidate we haven't
+
+1444
+00:57:48,020 --> 00:57:50,300
+reverted to a follower so actually one
+
+1445
+00:57:50,300 --> 00:57:52,250
+thing I want to show you is if we do
+
+1446
+00:57:52,250 --> 00:57:57,950
+print out our state over here then we do
+
+1447
+00:57:57,950 --> 00:58:00,530
+see that server 0 became a follower but
+
+1448
+00:58:00,530 --> 00:58:02,330
+it's still setting itself to a leader on
+
+1449
+00:58:02,330 --> 00:58:04,250
+this line
+
+1450
+00:58:04,250 --> 00:58:07,040
+so yeah we can just check for that if
+
+1451
+00:58:07,040 --> 00:58:10,640
+we're not a candidate or the current
+
+1452
+00:58:10,640 --> 00:58:12,470
+term doesn't match the term which we
+
+1453
+00:58:12,470 --> 00:58:14,660
+started the election then let's just
+
+1454
+00:58:14,660 --> 00:58:18,500
+quit and if we do that then
+
+1455
+00:58:18,500 --> 00:58:20,600
+so everyone becomes a leader and we
+
+1456
+00:58:20,600 --> 00:58:22,040
+never cease over zero become leader so
+
+1457
+00:58:22,040 --> 00:58:27,040
+the problem solved any question yeah
+
+1458
+00:58:28,630 --> 00:58:30,830
+yeah I think I think that would I
+
+1459
+00:58:30,830 --> 00:58:35,240
+because we would not if the term is
+
+1460
+00:58:35,240 --> 00:58:38,990
+higher now than actually no it would it
+
+1461
+00:58:38,990 --> 00:58:40,310
+might not be sufficient because we might
+
+1462
+00:58:40,310 --> 00:58:42,800
+have attempted another election it
+
+1463
+00:58:42,800 --> 00:58:44,780
+depends on your implementation but it's
+
+1464
+00:58:44,780 --> 00:58:47,450
+possible that you could have attempted
+
+1465
+00:58:47,450 --> 00:58:49,630
+another election on a higher term
+
+1466
+00:58:49,630 --> 00:58:51,560
+afterwards all we know that's the same
+
+1467
+00:58:51,560 --> 00:58:52,910
+thing right yeah it would not be
+
+1468
+00:58:52,910 --> 00:58:54,680
+sufficient to only check the state but I
+
+1469
+00:58:54,680 --> 00:58:56,570
+think you're right if you only check the
+
+1470
+00:58:56,570 --> 00:59:01,160
+term then it is sufficient all right any
+
+1471
+00:59:01,160 --> 00:59:09,890
+other questions all right so yeah that's
+
+1472
+00:59:09,890 --> 00:59:11,600
+it for this part she's going to show you
+
+1473
+00:59:11,600 --> 00:59:14,210
+some more examples of actually debugging
+
+1474
+00:59:14,210 --> 00:59:18,280
+some of these draft implementations
+
+1475
+00:59:34,039 --> 00:59:40,220
+hi can you all hear me yeah
+
+1476
+00:59:52,870 --> 00:59:56,290
+is it not
+
+1477
+01:00:06,800 --> 01:00:14,940
+okay so in my section I'm gonna walk you
+
+1478
+01:00:14,940 --> 01:00:17,760
+through how I would be but if you have
+
+1479
+01:00:17,760 --> 01:00:20,310
+like a bug in your raft implementation
+
+1480
+01:00:20,310 --> 01:00:24,150
+so I prepare a couple of buggy raft code
+
+1481
+01:00:24,150 --> 01:00:30,030
+and I just try to walk you through it so
+
+1482
+01:00:30,030 --> 01:00:33,050
+first I'm gonna go into my first
+
+1483
+01:00:33,050 --> 01:00:41,010
+buggy implementation and if I run the
+
+1484
+01:00:41,010 --> 01:00:52,350
+test here so for this one it doesn't
+
+1485
+01:00:52,350 --> 01:00:55,260
+print anything it just gets started and
+
+1486
+01:00:55,260 --> 01:01:00,390
+it's gonna be here forever and let's
+
+1487
+01:01:00,390 --> 01:01:02,400
+assume that I have no idea why there's
+
+1488
+01:01:02,400 --> 01:01:03,120
+happening
+
+1489
+01:01:03,120 --> 01:01:07,290
+the first thing that I want to find out
+
+1490
+01:01:07,290 --> 01:01:13,140
+is where it gets started and we we do
+
+1491
+01:01:13,140 --> 01:01:16,910
+have a good tool for that which printf
+
+1492
+01:01:16,910 --> 01:01:21,330
+but in the stop code if you go to
+
+1493
+01:01:21,330 --> 01:01:25,290
+youtube go we have a function called the
+
+1494
+01:01:25,290 --> 01:01:28,470
+printf this is just a nice wrapper
+
+1495
+01:01:28,470 --> 01:01:32,960
+around the block printf with the
+
+1496
+01:01:32,960 --> 01:01:36,600
+debugger able to enable or disable the
+
+1497
+01:01:36,600 --> 01:01:40,290
+locking messages so I'm gonna enable
+
+1498
+01:01:40,290 --> 01:01:46,980
+that and go back to my raft code so
+
+1499
+01:01:46,980 --> 01:01:50,430
+first of all when i when when there
+
+1500
+01:01:50,430 --> 01:01:54,800
+there's something that's bug happening I
+
+1501
+01:01:54,800 --> 01:02:02,540
+always go check if the code actually
+
+1502
+01:02:02,540 --> 01:02:08,220
+actually initialize raft server so here
+
+1503
+01:02:08,220 --> 01:02:11,180
+I'll just clean
+
+1504
+01:02:20,730 --> 01:02:27,640
+okay so here if I run the test again
+
+1505
+01:02:27,640 --> 01:02:31,420
+then now I know that there are three
+
+1506
+01:02:31,420 --> 01:02:36,940
+servers that get initialized so this
+
+1507
+01:02:36,940 --> 01:02:43,180
+files is okay but like there's nowhere
+
+1508
+01:02:43,180 --> 01:02:45,730
+where the bug is happening so I'll just
+
+1509
+01:02:45,730 --> 01:02:48,579
+go deeper into the hood just to find
+
+1510
+01:02:48,579 --> 01:02:50,740
+where it gets stuck so now if you see
+
+1511
+01:02:50,740 --> 01:02:55,690
+the code we are calling the leader a
+
+1512
+01:02:55,690 --> 01:02:58,839
+election so I'm gonna go to that
+
+1513
+01:02:58,839 --> 01:03:06,099
+function and just to make faster I'll
+
+1514
+01:03:06,099 --> 01:03:08,319
+try to check if it kicks off some
+
+1515
+01:03:08,319 --> 01:03:11,099
+election
+
+1516
+01:03:21,770 --> 01:03:25,640
+that part still fine so we we try to go
+
+1517
+01:03:25,640 --> 01:03:31,340
+for now here we are in the election I'll
+
+1518
+01:03:31,340 --> 01:03:37,190
+see if there's so we actually send the
+
+1519
+01:03:37,190 --> 01:03:41,410
+request vote to some other servers
+
+1520
+01:04:00,320 --> 01:04:02,750
+now we kind of have like more idea of
+
+1521
+01:04:02,750 --> 01:04:04,670
+where guests are because it's not
+
+1522
+01:04:04,670 --> 01:04:08,510
+printing that some sorry that kicks off
+
+1523
+01:04:08,510 --> 01:04:11,360
+the election are not sending the request
+
+1524
+01:04:11,360 --> 01:04:17,420
+words so I would go back for her just to
+
+1525
+01:04:17,420 --> 01:04:21,500
+see where customers like I always tried
+
+1526
+01:04:21,500 --> 01:04:27,370
+here prin if if we call some function
+
+1527
+01:04:27,370 --> 01:04:29,270
+I I
+
+1528
+01:04:29,270 --> 01:04:31,970
+I was always double shake if it actually
+
+1529
+01:04:31,970 --> 01:04:37,660
+go into the function so now I'm going to
+
+1530
+01:04:37,660 --> 01:04:42,500
+say that this service is at the start of
+
+1531
+01:04:42,500 --> 01:04:45,640
+the election
+
+1532
+01:04:50,200 --> 01:04:56,809
+and that works so now we have an idea of
+
+1533
+01:04:56,809 --> 01:05:02,829
+like the bug should be between here and
+
+1534
+01:05:02,829 --> 01:05:06,670
+here so we are trying to minimize the
+
+1535
+01:05:06,670 --> 01:05:12,640
+scope of the code that's causing the bug
+
+1536
+01:05:14,410 --> 01:05:19,059
+let's say if I print something here
+
+1537
+01:05:28,300 --> 01:05:33,960
+and it does it doesn't get there so I
+
+1538
+01:05:33,960 --> 01:05:41,380
+move it up let's say here still not
+
+1539
+01:05:41,380 --> 01:05:43,620
+there
+
+1540
+01:05:48,540 --> 01:05:55,470
+now it's there so the bug is probably in
+
+1541
+01:05:55,470 --> 01:06:02,090
+this function and I just go check so
+
+1542
+01:06:02,090 --> 01:06:05,400
+here the problem is that I'm trying to
+
+1543
+01:06:05,400 --> 01:06:08,600
+acquire a lock where I actually do have
+
+1544
+01:06:08,600 --> 01:06:13,620
+the lock so it's gonna be a deadlock so
+
+1545
+01:06:13,620 --> 01:06:16,460
+that's how I will find their first bug
+
+1546
+01:06:16,460 --> 01:06:22,910
+using the DPrintf and it's it's nice
+
+1547
+01:06:22,910 --> 01:06:28,670
+to use the printf because you can like
+
+1548
+01:06:29,000 --> 01:06:33,690
+just turn off the debugging print and
+
+1549
+01:06:33,690 --> 01:06:38,970
+have a nice test output with our audit
+
+1550
+01:06:38,970 --> 01:06:43,740
+debugging if you want it so that's how I
+
+1551
+01:06:43,740 --> 01:06:47,250
+would use it DPrintf to try to like
+
+1552
+01:06:47,250 --> 01:06:51,750
+handle a bug in your code and for this
+
+1553
+01:06:51,750 --> 01:06:54,810
+example there's actually another trick
+
+1554
+01:06:54,810 --> 01:06:59,430
+to help you find this kind of deadlock
+
+1555
+01:06:59,430 --> 01:07:04,710
+so if you press ctrl + backslash you can
+
+1556
+01:07:04,710 --> 01:07:09,000
+see in the bottle but bottom left that I
+
+1557
+01:07:09,000 --> 01:07:13,140
+press like control and backslash this
+
+1558
+01:07:13,140 --> 01:07:16,740
+this command will send a signal quit
+
+1559
+01:07:16,740 --> 01:07:17,630
+today
+
+1560
+01:07:17,630 --> 01:07:21,990
+go program and by default it will
+
+1561
+01:07:21,990 --> 01:07:26,370
+handles the the quiz signal and quit all
+
+1562
+01:07:26,370 --> 01:07:29,130
+the goroutines and print audio strike
+
+1563
+01:07:29,130 --> 01:07:41,370
+the stack rates so now this like Chico
+
+1564
+01:07:41,370 --> 01:07:43,650
+up here like this way it gets touched
+
+1565
+01:07:43,650 --> 01:07:47,520
+and then there are gonna be a couple
+
+1566
+01:07:47,520 --> 01:07:52,280
+functions printing here
+
+1567
+01:07:55,780 --> 01:08:01,450
+just trying to go through all the traces
+
+1568
+01:08:07,480 --> 01:08:11,200
+yes so it's actually showing that the
+
+1569
+01:08:11,200 --> 01:08:14,080
+function that's causing the problem is
+
+1570
+01:08:14,080 --> 01:08:17,770
+the cover to candidate so that's another
+
+1571
+01:08:17,770 --> 01:08:20,439
+wait you've to find out where the day
+
+1572
+01:08:20,439 --> 01:08:31,229
+locks are I can remove all this
+
+1573
+01:08:43,109 --> 01:08:47,040
+and now it works so that's the first
+
+1574
+01:08:47,040 --> 01:08:51,569
+example that I want to go through second
+
+1575
+01:08:51,569 --> 01:08:54,089
+thing that you want it you want to do
+
+1576
+01:08:54,089 --> 01:08:57,000
+before you submit your labs is to turn
+
+1577
+01:08:57,000 --> 01:08:58,469
+the race
+
+1578
+01:08:58,469 --> 01:09:03,270
+flag on when you do the test the way to
+
+1579
+01:09:03,270 --> 01:09:07,080
+do that is just to add -race before
+
+1580
+01:09:07,080 --> 01:09:18,139
+-run and here because my implement
+
+1581
+01:09:18,139 --> 01:09:20,399
+implementation doesn't have any races
+
+1582
+01:09:20,399 --> 01:09:22,529
+so it's not going to tell you anything
+
+1583
+01:09:22,529 --> 01:09:25,290
+but this just be careful about this
+
+1584
+01:09:25,290 --> 01:09:29,609
+because it's not a proof that you don't
+
+1585
+01:09:29,609 --> 01:09:33,448
+have any really it's just that it cannot
+
+1586
+01:09:33,448 --> 01:09:42,689
+detect races for you I'm going to run
+
+1587
+01:09:42,689 --> 01:09:45,569
+the same command again with the red flag
+
+1588
+01:09:45,569 --> 01:09:48,000
+but now this time that's actually race
+
+1589
+01:09:48,000 --> 01:09:56,820
+going on in my implementation so it's
+
+1590
+01:09:56,820 --> 01:10:00,389
+gonna yell at you that there's some
+
+1591
+01:10:00,389 --> 01:10:06,290
+deliveries going on in your code
+
+1592
+01:10:08,000 --> 01:10:13,830
+I'm quitting that and let's see like how
+
+1593
+01:10:13,830 --> 01:10:20,130
+useful is the warning are so I'm gonna
+
+1594
+01:10:20,130 --> 01:10:25,820
+go to my second implementation with
+
+1595
+01:10:27,830 --> 01:10:35,389
+Raft code and here
+
+1596
+01:10:37,030 --> 01:10:45,410
+let's look at this race so it's telling
+
+1597
+01:10:45,410 --> 01:10:48,020
+us that there's a wait going on at the
+
+1598
+01:10:48,020 --> 01:10:49,810
+line
+
+1599
+01:10:49,810 --> 01:10:54,680
+103 I'm going to that line so this the
+
+1600
+01:10:54,680 --> 01:11:08,020
+wait on probably Thursday here and
+
+1601
+01:11:08,020 --> 01:11:20,330
+there's also a right line 412 which
+
+1602
+01:11:20,330 --> 01:11:27,820
+is Thursday so
+
+1603
+01:11:38,310 --> 01:11:45,500
+I'm going to this line again
+
+1604
+01:11:45,500 --> 01:11:48,900
+and now we kind of know that this this
+
+1605
+01:11:48,900 --> 01:11:53,280
+radiation is protected by a lock so the
+
+1606
+01:11:53,280 --> 01:11:56,220
+risk flies actually wanting us and
+
+1607
+01:11:56,220 --> 01:12:00,900
+helping us to find out bug on on this
+
+1608
+01:12:00,900 --> 01:12:05,100
+database that we have so the fake it's
+
+1609
+01:12:05,100 --> 01:12:15,240
+gonna be just you lock this and unlock
+
+1610
+01:12:15,240 --> 01:12:23,090
+it and that should solve the problem
+
+1611
+01:12:28,050 --> 01:12:31,740
+so at this place we kind of know how to
+
+1612
+01:12:31,740 --> 01:12:35,220
+basic like do some basic debugging does
+
+1613
+01:12:35,220 --> 01:12:42,650
+anyone have any question no okay yeah so
+
+1614
+01:12:42,650 --> 01:12:46,050
+I'm going to go to the third one which
+
+1615
+01:12:46,050 --> 01:12:50,520
+is going to be more difficult to find
+
+1616
+01:12:50,520 --> 01:13:01,440
+a bug I'm going to test the run the
+
+1617
+01:13:01,440 --> 01:13:04,980
+centers and now I am I actually have
+
+1618
+01:13:04,980 --> 01:13:10,170
+some debugging messages in there already
+
+1619
+01:13:10,170 --> 01:13:17,610
+and just see that I also have a
+
+1620
+01:13:17,610 --> 01:13:20,100
+debugging message with the test action
+
+1621
+01:13:20,100 --> 01:13:22,850
+there's something you might want to
+
+1622
+01:13:22,850 --> 01:13:34,140
+consider doing if you go into the test
+
+1623
+01:13:34,140 --> 01:13:38,330
+clip here
+
+1624
+01:13:42,989 --> 01:13:46,350
+you can just see how the test would run
+
+1625
+01:13:46,350 --> 01:13:49,920
+and then there are some actions that the
+
+1626
+01:13:49,920 --> 01:13:52,140
+test clip is gonna do to make your code
+
+1627
+01:13:52,140 --> 01:13:58,160
+fail and it's usually a good idea to
+
+1628
+01:13:58,160 --> 01:14:02,420
+print out where that action is happening
+
+1629
+01:14:02,420 --> 01:14:07,410
+in your actual debugging message so you
+
+1630
+01:14:07,410 --> 01:14:13,410
+can guess what is happening like where
+
+1631
+01:14:13,410 --> 01:14:18,210
+the bug is happening in which phase of
+
+1632
+01:14:18,210 --> 01:14:22,110
+the test if that make sense so now it's
+
+1633
+01:14:22,110 --> 01:14:27,330
+like I was doing fine in the first case
+
+1634
+01:14:27,330 --> 01:14:30,719
+I passed I passed the fail but I'm
+
+1635
+01:14:30,719 --> 01:14:37,260
+failing their second test and here the
+
+1636
+01:14:37,260 --> 01:14:40,800
+Test section is to found one as a little
+
+1637
+01:14:40,800 --> 01:14:46,950
+one so I'm passing this the test until
+
+1638
+01:14:46,950 --> 01:14:51,530
+this and if you go to I'm actually
+
+1639
+01:14:51,530 --> 01:14:57,030
+passing until the leader two rejoins so
+
+1640
+01:14:57,030 --> 01:14:59,820
+this can give you a nice idea of how the
+
+1641
+01:14:59,820 --> 01:15:09,860
+test is working and just to help you
+
+1642
+01:15:09,860 --> 01:15:13,830
+have a better case as where the bondage
+
+1643
+01:15:13,830 --> 01:15:21,090
+is in your code so now let's look at the
+
+1644
+01:15:21,090 --> 01:15:24,440
+debugging messages
+
+1645
+01:15:32,179 --> 01:15:35,480
+so it's least it seems like when leader 2
+
+1646
+01:15:35,480 --> 01:15:40,489
+rejoined it becomes a follower and we
+
+1647
+01:15:40,489 --> 01:15:41,810
+have a new leader
+
+1648
+01:15:41,810 --> 01:15:46,880
+so that looks fine to me and we probably
+
+1649
+01:15:46,880 --> 01:15:50,630
+need more debugging messages instead of
+
+1650
+01:15:50,630 --> 01:16:00,920
+just their state changes so I am going
+
+1651
+01:16:00,920 --> 01:16:05,780
+to add some more my first case that when
+
+1652
+01:16:05,780 --> 01:16:08,540
+one becomes a leader it might not be
+
+1653
+01:16:08,540 --> 01:16:13,190
+doing what a leader should you correctly
+
+1654
+01:16:13,190 --> 01:16:17,469
+so we got stuck
+
+1655
+01:16:23,769 --> 01:16:26,369
+so you might could after we cover it as
+
+1656
+01:16:26,369 --> 01:16:30,010
+eventually there I have a goroutine
+
+1657
+01:16:30,010 --> 01:16:32,260
+call operate leader
+
+1658
+01:16:32,260 --> 01:16:34,989
+there's just sending heartbeat to the all set
+
+1659
+01:16:34,989 --> 01:16:41,440
+to the all servers so I'm gonna print
+
+1660
+01:16:41,440 --> 01:16:54,219
+some stuff here saying heartbeat  cheers
+
+1661
+01:16:54,219 --> 01:16:56,550
+away
+
+1662
+01:17:20,850 --> 01:17:25,110
+so to become a leader it sends the the
+
+1663
+01:17:25,110 --> 01:17:33,120
+first heartbeat to each server and one still
+
+1664
+01:17:33,120 --> 01:17:39,530
+tries to send heartbeat to the new leader
+
+1665
+01:17:41,000 --> 01:17:46,940
+and then one becomes a follower so this
+
+1666
+01:17:46,940 --> 01:17:54,720
+doesn't look like to be a problem now
+
+1667
+01:17:54,720 --> 01:17:56,910
+I'm gonna check if the other service
+
+1668
+01:17:56,910 --> 01:18:01,010
+receive heartbeat correctly
+
+1669
+01:19:25,659 --> 01:19:29,080
+it's taking away with I'm trying to
+
+1670
+01:19:29,080 --> 01:19:37,350
+finish this yeah so to becomes a leader
+
+1671
+01:19:37,350 --> 01:19:43,870
+to sends heartbeat but no one receive a
+
+1672
+01:19:43,870 --> 01:19:54,719
+heartbeat form - so if I go to the same
+
+1673
+01:19:54,719 --> 01:19:59,760
+opinion tree I actually hold the law to
+
+1674
+01:19:59,760 --> 01:20:03,810
+the RPC Hall which is the problem that
+
+1675
+01:20:03,810 --> 01:20:07,949
+Fabian went to in the last section so
+
+1676
+01:20:07,949 --> 01:20:10,780
+that's that's the problem that I need to
+
+1677
+01:20:10,780 --> 01:20:22,050
+fix so what I should do is to a log here
+
+1678
+01:20:23,969 --> 01:20:28,800
+and then
+
+1679
+01:20:33,730 --> 01:20:39,540
+lock again here and that should work
+
+1680
+01:20:47,190 --> 01:20:53,880
+we pass and then there are couple things
+
+1681
+01:20:53,880 --> 01:20:58,410
+that you might want to do when you test
+
+1682
+01:20:58,410 --> 01:21:03,360
+your rough implementation so that's
+
+1683
+01:21:03,360 --> 01:21:09,560
+actually script to run the test in
+
+1684
+01:21:09,560 --> 01:21:14,010
+imperial and I can show you how I how we
+
+1685
+01:21:14,010 --> 01:21:18,570
+can use how we can use it this creep is
+
+1686
+01:21:18,570 --> 01:21:21,360
+in the inner peer support some someone
+
+1687
+01:21:21,360 --> 01:21:27,180
+make a point about it and here's how we
+
+1688
+01:21:27,180 --> 01:21:33,770
+can use the script so you run the script
+
+1689
+01:21:33,770 --> 01:21:36,380
+specify the number of the test
+
+1690
+01:21:36,380 --> 01:21:40,230
+personally I do like a 1000 but that
+
+1691
+01:21:40,230 --> 01:21:44,190
+depends on your preference this is the
+
+1692
+01:21:44,190 --> 01:21:47,250
+number of course that you wanna run the
+
+1693
+01:21:47,250 --> 01:21:49,290
+test at the same time and then here's
+
+1694
+01:21:49,290 --> 01:21:56,989
+the test and if you run the script then
+
+1695
+01:21:59,480 --> 01:22:04,620
+if you show you that's like we have run
+
+1696
+01:22:04,620 --> 01:22:09,330
+four tests so far all are working fine
+
+1697
+01:22:09,330 --> 01:22:13,949
+and it's gonna keep going like that so
+
+1698
+01:22:13,949 --> 01:22:17,239
+that's how I would go about debugging
+
+1699
+01:22:17,239 --> 01:22:19,739
+rough implementation and you are all
+
+1700
+01:22:19,739 --> 01:22:22,260
+welcome to come to office hours when you
+
+1701
+01:22:22,260 --> 00:00:00,000
+need help
+
