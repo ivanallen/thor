@@ -3411,188 +3411,132 @@ client may not know how long the file is
 if lots of clients are appending the
 
 854
-00:41:00,329 --> 00:41:02,819
-same file because we have some big file
+00:41:00,329 --> 00:41:06,900
 
-855
-00:41:02,819 --> 00:41:04,950
-this logging stuff from a lot of
-
-856
-00:41:04,950 --> 00:41:06,900
-different clients may be you know no
+same file because we have some big file this logging stuff from a lot of different clients may be you know 
 
 857
 00:41:06,900 --> 00:41:08,369
-client will necessarily know how long
-
-858
-00:41:08,369 --> 00:41:10,380
-the file is and therefore which offset
-
-859
-00:41:10,380 --> 00:41:12,270
-or which chunk it should be appending to
+没有client必须会知道 文件有多长 因此（也不会知道）增加在哪个offset或者chunk上
+no client will necessarily know how long the file is and therefore which offset or which chunk it should be appending to
 
 860
 00:41:12,270 --> 00:41:14,280
-so you can ask the master please tell me
+你可以问master
+so you can ask the master 
 
 861
-00:41:14,280 --> 00:41:16,680
-about the the server's that hold the
-
-862
-00:41:16,680 --> 00:41:18,710
-very last chunk
-
-863
-00:41:18,710 --> 00:41:22,550
-current chunk in this file so
+00:41:14,280 --> 00:41:22,550
+请告诉我 
+please tell me about the the server's that hold the very last chunk current chunk in this file
 
 864
 00:41:22,550 --> 00:41:26,040
-unfortunately now the writing if you're
+不幸的 现在写 如果你在读
+so unfortunately now the writing if you're
 
 865
 00:41:26,040 --> 00:41:27,569
-reading you can read from any up-to-date
-
+你可以从任何最新的复制读取
+reading you can read from any up-to-date replica 
+-
 866
 00:41:27,569 --> 00:41:30,060
-replica for writing though there needs
+对于写 需要有一个primary
+for writing though there needs to be a primary 
 
 867
-00:41:30,060 --> 00:41:32,760
-to be a primary so at this point on the
-
-868
-00:41:32,760 --> 00:41:35,579
-file may or may not have a primary
-
-869
-00:41:35,579 --> 00:41:37,710
-already designated by the master so we
+00:41:30,060 --> 00:41:37,710
+因此，此时文件上的primary可能已经指定，也可能没有
+so at this point on the file may or may not have a primary already designated by the master
 
 870
 00:41:37,710 --> 00:41:39,180
-need to consider the case of if there's
+所以我们需要考虑
+so we need to consider the case of
 
 871
 00:41:39,180 --> 00:41:40,980
-no primary already and all the master
+如果还没有primary
+if there's no primary already 
 
 872
 00:41:40,980 --> 00:41:49,560
-knows well there's no primary so so one
+而且master所知的 好吧 没有primary
+and all the master knows well there's no primary so
 
 873
 00:41:49,560 --> 00:41:53,119
-case is no primary
+一个情况是没有primary
+so one case is no primary
 
 874
-00:41:57,599 --> 00:42:00,099
-in that case the master needs to find
-
-875
-00:42:00,099 --> 00:42:03,430
-out the set of chunk servers that have
-
-876
-00:42:03,430 --> 00:42:06,339
-the most up-to-date copy of the chunk
+00:41:57,599 --> 00:42:06,339
+in that case the master needs to find out the set of chunk servers that have the most up-to-date copy of the chunk
 
 877
-00:42:06,339 --> 00:42:08,470
-because know if you've been running the
-
-878
-00:42:08,470 --> 00:42:10,660
-system for a long time due to failures
+00:42:06,339 --> 00:42:10,660
+because you know if you've been running the system for a long time 
 
 879
 00:42:10,660 --> 00:42:11,800
-or whatever there may be chunk servers
+due to failures or whatever 
 
 880
-00:42:11,800 --> 00:42:14,290
-out there that have old copies of the
-
-881
-00:42:14,290 --> 00:42:15,579
-chunk from you know yesterday or last
+00:42:11,800 --> 00:42:15,579
+there may be chunk servers out there that have old copies of the chunk from you know yesterday or last week 
 
 882
 00:42:15,579 --> 00:42:17,950
-week that I've been kept up to kept up
+that I've been kept up to kept up to date 
 
 883
-00:42:17,950 --> 00:42:19,690
-to date because maybe that server was
-
-884
-00:42:19,690 --> 00:42:21,819
-dead for a couple days and wasn't
+00:42:17,950 --> 00:42:21,819
+because maybe that server was dead for a couple days and wasn't receiving updates 
 
 885
-00:42:21,819 --> 00:42:23,800
-receiving updates so there's you need to
-
-886
-00:42:23,800 --> 00:42:24,730
-be able to tell the difference between
-
-887
-00:42:24,730 --> 00:42:27,190
-up-to-date copies of the chunk and non
+00:42:21,819 --> 00:42:27,190
+so there's you need to be able to tell the difference between up-to-date copies of the chunk and non up-to-date 
 
 888
 00:42:27,190 --> 00:42:33,569
-up-to-date so the first step is to find
+so the first step is to find
 
 889
 00:42:33,569 --> 00:42:37,510
-you know find up-to-date this is all
+you know find up-to-date 
 
 890
 00:42:37,510 --> 00:42:41,319
-happening in the master because the
+this is all happening in the master
 
 891
 00:42:41,319 --> 00:42:42,790
-client has asked the master told the
+because the client has asked the master 
 
 892
 00:42:42,790 --> 00:42:44,260
-master look I want up end of this file
+told the master look I want up append this file
 
 893
 00:42:44,260 --> 00:42:46,180
-please tell me what chunk service to
+please tell me what chunk servers to talk to
 
 894
-00:42:46,180 --> 00:42:48,550
-talk to so a part of the master trying
-
-895
-00:42:48,550 --> 00:42:49,780
-to figure out what chunk servers the
-
-896
-00:42:49,780 --> 00:42:50,680
-client should talk to you
+00:42:46,180 --> 00:42:50,680
+so a part of the master trying to figure out what chunk servers the client should talk to
 
 897
 00:42:50,680 --> 00:42:52,950
-so when we finally find up-to-date
+so when we finally find up-to-date replicas 
 
 898
 00:42:52,950 --> 00:42:59,770
-replicas and what update means is a
-
+and what update means is 
+- 
 899
 00:42:59,770 --> 00:43:02,260
-replica whose version of the chunk is
+a replica whose version of the chunk is
 
 900
 00:43:02,260 --> 00:43:04,720
@@ -3600,103 +3544,71 @@ equal to the version number that the
 
 901
 00:43:04,720 --> 00:43:06,730
-master knows is the most up-to-date
+master knows is the most up-to-date version number
 
 902
-00:43:06,730 --> 00:43:08,140
-version number it's the master that
-
-903
-00:43:08,140 --> 00:43:10,630
-hands out these version numbers the
+00:43:06,730 --> 00:43:10,630
+so the master that hands out these version numbers
 
 904
 00:43:10,630 --> 00:43:14,740
-master remembers that oh for this
+the master remembers that 
 
 905
 00:43:14,740 --> 00:43:18,460
-particular chunk you know the trunk
+oh for this particular chunk you know 
 
 906
-00:43:18,460 --> 00:43:19,569
-server is only up to date if it has
-
-907
-00:43:19,569 --> 00:43:21,220
-version number 17 and this is why it has
-
-908
-00:43:21,220 --> 00:43:23,550
-to be non-volatile stored on disk
+00:43:18,460 --> 00:43:23,550
+the trunk server is only up to date if it has version number 17 and this is why it has to be non-volatile stored on disk
 
 909
 00:43:23,550 --> 00:43:26,560
-because if if it was lost in a crash and
+because if if it was lost in a crash 
 
 910
 00:43:26,560 --> 00:43:31,000
-there were chunk servers holding stale
+and there were chunk servers holding stale copies of chunks
 
 911
-00:43:31,000 --> 00:43:33,670
-copies of chunks the master wouldn't be
-
-912
-00:43:33,670 --> 00:43:35,140
-able to distinguish between chunk
+00:43:31,000 --> 00:43:35,140
+the master wouldn't be able to distinguish between chunk
 
 913
 00:43:35,140 --> 00:43:36,819
-servers holding stale copies of a chunk
+servers holding stale copies of a chunk from last week 
 
 914
 00:43:36,819 --> 00:43:39,310
-from last week and a chunk server that
+and a chunk server that
 
 915
-00:43:39,310 --> 00:43:42,250
-holds the copy of the chunk that was
-
-916
-00:43:42,250 --> 00:43:44,440
-up-to-date as of the crash that's why
+00:43:39,310 --> 00:43:44,440
+holds the copy of the chunk that was up-to-date as of the crash 
 
 917
-00:43:44,440 --> 00:43:46,660
-the master remembers the version number on
-
-918
-00:43:46,660 --> 00:43:49,470
-disk yeah
+00:43:44,440 --> 00:43:49,470
+that's why the master remembers the version number on disk yeah
 
 919
-00:43:54,450 --> 00:43:56,859
-if you knew you were talking to all the
-
-920
-00:43:56,859 --> 00:43:59,970
-chunk servers okay so the observation is
+00:43:54,450 --> 00:43:59,970
+if you knew you were talking to all the chunk servers 
 
 921
-00:43:59,970 --> 00:44:02,260
-the master has to talk to the chunk
-
-922
-00:44:02,260 --> 00:44:04,660
-servers anyway if it reboots in order to
+00:43:59,970 --> 00:44:04,660
+so the observation is the master has to talk to the chunk servers anyway if it reboots 
 
 923
 00:44:04,660 --> 00:44:06,280
-find which chunk server holds which
+in order to find which chunk server holds which chunk 
 
 924
 00:44:06,280 --> 00:44:08,890
-chunk because the master doesn't
+because the master doesn't remember that 
 
 925
 00:44:08,890 --> 00:44:12,150
-remember that so you might think that
+so you might think that
 
 926
 00:44:12,150 --> 00:44:14,380
@@ -3708,79 +3620,55 @@ could just talk to the chunk servers
 
 928
 00:44:15,579 --> 00:44:17,079
-find out what trunks and versions they
+find out what trunks and versions they hold 
 
 929
-00:44:17,079 --> 00:44:19,000
-hold and take the maximum for a given
-
-930
-00:44:19,000 --> 00:44:20,619
-chunk overall the responding chunk
+00:44:17,079 --> 00:44:20,619
+and take the maximum for a given chunk overall the responding chunk servers
 
 931
-00:44:20,619 --> 00:44:22,750
-servers and that would work if all the
-
-932
-00:44:22,750 --> 00:44:24,579
-chunk servers holding a chunk responded
+00:44:20,619 --> 00:44:24,579
+and that would work if all the chunk servers holding a chunk responded
 
 933
 00:44:24,579 --> 00:44:26,920
-but the risk is that at the time the
+but the risk is that 
 
 934
 00:44:26,920 --> 00:44:28,480
-master reboots maybe some of the chunk
+at the time the master reboots 
 
 935
 00:44:28,480 --> 00:44:30,400
-servers are offline or disconnected or
+maybe some of the chunk servers are offline or disconnected or
 
 936
 00:44:30,400 --> 00:44:32,770
-whatever themselves rebooting and don't
+whatever themselves rebooting and don't respond
 
 937
 00:44:32,770 --> 00:44:35,349
-respond and so all the master gets back
+and so all the master gets back
 
 938
-00:44:35,349 --> 00:44:38,200
-is responses from chunk servers that
-
-939
-00:44:38,200 --> 00:44:40,119
-have last week's copies of the block and
+00:44:35,349 --> 00:44:40,119
+is responses from chunk servers that have last week's copies of the block 
 
 940
-00:44:40,119 --> 00:44:42,460
-the chunk servers that have the current
-
-941
-00:44:42,460 --> 00:44:44,320
-copy haven't finished rebooting or
+00:44:40,119 --> 00:44:44,320
+and the chunk servers that have the current copy haven't finished rebooting or offline or something
 
 942
 00:44:44,320 --> 00:44:54,940
-offline or something so ok oh yes if if
+so ok oh yes if 
 
 943
-00:44:54,940 --> 00:44:56,619
-the server's holding the most recent
-
-944
-00:44:56,619 --> 00:44:59,859
-copy are permanently dead if you've lost
+00:44:54,940 --> 00:44:59,859
+if the server's holding the most recent copy are permanently dead 
 
 945
-00:44:59,859 --> 00:45:02,980
-all copies all of the most recent
-
-946
-00:45:02,980 --> 00:45:06,540
-version of a chunk then yes
+00:44:59,859 --> 00:45:06,540
+if you've lost all copies all of the most recent version of a chunk then yes
 
 947
 00:45:09,030 --> 00:45:11,130
@@ -3788,259 +3676,151 @@ No
 
 948
 00:45:11,130 --> 00:45:15,339
-okay so the question is the master knows
+okay so the question is 
 
 949
-00:45:15,339 --> 00:45:17,560
-that for this chunk is looking for
-
-950
-00:45:17,560 --> 00:45:18,550
-version 17
+00:45:15,339 --> 00:45:18,550
+the master knows that for this chunk is looking for version 17
 
 951
 00:45:18,550 --> 00:45:21,579
-supposing it finds no chunk server you
+supposing it finds no chunk server you know
 
 952
-00:45:21,579 --> 00:45:22,690
-know and it talks to the chunk servers
-
-953
-00:45:22,690 --> 00:45:24,430
-periodically to sort of ask them what
-
-954
-00:45:24,430 --> 00:45:25,780
-chunks do you have what versions you
+00:45:21,579 --> 00:45:25,780
+and it talks to the chunk servers periodically to sort of ask them what chunks do you have what versions you have 
 
 955
-00:45:25,780 --> 00:45:27,520
-have supposing it finds no server with
-
-956
-00:45:27,520 --> 00:45:30,369
-chunk 17 with version 17 for this this
+00:45:25,780 --> 00:45:30,369
+supposing it finds no server with chunk 17 with version 17 for this this chunk 
 
 957
 00:45:30,369 --> 00:45:32,800
-chunk then the master will either say
+then the master will either say
 
 958
 00:45:32,800 --> 00:45:35,710
 well either not respond yet and wait or
 
 959
-00:45:35,710 --> 00:45:39,790
-it will tell the client look I can't
-
-960
-00:45:39,790 --> 00:45:42,880
-answer that try again later and this
+00:45:35,710 --> 00:45:42,880
+it will tell the client look I can't answer that try again later 
 
 961
-00:45:42,880 --> 00:45:44,530
-would come up like there was a power
-
-962
-00:45:44,530 --> 00:45:45,849
-failure in the building and all the
-
-963
-00:45:45,849 --> 00:45:47,079
-server's crashed and we're slowly
+00:45:42,880 --> 00:45:47,079
+and this would come up like there was a power failure in the building and all the server's crashed and we're slowly rebooting 
 
 964
 00:45:47,079 --> 00:45:49,510
-rebooting the master might come up first
+the master might come up first
 
 965
-00:45:49,510 --> 00:45:51,430
-and you know some fraction of the chunk
-
-966
-00:45:51,430 --> 00:45:53,079
-servers might be up and other ones would
+00:45:49,510 --> 00:45:53,079
+and you know some fraction of the chunk servers might be up 
 
 967
 00:45:53,079 --> 00:45:57,609
-reboot five minutes from now but so we
+and other ones would reboot five minutes from now but
 
 968
 00:45:57,609 --> 00:45:59,890
-ask to be prepared to wait and it will
+so we have to be prepared to wait 
 
 969
-00:45:59,890 --> 00:46:02,290
-wait forever because you don't want to
-
-970
-00:46:02,290 --> 00:46:05,440
-use a stale version of that of a chunk
+00:45:59,890 --> 00:46:05,440
+and it will wait forever because you don't want to use a stale version of that of a chunk
 
 971
-00:46:05,440 --> 00:46:09,190
-okay so the master needs to assemble the
-
-972
-00:46:09,190 --> 00:46:10,540
-list of chunk servers that have the most
-
-973
-00:46:10,540 --> 00:46:12,910
-recent version the master knows the most
+00:46:05,440 --> 00:46:12,910
+okay so the master needs to assemble the list of chunk servers that have the most recent version 
 
 974
 00:46:12,910 --> 00:46:14,619
-recent versions stored on disk each
+the master knows the most recent versions stored on disk
 
 975
 00:46:14,619 --> 00:46:16,540
-chunk server along with each chunk as
+each chunk server along with each chunk
 
 976
-00:46:16,540 --> 00:46:18,280
-you pointed out also remembers the
-
-977
-00:46:18,280 --> 00:46:19,810
-version number of the chunk that it's
+00:46:16,540 --> 00:46:19,810
+as you pointed out also remembers the version number of the chunk that it's stores 
 
 978
-00:46:19,810 --> 00:46:22,540
-stores so that when chunk slivers
-
-979
-00:46:22,540 --> 00:46:23,859
-reported into the master saying look I
-
-980
-00:46:23,859 --> 00:46:25,690
-have this chunk the master can ignore
+00:46:19,810 --> 00:46:25,690
+so that when chunk servers reported into the master saying look I have this chunk 
 
 981
 00:46:25,690 --> 00:46:27,760
-the ones whose version does not match
+the master can ignore the ones whose version does not match
 
 982
 00:46:27,760 --> 00:46:30,339
-the version the master knows is the most
+the version the master knows is the most recent
 
 983
-00:46:30,339 --> 00:46:34,869
-recent okay so remember we were the
-
-984
-00:46:34,869 --> 00:46:36,670
-client want to append the master doesn't
+00:46:30,339 --> 00:46:36,670
+okay so remember we were the client want to append the master doesn't have a primary 
 
 985
-00:46:36,670 --> 00:46:39,579
-have a primary it figures out maybe you
-
-986
-00:46:39,579 --> 00:46:42,310
-have to wait for the set of chunk
+00:46:36,670 --> 00:46:42,310
+it figures out maybe you have to wait for the set of chunk
 
 987
-00:46:42,310 --> 00:46:43,960
-servers that have the most recent
-
-988
-00:46:43,960 --> 00:46:49,020
-version of that chunk it picks a primary
+00:46:42,310 --> 00:46:49,020
+servers that have the most recent version of that chunk it picks a primary
 
 989
-00:46:50,040 --> 00:46:52,930
-so I'm gonna pick one of them to be the
-
-990
-00:46:52,930 --> 00:46:56,109
-primary and the others to be secondary
-
-991
-00:46:56,109 --> 00:46:56,859
-servers
+00:46:50,040 --> 00:46:56,859
+so I'm gonna pick one of them to be the primary and the others to be secondary servers
 
 992
-00:46:56,859 --> 00:46:58,210
-among the replicas set at the most
-
-993
-00:46:58,210 --> 00:47:02,140
-recent version the master then
+00:46:56,859 --> 00:47:02,140
+among the replicas set at the most recent version 
 
 994
-00:47:02,140 --> 00:47:04,859
-increments
-
-995
-00:47:07,570 --> 00:47:11,170
-the version number and writes that to
+00:47:02,140 --> 00:47:11,170
+the master then increments the version number and writes that to disk 
 
 996
 00:47:11,170 --> 00:47:13,600
-disk so it doesn't forget it the crashes
+so it doesn't forget it the crashes
 
 997
 00:47:13,600 --> 00:47:15,970
 and then it sends the primary in the
 
 998
-00:47:15,970 --> 00:47:18,700
-secondaries and that's each of them a
-
-999
-00:47:18,700 --> 00:47:20,710
-message saying look for this chunk
+00:47:15,970 --> 00:47:20,710
+secondaries and that's each of them a message saying 
 
 1000
 00:47:20,710 --> 00:47:22,840
-here's the primary here's the
+look for this chunk here's the primary here's the secondaries 
 
 1001
-00:47:22,840 --> 00:47:26,650
-secondaries you know recipient maybe one
-
-1002
-00:47:26,650 --> 00:47:28,450
-of them and here's the new version
+00:47:22,840 --> 00:47:28,450
+you know recipient maybe one of them and here's the new version number
 
 1003
-00:47:28,450 --> 00:47:32,170
-number so then it tells primary
-
-1004
-00:47:32,170 --> 00:47:37,060
-secondaries this information plus the
-
-1005
-00:47:37,060 --> 00:47:39,490
-version number the primaries and
+00:47:28,450 --> 00:47:39,490
+so then it tells primary secondaries this information plus the version number 
 
 1006
-00:47:39,490 --> 00:47:39,970
-secondaries
-
-1007
-00:47:39,970 --> 00:47:41,920
-alright the version number to disk so
+00:47:39,490 --> 00:47:41,920
+the primaries and secondaries all write the version number to disk
 
 1008
 00:47:41,920 --> 00:47:43,780
-they don't forget because you know if
+so they don't forget because you know 
 
 1009
 00:47:43,780 --> 00:47:45,040
-there's a power failure or whatever they
+if there's a power failure or whatever 
 
 1010
-00:47:45,040 --> 00:47:47,140
-have to report in to the master with the
-
-1011
-00:47:47,140 --> 00:47:51,210
-actual version number they hold yes
+00:47:45,040 --> 00:47:51,210
+they have to report in to the master with the actual version number they hold yes
 
 1012
 00:48:04,230 --> 00:48:06,190
@@ -4048,207 +3828,139 @@ that's a great question
 
 1013
 00:48:06,190 --> 00:48:08,500
-so I don't know there's hints in the
+so I don't know 
 
 1014
 00:48:08,500 --> 00:48:11,170
-paper that I'm slightly wrong about this
+there's hints in the paper that I'm slightly wrong about this
 
 1015
-00:48:11,170 --> 00:48:14,740
-so the paper says I think your question
-
-1016
-00:48:14,740 --> 00:48:16,030
-was explaining something to me about the
+00:48:11,170 --> 00:48:16,030
+so the paper says I think your question was explaining something to me about the paper 
 
 1017
-00:48:16,030 --> 00:48:18,310
-paper the paper says if the master
-
-1018
-00:48:18,310 --> 00:48:22,480
-reboots and talks to chunk servers and
+00:48:16,030 --> 00:48:22,480
+the paper says if the master reboots and talks to chunk servers
 
 1019
-00:48:22,480 --> 00:48:24,220
-one of the chunk servers reboot reports
-
-1020
-00:48:24,220 --> 00:48:26,530
-a version number that's higher than the
-
-1021
-00:48:26,530 --> 00:48:28,540
-version number the master remembers the
+00:48:22,480 --> 00:48:28,540
+and one of the chunk servers reboot reports a version number that's higher than the version number the master remembers
 
 1022
 00:48:28,540 --> 00:48:31,600
-master assumes that there was a failure
+the master assumes that there was a failure
 
 1023
 00:48:31,600 --> 00:48:34,600
 while it was assigning a new primary and
 
 1024
-00:48:34,600 --> 00:48:36,760
-adopts the new the higher version number
-
-1025
-00:48:36,760 --> 00:48:38,860
-that it heard from a chunk server so it
+00:48:34,600 --> 00:48:38,860
+adopts the new the higher version number that it heard from a chunk server 
 
 1026
 00:48:38,860 --> 00:48:42,250
-must be the case that in order to handle
+so it must be the case that 
 
 1027
 00:48:42,250 --> 00:48:48,010
-a master crash at this point that the
+in order to handle a master crash at this point that 
 
 1028
-00:48:48,010 --> 00:48:55,869
-master writes its own version number to
-
-1029
-00:48:55,869 --> 00:49:02,530
-disk after telling the primaries there's
+00:48:48,010 --> 00:49:02,530
+the master writes its own version number to disk after telling the primaries 
 
 1030
 00:49:02,530 --> 00:49:03,550
-a bit of a problem here though because
+there's a bit of a problem here though because if the
 
 1031
 00:49:03,550 --> 00:49:11,880
-if the was that is there an ACK
+what is that is there an ACK
 
 1032
 00:49:12,410 --> 00:49:17,250
 all right so maybe the master tells the
 
 1033
-00:49:17,250 --> 00:49:18,810
-primaries and backups and that their
-
-1034
-00:49:18,810 --> 00:49:20,400
-primaries and secondaries if they're a
+00:49:17,250 --> 00:49:20,400
+primaries and backups and that their primaries and secondaries 
 
 1035
 00:49:20,400 --> 00:49:21,720
-primary secondary tells him the new
+if their primary secondary tells him the new version number
 
 1036
-00:49:21,720 --> 00:49:24,450
-version number waits for the AK and then
-
-1037
-00:49:24,450 --> 00:49:27,870
-writes to disk or something unsatisfying
+00:49:21,720 --> 00:49:27,870
+waits for the ACK and then writes to disk or something unsatisfying about this 
 
 1038
 00:49:27,870 --> 00:49:37,770
-about this I don't believe that works
+I don't believe that works
 
 1039
 00:49:37,770 --> 00:49:40,380
 because of the possibility that the
 
 1040
-00:49:40,380 --> 00:49:41,940
-chunk servers with the most recent
-
-1041
-00:49:41,940 --> 00:49:44,190
-version numbers being offline at the
-
-1042
-00:49:44,190 --> 00:49:46,650
-time the master reboots we wouldn't want
+00:49:40,380 --> 00:49:46,650
+chunk servers with the most recent version numbers being offline at the time the master reboots 
 
 1043
-00:49:46,650 --> 00:49:48,360
-the master the master doesn't know the
-
-1044
-00:49:48,360 --> 00:49:50,610
-current version number it'll just accept
+00:49:46,650 --> 00:49:50,610
+we wouldn't want the master the master doesn't know the current version number 
 
 1045
-00:49:50,610 --> 00:49:51,960
-whatever highest version number adheres
-
-1046
-00:49:51,960 --> 00:49:54,300
-which could be an old version number all
+00:49:50,610 --> 00:49:54,300
+it'll just accept whatever highest version number adheres which could be an old version number 
 
 1047
 00:49:54,300 --> 00:49:57,000
-right so this is a an area of my
+all right so this is a an area of my ignorance
 
 1048
 00:49:57,000 --> 00:49:58,260
-ignorance I don't really understand
+I don't really understand
 
 1049
-00:49:58,260 --> 00:50:00,570
-whether the master update system version
-
-1050
-00:50:00,570 --> 00:50:01,800
-number on this first and then tells the
-
-1051
-00:50:01,800 --> 00:50:03,600
-primary secondary or the other way
+00:49:58,260 --> 00:50:03,600
+whether the master update its own version number on this first and then tells the primary secondary or the other way around 
 
 1052
 00:50:03,600 --> 00:50:06,360
-around and I'm not sure it works either
+and I'm not sure it works either way 
 
 1053
 00:50:06,360 --> 00:50:11,340
-way okay but in any case one way or
+okay but in any case one way or another 
 
 1054
 00:50:11,340 --> 00:50:12,810
-another the master update is version
+the master update its version number 
 
 1055
 00:50:12,810 --> 00:50:14,340
-number tells the primary secondary look
+tells the primary secondary 
 
 1056
 00:50:14,340 --> 00:50:16,140
-your primaries and secondaries here's a
+look your primaries and secondaries here's a new version number
 
 1057
-00:50:16,140 --> 00:50:17,700
-new version number and so now we have a
-
-1058
-00:50:17,700 --> 00:50:19,410
-primary which is able to accept writes
+00:50:16,140 --> 00:50:19,410
+and so now we have a primary which is able to accept writes
 
 1059
-00:50:19,410 --> 00:50:21,480
-all right that's what the primaries job
-
-1060
-00:50:21,480 --> 00:50:23,730
-is to take writes from clients and
+00:50:19,410 --> 00:50:23,730
+that's what the primaries job is to take writes from clients and
 
 1061
-00:50:23,730 --> 00:50:26,760
-organize applying those writes to the
-
-1062
-00:50:26,760 --> 00:50:35,130
-various chunk servers and you know the
+00:50:23,730 --> 00:50:35,130
+organize applying those writes to the various chunk servers 
 
 1063
 00:50:35,130 --> 00:50:36,450
-reason for the version number stuff is
+and you know the reason for the version number stuff is
 
 1064
 00:50:36,450 --> 00:50:44,270
@@ -4259,228 +3971,144 @@ so that the master will recognize the
 which servers have this new you know the
 
 1066
-00:50:50,240 --> 00:50:52,800
-master hands out the ability to be
-
-1067
-00:50:52,800 --> 00:50:55,320
-primary for some chunk server we want to
+00:50:50,240 --> 00:50:55,320
+master hands out the ability to be primary for some chunk server 
 
 1068
 00:50:55,320 --> 00:50:58,950
-be able to recognize if the master
+we want to be able to recognize 
 
 1069
 00:50:58,950 --> 00:51:01,260
-crashes you know that it was that was
+if the master crashes you know that it was that was the primary 
 
 1070
-00:51:01,260 --> 00:51:03,840
-the primary that only that primary and
-
-1071
-00:51:03,840 --> 00:51:05,070
-it secondaries which were actually
+00:51:01,260 --> 00:51:05,070
+that only that primary and it secondaries which were actually processed
 
 1072
-00:51:05,070 --> 00:51:06,720
-processed which were in charge of
-
-1073
-00:51:06,720 --> 00:51:08,250
-updating that chunk that only those
+00:51:05,070 --> 00:51:08,250
+which were in charge of updating that chunk 
 
 1074
-00:51:08,250 --> 00:51:10,530
-primaries and secondaries are allowed to
-
-1075
-00:51:10,530 --> 00:51:12,630
-be chunk servers in the future and the
+00:51:08,250 --> 00:51:12,630
+that only those primaries and secondaries are allowed to be chunk servers in the future 
 
 1076
-00:51:12,630 --> 00:51:14,070
-way the master does this is with this
-
-1077
-00:51:14,070 --> 00:51:17,270
-version number logic
+00:51:12,630 --> 00:51:17,270
+and the way the master does this is with this version number logic
 
 1078
 00:51:17,480 --> 00:51:21,500
-okay so the master tells the primaries
+okay so the master tells the primaries and secondaries
 
 1079
-00:51:21,500 --> 00:51:23,119
-and secondaries that there it they're
-
-1080
-00:51:23,119 --> 00:51:24,740
-allowed to modify this block it also
+00:51:21,500 --> 00:51:24,740
+that there it they're allowed to modify this block 
 
 1081
-00:51:24,740 --> 00:51:27,530
-gives the primary a lease which
-
-1082
-00:51:27,530 --> 00:51:29,390
-basically tells the primary look you're
+00:51:24,740 --> 00:51:29,390
+it also gives the primary a lease which basically tells the primary 
 
 1083
 00:51:29,390 --> 00:51:31,099
-allowed to be primary for the next sixty
+look you're allowed to be primary for the next sixty seconds 
 
 1084
 00:51:31,099 --> 00:51:33,200
-seconds after sixty Seconds you have to
+after sixty Seconds you have to stop 
 
 1085
-00:51:33,200 --> 00:51:37,280
-stop and this is part of the machinery
-
-1086
-00:51:37,280 --> 00:51:39,290
-for making sure that we don't end up
+00:51:33,200 --> 00:51:39,290
+and this is part of the machinery for making sure that we don't end up with two primaries
 
 1087
 00:51:39,290 --> 00:51:41,869
-with two primaries I'll talk about a bit
+I'll talk about a bit later 
 
 1088
 00:51:41,869 --> 00:51:46,339
-later okay so now we were primary now
+okay so now we were primary 
 
 1089
 00:51:46,339 --> 00:51:50,089
-the master tells the client who the
+now the master tells the client 
 
 1090
 00:51:50,089 --> 00:51:54,440
-primary and the secondaries are and at
+who the primary and the secondaries are 
 
 1091
 00:51:54,440 --> 00:51:59,050
-this point we're we're executing in
+and at this point we're we're executing in
 
 1092
 00:51:59,050 --> 00:52:02,240
-figure two in the paper the client now
+figure two in the paper 
 
 1093
 00:52:02,240 --> 00:52:04,040
-knows who the primary secondaries are in
+the client now knows who the primary secondaries are 
 
 1094
-00:52:04,040 --> 00:52:05,660
-some order or another and the paper
-
-1095
-00:52:05,660 --> 00:52:08,180
-explains a sort of clever way to manage
+00:52:04,040 --> 00:52:08,180
+in some order or another and the paper explains a sort of clever way to manage this
 
 1096
 00:52:08,180 --> 00:52:10,849
-this in some order or another the client
+in some order or another 
 
 1097
-00:52:10,849 --> 00:52:13,250
-sends a copy of the data it wants to be
-
-1098
-00:52:13,250 --> 00:52:15,230
-appended to the primary in all the
+00:52:10,849 --> 00:52:15,230
+the client sends a copy of the data it wants to be appended to the primary in all the secondaries 
 
 1099
-00:52:15,230 --> 00:52:18,440
-secondaries and the primary in the
-
-1100
-00:52:18,440 --> 00:52:20,390
-secondaries write that data to a
-
-1101
-00:52:20,390 --> 00:52:22,099
-temporary location it's not appended to
+00:52:15,230 --> 00:52:22,099
+and the primary in the secondaries write that data to a temporary location 
 
 1102
 00:52:22,099 --> 00:52:24,380
-the file yet after they've all said yes
+it's not appended to the file yet 
 
 1103
 00:52:24,380 --> 00:52:29,180
-we have the data the client sends a
+after they've all said yes we have the data 
 
 1104
 00:52:29,180 --> 00:52:31,130
-message to the primary saying look you
+the client sends a message to the primary saying look 
 
 1105
-00:52:31,130 --> 00:52:33,470
-know you and all the secondaries have
-
-1106
-00:52:33,470 --> 00:52:35,569
-the data I'd like to append it for this
-
-1107
-00:52:35,569 --> 00:52:36,579
-file
+00:52:31,130 --> 00:52:36,579
+you know you and all the secondaries have the data I'd like to append it for this file
 
 1108
-00:52:36,579 --> 00:52:38,960
-the primary maybe is receiving these
-
-1109
-00:52:38,960 --> 00:52:40,520
-requests from lots of different clients
+00:52:36,579 --> 00:52:40,520
+the primary maybe is receiving these requests from lots of different clients concurrently
 
 1110
-00:52:40,520 --> 00:52:43,010
-concurrently it picks some order execute
-
-1111
-00:52:43,010 --> 00:52:45,260
-the client request one at a time and for
+00:52:40,520 --> 00:52:45,260
+it picks some order execute the client request one at a time 
 
 1112
 00:52:45,260 --> 00:52:48,260
-each client appends request the primary
+and for each client appends request 
 
 1113
-00:52:48,260 --> 00:52:50,450
-looks at the offset that's the end of
-
-1114
-00:52:50,450 --> 00:52:53,030
-the file the current end of the current
+00:52:48,260 --> 00:52:53,030
+the primary looks at the offset that's the end of the file the current end of the current chunk 
 
 1115
-00:52:53,030 --> 00:52:54,740
-chunk makes sure there's enough
-
-1116
-00:52:54,740 --> 00:52:56,480
-remaining space in the chunk and then
+00:52:53,030 --> 00:52:56,480
+makes sure there's enough remaining space in the chunk and 
 
 1117
-00:52:56,480 --> 00:52:59,960
-tells then writes the clients record to
-
-1118
-00:52:59,960 --> 00:53:02,240
-the end of the current chunk and tells
+00:52:56,480 --> 00:53:02,240
+then tells then writes the clients record to the end of the current chunk 
 
 1119
-00:53:02,240 --> 00:53:04,369
-all the secondaries to also write the
-
-1120
-00:53:04,369 --> 00:53:08,359
-clients data to the end to the same
-
-1121
-00:53:08,359 --> 00:53:12,010
-offset the same offset in their chunks
+00:53:02,240 --> 00:53:12,010
+and tells all the secondaries to also write the clients data to the end to the same offset the same offset in their chunks
 
 1122
 00:53:12,010 --> 00:53:20,500
@@ -4491,176 +4119,108 @@ all right so the primary picks an offset
 all the replicas including the primary
 
 1124
-00:53:26,480 --> 00:53:29,180
-are told to write
-
-1125
-00:53:29,180 --> 00:53:36,090
-the new appended record at at offset the
+00:53:26,480 --> 00:53:36,090
+are told to write the new appended record at at offset 
 
 1126
 00:53:36,090 --> 00:53:38,700
-secondary's they may do it they may not
+the secondary's they may do it they may not
 
 1127
-00:53:38,700 --> 00:53:41,250
-do it I'm either run out of space maybe
-
-1128
-00:53:41,250 --> 00:53:42,810
-they crashed maybe the network message
-
-1129
-00:53:42,810 --> 00:53:45,480
-was lost from the primary so if a
+00:53:38,700 --> 00:53:45,480
+do it I'm either run out of space maybe they crashed maybe the network message was lost from the primary 
 
 1130
-00:53:45,480 --> 00:53:47,970
-secondary actually wrote the data to its
-
-1131
-00:53:47,970 --> 00:53:50,760
-disk at that offset it will reply yes to
+00:53:45,480 --> 00:53:50,760
+so if a secondary actually wrote the data to its disk at that offset 
 
 1132
 00:53:50,760 --> 00:53:52,859
-the primary if the primary collects a
+it will reply yes to the primary 
 
 1133
 00:53:52,859 --> 00:53:57,740
-yes answer from all of the secondaries
+if the primary collects a yes answer from all of the secondaries
 
 1134
-00:53:58,520 --> 00:54:02,190
-so if they all of all of them managed to
-
-1135
-00:54:02,190 --> 00:54:03,630
-actually write and reply to the primary
-
-1136
-00:54:03,630 --> 00:54:08,250
-saying yes I did it then the primary is
+00:53:58,520 --> 00:54:08,250
+so if they all of all of them managed to actually write and reply to the primary saying yes I did it 
 
 1137
 00:54:08,250 --> 00:54:10,800
-going to reply reply success to the
+then the primary is going to reply reply success to the client
 
 1138
-00:54:10,800 --> 00:54:18,930
-client if the primary doesn't get an
-
-1139
-00:54:18,930 --> 00:54:21,510
-answer from one of the secondaries or
+00:54:10,800 --> 00:54:21,510
+if the primary doesn't get an answer from one of the secondaries 
 
 1140
-00:54:21,510 --> 00:54:23,580
-the secondary reply sorry something bad
-
-1141
-00:54:23,580 --> 00:54:25,590
-happened I ran out of disk space my disk
-
-1142
-00:54:25,590 --> 00:54:28,980
-I don't know what then the primary
+00:54:21,510 --> 00:54:28,980
+or the secondary reply sorry something bad happened I ran out of disk space my disk I don't know what 
 
 1143
 00:54:28,980 --> 00:54:37,950
-replies no to the client and the paper
+then the primary replies no to the client 
 
 1144
-00:54:37,950 --> 00:54:39,420
-says oh if the client gets an error like
-
-1145
-00:54:39,420 --> 00:54:42,000
-that back in the primary the client is
-
+00:54:37,950 --> 00:54:42,000
+and the paper says oh if the client gets an error like that back in the primary 
+-
 1146
-00:54:42,000 --> 00:54:44,369
-supposed to reissue the entire append
-
-1147
-00:54:44,369 --> 00:54:46,020
-sequence starting again talking to the
+00:54:42,000 --> 00:54:46,020
+the client is supposed to reissue the entire append sequence starting again 
 
 1148
-00:54:46,020 --> 00:54:48,530
-master to find out the most grease the
-
-1149
-00:54:48,530 --> 00:54:50,369
-chunk at the end of the file
+00:54:46,020 --> 00:54:50,369
+talking to the master to find out the most grease the chunk at the end of the file
 
 1150
-00:54:50,369 --> 00:54:52,500
-I want to know the client supposed to
-
-1151
-00:54:52,500 --> 00:54:54,300
-reissue the whole record append
+00:54:50,369 --> 00:54:54,300
+I want to know the client supposed to reissue the whole record append operation
 
 1152
 00:54:54,300 --> 00:55:01,650
-operation ah you would think but they
+ah you would think but they don't 
 
 1153
 00:55:01,650 --> 00:55:05,180
-don't so the question is jeez you know
+so the question is jeez you know
 
 1154
 00:55:05,180 --> 00:55:08,220
-the the primary tells all the replicas
+the the primary tells all the replicas to do the append
 
 1155
-00:55:08,220 --> 00:55:09,869
-to do the append yeah maybe some of them
-
-1156
-00:55:09,869 --> 00:55:10,830
-do some of them don't
+00:55:08,220 --> 00:55:10,830
+yeah maybe some of them do some of them don't right 
 
 1157
-00:55:10,830 --> 00:55:12,869
-right if some of them don't then we
-
-1158
-00:55:12,869 --> 00:55:14,460
-apply an error to the client so the
+00:55:10,830 --> 00:55:14,460
+if some of them don't then we apply an error to the client 
 
 1159
 00:55:14,460 --> 00:55:16,109
-client thinks of the append in happen
+so the client thinks of the append in happen
 
 1160
-00:55:16,109 --> 00:55:18,630
-but those other replicas where the append
-
-1161
-00:55:18,630 --> 00:55:23,550
-succeeded they did append so now we have
+00:55:16,109 --> 00:55:23,550
+but those other replicas where the append succeeded they did append 
 
 1162
 00:55:23,550 --> 00:55:25,400
-replicas donor the same data one of them
+so now we have replicas donor the same data
 
 1163
-00:55:25,400 --> 00:55:27,480
-the one that returned in error didn't do
+00:55:25,400 --> 00:55:31,830
+one of them the one that returned in error didn't do the append 
 
 1164
 00:55:27,480 --> 00:55:28,890
-the append and the ones they returned
-
-1165
-00:55:28,890 --> 00:55:31,830
-yes did do the append so that is just
+and the ones they returned yes did do the append 
 
 1166
 00:55:31,830 --> 00:55:35,119
-the way GFS works
+so that is just the way GFS works
 
 1167
 00:55:44,590 --> 00:55:47,590
@@ -4672,63 +4232,43 @@ they depending on what replica they be
 
 1169
 00:55:50,330 --> 00:55:53,360
-they may either see the appended record
+they may either see the appended record or they may not 
 
 1170
 00:55:53,360 --> 00:55:56,810
-or they may not if the record append
+if the record append failed
 
 1171
 00:55:56,810 --> 00:55:59,120
-but if the record append succeeded if
+but if the record append succeeded 
 
 1172
 00:55:59,120 --> 00:56:00,920
-the client got a success message back
+if the client got a success message back
 
 1173
-00:56:00,920 --> 00:56:03,920
-then that means all of the replicas
-
-1174
-00:56:03,920 --> 00:56:05,420
-appended that record at the same offset
+00:56:00,920 --> 00:56:05,420
+then that means all of the replicas appended that record at the same offset
 
 1175
 00:56:05,420 --> 00:56:10,160
-if the client gets a no back then zero
+if the client gets a no back 
 
 1176
-00:56:10,160 --> 00:56:14,090
-or more of the replicas may have
-
-1177
-00:56:14,090 --> 00:56:15,740
-appended the record of that all set and
+00:56:10,160 --> 00:56:15,740
+then zero or more of the replicas may have appended the record of that offset and the other ones not
 
 1178
 00:56:15,740 --> 00:56:20,240
-the other ones not so the client got to
+so the client got a No
 
 1179
-00:56:20,240 --> 00:56:22,280
-know then that means that some replicas
-
-1180
-00:56:22,280 --> 00:56:25,130
-maybe some replicas have the record and
+00:56:20,240 --> 00:56:25,130
+then that means that some replicas maybe some replicas have the record and some don't 
 
 1181
-00:56:25,130 --> 00:56:27,860
-some don't so what you which were
-
-1182
-00:56:27,860 --> 00:56:29,750
-roughly read from you know you may or
-
-1183
-00:56:29,750 --> 00:56:32,980
-may not see the record yeah
+00:56:25,130 --> 00:56:32,980
+so what you which were oughly read from you know you may or may not see the record yeah
 
 1184
 00:56:39,410 --> 00:56:45,319
@@ -4736,763 +4276,447 @@ oh that all the replicas are the same
 
 1185
 00:56:45,319 --> 00:56:47,240
-all the secondaries are the same version
+all the secondaries are the same version number 
 
 1186
-00:56:47,240 --> 00:56:49,430
-number so the version number only
-
-1187
-00:56:49,430 --> 00:56:51,500
-changes when the master assigns a new
+00:56:47,240 --> 00:56:51,500
+so the version number only changes when the master assigns a new
 
 1188
-00:56:51,500 --> 00:56:53,900
-primary which would ordinarily happen
-
-1189
-00:56:53,900 --> 00:56:55,309
-and probably only happen if the primary
+00:56:51,500 --> 00:56:55,309
+primary which would ordinarily happen and probably only happen if the primary failed 
 
 1190
 00:56:55,309 --> 00:56:58,270
-failed so what we're talking about is is
+so what we're talking about is is
 
 1191
 00:56:58,270 --> 00:57:00,200
-replicas that have the fresh version
-
+replicas that have the fresh version number all right 
+-
 1192
-00:57:00,200 --> 00:57:02,660
-number all right and you can't tell from
-
-1193
-00:57:02,660 --> 00:57:03,740
-looking at them that they're missing
-
-1194
-00:57:03,740 --> 00:57:08,059
-that the replicas are different but
+00:57:00,200 --> 00:57:08,059
+and you can't tell from looking at them that they're missing that the replicas are different 
 
 1195
 00:57:08,059 --> 00:57:09,319
-maybe they're different and the
+but maybe they're different 
 
 1196
 00:57:09,319 --> 00:57:11,390
-justification for this is that yeah you
+and the justification for this is that 
 
 1197
-00:57:11,390 --> 00:57:13,160
-know maybe the replicas don't all have
-
-1198
-00:57:13,160 --> 00:57:16,099
-that the appended record but that's the
+00:57:11,390 --> 00:57:16,099
+yeah you know maybe the replicas don't all have that the appended record 
 
 1199
-00:57:16,099 --> 00:57:18,200
-case in which the primary answer no to
-
-1200
-00:57:18,200 --> 00:57:20,180
-the clients and the client knows that
-
-1201
-00:57:20,180 --> 00:57:22,940
-the write failed and the reasoning
+00:57:16,099 --> 00:57:22,940
+but that's the case in which the primary answer no to the clients and the client knows that the write failed 
 
 1202
-00:57:22,940 --> 00:57:24,410
-behind this is that then the client
-
-1203
-00:57:24,410 --> 00:57:27,859
-library will reissue the append so the
+00:57:22,940 --> 00:57:27,859
+and the reasoning behind this is that then the client ibrary will reissue the append 
 
 1204
-00:57:27,859 --> 00:57:29,480
-appended record will show up you know
-
-1205
-00:57:29,480 --> 00:57:33,260
-eventually the append succeed you
+00:57:27,859 --> 00:57:33,260
+so the appended record will show up you know eventually the append succeed you would think 
 
 1206
-00:57:33,260 --> 00:57:36,920
-would think because the client I'll keep
-
-1207
-00:57:36,920 --> 00:57:38,480
-reissuing it until succeeds and then
+00:57:33,260 --> 00:57:38,480
+because the client I'll keep reissuing it until succeeds and then
 
 1208
-00:57:38,480 --> 00:57:39,770
-when it succeeds that means there's
-
-1209
-00:57:39,770 --> 00:57:41,510
-gonna be some offset you know farther on
+00:57:38,480 --> 00:57:41,510
+when it succeeds that means there's gonna be some offset you know farther on
 
 1210
-00:57:41,510 --> 00:57:43,460
-in the file where that record actually
-
-1211
-00:57:43,460 --> 00:57:45,859
-occurs in all the replicas as well as
+00:57:41,510 --> 00:57:45,859
+in the file where that record actually occurs in all the replicas as well as
 
 1212
-00:57:45,859 --> 00:57:48,049
-offsets preceding that word only occurs
-
-1213
-00:57:48,049 --> 00:57:52,690
-in a few of the replicas yes
+00:57:45,859 --> 00:57:52,690
+offsets preceding that word only occurs in a few of the replicas yes
 
 1214
 00:58:04,680 --> 00:58:11,779
 oh this is a great question
 
 1215
-00:58:11,779 --> 00:58:15,690
-the exact path that the right data takes
-
-1216
-00:58:15,690 --> 00:58:17,910
-might be quite important with respect to
-
-1217
-00:58:17,910 --> 00:58:19,410
-the underlying network and the paper
+00:58:11,779 --> 00:58:19,410
+the exact path that the right data takes might be quite important with respect to the underlying network 
 
 1218
 00:58:19,410 --> 00:58:22,950
-somewhere says even though when the
+and the paper somewhere says even though 
 
 1219
 00:58:22,950 --> 00:58:24,539
-paper first talks about it he claims
+when the paper first talks about it 
 
 1220
 00:58:24,539 --> 00:58:26,490
-that the client sends the data to each
+he claims that the client sends the data to each replica 
 
 1221
-00:58:26,490 --> 00:58:29,309
-replica in fact later on it changes the
-
-1222
-00:58:29,309 --> 00:58:31,289
-tune and says the client sends it to
-
-1223
-00:58:31,289 --> 00:58:33,539
-only the closest of the replicas and
+00:58:26,490 --> 00:58:33,539
+in fact later on it changes the tune and says the client sends it to only the closest of the replicas 
 
 1224
-00:58:33,539 --> 00:58:36,359
-then the replicas then that replica
-
-1225
-00:58:36,359 --> 00:58:37,829
-forwards the data to another replica
+00:58:33,539 --> 00:58:37,829
+and then the replicas then that replica forwards the data to another replica
 
 1226
 00:58:37,829 --> 00:58:39,630
 along I sort of chained until all the
 
 1227
-00:58:39,630 --> 00:58:41,940
-replicas had the data and that path of
-
-1228
-00:58:41,940 --> 00:58:43,770
-that chain is taken to sort of minimize
+00:58:39,630 --> 00:58:43,770
+replicas had the data and that path of that chain is taken to sort of minimize
 
 1229
-00:58:43,770 --> 00:58:46,859
-crossing bottleneck inter switch links
-
-1230
-00:58:46,859 --> 00:59:00,390
-in a data center yes the version number
+00:58:43,770 --> 00:59:00,390
+crossing a bottleneck inter switch links in a data center yes 
 
 1231
-00:59:00,390 --> 00:59:03,539
-only gets incremented if the master
-
-1232
-00:59:03,539 --> 00:59:06,119
-thinks there's no primary so it's a so
+00:59:00,390 --> 00:59:06,119
+the version number only gets incremented if the master thinks there's no primary
 
 1233
-00:59:06,119 --> 00:59:09,359
-in the ordinary sequence there already
-
-1234
-00:59:09,359 --> 00:59:13,710
-be a primary for that chunk the the
+00:59:06,119 --> 00:59:13,710
+in the ordinary sequence there already be a primary for that chunk the the
 
 1235
-00:59:13,710 --> 00:59:16,680
-the the master sort of will remember oh
-
-1236
-00:59:16,680 --> 00:59:18,180
-gosh there's already a primary and
-
-1237
-00:59:18,180 --> 00:59:19,470
-secondary for that chunk and it'll just
+00:59:13,710 --> 00:59:19,470
+the the master sort of will remember oh gosh there's already a primary and secondary for that chunk and it'll just
 
 1238
-00:59:19,470 --> 00:59:20,640
-it won't go through this master
-
-1239
-00:59:20,640 --> 00:59:22,079
-selection it won't increment the version
+00:59:19,470 --> 00:59:22,079
+it won't go through this master selection it won't increment the version number 
 
 1240
-00:59:22,079 --> 00:59:24,450
-number it'll just tell the client look
-
-1241
-00:59:24,450 --> 00:59:26,400
-up here's the primary with with no
-
-1242
-00:59:26,400 --> 00:59:29,270
-version number change
+00:59:22,079 --> 00:59:29,270
+it'll just tell the client look up here's the primary with with no version number change
 
 1243
 00:59:42,340 --> 00:59:47,090
 my understanding is that if this is this
 
 1244
-00:59:47,090 --> 00:59:49,130
-I think you're asking a you're asking an
-
-1245
-00:59:49,130 --> 00:59:51,050
-interesting question so in this scenario
+00:59:47,090 --> 00:59:51,050
+I think you're asking a you're asking an interesting question 
 
 1246
-00:59:51,050 --> 00:59:52,940
-in which the primaries isn't answered
-
-1247
-00:59:52,940 --> 00:59:54,590
-failure to the client you might think
+00:59:51,050 --> 00:59:54,590
+so in this scenario in which the primaries isn't answered failure to the client 
 
 1248
-00:59:54,590 --> 00:59:56,000
-something must be wrong with something
-
-1249
-00:59:56,000 --> 00:59:57,860
-and that it should be fixed before you
+00:59:54,590 --> 00:59:57,860
+you might think something must be wrong with something and that it should be fixed before you proceed 
 
 1250
-00:59:57,860 --> 00:59:59,870
-proceed in fact as far as I can tell the
-
-1251
-00:59:59,870 --> 01:00:03,320
-paper there's no immediate anything the
-
-1252
-01:00:03,320 --> 01:00:08,300
-client retries the append you know
+00:59:57,860 --> 01:00:08,300
+in fact as far as I can tell the paper there's no an immediate anything the client retries the append you know
 
 1253
-01:00:08,300 --> 01:00:10,010
-because maybe the problem was a network
-
-1254
-01:00:10,010 --> 01:00:11,570
-message got lost so there's nothing to
+01:00:08,300 --> 01:00:11,570
+because maybe the problem was a network message got lost so there's nothing to repair right
 
 1255
-01:00:11,570 --> 01:00:12,980
-repair right you know now we're gonna
-
-1256
-01:00:12,980 --> 01:00:13,850
-message got lost we should be
-
-1257
-01:00:13,850 --> 01:00:15,080
-transmitted and this is sort of a
+01:00:11,570 --> 01:00:15,080
+you know the network message got lost which should be transmitted a
 
 1258
 01:00:15,080 --> 01:00:17,600
-complicated way of retransmitting the
+and this is sort of complicated way of retransmitting the network message
 
 1259
-01:00:17,600 --> 01:00:19,040
-network message maybe that's the most
-
-1260
-01:00:19,040 --> 01:00:21,020
-common kind of failure in that case just
+01:00:17,600 --> 01:00:21,020
+maybe that's the most common kind of failure in that case just
 
 1261
 01:00:21,020 --> 01:00:22,790
-we don't change anything it's still the
+we don't change anything
 
 1262
 01:00:22,790 --> 01:00:26,750
-same primary same secondaries the client
+so same primary same secondaries 
 
 1263
-01:00:26,750 --> 01:00:28,130
-we tries maybe this time it'll work
-
-1264
-01:00:28,130 --> 01:00:29,270
-because the network doesn't
+01:00:26,750 --> 01:00:29,270
+the client retries maybe this time it'll work because the network doesn't discard a message 
 
 1265
 01:00:29,270 --> 01:00:31,490
-discard a message it's an interesting
+it's an interesting question
 
 1266
-01:00:31,490 --> 01:00:32,900
-question though that if what went wrong
-
-1267
-01:00:32,900 --> 01:00:35,510
-here is that one of that there was a
-
-1268
-01:00:35,510 --> 01:00:37,910
-serious error or Fault in one of the
+01:00:31,490 --> 01:00:37,910
+what went wrong here is that one of that there was a serious error or Fault in one of the secondaries
 
 1269
-01:00:37,910 --> 01:00:41,150
-secondaries what we would like is for
-
-1270
-01:00:41,150 --> 01:00:43,880
-the master to reconfigure that set of
-
-1271
-01:00:43,880 --> 01:00:46,820
-replicas to drop that secondary that's
+01:00:37,910 --> 01:00:46,820
+what we would like is for the master to reconfigure that set of replicas to drop that secondary that's not working
 
 1272
 01:00:46,820 --> 01:00:49,460
-not working and it would then because
+and it would then 
 
 1273
 01:00:49,460 --> 01:00:50,900
-it's choosing a new primary in executing
+because it's choosing a new primary in executing this code path 
 
 1274
-01:00:50,900 --> 01:00:52,610
-this code path the master would then
-
-1275
-01:00:52,610 --> 01:00:54,890
-increment the version and then we have a
+01:00:50,900 --> 01:00:54,890
+the master would then increment the version 
 
 1276
 01:00:54,890 --> 01:00:56,750
-new primary and new working secondaries
+and then we have a new primary and new working secondaries with a new version
 
 1277
-01:00:56,750 --> 01:01:00,170
-with a new version and this not-so-great
-
-1278
-01:01:00,170 --> 01:01:02,720
-secondary with an old version and a
-
-1279
-01:01:02,720 --> 01:01:04,160
-stale copy of the data but because that
-
+01:00:56,750 --> 01:01:04,160
+and this not-so-great secondary with an old version and a stale copy of the data 
+ 
 1280
-01:01:04,160 --> 01:01:07,000
-has an old version the master will never
-
-1281
-01:01:07,000 --> 01:01:09,260
-never mistake it for being fresh but
+01:01:04,160 --> 01:01:09,260
+but because that has an old version the master will never never mistake it for being fresh 
 
 1282
-01:01:09,260 --> 01:01:10,640
-there's no evidence in the paper that
-
-1283
-01:01:10,640 --> 01:01:12,470
-that happens immediately as far as
+01:01:09,260 --> 01:01:12,470
+but there's no evidence in the paper that that happens immediately 
 
 1284
 01:01:12,470 --> 01:01:15,110
-what's said in the paper the client just
+what's said in the paper 
 
 1285
 01:01:15,110 --> 01:01:17,180
-retries and hopes it works again later
+the client just retries and hopes it works again later
 
 1286
 01:01:17,180 --> 01:01:19,610
-eventually the master will if the
+eventually the master will 
 
 1287
 01:01:19,610 --> 01:01:21,230
-secondary is dead
+if the secondary is dead
 
 1288
 01:01:21,230 --> 01:01:23,990
-eventually the master does ping all the
+eventually the master does ping 
 
 1289
 01:01:23,990 --> 01:01:25,850
-trunk servers will realize that and will
+all the trunk servers will realize that 
 
 1290
-01:01:25,850 --> 01:01:30,770
-probably then change the set of
-
-1291
-01:01:30,770 --> 01:01:32,090
-primaries and secondaries and increment
-
-1292
-01:01:32,090 --> 01:01:35,590
-the version but only only later
+01:01:25,850 --> 01:01:35,590
+and will probably then change the set of primaries and secondaries and increment the version but only only later
 
 1293
 01:01:40,380 --> 01:01:45,660
-the lease the leases that the answer to
+the lease the leases that the answer to the question
 
 1294
-01:01:45,660 --> 01:01:49,890
-the question what if the master thinks
-
-1295
-01:01:49,890 --> 01:01:52,500
-the primary is dead because it can't
+01:01:45,660 --> 01:01:52,500
+what if the master thinks the primary is dead 
 
 1296
 01:01:52,500 --> 01:01:53,790
-reach it right that's supposing we're in
+because it can't reach it right 
 
 1297
 01:01:53,790 --> 01:01:55,470
-a situation where at some point the
+that's supposing we're in a situation where 
 
 1298
 01:01:55,470 --> 01:01:58,110
-master said you're the primary and the
+at some point the master said you're the primary 
 
 1299
 01:01:58,110 --> 01:01:59,940
-master was like painting them all the
+and the master was like pinging them all the
 
 1300
 01:01:59,940 --> 01:02:01,260
-service periodically to see if they're
+servers periodically to see if they're alive 
 
 1301
 01:02:01,260 --> 01:02:02,610
-alive because if they're dead and wants
+because if they're dead and wants to pick a new primary 
 
 1302
 01:02:02,610 --> 01:02:05,160
-to pick a new primary the master sends
+the master sends some pings to you 
 
 1303
-01:02:05,160 --> 01:02:07,080
-some pings to you you're the primary and
-
-1304
-01:02:07,080 --> 01:02:09,690
-you don't respond right so you would
+01:02:05,160 --> 01:02:09,690
+you're the primary and you don't respond right 
 
 1305
 01:02:09,690 --> 01:02:11,850
-think that at that point where gosh
+so you would think that at that point where gosh
 
 1306
 01:02:11,850 --> 01:02:14,060
-you're not responding to my pings then
+you're not responding to my pings 
 
 1307
-01:02:14,060 --> 01:02:16,560
-you might think the master at that point
-
-1308
-01:02:16,560 --> 01:02:20,790
-would designate a new primary it turns
+01:02:14,060 --> 01:02:20,790
+then you might think the master at that point would designate a new primary 
 
 1309
 01:02:20,790 --> 01:02:23,820
-out that by itself is a mistake and the
+it turns out that by itself is a mistake 
 
 1310
-01:02:23,820 --> 01:02:26,130
-reason for that the reason why it's a
-
-1311
-01:02:26,130 --> 01:02:30,090
-mistake to do that simple did you know
+01:02:23,820 --> 01:02:30,090
+and the reason for that the reason why it's a mistake to do that simple did you know
 
 1312
 01:02:30,090 --> 01:02:32,400
-use that simple design is that I may be
+use that simple design is that 
 
 1313
-01:02:32,400 --> 01:02:33,870
-pinging you and the reason why I'm not
-
-1314
-01:02:33,870 --> 01:02:35,400
-getting responses is because then
+01:02:32,400 --> 01:02:35,400
+I may be pinging you and the reason why I'm not getting responses is because then
 
 1315
-01:02:35,400 --> 01:02:36,570
-there's something wrong with a network
-
-1316
-01:02:36,570 --> 01:02:38,190
-between me and you so there's a
+01:02:35,400 --> 01:02:38,190
+there's something wrong with a network between me and you 
 
 1317
-01:02:38,190 --> 01:02:39,870
-possibility that you're alive you're the
-
-1318
-01:02:39,870 --> 01:02:41,220
-primary you're alive I'm peeing you the
+01:02:38,190 --> 01:02:41,220
+so there's a possibility that you're alive you're the primary you're alive 
 
 1319
 01:02:41,220 --> 01:02:42,750
-network is dropping that packets but you
+I'm pining you the network is dropping that packets 
 
 1320
-01:02:42,750 --> 01:02:44,280
-can talk to other clients and you're
-
-1321
-01:02:44,280 --> 01:02:46,320
-serving requests from other clients you
+01:02:42,750 --> 01:02:46,320
+but you can talk to other clients and you're serving requests from other clients you know 
 
 1322
-01:02:46,320 --> 01:02:49,140
-know and if I if I the master sort of
-
-1323
-01:02:49,140 --> 01:02:51,840
-designated a new primary for that chunk
+01:02:46,320 --> 01:02:51,840
+and if I if I the master sort of designated a new primary for that chunk
 
 1324
-01:02:51,840 --> 01:02:54,600
-now we'd have two primaries processing
-
-1325
-01:02:54,600 --> 01:02:56,340
-writes but two different copies of the
+01:02:51,840 --> 01:02:56,340
+now we'd have two primaries processing writes but two different copies of the data 
 
 1326
-01:02:56,340 --> 01:02:58,830
-data and so now we have totally
-
-1327
-01:02:58,830 --> 01:03:02,370
-diverging copies the data and that's
+01:02:56,340 --> 01:03:02,370
+and so now we have totally diverging copies the data 
 
 1328
-01:03:02,370 --> 01:03:07,560
-called that error having two primaries
-
-1329
-01:03:07,560 --> 01:03:10,770
-or whatever processing requests without
-
-1330
-01:03:10,770 --> 01:03:12,570
-knowing each other it's called split
+01:03:02,370 --> 01:03:12,570
+and that's called that error having two primaries or whatever processing requests without knowing each other it's called split brain 
 
 1331
 01:03:12,570 --> 01:03:16,710
-brain and I'm writing this on board
+and I'm writing this on board
 
 1332
 01:03:16,710 --> 01:03:19,440
-because it's an important idea and it'll
+because it's an important idea and it'll come up again 
 
 1333
-01:03:19,440 --> 01:03:23,160
-come up again and it's caused or it's
-
-1334
-01:03:23,160 --> 01:03:24,540
-usually said to be caused by network
+01:03:19,440 --> 01:03:24,540
+and it's caused or it's usually said to be caused by network partition 
 
 1335
-01:03:24,540 --> 01:03:33,120
-partition that is some network error in
-
-1336
-01:03:33,120 --> 01:03:34,260
-which the master can't talk to the
-
-1337
-01:03:34,260 --> 01:03:35,640
-primary but the primary can talk to
+01:03:24,540 --> 01:03:35,640
+that is some network error in which the master can't talk to the primary but the primary can talk to clients 
 
 1338
 01:03:35,640 --> 01:03:38,330
-clients sort of partial network failure
+sort of partial network failure
 
 1339
-01:03:38,330 --> 01:03:41,160
-and you know these are some of the these
-
-1340
-01:03:41,160 --> 01:03:44,760
-are the hardest problems to deal with
+01:03:38,330 --> 01:03:44,760
+and you know these are some of the these are the hardest problems to deal with
 
 1341
 01:03:44,760 --> 01:03:46,470
-and building these kind of storage
+and building these kind of storage systems 
 
 1342
 01:03:46,470 --> 01:03:49,170
-systems okay so that's the problem is we
+okay so that's the problem is 
 
 1343
-01:03:49,170 --> 01:03:51,690
-want to rule out the possibility of
-
-1344
-01:03:51,690 --> 01:03:54,280
-mistakingly designating two primaries
-
-1345
-01:03:54,280 --> 01:03:56,210
-for the same chunk the way the
+01:03:49,170 --> 01:03:56,210
+we want to rule out the possibility of mistakingly designating two primaries for the same chunk 
 
 1346
 01:03:56,210 --> 01:03:58,610
-master achieves that is that when it
+the way the master achieves that is that 
 
 1347
-01:03:58,610 --> 01:04:00,920
-designates a primary it says it gives a
-
-1348
-01:04:00,920 --> 01:04:03,320
-primary a lease which is basically the
-
-1349
-01:04:03,320 --> 01:04:05,590
-right to be primary until a certain time
+01:03:58,610 --> 01:04:05,590
+when it designates a primary it says it gives a primary a lease which is basically the right to be primary until a certain time
 
 1350
-01:04:05,590 --> 01:04:08,990
-the master knows it remembers and knows
-
-1351
-01:04:08,990 --> 01:04:12,500
-how long the least lasts and the primary
+01:04:05,590 --> 01:04:12,500
+the master knows it remembers and knows how long the least lasts and 
 
 1352
 01:04:12,500 --> 01:04:14,960
-knows how long is lease lasts if the
+the primary knows how long is lease lasts 
 
 1353
-01:04:14,960 --> 01:04:18,800
-lease expires the primary knows that it
-
-1354
-01:04:18,800 --> 01:04:20,570
-expires and will simply stop executing
+01:04:14,960 --> 01:04:20,570
+if the lease expires the primary knows that it expires and will simply stop executing client requests 
 
 1355
-01:04:20,570 --> 01:04:23,150
-client requests it'll ignore or reject
-
-1356
-01:04:23,150 --> 01:04:24,830
-client requests after the lease expired
+01:04:20,570 --> 01:04:24,830
+it'll ignore or reject client requests after the lease expired
 
 1357
 01:04:24,830 --> 01:04:27,800
-and therefore if the master can't talk
+and therefore if the master can't talk to the primary
 
 1358
-01:04:27,800 --> 01:04:29,570
-to the primary and the master would like
-
-1359
-01:04:29,570 --> 01:04:31,220
-to designate a new primary the master
+01:04:27,800 --> 01:04:31,220
+and the master would like to designate a new primary 
 
 1360
-01:04:31,220 --> 01:04:33,830
-must wait for the lease to expire for
-
-1361
-01:04:33,830 --> 01:04:35,270
-the previous primary so that means
+01:04:31,220 --> 01:04:35,270
+the master must wait for the lease to expire for the previous primary 
 
 1362
-01:04:35,270 --> 01:04:37,670
-master is going to sit on its hands for
-
-1363
-01:04:37,670 --> 01:04:40,010
-one lease period 60 seconds after that
+01:04:35,270 --> 01:04:40,010
+so that means master is going to sit on its hands for one lease period 60 seconds 
 
 1364
-01:04:40,010 --> 01:04:41,660
-it's guaranteed the old primary will
-
-1365
-01:04:41,660 --> 01:04:44,510
-stop operating its primary and now the
+01:04:40,010 --> 01:04:44,510
+after that it's guaranteed the old primary will stop operating its primary 
 
 1366
-01:04:44,510 --> 01:04:46,160
-master can see if he doesn't need a new
-
-1367
-01:04:46,160 --> 01:04:50,810
-primary without producing this terrible
-
-1368
-01:04:50,810 --> 01:04:54,460
-split brain situation
+01:04:44,510 --> 01:04:54,460
+and now the master can see if he doesn't need a new primary without producing this terrible split brain situation
 
 1369
-01:05:02,299 --> 01:05:14,119
-oh so the question is why is designated
-
-1370
-01:05:14,119 --> 01:05:15,920
-a new primary bad since the clients
+01:05:02,299 --> 01:05:15,920
+oh so the question is why is designating a new primary bad 
 
 1371
 01:05:15,920 --> 01:05:18,079
-always ask the master first and so the
+since the clients always ask the master first and 
 
 1372
 01:05:18,079 --> 01:05:20,059
-master changes its mind then subsequent
+so the master changes its mind 
 
 1373
 01:05:20,059 --> 01:05:22,819
-clients will direct the clients to the
+then subsequent clients will direct the clients to the new primary 
 
 1374
 01:05:22,819 --> 01:05:26,390
-new primary well one reason is that the
+well one reason is that the
 
 1375
 01:05:26,390 --> 01:05:28,429
@@ -5500,71 +4724,63 @@ clients cache for efficiency the clients
 
 1376
 01:05:28,429 --> 01:05:31,279
-cache the identity of the primary for at
+cache the identity of the primary 
 
 1377
 01:05:31,279 --> 01:05:34,009
-least for short periods of time even if
+for at least for short periods of time 
 
 1378
 01:05:34,009 --> 01:05:37,489
-they didn't though the bad sequence is
+even if they didn't though the bad sequence is that 
 
 1379
 01:05:37,489 --> 01:05:40,640
-that I'm the prime the master you ask me
+I'm the prime the master you ask me who the primary is 
 
 1380
-01:05:40,640 --> 01:05:43,449
-who the primary is I send you a message
-
-1381
-01:05:43,449 --> 01:05:46,369
-saying the primary is server one right
+01:05:40,640 --> 01:05:46,369
+I send you a message saying the primary is server one right
 
 1382
 01:05:46,369 --> 01:05:47,809
-and that message is inflate in the
+and that message is inflate in the network 
 
 1383
 01:05:47,809 --> 01:05:50,630
-network and then I'm the master I you
+and then I'm the master I you know 
 
 1384
 01:05:50,630 --> 01:05:52,160
-know I think somebody's failed whatever
+I think somebody's failed whatever
 
 1385
 01:05:52,160 --> 01:05:53,269
-I think that primary is filled I
+I think that primary is filled 
 
 1386
 01:05:53,269 --> 01:05:55,219
-designated a new primary and I send the
+I designated a new primary 
 
 1387
 01:05:55,219 --> 01:05:56,209
-primary message saying you're the
+and I send the primary message saying you're the primary 
 
 1388
-01:05:56,209 --> 01:05:57,619
-primary and I start answering other
-
-1389
-01:05:57,619 --> 01:06:00,349
-clients who ask the primary is saying
+01:05:56,209 --> 01:06:00,349
+and I start answering other clients who ask the primary is 
 
 1390
 01:06:00,349 --> 01:06:01,400
-that that over there is the primary
+saying that that over there is the primary
 
 1391
 01:06:01,400 --> 01:06:03,019
-while the message to you is still in
+while the message to you is still in flight 
 
 1392
 01:06:03,019 --> 01:06:04,880
-flight you receive the message saying
+you receive the message saying
 
 1393
 01:06:04,880 --> 01:06:07,130
@@ -5572,39 +4788,31 @@ the old primaries the primary you think
 
 1394
 01:06:07,130 --> 01:06:10,219
-gosh I just got this from the master I'm
+gosh I just got this from the master 
 
 1395
 01:06:10,219 --> 01:06:11,630
-gonna go talk to that primary and
+I'm gonna go talk to that primary 
 
 1396
 01:06:11,630 --> 01:06:13,459
-without some much more clever scheme
+and without some much more clever scheme
 
 1397
 01:06:13,459 --> 01:06:14,859
 there's no way you could realize that
 
 1398
-01:06:14,859 --> 01:06:16,849
-even though you just got this
-
-1399
-01:06:16,849 --> 01:06:19,309
-information from the master it's already
+01:06:14,859 --> 01:06:19,309
+even though you just got this information from the master 
 
 1400
-01:06:19,309 --> 01:06:21,679
-out of date and if that primary serves
-
-1401
-01:06:21,679 --> 01:06:24,410
-your modification requests now we have
+01:06:19,309 --> 01:06:24,410
+it's already out of date and if that primary serves your modification requests 
 
 1402
 01:06:24,410 --> 01:06:27,920
-to and and respond success to you right
+now we have to and and respond success to you right
 
 1403
 01:06:27,920 --> 01:06:35,349
@@ -5616,67 +4824,39 @@ yes
 
 1405
 01:06:41,910 --> 01:06:50,710
-again you've a new file and no replicas
+say that again you've a new file and no replicas
 
 1406
-01:06:50,710 --> 01:06:53,410
-okay so if you have a new file no
-
-1407
-01:06:53,410 --> 01:06:55,180
-replicas or even an existing file and no
+01:06:50,710 --> 01:06:55,180
+okay so if you have a new file no replicas or even an existing file and no replicas 
 
 1408
-01:06:55,180 --> 01:06:58,090
-replicas the you'll take the path I drew
-
-1409
-01:06:58,090 --> 01:07:00,130
-on the blackboard the master will
+01:06:55,180 --> 01:07:00,130
+the you'll take the path I drew on the blackboard 
 
 1410
-01:07:00,130 --> 01:07:02,140
-receive a request from a client saying
-
-1411
-01:07:02,140 --> 01:07:04,270
-oh I'd like to append this file and
+01:07:00,130 --> 01:07:04,270
+the master will receive a request from a client saying oh I'd like to append this file 
 
 1412
-01:07:04,270 --> 01:07:06,430
-then well I guess the master will first
-
-1413
-01:07:06,430 --> 01:07:08,200
-see there's no chunks associated with
+01:07:04,270 --> 01:07:08,200
+and then well I guess the master will first see there's no chunks associated with that file 
 
 1414
-01:07:08,200 --> 01:07:11,710
-that file and it will just make up a new
-
-1415
-01:07:11,710 --> 01:07:13,570
-chunk identifier or perhaps by calling
-
-1416
-01:07:13,570 --> 01:07:15,730
-the random number generator and then
+01:07:08,200 --> 01:07:15,730
+and it will just make up a new chunk identifier or perhaps by calling the random number generator 
 
 1417
 01:07:15,730 --> 01:07:17,920
-it'll look in its chunk information
+and then it'll look in its chunk information table and see
 
 1418
-01:07:17,920 --> 01:07:20,080
-table and see gosh I don't have any
-
-1419
-01:07:20,080 --> 01:07:22,030
-information about that chunk and it'll
+01:07:17,920 --> 01:07:22,030
+gosh I don't have any information about that chunk 
 
 1420
 01:07:22,030 --> 01:07:24,730
-make up a new record saying but it must
+and it'll make up a new record saying but it must
 
 1421
 01:07:24,730 --> 01:07:26,410
@@ -5692,59 +4872,43 @@ chunk doesn't exist I'm just gonna make
 
 1424
 01:07:30,850 --> 01:07:32,740
-up a new version number one pick a
+up a new version number one 
 
 1425
 01:07:32,740 --> 01:07:35,380
-random primary and set of secondaries
+pick a random primary and set of secondaries
 
 1426
-01:07:35,380 --> 01:07:37,900
-and tell them look you are responsible
-
-1427
-01:07:37,900 --> 01:07:40,660
-for this new empty chunk please get to
+01:07:35,380 --> 01:07:40,660
+and tell them look you are responsible for this new empty chunk please get to work
 
 1428
-01:07:40,660 --> 01:07:47,020
-work the paper says three replicas per
-
-1429
-01:07:47,020 --> 01:07:50,110
-chunk by default so typically a primary
-
-1430
-01:07:50,110 --> 01:07:52,710
-and two backups
+01:07:40,660 --> 01:07:52,710
+the paper says three replicas per chunk by default so typically a primary and two backups
 
 1431
 01:08:03,930 --> 01:08:13,270
 okay okay so the maybe the most
 
 1432
-01:08:13,270 --> 01:08:16,299
-important thing here is just to repeat
-
-1433
-01:08:16,299 --> 01:08:19,890
-the discussion we had a few minutes ago
+01:08:13,270 --> 01:08:19,890
+important thing here is just to repeat the discussion we had a few minutes ago
 
 1434
 01:08:21,540 --> 01:08:32,140
-the intentional construction of GFS we
+the intentional construction of GFS 
 
 1435
 01:08:32,140 --> 01:08:33,790
-had these record appends is that if we
+we had these record appends is that 
 
 1436
 01:08:33,790 --> 01:08:41,009
-have three we have three replicas you
+if we have three we have three replicas 
 
 1437
 01:08:41,009 --> 01:08:43,779
-know maybe a client sends in and a
+you know maybe a client sends in and a
 
 1438
 01:08:43,779 --> 01:08:46,719
@@ -5764,11 +4928,11 @@ the chunks and maybe the first record in
 
 1442
 01:08:54,069 --> 01:08:55,689
-the trunk might be a in that case and
+the trunk might be a in that case 
 
 1443
 01:08:55,689 --> 01:08:57,930
-they all agree because they all did it
+and they all agree because they all did it
 
 1444
 01:08:57,930 --> 01:09:00,040
@@ -5776,11 +4940,11 @@ supposing another client comes in says
 
 1445
 01:09:00,040 --> 01:09:03,339
-look I want append record B but the
+look I want append record B 
 
 1446
 01:09:03,339 --> 01:09:06,250
-message is lost to one of the replicas
+but the message is lost to one of the replicas
 
 1447
 01:09:06,250 --> 01:09:08,410
@@ -5808,19 +4972,15 @@ so now what we have is two the replicas
 
 1453
 01:09:19,390 --> 01:09:21,759
-that B and the other one doesn't have
+that B and the other one doesn't have anything 
 
 1454
-01:09:21,759 --> 01:09:26,410
-anything and then may be a third client
-
-1455
-01:09:26,410 --> 01:09:29,109
-wants to append C and maybe the remember
+01:09:21,759 --> 01:09:29,109
+and then may be a third client wants to append C and maybe the 
 
 1456
 01:09:29,109 --> 01:09:30,460
-that this is the primary the primary
+remember that this is the primary the primary
 
 1457
 01:09:30,460 --> 01:09:32,738
@@ -5832,15 +4992,15 @@ gonna tell the secondaries look in a
 
 1459
 01:09:35,109 --> 01:09:38,620
-right record C at this point in the
+right record C at this point 
 
 1460
 01:09:38,620 --> 01:09:43,450
-chunk they all right C here now the
+in the chunk they all write C here 
 
 1461
 01:09:43,450 --> 01:09:45,040
-client for be the rule for a client for
+now the client for B the rule for a client for
 
 1462
 01:09:45,040 --> 01:09:47,830
@@ -5848,11 +5008,11 @@ B that for the client that gets us error
 
 1463
 01:09:47,830 --> 01:09:50,439
-back from its request is that it will
+back from its request is that 
 
 1464
 01:09:50,439 --> 01:09:53,770
-resend the request so now the client
+it will resend the request so now the client
 
 1465
 01:09:53,770 --> 01:09:56,020
@@ -5860,27 +5020,27 @@ that asked to append record B will ask
 
 1466
 01:09:56,020 --> 01:09:57,640
-again to append record B and this time
+again to append record B 
 
 1467
 01:09:57,640 --> 01:10:00,340
-maybe there's no network losses and all
+and this time maybe there's no network losses and 
 
 1468
 01:10:00,340 --> 01:10:05,040
-three replicas as a panel record be
+all three replicas as a panel record B
 
 1469
 01:10:05,040 --> 01:10:07,239
-right and they're all lives there I'll
+right and they're all lives there they all
 
 1470
 01:10:07,239 --> 01:10:09,870
-have the most fresh version number and
+have the most fresh version number and now 
 
 1471
 01:10:09,870 --> 01:10:13,150
-now if a client reads
+if a client reads
 
 1472
 01:10:13,150 --> 01:10:16,830
@@ -5888,39 +5048,35 @@ what they see depends on the track which
 
 1473
 01:10:17,820 --> 01:10:20,020
-replicas they look at it's gonna see in
+replicas they look at 
 
 1474
 01:10:20,020 --> 01:10:22,929
-total all three of the records but it'll
+it's gonna see in total all three of the records 
 
 1475
 01:10:22,929 --> 01:10:25,030
-see in different orders depending on
+but it'll see in different orders depending on
 
 1476
-01:10:25,030 --> 01:10:28,750
-which replica reads it'll mean I'll see
-
-1477
-01:10:28,750 --> 01:10:31,870
-a B C and then a repeat of B so if it
+01:10:25,030 --> 01:10:31,870
+which replica reads a B C and then a repeat of B so if it
 
 1478
 01:10:31,870 --> 01:10:33,730
-reads this replica it'll see B and then
+it'll mean I'll see reads this replica it'll see B and then
 
 1479
 01:10:33,730 --> 01:10:36,969
-C if it reads this replica it'll see a
+C if it reads this replica 
 
 1480
 01:10:36,969 --> 01:10:39,340
-and then a blank space in the file
+it'll see A and then a blank space in the file padding 
 
 1481
 01:10:39,340 --> 01:10:41,920
-padding and then C and then B so if you
+and then C and then B so if you
 
 1482
 01:10:41,920 --> 01:10:44,199
@@ -5936,47 +5092,39 @@ readers will see different results and
 
 1485
 01:10:49,350 --> 01:10:52,330
-maybe the worst situation is it some
+maybe the worst situation is it 
 
 1486
 01:10:52,330 --> 01:10:54,489
-client gets an error back from the
+some client gets an error back from the primary 
 
 1487
 01:10:54,489 --> 01:10:58,360
-primary because one of the secondaries
+because one of the secondaries
 
 1488
 01:10:58,360 --> 01:11:00,159
-failed to do the append and then the
+failed to do the append 
 
 1489
 01:11:00,159 --> 01:11:02,260
-client dies before we sending the
+and then the client dies before we sending the request 
 
 1490
 01:11:02,260 --> 01:11:04,030
-request so then you might get a
+so then you might get a
 
 1491
 01:11:04,030 --> 01:11:07,030
 situation where you have record D
 
 1492
-01:11:07,030 --> 01:11:11,890
-showing up in some of the replicas and
-
-1493
-01:11:11,890 --> 01:11:13,750
-completely not showing up anywhere in
-
-1494
-01:11:13,750 --> 01:11:16,420
-the other replicas so you know under
+01:11:07,030 --> 01:11:16,420
+showing up in some of the replicas and completely not showing up anywhere in the other replicas 
 
 1495
 01:11:16,420 --> 01:11:19,659
-this scheme we have good properties for
+so you know under this scheme we have good properties for
 
 1496
 01:11:19,659 --> 01:11:23,620
@@ -5984,159 +5132,79 @@ for appends that the primary sent back a
 
 1497
 01:11:23,620 --> 01:11:26,800
-successful answer for and sort of not so
+successful answer for and 
 
 1498
-01:11:26,800 --> 01:11:29,469
-great properties for appends where the
-
-1499
-01:11:29,469 --> 01:11:32,949
-primary sent back of failure and the
+01:11:26,800 --> 01:11:32,949
+sort of not so great properties for appends where the primary sent back of failure 
 
 1500
-01:11:32,949 --> 01:11:35,530
-records the replicas just absolutely be
-
-1501
-01:11:35,530 --> 01:11:37,540
-different all different sets of replicas
+01:11:32,949 --> 01:11:37,540
+and the records the replicas just absolutely be different all different sets of replicas
 
 1502
 01:11:37,540 --> 01:11:40,440
 yes
 
 1503
-01:11:44,400 --> 01:11:46,660
-my reading in the paper is that the
-
-1504
-01:11:46,660 --> 01:11:49,090
-client starts at the very beginning of
+01:11:44,400 --> 01:11:49,090
+my reading in the paper is that the client starts at the very beginning of the process 
 
 1505
-01:11:49,090 --> 01:11:51,310
-the process and asked the master again
-
-1506
-01:11:51,310 --> 01:11:54,190
-what's the last chunk in this file you
+01:11:49,090 --> 01:11:54,190
+and asked the master again what's the last chunk in this file you know 
 
 1507
-01:11:54,190 --> 01:11:55,240
-know because it might be might have
-
-1508
-01:11:55,240 --> 01:11:56,710
-changed if other people are pending in
-
-1509
-01:11:56,710 --> 01:12:02,820
-the file yes
+01:11:54,190 --> 01:12:02,820
+because it might be might have changed if other people are pending in the file yes
 
 1510
 01:12:17,760 --> 01:12:20,290
-so I can't you know I can't read the
+so I can't you know I can't read the designers mind 
 
 1511
-01:12:20,290 --> 01:12:22,720
-designers mind so the observation is the
-
-1512
-01:12:22,720 --> 01:12:24,760
-system could have been designed to keep
-
-1513
-01:12:24,760 --> 01:12:27,640
-the replicas in precise sync it's
+01:12:20,290 --> 01:12:27,640
+so the observation is the system could have been designed to keep the replicas in precise sync 
 
 1514
 01:12:27,640 --> 01:12:30,820
-absolutely true and you will do it in
+it's absolutely true and you will do it in labs 2 & 3 
 
 1515
-01:12:30,820 --> 01:12:33,100
-labs 2 & 3 so you guys are going to
-
-1516
-01:12:33,100 --> 01:12:34,930
-design a system that does replication
-
-1517
-01:12:34,930 --> 01:12:36,880
-that actually keeps the replicas in sync
+01:12:30,820 --> 01:12:36,880
+so you guys are going to design a system that does replication that actually keeps the replicas in sync
 
 1518
-01:12:36,880 --> 01:12:38,490
-and you'll learn you know there's some
-
-1519
-01:12:38,490 --> 01:12:41,020
-various techniques various things you
-
-1520
-01:12:41,020 --> 01:12:43,180
-have to do in order to do that and one
+01:12:36,880 --> 01:12:43,180
+and you'll learn you know there's some various techniques various things you have to do in order to do that
 
 1521
-01:12:43,180 --> 01:12:46,150
-of them is that there just has to be
-
-1522
-01:12:46,150 --> 01:12:47,740
-this rule if you want the replicas to
+01:12:43,180 --> 01:12:47,740
+and one of them is that there just has to be this rule if you want the replicas to stay in sync 
 
 1523
-01:12:47,740 --> 01:12:50,410
-stay in sync it has to be this rule that
-
-1524
-01:12:50,410 --> 01:12:53,320
-you can't have these partial operations
-
-1525
-01:12:53,320 --> 01:12:54,490
-that are applied to only some and not
+01:12:47,740 --> 01:12:54,490
+it has to be this rule that you can't have these partial operations that are applied to only some and not others 
 
 1526
-01:12:54,490 --> 01:12:56,410
-others and that means that there has to
-
-1527
-01:12:56,410 --> 01:12:58,630
-be some mechanism to like where the
+01:12:54,490 --> 01:12:58,630
+and that means that there has to be some mechanism to like where the system 
 
 1528
-01:12:58,630 --> 01:13:00,130
-system even if the client dies where the
-
-1529
-01:13:00,130 --> 01:13:01,900
-system says we don't wait a minute there
+01:12:58,630 --> 01:13:01,900
+even if the client dies where the system says we don't wait a minute 
 
 1530
 01:13:01,900 --> 01:13:04,060
-was this operation I haven't finished it
+there was this operation I haven't finished it yet 
 
 1531
-01:13:04,060 --> 01:13:07,390
-yet so you build systems in which the
-
-1532
-01:13:07,390 --> 01:13:11,820
-primary actually make sure the backups
-
-1533
-01:13:11,820 --> 01:13:15,360
-get every message
+01:13:04,060 --> 01:13:15,360
+so you build systems in which the primary actually make sure the backups get every message
 
 1534
-01:13:29,460 --> 01:13:34,390
-if the first right B failed you think
-
-1535
-01:13:34,390 --> 01:13:37,739
-the C should go with the B
+01:13:29,460 --> 01:13:37,739
+if the first write of B failed you think the C should go with the B
 
 1536
 01:13:37,770 --> 01:13:40,450
@@ -6144,143 +5212,95 @@ well it doesn't you may think it should
 
 1537
 01:13:40,450 --> 01:13:42,130
-but the way the system actually operates
+but the way the system actually operates is that 
 
 1538
 01:13:42,130 --> 01:13:46,690
-is that the primary will add C to the
+the primary will add C to the end of the chunk 
 
 1539
 01:13:46,690 --> 01:13:57,730
-end of the chunk and the after B yeah I
+and the after B 
 
 1540
 01:13:57,730 --> 01:13:59,890
-mean one reason for this is that at the
+yeah I mean one reason for this is that 
 
 1541
-01:13:59,890 --> 01:14:01,480
-time the right for C comes in the
-
-1542
-01:14:01,480 --> 01:14:03,010
-primary may not actually know what the
+01:13:59,890 --> 01:14:03,010
+at the time the write for C comes in the primary may not actually know what the fate of B was
 
 1543
-01:14:03,010 --> 01:14:05,710
-fate of B was because we met multiple
-
-1544
-01:14:05,710 --> 01:14:07,510
-clients submitting appends concurrently
+01:14:03,010 --> 01:14:07,510
+because we met multiple clients submitting appends concurrently
 
 1545
-01:14:07,510 --> 01:14:10,600
-and you know for high performance you
-
-1546
-01:14:10,600 --> 01:14:14,890
-want the primary to start the append for
+01:14:07,510 --> 01:14:14,890
+and you know for high performance you want the primary to start the append for B first 
 
 1547
-01:14:14,890 --> 01:14:17,860
-B first and then as soon as I can got
-
-1548
-01:14:17,860 --> 01:14:20,170
-the next stop set tell everybody did you
-
-1549
-01:14:20,170 --> 01:14:21,750
-see so that all this stuff happens in
+01:14:14,890 --> 01:14:21,750
+and then as soon as I can got the next stop set tell everybody did you see so that all this stuff happens in parallel 
 
 1550
 01:14:21,750 --> 01:14:25,270
-parallel you know by slowing it down you
+you know by slowing it down you could 
 
 1551
-01:14:25,270 --> 01:14:31,750
-could you know the primary could sort of
-
-1552
-01:14:31,750 --> 01:14:33,760
-decide that B it totally failed and then
+01:14:25,270 --> 01:14:33,760
+you know the primary could sort of decide that B it totally failed 
 
 1553
-01:14:33,760 --> 01:14:35,560
-send another round of messages saying
-
-1554
-01:14:35,560 --> 01:14:39,970
-please undo the write of B and there'll
+01:14:33,760 --> 01:14:39,970
+and then send another round of messages saying please undo the write of B 
 
 1555
 01:14:39,970 --> 01:14:43,360
-be more complex and slower I'm you know
+and there'll be more complex and slower I'm you know
 
 1556
-01:14:43,360 --> 01:14:45,880
-again the the justification for this is
-
-1557
-01:14:45,880 --> 01:14:48,730
-that the design is pretty simple it you
+01:14:43,360 --> 01:14:48,730
+again the the justification for this is that the design is pretty simple it you know 
 
 1558
 01:14:48,730 --> 01:14:53,820
-know it reveals some odd things to
+it reveals some odd things to applications 
 
 1559
 01:14:53,820 --> 01:14:58,060
-applications and the hope was that
+and the hope was that
 
 1560
-01:14:58,060 --> 01:14:59,680
-applications could be relatively easily
-
-1561
-01:14:59,680 --> 01:15:01,750
-written to tolerate records being in
-
-1562
-01:15:01,750 --> 01:15:04,960
-different orders or who knows what or if
+01:14:58,060 --> 01:15:04,960
+applications could be relatively easily written to tolerate records being in different orders or who knows what 
 
 1563
 01:15:04,960 --> 01:15:08,800
-they couldn't that applications could
+or if they couldn't that applications could
 
 1564
-01:15:08,800 --> 01:15:11,080
-either make their own arrangements for
-
-1565
-01:15:11,080 --> 01:15:13,300
-picking an order themselves and writing
+01:15:08,800 --> 01:15:13,300
+either make their own arrangements for picking an order themselves 
 
 1566
 01:15:13,300 --> 01:15:14,860
-you know sequence numbers in the files
+and writing you know sequence numbers in the files or something 
 
 1567
 01:15:14,860 --> 01:15:17,739
-or something or you could just have a if
+or you could just have a 
 
 1568
 01:15:17,739 --> 01:15:20,140
-application really was very sensitive to
+if application really was very sensitive to order 
 
 1569
-01:15:20,140 --> 01:15:21,910
-order you could just not have concurrent
-
-1570
-01:15:21,910 --> 01:15:24,220
-depends from different clients to the
+01:15:20,140 --> 01:15:24,220
+you could just not have concurrent depends from different clients to the same file 
 
 1571
 01:15:24,220 --> 01:15:27,520
-same file right you could just you know
+right you could just you know
 
 1572
 01:15:27,520 --> 01:15:29,410
@@ -6296,95 +5316,55 @@ know you don't want to scramble
 
 1575
 01:15:32,750 --> 01:15:35,840
-bytes in a movie file you just write the
+bytes in a movie file you just write the Movie file 
 
 1576
-01:15:35,840 --> 01:15:37,550
-Moot file you write the movie to the
-
-1577
-01:15:37,550 --> 01:15:40,100
-file by one client in sequential order
-
-1578
-01:15:40,100 --> 01:15:45,040
-and not with concurrent record appends
+01:15:35,840 --> 01:15:45,040
+you write the movie to the file by one client in sequential order and not with concurrent record appends
 
 1579
 01:15:49,150 --> 01:15:56,680
 okay all right
 
 1580
-01:15:56,680 --> 01:16:04,400
-the somebody asked basically what would
-
-1581
-01:16:04,400 --> 01:16:06,770
-it take to turn this design into one
+01:15:56,680 --> 01:16:06,770
+the somebody asked basically what would it take to turn this design into one
 
 1582
 01:16:06,770 --> 01:16:08,120
-which actually provided strong
+which actually provided strong consistency
 
 1583
-01:16:08,120 --> 01:16:11,960
-consistency consistency closer to our
-
-1584
-01:16:11,960 --> 01:16:13,790
-sort of single server model where
-
-1585
-01:16:13,790 --> 01:16:18,680
-there's no surprises I don't actually
+01:16:08,120 --> 01:16:18,680
+consistency closer to our sort of single server model where there's no surprises 
 
 1586
-01:16:18,680 --> 01:16:20,180
-know because you know that requires an
-
-1587
-01:16:20,180 --> 01:16:22,340
-entire new complex design it's not clear
+01:16:18,680 --> 01:16:22,340
+I don't actually know because you know that requires an entire new complex design 
 
 1588
 01:16:22,340 --> 01:16:24,560
-how to mutate GFS to be that design but
+it's not clear how to mutate GFS to be that design 
 
 1589
-01:16:24,560 --> 01:16:26,330
-I can list for you lists for you some
-
-1590
-01:16:26,330 --> 01:16:27,440
-things that you would want to think
+01:16:24,560 --> 01:16:27,440
+but I can list for you lists for you some things that you would want to think about 
 
 1591
-01:16:27,440 --> 01:16:32,350
-about if you wanted to upgrade GFS to a
-
-1592
-01:16:32,350 --> 01:16:34,460
-assistance did have strong consistency
+01:16:27,440 --> 01:16:34,460
+if you wanted to upgrade GFS to a a system did have strong consistency
 
 1593
-01:16:34,460 --> 01:16:37,370
-one is that you probably need the
-
-1594
-01:16:37,370 --> 01:16:40,940
-primary to detect duplicate requests so
+01:16:34,460 --> 01:16:40,940
+one is that you probably need the primary to detect duplicate requests 
 
 1595
-01:16:40,940 --> 01:16:43,460
-that when this second becomes in the
-
-1596
-01:16:43,460 --> 01:16:44,960
-primary is aware that oh actually you
+01:16:40,940 --> 01:16:44,960
+so that when this second B comes in the primary is aware that 
 
 1597
 01:16:44,960 --> 01:16:47,030
-know we already saw that request earlier
+oh actually you know we already saw that request earlier
 
 1598
 01:16:47,030 --> 01:16:50,570
@@ -6392,395 +5372,227 @@ and did it or didn't do it and to try to
 
 1599
 01:16:50,570 --> 01:16:52,160
-make sure that B doesn't show up twice
+make sure that B doesn't show up twice in the file 
 
 1600
 01:16:52,160 --> 01:16:54,140
-in the file so one is you're gonna need
+so one is you're gonna need duplicate detection 
 
 1601
 01:16:54,140 --> 01:16:59,570
-duplicate detection another issues you
+another issues you probably 
 
 1602
 01:16:59,570 --> 01:17:02,660
-probably if a secondary is acting a
+if a secondary is acting a secondary 
 
 1603
 01:17:02,660 --> 01:17:05,000
-secondary you really need to design the
+you really need to design the system 
 
 1604
-01:17:05,000 --> 01:17:06,920
-system so that if the primary tells a
-
-1605
-01:17:06,920 --> 01:17:08,180
-secondary to do something
+01:17:05,000 --> 01:17:08,180
+so that if the primary tells a secondary to do something
 
 1606
-01:17:08,180 --> 01:17:10,010
-the secondary actually does it and
-
-1607
-01:17:10,010 --> 01:17:12,560
-doesn't just return error right for a
+01:17:08,180 --> 01:17:12,560
+the secondary actually does it and doesn't just return error right 
 
 1608
-01:17:12,560 --> 01:17:15,260
-strictly consistent system having the
-
-1609
-01:17:15,260 --> 01:17:16,880
-secondaries be able to just sort of blow
+01:17:12,560 --> 01:17:16,880
+for a strictly consistent system having the secondaries be able to just sort of blow
 
 1610
-01:17:16,880 --> 01:17:20,210
-off primary requests with really no
-
-1611
-01:17:20,210 --> 01:17:24,170
-compensation is not okay so I think the
+01:17:16,880 --> 01:17:24,170
+off primary requests with really no compensation is not okay 
 
 1612
 01:17:24,170 --> 01:17:25,730
-secondaries have to accept requests and
+so I think the secondaries have to accept requests and execute them 
 
 1613
-01:17:25,730 --> 01:17:28,460
-execute them or if a secondary has some
-
-1614
-01:17:28,460 --> 01:17:30,050
-sort of permanent damage like it's disk
-
-1615
-01:17:30,050 --> 01:17:32,180
-got unplugged by mistake this you need
+01:17:25,730 --> 01:17:32,180
+or if a secondary has some sort of permanent damage like it's disk got unplugged by mistake this 
 
 1616
-01:17:32,180 --> 01:17:34,160
-to have a mechanism to like take the
-
-1617
-01:17:34,160 --> 01:17:36,200
-secondary out of the system so the
+01:17:32,180 --> 01:17:36,200
+you need to have a mechanism to like take the secondary out of the system 
 
 1618
 01:17:36,200 --> 01:17:39,140
-primary can proceed with the remaining
+so the primary can proceed with the remaining secondaries 
 
 1619
-01:17:39,140 --> 01:17:41,750
-secondaries but GFS kind of doesn't
-
-1620
-01:17:41,750 --> 01:17:44,950
-either at least not right away
+01:17:39,140 --> 01:17:44,950
+but GFS kind of doesn't either at least not right away
 
 1621
 01:17:45,200 --> 01:17:49,350
-and so that also means that when the
+and so that also means that 
 
 1622
 01:17:49,350 --> 01:17:50,910
-primary asks secondary's to append
+when the primary asks secondary's to append something 
 
 1623
-01:17:50,910 --> 01:17:52,800
-something the secondaries have to be
-
-1624
-01:17:52,800 --> 01:17:54,810
-careful not to expose that data to
+01:17:50,910 --> 01:17:54,810
+the secondaries have to be careful not to expose that data to readers 
 
 1625
-01:17:54,810 --> 01:17:57,600
-readers until the primary is sure that
-
-1626
-01:17:57,600 --> 01:17:59,250
-all the secondaries really will be able
-
-1627
-01:17:59,250 --> 01:18:02,610
-to execute the append so you might need
+01:17:54,810 --> 01:18:02,610
+until the primary is sure that all the secondaries really will be able to execute the append 
 
 1628
 01:18:02,610 --> 01:18:05,400
-sort of multiple phases in the writes of
+so you might need sort of multiple phases in the writes of
 
 1629
 01:18:05,400 --> 01:18:06,900
-first phase in which the primary asks
+first phase in which the primary asks the secondaries 
 
 1630
-01:18:06,900 --> 01:18:09,030
-the secondaries look you know I really
-
-1631
-01:18:09,030 --> 01:18:11,310
-like you to do this operation can you do
-
-1632
-01:18:11,310 --> 01:18:13,560
-it but don't don't actually do it yet
+01:18:06,900 --> 01:18:13,560
+look you know I really like you to do this operation can you do it but don't don't actually do it yet
 
 1633
-01:18:13,560 --> 01:18:15,810
-and if all the secondaries answer with a
-
-1634
-01:18:15,810 --> 01:18:17,670
-promise to be able to do the operation
+01:18:13,560 --> 01:18:17,670
+and if all the secondaries answer with a promise to be able to do the operation
 
 1635
-01:18:17,670 --> 01:18:20,550
-only then the primary says alright
-
-1636
-01:18:20,550 --> 01:18:22,080
-everybody go ahead and do that operation
+01:18:17,670 --> 01:18:22,080
+only then the primary says alright everybody go ahead and do that operation you promised 
 
 1637
 01:18:22,080 --> 01:18:24,570
-you promised and people you know that's
+and people you know that's
 
 1638
 01:18:24,570 --> 01:18:27,210
 the way a lot of real world systems
 
 1639
-01:18:27,210 --> 01:18:28,950
-strong consistent systems work and that
-
-1640
-01:18:28,950 --> 01:18:32,540
-trick it's called two-phase commit
+01:18:27,210 --> 01:18:32,540
+strong consistent systems work and that trick it's called two-phase commit
 
 1641
 01:18:32,630 --> 01:18:34,590
-another issue is that if the primary
+another issue is that if the primary crashes 
 
 1642
-01:18:34,590 --> 01:18:38,370
-crashes there will have been some last
-
-1643
-01:18:38,370 --> 01:18:40,410
-set of operations that the primary had
-
-1644
-01:18:40,410 --> 01:18:44,340
-launched started to the secondaries but
+01:18:34,590 --> 01:18:44,340
+there will have been some last set of operations that the primary had launched started to the secondaries 
 
 1645
-01:18:44,340 --> 01:18:46,890
-the primary crashed before it was sure
-
-1646
-01:18:46,890 --> 01:18:48,900
-whether those all the secondaries got
-
-1647
-01:18:48,900 --> 01:18:51,660
-there copied the operation or not so if
+01:18:44,340 --> 01:18:51,660
+the primary crashed before it was sure but whether those all the secondaries got there copied the operation or not 
 
 1648
 01:18:51,660 --> 01:18:54,510
-the primary crashes you know a new
+so if the primary crashes 
 
 1649
-01:18:54,510 --> 01:18:56,040
-primary one of the secondaries is going
-
-1650
-01:18:56,040 --> 01:18:57,780
-to take over as primary but at that
+01:18:54,510 --> 01:18:57,780
+you know a new primary one of the secondaries is going to take over as primary 
 
 1651
-01:18:57,780 --> 01:19:01,200
-point the second the new primary and the
-
-1652
-01:19:01,200 --> 01:19:03,240
-remaining secondaries may differ in the
-
-1653
-01:19:03,240 --> 01:19:05,580
-last few operations because maybe some
+01:18:57,780 --> 01:19:05,580
+but at that point the second the new primary and the remaining secondaries may differ in the last few operations 
 
 1654
-01:19:05,580 --> 01:19:07,200
-of them didn't get the message before
-
-1655
-01:19:07,200 --> 01:19:09,030
-the primary crashed and so the new
+01:19:05,580 --> 01:19:09,030
+because maybe some of them didn't get the message before the primary crashed
 
 1656
-01:19:09,030 --> 01:19:11,490
-primer has to start by explicitly
-
-1657
-01:19:11,490 --> 01:19:15,300
-resynchronizing with the secondaries to
+01:19:09,030 --> 01:19:15,300
+and so the new primer has to start by explicitly resynchronizing with the secondaries to
 
 1658
-01:19:15,300 --> 01:19:17,010
-make sure that the sort of the tail of
-
-1659
-01:19:17,010 --> 01:19:20,750
-their operation histories are the same
+01:19:15,300 --> 01:19:20,750
+make sure that the sort of the tail of their operation histories are the same
 
 1660
 01:19:21,080 --> 01:19:24,060
-finally to deal with this problem of oh
+finally to deal with this problem of 
 
 1661
 01:19:24,060 --> 01:19:25,530
-you know there may be times when the
+oh you know there may be times when the secondaries differ 
 
 1662
-01:19:25,530 --> 01:19:28,500
-secondaries differ or the client may
-
-1663
-01:19:28,500 --> 01:19:31,200
-have a slightly stale indication from
-
-1664
-01:19:31,200 --> 01:19:33,000
-the master of which secondary to talk to
+01:19:25,530 --> 01:19:33,000
+or the client may have a slightly stale indication from the master of which secondary to talk to
 
 1665
-01:19:33,000 --> 01:19:35,940
-the system either needs to send all
-
-1666
-01:19:35,940 --> 01:19:38,010
-client reads through the primary because
+01:19:33,000 --> 01:19:38,010
+the system either needs to send all client reads through the primary 
 
 1667
-01:19:38,010 --> 01:19:41,490
-only the primary is likely to know which
-
-1668
-01:19:41,490 --> 01:19:43,860
-operations have really happened or we
+01:19:38,010 --> 01:19:43,860
+because only the primary is likely to know which operations have really happened
 
 1669
-01:19:43,860 --> 01:19:45,570
-need a lease system for the secondaries
-
-1670
-01:19:45,570 --> 01:19:47,400
-just like we have for the primary so
+01:19:43,860 --> 01:19:47,400
+or we need a lease system for the secondaries just like we have for the primary 
 
 1671
-01:19:47,400 --> 01:19:50,700
-that it's well understood that when
-
-1672
-01:19:50,700 --> 01:19:55,030
-secondary can or can't legally respond
+01:19:47,400 --> 01:19:55,030
+so that it's well understood that when secondary can or can't legally respond to a client 
 
 1673
-01:19:55,030 --> 01:19:56,650
-a client and so these are the things I'm
-
-1674
-01:19:56,650 --> 01:19:58,570
-aware of that would have to be fixed in
+01:19:55,030 --> 01:19:58,570
+and so these are the things I'm aware of that would have to be fixed in this system 
 
 1675
-01:19:58,570 --> 01:20:00,550
-this system tor added complexity and
-
-1676
-01:20:00,550 --> 01:20:02,230
-chitchat to make it have strong
+01:19:58,570 --> 01:20:02,230
+to added complexity and chitchat to make it have strong consistency 
 
 1677
 01:20:02,230 --> 01:20:05,050
-consistency and you're actually the way
+and you're actually the way
 
 1678
 01:20:05,050 --> 01:20:08,020
-I got that list was by thinking about
+I got that list was by thinking about the labs 
 
 1679
-01:20:08,020 --> 01:20:09,940
-the labs you're gonna end up doing all
-
-1680
-01:20:09,940 --> 01:20:12,099
-the things I just talked about as part
+01:20:08,020 --> 01:20:12,099
+you're gonna end up doing all the things I just talked about as part
 
 1681
-01:20:12,099 --> 01:20:13,989
-of labs two and three to build a
-
-1682
-01:20:13,989 --> 01:20:18,940
-strictly consistent system okay so let
+01:20:12,099 --> 01:20:18,940
+of labs two and three to build a strictly consistent system 
 
 1683
 01:20:18,940 --> 01:20:21,099
-me spend one minute on there's actually
+okay so let me spend one minute on there's actually
 
 1684
-01:20:21,099 --> 01:20:23,079
-I have a link in the notes to a sort of
-
-1685
-01:20:23,079 --> 01:20:25,840
-retrospective interview about how well
+01:20:21,099 --> 01:20:25,840
+I have a link in the notes to a sort of retrospective interview about how well
 
 1686
-01:20:25,840 --> 01:20:28,389
-GFS played out over the first five or
-
-1687
-01:20:28,389 --> 01:20:32,770
-ten years of his life at Google so the
+01:20:25,840 --> 01:20:32,770
+GFS played out over the first five or ten years of his life at Google 
 
 1688
-01:20:32,770 --> 01:20:36,219
-high-level summary is that the most is
-
-1689
-01:20:36,219 --> 01:20:37,690
-that was tremendously successful and
-
-1690
-01:20:37,690 --> 01:20:40,570
-many many Google applications used it in
+01:20:32,770 --> 01:20:40,570
+so the high-level summary is that the most is that was tremendously successful and many many Google applications used it 
 
 1691
-01:20:40,570 --> 01:20:43,000
-a number of Google infrastructure was
-
-1692
-01:20:43,000 --> 01:20:45,250
-built as a late like big file for
+01:20:40,570 --> 01:20:45,250
+and a number of Google infrastructure was built as a late like big file for example BigTable 
 
 1693
-01:20:45,250 --> 01:20:47,409
-example BigTable I mean was built as a
-
-1694
-01:20:47,409 --> 01:20:50,190
-layer on top of GFS and MapReduce also
+01:20:45,250 --> 01:20:50,190
+I mean was built as a layer on top of GFS and MapReduce also
 
 1695
 01:20:50,190 --> 01:20:54,550
-so widely used within Google may be the
+so widely used within Google 
 
 1696
 01:20:54,550 --> 01:20:57,460
-most serious limitation is that there
+may be the most serious limitation is that there
 
 1697
 01:20:57,460 --> 01:20:59,289
@@ -6788,129 +5600,67 @@ was a single master and the master had
 
 1698
 01:20:59,289 --> 01:21:01,510
-to have a table entry for every file in
+to have a table entry for every file in every chunk 
 
 1699
-01:21:01,510 --> 01:21:04,510
-every chunk and that mean does the GFS
-
-1700
-01:21:04,510 --> 01:21:06,820
-use grew and they're about more and more
+01:21:01,510 --> 01:21:06,820
+and that mean does the GFS use grew and they're about more and more files 
 
 1701
-01:21:06,820 --> 01:21:08,650
-files the master just ran out of memory
-
-1702
-01:21:08,650 --> 01:21:11,980
-ran out of RAM to store the files and
+01:21:06,820 --> 01:21:11,980
+the master just ran out of memory ran out of RAM to store the files and
 
 1703
-01:21:11,980 --> 01:21:13,690
-you know you can put more RAM on but
-
-1704
-01:21:13,690 --> 01:21:15,010
-there's limits to how much RAM a single
-
-1705
-01:21:15,010 --> 01:21:18,309
-machine can have and so that was the
+01:21:11,980 --> 01:21:18,309
+you know you can put more RAM on but there's limits to how much RAM a single machine can have and so 
 
 1706
 01:21:18,309 --> 01:21:19,599
-most of the most immediate problem
+that was the most of the most immediate problem people ran into
 
 1707
-01:21:19,599 --> 01:21:24,159
-people ran into in addition the load on
-
-1708
-01:21:24,159 --> 01:21:25,869
-a single master from thousands of
-
-1709
-01:21:25,869 --> 01:21:28,030
-clients started to be too much in the
+01:21:19,599 --> 01:21:28,030
+in addition the load on a single master from thousands of clients started to be too much 
 
 1710
-01:21:28,030 --> 01:21:29,650
-master kernel they see if you can only
-
-1711
-01:21:29,650 --> 01:21:30,940
-process however many hundreds of
+01:21:28,030 --> 01:21:30,940
+in the master only the cpu can only process however many hundreds of requests per second
 
 1712
-01:21:30,940 --> 01:21:33,070
-requests per second especially the right
-
-1713
-01:21:33,070 --> 01:21:35,739
-things to disk and pretty soon there got
-
-1714
-01:21:35,739 --> 01:21:39,880
-to be too many clients another problem
+01:21:30,940 --> 01:21:39,880
+especially the write 01:21:33,070 --> 01:21:35,739
+things to disk and pretty soon there got to be too many clients 
 
 1715
-01:21:39,880 --> 01:21:41,409
-with a some applications found it hard
-
-1716
-01:21:41,409 --> 01:21:44,260
-to deal with this kind of sort of odd
+01:21:39,880 --> 01:21:44,260
+another problem with a some applications found it hard to deal with this kind of 
 
 1717
 01:21:44,260 --> 01:21:47,500
-semantics and a final problem is that
+sort of odd semantics and a final problem is that
 
 1718
-01:21:47,500 --> 01:21:49,599
-the master that was not an automatic
-
-1719
-01:21:49,599 --> 01:21:52,059
-story for master failover
+01:21:47,500 --> 01:21:52,059
+the master that was not an automatic story for master failover
 
 1720
 01:21:52,059 --> 01:21:54,400
-in the original in the GFS paper as we
+in the original in the GFS paper as we read it 
 
 1721
-01:21:54,400 --> 01:21:56,440
-read it like required human intervention
-
-1722
-01:21:56,440 --> 01:21:59,170
-to deal with a master that had sort of
-
-1723
-01:21:59,170 --> 01:22:00,460
-permanently crashed and needs to be
+01:21:54,400 --> 01:22:00,460
+like required human intervention to deal with a master that had sort of permanently crashed and needs to be replaced 
 
 1724
-01:22:00,460 --> 01:22:03,579
-replaced and that could take tens of
-
-1725
-01:22:03,579 --> 01:22:05,980
-minutes or more I was just too long for
-
-1726
-01:22:05,980 --> 01:22:09,360
-failure recovery for some applications
+01:22:00,460 --> 01:22:09,360
+and that could take tens of minutes or more I was just too long for failure recovery for some applications
 
 1727
 01:22:09,360 --> 01:22:13,630
 okay excellent I'll see you on Thursday
 
 1728
-01:22:13,630 --> 01:22:15,970
-and we'll hear more about all these
+01:22:13,630 --> 00:00:00,000
+and we'll hear more about all these themes over the semester
 
-1729
-01:22:15,970 --> 00:00:00,000
-themes over the semester
 
