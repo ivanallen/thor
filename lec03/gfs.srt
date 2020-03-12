@@ -1,1385 +1,1731 @@
 1
 00:00:00,600 --> 00:00:05,640
+好啦，咱们开始上课
 I'd like to get started today we're
 
 2
 00:00:05,640 --> 00:00:09,389
+今天咱们谈谈 GFS
 gonna talk about GFS the Google file
 
 3
 00:00:09,389 --> 00:00:10,980
+也就是就是今天我们要读的论文《The Google File System》
 system paper we read for today
 
 4
 00:00:10,980 --> 00:00:12,660
+这也是在咱们这门课里
 and this will be the first of a number
 
 5
 00:00:12,660 --> 00:00:15,540
+众多 case 里要学的第一篇
 of different sort of case studies we'll
 
 6
 00:00:15,540 --> 00:00:17,160
+关于如何构建大型存储的文章
 talk about in this course about how to
 
 7
 00:00:17,160 --> 00:00:19,410
+关于如何构建大型存储的文章
 be build big storage systems so the
 
 8
 00:00:19,410 --> 00:00:29,310
+这里“大型存储”是一个很大的话题
 larger topic is big storage the reason
 
 9
 00:00:29,310 --> 00:00:31,410
+为什么是存储？
 is the storage is turned out to be a key
 
 10
 00:00:31,410 --> 00:00:34,260
+因为存储被证明是一种关键抽象
 abstraction you might you know if you
 
 11
 00:00:34,260 --> 00:00:35,850
+如果你还不知道的话
 didn't know already you might imagine
 
 12
 00:00:35,850 --> 00:00:37,230
+你可以想象在分布式系统中
 that there could be all kinds of
 
 13
 00:00:37,230 --> 00:00:40,050
+你希望使用的各种不同的抽象
 different you know important
 
 14
 00:00:40,050 --> 00:00:42,030
+你希望使用的各种不同的抽象
 abstractions you might want to use for
 
 15
 00:00:42,030 --> 00:00:43,650
+但事实表明
 distributed systems but it's turned out
 
 16
 00:00:43,650 --> 00:00:47,730
+简单的存储接口往往更有用而且更加通用
 that a simple storage interface is just
 
 17
 00:00:47,730 --> 00:00:50,010
+简单的存储接口往往更有用而且更加通用
 incredibly useful and extremely general
 
 18
 00:00:50,010 --> 00:00:51,480
+构建分布式系统
 and so a lot of the thought that's gone
 
 19
 00:00:51,480 --> 00:00:53,280
+大多都是关于如何设计存储系统
 into building distributed systems has
 
 20
 00:00:53,280 --> 00:00:55,170
+或是设计其它类型的系统
 either gone into designing storage
 
 21
 00:00:55,170 --> 00:00:57,630
+在它的底层
 systems or designing other systems that
 
 22
 00:00:57,630 --> 00:01:00,180
+运行着一个不错的大型分布式存储系统
 assume underneath them some sort of
 
 23
 00:01:00,180 --> 00:01:02,989
+运行着一个不错的大型分布式存储系统
 reasonably well behaved big just
 
 24
 00:01:02,989 --> 00:01:05,519
+运行着一个不错的大型分布式存储系统
 distributed storage system so we're
 
 25
 00:01:05,519 --> 00:01:07,500
+所以我们会更加关注
 going to care a lot about how the you
 
 26
 00:01:07,500 --> 00:01:09,360
+如何为大型分布式存储系统设计一个优秀的接口
 know how to design a good interface to a
 
 27
 00:01:09,360 --> 00:01:12,420
+如何为大型分布式存储系统设计一个优秀的接口
 big storage system and how to design the
 
 28
 00:01:12,420 --> 00:01:14,159
+以及如何设计存储系统的内部结构
 innards of the storage system so it has
 
 29
 00:01:14,159 --> 00:01:18,030
+这样它才具备良好的行为
 good behavior you know of course that's
 
 30
 00:01:18,030 --> 00:01:19,229
-why we're reading this paper just to get
+通过阅读这篇论文可以让我们起步
+why we're reading this paper is to get
 
 31
 00:01:19,229 --> 00:01:20,850
-a start on that the this paper also
+通过阅读这篇论文可以让我们起步
+a start on that. the this paper also
 
 32
 00:01:20,850 --> 00:01:22,530
+论文也涉及到很多本课程常出现的话题
 touches on a lot of themes that will
 
 33
 00:01:22,530 --> 00:01:24,900
+论文也涉及到很多本课程常出现的话题
 come up a lot in a tube for parallel
 
 34
 00:01:24,900 --> 00:01:27,060
+主要包括并行性能、容错、复制和一致性
 performance fault tolerance replication
 
 35
 00:01:27,060 --> 00:01:31,740
+主要包括并行性能、容错、复制和一致性
 and consistency and this paper is as
 
 36
 00:01:31,740 --> 00:01:34,140
+论文的内容也像 Go 语言那样，简单明了
 such things go reasonably
 
 37
 00:01:34,140 --> 00:01:36,390
+论文的内容也像 Go 语言那样，简单明了
 straightforward and easy to understand
 
 38
 00:01:36,390 --> 00:01:38,670
+这也是一篇非常优秀的系统论文
 it's also a good systems paper it sort
 
 39
 00:01:38,670 --> 00:01:40,560
+从硬件到软件
 of talks about issues all the way from
 
 40
 00:01:40,560 --> 00:01:43,229
+到最终构建出整个系统都有涉及
 the hardware to the software that
 
 41
 00:01:43,229 --> 00:01:45,960
+到最终构建出整个系统都有涉及
 ultimately uses the system and it's a
 
 42
 00:01:45,960 --> 00:01:49,320
+而且在现实世界中 它也设计的相当成功
 successful real world design so it says
 
 43
 00:01:49,320 --> 00:01:51,030
+尽管这是在学术会议上发表的论文
 you know academic paper published in an
 
 44
 00:01:51,030 --> 00:01:53,189
+尽管这是在学术会议上发表的论文
 academic conference but it describes
 
 45
 00:01:53,189 --> 00:01:54,890
+但是文章里介绍的东西(GFS)也相当成功
 something that really was successful and
 
 46
 00:01:54,890 --> 00:01:57,030
+在现实世界中也使用了相当长的时间
 used for a long time in the real world
 
 47
 00:01:57,030 --> 00:01:58,650
+所以，在这里
 so we sort of know that we're talking
 
 48
 00:01:58,650 --> 00:02:02,340
+咱们讨论的这些东西 真的相当牛逼
 about something that is it's a good a
 
 49
 00:02:02,340 --> 00:02:07,110
+咱们讨论的这些东西 真的相当牛逼
 good useful design okay so before I'm
 
 50
 00:02:07,110 --> 00:02:09,149
+不过在讨论 GFS 前
 gonna talk about GFS I want to sort of
 
 51
 00:02:09,149 --> 00:02:11,279
+我想聊聊一点关于分布式存储系统的空间
 talk about the space of distributed
 
 52
 00:02:11,279 --> 00:02:13,030
+我想聊聊一点关于分布式存储系统的空间
 storage systems a little bit
 
 53
 00:02:13,030 --> 00:02:18,810
-set the scene so first why is it hard
+首先 为什么它会如此之难？
+to set the scene so first why is it hard
 
 54
 00:02:19,920 --> 00:02:23,560
+你需要做大量的工作才能让他变得正确
 it's actually a lot to get right but for
 
 55
 00:02:23,560 --> 00:02:25,900
-a 2/4 there's a particular sort of
+但在 6.824 里
+824 there's a particular sort of
 
 56
 00:02:25,900 --> 00:02:28,330
+会有一些特殊的讲述方式
 narrative that's gonna come up quite a
 
 57
 00:02:28,330 --> 00:02:32,140
+在未来很多系统里你将会接触到
 lot for many systems often the starting
 
 58
 00:02:32,140 --> 00:02:34,180
+人们设计大型分布式系统
 point for people designing these sort of
 
 59
 00:02:34,180 --> 00:02:35,890
+或大型存储系统 通常的出发点是
 big distributed systems or big storage
 
 60
 00:02:35,890 --> 00:02:37,330
+为了获得巨大的综合性能
 systems is they want to get huge
 
 61
 00:02:37,330 --> 00:02:39,340
+为了获得巨大的综合性能
 aggregate performance be able to harness
 
 62
 00:02:39,340 --> 00:02:43,090
+要能利用数百台机器的资源 来完成大量工作
 the resources of hundreds of machines in
 
 63
 00:02:43,090 --> 00:02:44,620
+要能利用数百台机器的资源 来完成大量工作
 order to get a huge amount of work done
 
 64
 00:02:44,620 --> 00:02:48,000
+因此，性能问题就成为了最初的诉求
 so the sort of starting point is often
 
 65
 00:02:48,000 --> 00:02:54,430
+因此 性能问题就成为了最初的诉求
 performance and you know if you start
 
 66
 00:02:54,430 --> 00:02:57,010
+因此有个很自然的想法
 there a natural next thought is well
 
 67
 00:02:57,010 --> 00:02:59,019
+将数据进行分割 放到大量服务器上
 we're gonna split our data over a huge
 
 68
 00:02:59,019 --> 00:03:00,640
+将数据进行分割 放到大量服务器上
 number of servers in order to be able to
 
 69
 00:03:00,640 --> 00:03:04,420
+从而能够并行地 从多台服务器读取数据
 read many servers in parallel so we're
 
 70
 00:03:04,420 --> 00:03:05,769
+通常 我们把这种方式称为 分片(sharding)
 gonna get and that's often called
 
 71
 00:03:05,769 --> 00:03:11,160
+如果你将数据分片到成百上千台服务器上
 sharding if you shard over many servers
 
 72
 00:03:11,160 --> 00:03:13,600
+如果你将数据分片到成百上千台服务器上
 hundreds or thousands of servers you're
 
 73
 00:03:13,600 --> 00:03:15,970
+你会发现出错成了常态
 just gonna see constant faults right if
 
 74
 00:03:15,970 --> 00:03:17,140
+在上千台服务器中 总有那么几台会宕机
 you have thousands of servers there's
 
 75
 00:03:17,140 --> 00:03:20,680
+在上千台服务器中 总有那么几台会宕机
 just always gonna be one down so we
 
 76
 00:03:20,680 --> 00:03:25,540
+所以每天 每小时都在发生错误
 the faults are just every day every hour
 
 77
 00:03:25,540 --> 00:03:27,250
+所以 我们需要自动化的方法去纠正它
 occurrences and we need automatic
 
 78
 00:03:27,250 --> 00:03:29,350
+你不可能靠人工去发现并纠正这些错误
 we can't have human involved and fixing
 
 79
 00:03:29,350 --> 00:03:31,890
+所以 得需要有一个自动化的 容错(fault-tolerant, ft)系统
 this fault we need automatic
 
 80
 00:03:31,890 --> 00:03:38,290
+所以 得需要有一个自动化的 容错(fault-tolerant, ft)系统
 fault-tolerant systems so that leads to
 
 81
 00:03:38,290 --> 00:03:43,090
+这就引出 容错 这个话题
 fault tolerance the among the most
 
 82
 00:03:43,090 --> 00:03:44,920
+实现容错最有用的一种方法是使用复制
 powerful ways to get fault tolerance is
 
 83
 00:03:44,920 --> 00:03:46,630
+实现容错最有用的一种方法是使用复制
 with replication just keep two or three
 
 84
 00:03:46,630 --> 00:03:48,190
+只需保留两三个或更多数量数据副本
 or whatever copies of data one of them
 
 85
 00:03:48,190 --> 00:03:52,390
+只要其中有一个失败，你就可以使用另一个
 fails you can use another one so we want
 
 86
 00:03:52,390 --> 00:03:56,010
+所以，如果想要容错能力，就得有 复制（replication）
 to have tolerance that leads to
 
 87
 00:03:56,010 --> 00:04:03,100
+如果有复制 两份数据的副本
 replication if you have replication two
 
 88
 00:04:03,100 --> 00:04:05,470
+如果有复制 两份数据的副本
 copies the data then you know for sure
 
 89
 00:04:05,470 --> 00:04:07,329
+可以确定的是 如果你不小心 它们就会不一致
 if you're not careful they're gonna get
 
 90
 00:04:07,329 --> 00:04:09,010
+所以如果你有 2 个数据副本（replicas）
 out of sync and so what you thought was
 
 91
 00:04:09,010 --> 00:04:10,750
+你就能使用其中之一替换另一个 进行容错
 two replicas of the data where you could
 
 92
 00:04:10,750 --> 00:04:12,549
+你就能使用其中之一替换另一个 进行容错
 use either one interchangeably to
 
 93
 00:04:12,549 --> 00:04:14,170
+你就能使用其中之一替换另一个 进行容错
 tolerate faults if you're not careful
 
 94
 00:04:14,170 --> 00:04:15,670
+如果你不小心弄出两个几乎不同的 replicas
 what you end up with is two almost
 
 95
 00:04:15,670 --> 00:04:18,640
+如果你不小心弄出两个几乎不同的 replicas
 identical replicas of the data that's
 
 96
 00:04:18,640 --> 00:04:20,289
+严格来讲它们就算不上 replicas
 like not exactly replicas at all and
 
 97
 00:04:20,289 --> 00:04:22,180
+那么 你获得的数据 将取决于与向哪个服务器请求
 what you get back depends on which one
 
 98
 00:04:22,180 --> 00:04:24,039
+那么 你获得的数据 将取决于与向哪个服务器请求
 you talk to so that's starting to maybe
 
 99
 00:04:24,039 --> 00:04:25,240
+这样的话 应用程序用起来就有点棘手
 look a little bit
 
 100
 00:04:25,240 --> 00:04:28,420
+这样的话 应用程序用起来就有点棘手
 tricky for applications to use so if we
 
 101
 00:04:28,420 --> 00:04:34,330
+所以如果采用复制 就可能遇到奇怪的不一致问题
 have replication we risk weird
 
 102
 00:04:34,330 --> 00:04:41,800
+所以如果采用复制 就可能遇到奇怪的不一致问题
 inconsistencies of course clever design
 
 103
 00:04:41,800 --> 00:04:45,400
+当然 有聪明的设计 可以让你避免不一致
 you can get rid of inconsistency and
 
 104
 00:04:45,400 --> 00:04:47,680
+并使数据看起来是行为良好的
 make the data look very well-behaved but
 
 105
 00:04:47,680 --> 00:04:49,450
+但这种设计的代价是 你得做更多额外的工作
 if you do that it almost always requires
 
 106
 00:04:49,450 --> 00:04:51,210
+但这种设计的代价是 你得做更多额外的工作
 extra work and extra sort of chitchat
 
 107
 00:04:51,210 --> 00:04:53,140
+以及网络中所有不同服务器和客户端之间的额外通信
 between all the different servers and
 
 108
 00:04:53,140 --> 00:04:54,610
+以及网络中所有不同服务器和客户端之间的额外通信
 clients in the network that reduces
 
 109
 00:04:54,610 --> 00:04:58,470
+这样性能也就变低了
 performance so if you want consistency
 
 110
 00:04:59,550 --> 00:05:09,190
+因此，如果要保持一致性，就需要付出代价
 you pay for with low performance I which
 
 111
 00:05:09,190 --> 00:05:11,740
+当然这也违背了我们的初衷
 is of course not what we originally
 
 112
 00:05:11,740 --> 00:05:13,420
+当然这是绝对的
 hoping for of course this is an absolute
 
 113
 00:05:13,420 --> 00:05:14,650
+你可以构建 高性能的系统
 you can build very high performance
 
 114
 00:05:14,650 --> 00:05:16,990
+在设计这些系统的时候 这些事情你都需要去面对
 systems but nevertheless there's this
 
 115
 00:05:16,990 --> 00:05:19,480
+在设计这些系统的时候 这些事情你都需要去面对
 sort of inevitable way that the design
 
 116
 00:05:19,480 --> 00:05:21,370
+在设计这些系统的时候 这些事情你都需要去面对
 of these systems play out and it results
 
 117
 00:05:21,370 --> 00:05:24,670
+所以这就会导致你需要在
 in a tension between the original goals
 
 118
 00:05:24,670 --> 00:05:26,920
+性能目标和实现良好的一致性之间做权衡
 of performance and the sort of
 
 119
 00:05:26,920 --> 00:05:29,020
+性能目标和实现良好的一致性之间做权衡
 realization that if you want good
 
 120
 00:05:29,020 --> 00:05:31,720
+并因此付出一些代价
 consistency you're gonna pay for it and
 
 121
 00:05:31,720 --> 00:05:33,730
+如果你不想付出代价 那你就得接受系统的异常行为
 if you don't want to pay for it then you
 
 122
 00:05:33,730 --> 00:05:35,830
+如果你不想付出代价 那你就得接受系统的异常行为
 have to suffer with sort of anomalous
 
 123
 00:05:35,830 --> 00:05:37,930
+我把这些东西写在这里
 behavior sometimes I'm putting this up
 
 124
 00:05:37,930 --> 00:05:39,840
+因为在未来许多系统里 你都能经常见到这些东西
 because we're gonna see this this loop
 
 125
 00:05:39,840 --> 00:05:42,310
+因为在未来许多系统里 你都能经常见到这些东西
 many times for many of the systems we
 
 126
 00:05:42,310 --> 00:05:45,580
+有很多人都不太愿意在良好的一致性（强一致性）上面花费精力
 look we look at people are rarely
 
 127
 00:05:45,580 --> 00:05:48,070
+有很多人都不太愿意在良好的一致性（强一致性）上面花费精力
 willing to or happy about paying the
 
 128
 00:05:48,070 --> 00:05:52,930
+有很多人都不太愿意在良好的一致性（强一致性）上面花费精力
 full cost of very good consistency ok so
 
 129
 00:05:52,930 --> 00:05:57,520
+在接下来的课程里我将会讨论更多关于良好一致性的话题
 you know with brought a consistency I'll
 
 130
 00:05:57,520 --> 00:06:02,050
+在接下来的课程里我将会讨论更多关于良好一致性的话题
 talk more later in the course about more
 
 131
 00:06:02,050 --> 00:06:04,000
+在接下来的课程里我将会讨论更多关于良好一致性的话题
 exactly what I mean by good consistency
 
 132
 00:06:04,000 --> 00:06:07,000
+你可以把“强一致性”(strong consistency)
 but you can think of strong consistency
 
 133
 00:06:07,000 --> 00:06:09,280
+或是“良好一致性”的系统想象成就像是一台单机 server 一样
 or good consistency as being we want to
 
 134
 00:06:09,280 --> 00:06:11,410
+或是“良好一致性”的系统想象成就像是一台单机 server 一样
 build a system whose behavior to
 
 135
 00:06:11,410 --> 00:06:13,930
+应用程序或是客户端和它通信，感觉就像是和一台 server 通信
 applications or clients looks just like
 
 136
 00:06:13,930 --> 00:06:15,610
+应用程序或是客户端和它通信，感觉就像是和一台 server 通信
 you'd expect from talking to a single
 
 137
 00:06:15,610 --> 00:06:18,760
+应用程序或是客户端和它通信，感觉就像是和一台 server 通信
 server all right we're gonna build you
 
 138
 00:06:18,760 --> 00:06:20,260
+在数百台机器上的构建的理想的强一致模型的系统
 know systems out of hundreds of machines
 
 139
 00:06:20,260 --> 00:06:23,170
+在数百台机器上的构建的理想的强一致模型的系统
 but a kind of ideal strong consistency
 
 140
 00:06:23,170 --> 00:06:25,000
+在同一时刻你只能请求到一台 server 上的一个数据副本
 model would be what you'd get if there
 
 141
 00:06:25,000 --> 00:06:26,560
+在同一时刻你只能请求到一台 server 上的一个数据副本
 was just one server with one copy of the
 
 142
 00:06:26,560 --> 00:06:31,810
+在同一时刻你只能请求到一台 server 上的一个数据副本
 data doing one thing at a time so this
 
 143
 00:06:31,810 --> 00:06:34,349
+这是思考强一致的一种最直觉的方式
 is kind of a strong
 
 144
 00:06:34,349 --> 00:06:41,169
+这是思考强一致的一种最直觉的方式
 consistency kind of intuitive way to
 
 145
 00:06:41,169 --> 00:06:42,789
+这是思考强一致的一种最直觉的方式
 think about strong consistency so you
 
 146
 00:06:42,789 --> 00:06:45,490
+你可以想象你有一台服务器
 might think you have one server we'll
 
 147
 00:06:45,490 --> 00:06:47,020
+这里假设它是单线程服务
 assume that's a single-threaded server
 
 148
 00:06:47,020 --> 00:06:49,210
+在同一时刻它处理来自多个客户端的请求
 and that it processes requests from
 
 149
 00:06:49,210 --> 00:06:50,919
+在同一时刻它处理来自多个客户端的请求
 clients one at a time and that's
 
 150
 00:06:50,919 --> 00:06:52,569
+这很重要，因为有大量客户端可能会同时并发的请求 server
 important because there may be lots of
 
 151
 00:06:52,569 --> 00:06:55,509
+这很重要，因为有大量客户端可能会同时并发的请求 server
 clients sending concurrently requests
 
 152
 00:06:55,509 --> 00:06:57,370
+server 看到这些请求后
 into the server and see some current
 
 153
 00:06:57,370 --> 00:06:59,020
+首先会从中挑选一个出来（TODO）
 requests it picks one or the other to go
 
 154
 00:06:59,020 --> 00:07:00,729
-first and excuse that request to
+首先会从中挑选一个出来
+first and excute that request to
 
 155
 00:07:00,729 --> 00:07:04,090
-completion then excuse the nets so for
+处理请求结束后然后回复
+completion then excute the nets so for
 
 156
 00:07:04,090 --> 00:07:06,099
+对于存储服务来说 你知道它会有一块磁盘
 storage servers or you know the server's
 
 157
 00:07:06,099 --> 00:07:07,629
+对于存储服务来说 你知道它会有一块磁盘
 got a disk on it and what it means to
 
 158
 00:07:07,629 --> 00:07:10,060
+这意味着处理一条请求可能会写入一条 item
 process a request is it's a write
 
 159
 00:07:10,060 --> 00:07:12,610
+这意味着处理一条请求可能会写入一条 item
 request you know which might be writing
 
 160
 00:07:12,610 --> 00:07:14,710
+也可能是给某个 item 做自增
 an item or may be increment and I mean
 
 161
 00:07:14,710 --> 00:07:17,979
+这里自增一个 item 是指它是否是一个可修改操作
 incrementing an item if it's a mutation
 
 162
 00:07:17,979 --> 00:07:21,069
+我有一些数据记录在这个表中
 then we're gonna go and we have some
 
 163
 00:07:21,069 --> 00:07:23,680
+它可能是通过 key-value 进行索引的数据
 table of data and you know maybe index
 
 164
 00:07:23,680 --> 00:07:25,240
+它可能是通过 key-value 进行索引的数据
 by keys and values and we're gonna
 
 165
 00:07:25,240 --> 00:07:27,039
+然后我们打算更新这个表
 update this table and if the request
 
 166
 00:07:27,039 --> 00:07:28,240
+如果一条请求进来读取它
 comes in and to read we're just gonna
 
 167
 00:07:28,240 --> 00:07:30,099
+只需要把写入的数据拉出来就行了
 you know pull the write data out of the
 
 168
 00:07:30,099 --> 00:07:36,759
+这里有一条法则
 table one of the rules here that sort of
 
 169
 00:07:36,759 --> 00:07:39,580
+要想使得 server 行为良好
 makes this well-behaved is that each is
 
 170
 00:07:39,580 --> 00:07:41,740
+那么 server 必须以一种简单的模型去运行
 that the server really does execute in
 
 171
 00:07:41,740 --> 00:07:44,710
+即同一时刻，只处理一条请求
 our simplified model excuse to request
 
 172
 00:07:44,710 --> 00:07:48,129
+即同一时刻，只处理一条请求
 one at a time and that requests see data
 
 173
 00:07:48,129 --> 00:07:49,990
+任何请求看到的数据
 that reflects all the previous
 
 174
 00:07:49,990 --> 00:07:51,819
+都能反应出在这之前所有的有序的操作
 operations in order so if a sequence of
 
 175
 00:07:51,819 --> 00:07:53,560
+所以 如果有一系列的写操作请求同时到来
 writes come in and the server process
 
 176
 00:07:53,560 --> 00:07:55,360
+server 就会有序的处理它们
 them in some order then when you read
 
 177
 00:07:55,360 --> 00:07:58,060
+当你读取的时候 你就能读取到你期望的值
 you see the sort of you know value you
 
 178
 00:07:58,060 --> 00:08:00,009
+当你读取的时候 你就能读取到你期望的值
 would expect if those writes that
 
 179
 00:08:00,009 --> 00:08:05,169
+当你读取的时候 你就能读取到你期望的值
 occurred one at a time the behavior this
 
 180
 00:08:05,169 --> 00:08:07,029
+这个行为仍然没那么简单
 is still not completely straightforward
 
 181
 00:08:07,029 --> 00:08:09,659
+你不得不花上几秒的时间去考虑一些事情
 there's some you know there's some
 
 182
 00:08:09,659 --> 00:08:11,919
+你不得不花上几秒的时间去考虑一些事情
 things that you have to spend at least a
 
 183
 00:08:11,919 --> 00:08:13,629
+你不得不花上几秒的时间去考虑一些事情
 second thinking about so for example if
 
 184
 00:08:13,629 --> 00:08:19,539
+比如我们有大量的客户端
 we have a bunch of clients and client
 
 185
 00:08:19,539 --> 00:08:25,180
+客户端 C1 发起写请求写 x 并把它的值设置成 1
 one issues a write of value X and wants
 
 186
 00:08:25,180 --> 00:08:27,460
+客户端 C1 发起写请求写 x 并把它的值设置成 1
 it to set it to one and at the same time
 
 187
 00:08:27,460 --> 00:08:30,460
+在同一时刻 客户端 C2 发起请求也写 x
 client two issues the right of the same
 
 188
 00:08:30,460 --> 00:08:32,159
+但是它想把值设置成一个不同的值(2)
 value but wants to set it to a different
 
 189
 00:08:32,159 --> 00:08:34,360
+但是它想把值设置成一个不同的值(2)
 the same key but wants to set it to a
 
 190
 00:08:34,360 --> 00:08:35,860
+但是它想把值设置成一个不同的值(2)
 different value right
 
 191
 00:08:35,860 --> 00:08:38,409
+现在有别的事情发生了
 something happens let's say client three
 
 192
 00:08:38,409 --> 00:08:42,490
+客户端 C3 请求读并得到一个结果
 reads and get some result or client
 
 193
 00:08:42,490 --> 00:08:44,020
+或者说 C3 在写请求结束后读取会得到一个结果
 three after these writes complete reads
 
 194
 00:08:44,020 --> 00:08:47,220
+或者说 C3 在写请求结束后读取会得到一个结果
 get some result client four
 
 195
 00:08:47,220 --> 00:08:50,290
+客户端 C4 读取 x 也得到一个结果
 reads X and get some also gets a result
 
 196
 00:08:50,290 --> 00:08:51,999
+那么这两个客户端看到的结果是多少？
 so what results should the two clients
 
 197
 00:08:51,999 --> 00:09:00,959
+(提问)
 see yeah
 
 198
 00:09:04,700 --> 00:09:07,200
+很好，这个问题不错
 well that's a good question so these
 
 199
 00:09:07,200 --> 00:09:09,060
+这里的客户端 C1 和 C2
 what I'm assuming here is that client
 
 200
 00:09:09,060 --> 00:09:10,770
-one inclined to launch these requests at
+我假设它们是在同时发起的请求
+one and client two launch these requests at
 
 201
 00:09:10,770 --> 00:09:12,720
+如果监控网络的话 我们能看到 2 个请求同时到达服务器
 the same time so if we were monitoring
 
 202
 00:09:12,720 --> 00:09:14,190
+如果监控网络的话 我们能看到 2 个请求同时到达服务器
 the network we'd see two requests
 
 203
 00:09:14,190 --> 00:09:16,500
+如果监控网络的话 我们能看到 2 个请求同时到达服务器
 heading to the server at the same time
 
 204
 00:09:16,500 --> 00:09:19,710
+接下来在某个时刻后 服务器会回复它们
 and then sometime later the server would
 
 205
 00:09:19,710 --> 00:09:20,520
+接下来在某个时刻后 服务器会回复它们
 respond to them
 
 206
 00:09:20,520 --> 00:09:23,790
+这里不足以判断客户端是否收到了第一条请求的回复
 so there's actually not enough here to
 
 207
 00:09:23,790 --> 00:09:26,070
+这里不足以判断客户端是否收到了第一条请求的回复
 be able to say whether the client would
 
 208
 00:09:26,070 --> 00:09:28,530
-receipt would process the first request
+不足以判断第一条请求是否被处理
+receive would process the first request
 
 209
 00:09:28,530 --> 00:09:30,780
+也不足以判断服务器是以何种方式处理的它们
 first which order there's not enough
 
 210
 00:09:30,780 --> 00:09:32,880
+也不足以判断服务器是以何种方式处理的它们
 here to tell which order the server
 
 211
 00:09:32,880 --> 00:09:35,460
+也不足以判断服务器是以何种方式处理的它们
 processes them in and of course if it
 
 212
 00:09:35,460 --> 00:09:38,580
+当然了，如果它先处理这个请求
 processes this request first then that
 
 213
 00:09:38,580 --> 00:09:41,760
+然后就意味着它会处理这边这条请求 把值设置成 2
 means or it processes the right with
 
 214
 00:09:41,760 --> 00:09:43,800
+然后就意味着它会处理这边这条请求 把值设置成 2
 value to second and that means that
 
 215
 00:09:43,800 --> 00:09:46,350
+接下来后续的读将看到 2
 subsequent reads have to see two where is
 
 216
 00:09:46,350 --> 00:09:48,030
+如果 server 先处理这条请求
 it the server happened to process this
 
 217
 00:09:48,030 --> 00:09:50,250
+然后再处理这条请求
 request first and this one's second that
 
 218
 00:09:50,250 --> 00:09:52,020
+这意味着最终的结果是 1
 means the resulting value better be one
 
 219
 00:09:52,020 --> 00:09:54,060
+然后这两条读请求就会看到 1
 and these these two requests and see one
 
 220
 00:09:54,060 --> 00:09:56,670
+提出这个问题的目的是想说明
 so I'm just putting this up to sort
 
 221
 00:09:56,670 --> 00:09:58,950
+即使是在一个非常简单的系统里也会存在模棱两可的结果
 of illustrate that even in a simple
 
 222
 00:09:58,950 --> 00:10:01,230
+即使是在一个非常简单的系统里也会存在模棱两可的结果
 system there's ambiguity you can't
 
 223
 00:10:01,230 --> 00:10:04,020
+你没办法判断出服务器到底会先处理哪条请求
 necessarily tell from trace of what went
 
 224
 00:10:04,020 --> 00:10:05,190
+也无法判断哪条回复会被先发出去
 into the server or what should come out
 
 225
 00:10:05,190 --> 00:10:08,820
+你能做到的只是判断
 all of you can tell is that some set of
 
 226
 00:10:08,820 --> 00:10:11,250
+在可能的执行上 产生的结果是一致还是不一致的
 results is consistent or not consistent
 
 227
 00:10:11,250 --> 00:10:13,470
+在可能的执行上 产生的结果是一致还是不一致的
 with a possible execution so certainly
 
 228
 00:10:13,470 --> 00:10:17,850
+所以我们肯定能看到有一些完全错误的结果
 there's some completely wrong results we
 
 229
 00:10:17,850 --> 00:10:21,060
+所以我们肯定能看到有一些完全错误的结果
 can see go by it you know if client 3
 
 230
 00:10:21,060 --> 00:10:24,030
+如果客户端 C3 看到了 2
 sees a 2 then client 4 I bet had better
 
 231
 00:10:24,030 --> 00:10:27,210
+客户端 C4 最好也要能看到 2
 see a two also because our model is
 
 232
 00:10:27,210 --> 00:10:29,040
+因为我们的模型保证第二次写之后是没有问题的
 well after the second write you know
 
 233
 00:10:29,040 --> 00:10:30,750
-client tree sees it two that means
+客户端 C3 能看到 2 意味着这条请求一定是第 2 次执行
+client three sees it two that means
 
 234
 00:10:30,750 --> 00:10:33,870
+客户端 C3 能看到 2 意味着这条请求一定是第 2 次执行
 this write must have been second and it
 
 235
 00:10:33,870 --> 00:10:35,700
+最好是这样 当客户端 C4 能读取到 2 时
 still had better be it still has to have
 
 236
 00:10:35,700 --> 00:10:37,620
-been the second write one client 4 goes
+它也必须是第二次写入
+been the second write when client 4 goes 2
 
 237
 00:10:37,620 --> 00:10:41,220
-to the date so hopefully all this is
+希望这些东西足够直白
+to read the data so hopefully all this is
 
 238
 00:10:41,220 --> 00:10:43,410
+希望这些东西足够简单 且如预期那样
 just completely straightforward and just
 
 239
 00:10:43,410 --> 00:10:47,790
+因为它就是强一致性的直观模型
 as expected because it's it's supposed
 
 240
 00:10:47,790 --> 00:10:49,200
+因为它就是强一致性的直观模型
 to be the intuitive model of strong
 
 241
 00:10:49,200 --> 00:10:53,190
+ok 这有什么问题呢？
 consistency ok and so the problem with
 
 242
 00:10:53,190 --> 00:10:54,300
+问题在于单个服务器的容错能力很差
 this of course is that a single server
 
 243
 00:10:54,300 --> 00:10:56,370
+问题在于单个服务器的容错能力很差
 has poor fault tolerance right if it
 
 244
 00:10:56,370 --> 00:10:57,840
+如果它 crash 了 或是磁盘坏了
 crashes or it's disk dies or something
 
 245
 00:10:57,840 --> 00:11:00,870
+那就什么东西都留不下来了
 we're left with nothing and so in the
 
 246
 00:11:00,870 --> 00:11:02,520
+所以在现实世界中的分布式系统
 real world of distributed systems we
 
 247
 00:11:02,520 --> 00:11:05,430
+我们实际上都会构建一个复制系统
 actually build replicated systems so and
 
 248
 00:11:05,430 --> 00:11:06,930
+但是 当我们有了第二份数据副本时
 that's where all the problems start
 
 249
 00:11:06,930 --> 00:11:08,220
+但是 当我们有了第二份数据副本时
 leaking in is when we have a second
 
 250
 00:11:08,220 --> 00:11:12,060
-copying data so here is what must be
+这成为了所有问题的发源地
+copy data so here is what must be
 
 251
 00:11:12,060 --> 00:11:16,180
+这里有一个最糟糕的副本设计方案
 close to the worst replication design
 
 252
 00:11:16,180 --> 00:11:19,220
+我写这个是为了警告你
 and I'm doing this to warn you of the
 
 253
 00:11:19,220 --> 00:11:20,810
+这个问题在 GFS 中你也会发现
 problems that we will then be looking
 
 254
 00:11:20,810 --> 00:11:23,960
+好 这里应该写 bad replication design
 for in GFS all right so here's a bad
 
 255
 00:11:23,960 --> 00:11:30,380
+假设现在我们有 2 台 server
 replication design we're gonna have two
 
 256
 00:11:30,380 --> 00:11:32,630
+每台都有一份完整的数据副本
 servers now each with a complete copy of
 
 257
 00:11:32,630 --> 00:11:38,510
+然后在磁盘上 他们都有这样一个 key-value 表格
 the data and so on disks that are both
 
 258
 00:11:38,510 --> 00:11:40,730
+然后在磁盘上 他们都有这样一个 key-value 表格
 gonna have this this table of keys and
 
 259
 00:11:40,730 --> 00:11:44,810
+直观上 当然了 我们希望让这两张表完全一致
 values the intuition of course is that
 
 260
 00:11:44,810 --> 00:11:47,090
+直观上 当然了 我们希望让这两张表完全一致
 we want to keep these tables we hope to
 
 261
 00:11:47,090 --> 00:11:49,880
+直观上 当然了 我们希望让这两张表完全一致
 keep these tables identical so that if
 
 262
 00:11:49,880 --> 00:11:51,650
+所以 如果其中一台 server 失败了
 one server fails we can read or write
 
 263
 00:11:51,650 --> 00:11:53,720
+我们可以读写另一台服务器
 from the other server and so that means
 
 264
 00:11:53,720 --> 00:11:55,490
+这意味着 每一个写操作都必须在所有的 server 处理
 that somehow every write must be
 
 265
 00:11:55,490 --> 00:11:59,210
+这意味着 每一个写操作都必须在所有的 server 处理
 processed by both servers and reads have
 
 266
 00:11:59,210 --> 00:12:00,890
+另外 read 只能在单台 server 处理 否则就无法容错了
 to be able to be processed by a single
 
 267
 00:12:00,890 --> 00:12:02,570
+另外 read 只能在单台 server 处理 否则就无法容错了
 server otherwise it's not fault tolerant
 
 268
 00:12:02,570 --> 00:12:04,280
+因为 如果 read 必须同时和 2 台服务器打交道
 all right if reads have to consult both
 
 269
 00:12:04,280 --> 00:12:07,940
+就无法在失去其中一台 server 的情况下幸免
 and we can't survive the loss of one of
 
 270
 00:12:07,940 --> 00:12:13,160
+所以问题就来了
 the servers okay so the problem is gonna
 
 271
 00:12:13,160 --> 00:12:17,030
+假设客户端 C1 和 C2 同时想执行这些写操作
 come up well I suppose we have client 1
 
 272
 00:12:17,030 --> 00:12:19,190
+假设客户端 C1 和 C2 同时想执行这些写操作
 and client 2 and they both want to do
 
 273
 00:12:19,190 --> 00:12:20,570
+其中一个写 1 另一个写 2
 these write say one of them gonna write
 
 274
 00:12:20,570 --> 00:12:22,250
+其中一个写 1 另一个写 2
 one and the other is going to write two
 
 275
 00:12:22,250 --> 00:12:25,790
+所以客户端 C1 需要将请求 Wx1 发送给两台服务器
 so client 1 is gonna launch it's write
 
 276
 00:12:25,790 --> 00:12:29,270
-x1 2 both because we want to update both
+因为我们就是想更新这 2 台 server
+x1 to both because we want to update both
 
 277
 00:12:29,270 --> 00:12:32,600
+客户端 C2 将请求 Wx2 发给这 2 台 server
 of them and clent 2 is gonna launch it's
 
 278
 00:12:32,600 --> 00:12:41,800
+所以这里就导致出错了
 write X so what's gonna go wrong here
 
 279
 00:12:41,800 --> 00:12:46,280
+(提问) 是的 我们没有做任何事情来保障
 yeah yeah we haven't done anything here
 
 280
 00:12:46,280 --> 00:12:48,410
+2 台 server 以相同的顺序处理这 2 个请求
 to ensure that the two servers process
 
 281
 00:12:48,410 --> 00:12:51,590
+2 台 server 以相同的顺序处理这 2 个请求
 the two requests in the same order right
 
 282
 00:12:51,590 --> 00:12:53,930
+这个设计真的不怎么样
 that's a bad design
 
 283
 00:12:53,930 --> 00:12:57,800
+如果 S1 先处理 C1 的请求
 so if server 1 processes client ones
 
 284
 00:12:57,800 --> 00:13:01,100
+处理结束后这里这个值变成 1
 request first it'll end up it'll start
 
 285
 00:13:01,100 --> 00:13:02,600
+处理结束后这里这个值变成 1
 with a value of 1 and then it'll see
 
 286
 00:13:02,600 --> 00:13:04,610
+接下来 C2 请求过来 覆盖了这个值变成了 2
 client twos request and overwrite that
 
 287
 00:13:04,610 --> 00:13:07,610
+如果 S2 在接收网络报文的时候
 with 2 if server 2 just happens to
 
 288
 00:13:07,610 --> 00:13:09,350
+刚好是不同的顺序 先收到 C2 的请求先把值设置成 2
 receive the packets over the network in
 
 289
 00:13:09,350 --> 00:13:11,020
+刚好是不同的顺序 先收到 C2 的请求先把值设置成 2
 a different order it's going to execute
 
 290
 00:13:11,020 --> 00:13:13,310
+刚好是不同的顺序 先收到 C2 的请求先把值设置成 2
 client 2's requests and set the value to
 
 291
 00:13:13,310 --> 00:13:15,350
+然后收到 C1 的请求 把值设置成了 1
 2 and then then it will see client ones
 
 292
 00:13:15,350 --> 00:13:18,140
+然后收到 C1 的请求 把值设置成了 1
 request set the value to 1 and now what
 
 293
 00:13:18,140 --> 00:13:20,450
+那么现在 后来的客户端读取的话
 a client a later reading client sees you
 
 294
 00:13:20,450 --> 00:13:22,760
+你应该很清楚 如果碰巧 C3 请求了这台 server
 know if client 3 happens to reach from
 
 295
 00:13:22,760 --> 00:13:25,520
+你应该很清楚 如果碰巧 C3 请求了这台 server
 this server and client for happens to
 
 296
 00:13:25,520 --> 00:13:26,720
+而 C4 碰巧访问了另一台 server
 reach from the other server then we get
 
 297
 00:13:26,720 --> 00:13:28,610
+于是我们就陷入了一种可怕的场景
 into this terrible situation where
 
 298
 00:13:28,610 --> 00:13:30,320
+他们读取到的值不同
 they're gonna read different values even
 
 299
 00:13:30,320 --> 00:13:33,410
+尽管我们对正确服务的直观模型表明
 though our intuitive model of a correct
 
 300
 00:13:33,410 --> 00:13:35,990
+在随后的 2 次读他们都产生了相同的值
 service says they both subsequent reads
 
 301
 00:13:35,990 --> 00:13:39,589
+在随后的 2 次读他们都产生了相同的值
 have to yeild the same value and this can
 
 302
 00:13:39,589 --> 00:13:41,930
+这种问题仍然以另一种方式暴露出来
 arise in other ways you know suppose we
 
 303
 00:13:41,930 --> 00:13:43,579
+假设客户端尝试
 try to fix this by making the clients
 
 304
 00:13:43,579 --> 00:13:45,920
+只从 S1 或是 S2 读取来修复这个问题
 always read from server one if it's up
 
 305
 00:13:45,920 --> 00:13:48,829
+只从 S1 或是 S2 读取来修复这个问题
 and otherwise server two if we do that
 
 306
 00:13:48,829 --> 00:13:51,350
-then if this situation happened and four
+如果我们这样做了 然后也发生了这种情况
+then if this situation happened and for
 
 307
 00:13:51,350 --> 00:13:53,089
-why oh yeah both everybody reads might
+过了一会儿 这 2 个客户端都去读这个 server
+a while，yeah both everybody reads might
 
 308
 00:13:53,089 --> 00:13:55,279
-see client might see value too but a
+这 2 个客户端或许都能看见值 2
+see client might see value two but a
 
 309
 00:13:55,279 --> 00:13:57,649
+但是 S1 突然宕机了
 server one suddenly fails then even
 
 310
 00:13:57,649 --> 00:14:00,290
-though there was no right suddenly the
+x 读取到的值从 2 变成了 1 尽管没有写操作 
+though there was no write suddenly the
 
 311
 00:14:00,290 --> 00:14:02,050
+x 读取到的值从 2 变成了 1 尽管没有写操作 
 value for X we'll switch from 2 to 1
 
 312
 00:14:02,050 --> 00:14:04,850
+因为 S1 宕机了 所有的客户端都会切换到 S2
 because if server 1 died it's all the
 
 313
 00:14:04,850 --> 00:14:07,130
-clients assistant server 2 no but just
+因为 S1 宕机了 所有的客户端都会切换到 S2
+clients will switch to server 2 not but just
 
 314
 00:14:07,130 --> 00:14:09,079
+不只是这种数据产生的离奇变化
 this mysterious change in the data that
 
 315
 00:14:09,079 --> 00:14:11,570
-doesn't correspond to any right which is
+它不和任何写对应
+doesn't correspond to any write which is
 
 316
 00:14:11,570 --> 00:14:13,190
+这种事情完全不应该在服务中发生
 also totally not something that could
 
 317
 00:14:13,190 --> 00:14:15,680
+这种事情完全不应该在这种简单的服务模型中发生
 have happened in this service simple
 
 318
 00:14:15,680 --> 00:14:23,329
+这种事情完全不应该在这种简单的服务模型中发生
 server model all right so of course this
 
 319
 00:14:23,329 --> 00:14:25,940
+当然了 这个问题可以被修复
 can be fixed the fix requires more
 
 320
 00:14:25,940 --> 00:14:28,220
+修复它需要 server 之间进行更多的通信
 communication usually between the
 
 321
 00:14:28,220 --> 00:14:33,529
+某些地方也会变得更加复杂
 servers or somewhere more complexity and
 
 322
 00:14:33,529 --> 00:14:36,649
+因为想获得强一致性 不可避免的需要更多开销
 because of the cost of inevitable cost
 
 323
 00:14:36,649 --> 00:14:37,820
+因为想获得强一致性 不可避免的需要更多开销
 to the complexity to get strong
 
 324
 00:14:37,820 --> 00:14:41,180
+有大量的解决方案可以获得更好的一致性
 consistency there's a whole range of
 
 325
 00:14:41,180 --> 00:14:43,610
+有大量的解决方案可以获得更好的一致性
 different solutions to get better
 
 326
 00:14:43,610 --> 00:14:45,769
+也有大量解决方案可以获得让人感觉还能接受的一致性
 consistency and a whole range of what
 
 327
 00:14:45,769 --> 00:14:48,350
+也有大量解决方案可以获得让人感觉还能接受的一致性
 people feel is an acceptable level of
 
 328
 00:14:48,350 --> 00:14:52,250
+也有大量解决方案可以获得让人感觉还能接受的一致性
 consistency in an acceptable sort of a
 
 329
 00:14:52,250 --> 00:14:54,890
+就算出现一些小瑕疵也还能接受
 set of anomalous behaviors that might be
 
 330
 00:14:54,890 --> 00:14:57,560
+好 关于这个灾难性的模型 还有什么问题吗？
 revealed all right any questions about
 
 331
 00:14:57,560 --> 00:15:03,910
+好 关于这个灾难性的模型 还有什么问题吗？
 this disastrous model here
 
 332
 00:15:04,649 --> 00:15:07,779
+okay 这些就是关于 GFS 的讨论
 okay that's what you're talking about
 
 333
 00:15:07,779 --> 00:15:13,209
+一些关于实现 GFS 的思考 以及修复这些问题
 GFS a lot of thought about doing GFS was
 
 334
 00:15:13,209 --> 00:15:17,079
+一些关于实现 GFS 的思考 以及修复这些问题
 doing is fixing this they had better but
 
 335
 00:15:17,079 --> 00:15:21,790
+他们做的挺好 但是还不够完美
 not perfect behavior okay so where GFS
 
 336
 00:15:21,790 --> 00:15:24,179
+GFS 是在 2003 年提出的 已经过去相当长一段时间
 came from in 2003 quite a while ago
 
 337
 00:15:24,179 --> 00:15:27,730
+那时候 web 发展到相当规模了
 actually at that time the the web you
 
 338
 00:15:27,730 --> 00:15:29,379
+那时候 web 发展到相当规模了 人们也在建立大型网站
 know was certainly starting to be a very
 
 339
 00:15:29,379 --> 00:15:31,569
-big deal and people are building big
+那时候 web 发展到相当规模了 人们也在建立大型网站
+big deal and people were building big
 
 340
 00:15:31,569 --> 00:15:35,439
+此外 分布式系统领域也有了几十年的研究
 websites in addition there had been
 
 341
 00:15:35,439 --> 00:15:37,540
+此外 分布式系统领域也有了几十年的研究
 decades of research into distributed
 
 342
 00:15:37,540 --> 00:15:39,009
+人们知道至少在学术领域
 systems and people sort of knew at least
 
 343
 00:15:39,009 --> 00:15:40,509
+如何构建各种类型的 高度并行化的且具备容错的系统
 at the academic level how to build all
 
 344
 00:15:40,509 --> 00:15:43,119
+如何构建各种类型的 高度并行化的且具备容错的系统
 kinds of highly parallel fault tolerant
 
 345
 00:15:43,119 --> 00:15:44,739
+但是学术上的点子 很少有能应用在工业领域
 whatever systems but there been very
 
 346
 00:15:44,739 --> 00:15:49,589
+但是学术上的点子 很少有能应用在工业领域
 little use of academic ideas in industry
 
 347
