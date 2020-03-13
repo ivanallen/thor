@@ -3757,58 +3757,98 @@ client may not know how long the file is
 if lots of clients are appending the
 
 854
-00:41:00,329 --> 00:41:06,900
-因为我们有一些大文件，比如许多不同客户端的日志
-same file because we have some big file, this logging stuff from a lot of different clients may be, you know 
+00:41:00,329 --> 00:41:02,819
+因为我们有一些大文件
+same file because we have some big file
+
+855
+00:41:02,819 --> 00:41:04,950
+比如许多不同客户端的日志
+this logging stuff from a lot of
+
+856
+00:41:04,950 --> 00:41:06,900
+比如许多不同客户端的日志
+different clients may be you know 
 
 857
 00:41:06,900 --> 00:41:08,369
-client不知道文件有多长，因此也不知道偏移量或者应该附加到哪个块中
-no client will necessarily know how long the file is and therefore which offset or which chunk it should be appending to
+client不知道文件有多长
+no client will necessarily know how long
+
+858
+00:41:08,369 --> 00:41:10,380
+因此也不知道偏移量，或是应该附加到哪个块中
+the file is and therefore which offset
+
+859
+00:41:10,380 --> 00:41:12,270
+因此也不知道偏移量，或是应该附加到哪个块中
+or which chunk it should be appending to
 
 860
 00:41:12,270 --> 00:41:14,280
-你可以问master
-so you can ask the master 
+你可以问master，请告诉我
+so you can ask the master please tell me
 
 861
-00:41:14,280 --> 00:41:22,550
-请告诉我，包含当前该文件最后一块的服务器的信息
-please tell me about the the server's that hold the very last chunk, current chunk in this file
+00:41:14,280 --> 00:41:16,680
+包含当前该文件最后一块的服务器的信息
+about the the server's that hold the
+
+862
+00:41:16,680 --> 00:41:18,710
+包含当前该文件最后一块的服务器的信息
+very last chunk
+
+863
+00:41:18,710 --> 00:41:22,550
+包含当前该文件最后一块的服务器的信息
+current chunk in this file 
 
 864
 00:41:22,550 --> 00:41:26,040
-so unfortunately now, the writing 
+so unfortunately now the writing 
 
 865
 00:41:26,040 --> 00:41:27,569
 如果你在读取，你可以从任何最新副本中读取内容
-if you're reading, you can read from any up-to-date replica 
+if you're reading you can read from any up-to-date replica 
 
 866
 00:41:27,569 --> 00:41:30,060
 对于写的情况，需要有一个primary
-for writing though, there needs to be a primary 
+for writing though there needs
 
 867
-00:41:30,060 --> 00:41:37,710
-此时文件上的primary可能已经由master指定，也可能没有
-so at this point, the file may or may not have a primary already designated by the master
+00:41:30,060 --> 00:41:32,760
+此时文件上的primary
+to be a primary so at this point on the
+
+868
+00:41:32,760 --> 00:41:35,579
+可能已经由master指定
+file may or may not have a primary
+
+869
+00:41:35,579 --> 00:41:37,710
+也可能没有
+already designated by the master
 
 870
 00:41:37,710 --> 00:41:39,180
 所以我们需要考虑这个情况
-so we need to consider the case of
+so we need to consider the case of if there's
 
 871
 00:41:39,180 --> 00:41:40,980
 如果还没有primary
-if there's no primary already 
+no primary already and all the master
 
 872
 00:41:40,980 --> 00:41:49,560
 而且master所知道的，好吧，没有primary
-and all the master knows, well, there's no primary, so
+knows well there's no primary so 
 
 873
 00:41:49,560 --> 00:41:53,119
@@ -3816,227 +3856,450 @@ and all the master knows, well, there's no primary, so
 so one case is no primary
 
 874
-00:41:57,599 --> 00:42:06,339
-在这种情况下，master服务器需要找出具有最新块副本的chunk服务器集合
-in that case, the master needs to find out the set of chunk servers that have the most up-to-date copy of the chunk
+00:41:57,599 --> 00:42:00,099
+在这种情况下，master服务器需要
+in that case the master needs to find
+
+875
+00:42:00,099 --> 00:42:03,430
+找出具有最新块副本的chunk服务器集合
+out the set of chunk servers that have
+
+876
+00:42:03,430 --> 00:42:06,339
+找出具有最新块副本的chunk服务器集合
+the most up-to-date copy of the chunk
 
 877
-00:42:06,339 --> 00:42:10,660
+00:42:06,339 --> 00:42:08,470
 因为，如果你是否已经运行了该系统很长时间
-because, you know, if you've been running the system for a long time 
+because know if you've been running the
+
+878
+00:42:08,470 --> 00:42:10,660
+因为，如果你是否已经运行了该系统很长时间
+system for a long time due to failures
 
 879
 00:42:10,660 --> 00:42:11,800
 由于故障或其他原因
-due to failures or whatever 
+or whatever there may be chunk servers
 
 880
-00:42:11,800 --> 00:42:15,579
-可能有chunk服务器有旧的昨天或上周的副本
-there may be chunk servers out there that have old copies of the chunk from, you know, yesterday or last week 
+00:42:11,800 --> 00:42:14,290
+可能有的chunk服务器有旧的
+out there that have old copies of the
+
+881
+00:42:14,290 --> 00:42:15,579
+昨天或上周的副本
+chunk from you know yesterday or last
 
 882
 00:42:15,579 --> 00:42:17,950
-that I've been kept up to, kept up to date 
+week that I've been kept up to kept up
 
 883
-00:42:17,950 --> 00:42:21,819
-因为可能该服务器已挂了两天并且没有收到更新
-because maybe that server was dead for a couple days and wasn't receiving updates 
+00:42:17,950 --> 00:42:19,690
+因为可能该服务器已挂了两天
+to date because maybe that server was
+
+884
+00:42:19,690 --> 00:42:21,819
+dead for a couple days and wasn't
 
 885
-00:42:21,819 --> 00:42:27,190
-因此，你需要能够分辨出最新的数据块副本与非最新的副本之间的区别
-so there's you need to be able to tell the difference between up-to-date copies of the chunk and non up-to-date 
+00:42:21,819 --> 00:42:23,800
+并且没有收到更新
+receiving updates so there's you need to
+
+886
+00:42:23,800 --> 00:42:24,730
+因此，你需要能够分辨出
+be able to tell the difference between
+
+887
+00:42:24,730 --> 00:42:27,190
+最新的数据块副本与非最新的副本之间的区别
+up-to-date copies of the chunk and non up-to-date 
 
 888
-00:42:27,190 --> 00:42:37,510
-所以第一步是要找到，找到最新的
-so, the first step is to find, you know, find up-to-date 
+00:42:27,190 --> 00:42:33,569
+所以第一步是要找到
+so the first step is to find
+
+889
+00:42:33,569 --> 00:42:37,510
+找到最新的
+you know find up-to-date this is all
 
 890
 00:42:37,510 --> 00:42:41,319
 这一切都发生在master
-this is all happening in the master
+happening in the master because the
 
 891
-00:42:41,319 --> 00:42:44,260
-因为client请求master，告诉master我要附加此文件
-because the client has asked the master, told the master look I want to append this file
+00:42:41,319 --> 00:42:42,790
+因为client请求master
+client has asked the master told the
+
+892
+00:42:42,790 --> 00:42:44,260
+告诉master我要追加此文件
+master look I want up end of this file
 
 893
 00:42:44,260 --> 00:42:46,180
 请告诉我要与哪些块服务器对话
-please tell me what chunk servers to talk to
+please tell me what chunk service to talk to 
 
 894
-00:42:46,180 --> 00:42:50,680
-所以master服务器一部分试图弄清楚client端应该与哪些服务器通信
-so a part of the master trying to figure out what chunk servers the client should talk to
+00:42:46,180 --> 00:42:48,550
+所以master服务器一部分
+so a part of the master trying
+
+895
+00:42:48,550 --> 00:42:49,780
+试图弄清楚client端
+to figure out what chunk servers the
+
+896
+00:42:49,780 --> 00:42:50,680
+应该与哪些服务器通信
+client should talk to you
 
 897
 00:42:50,680 --> 00:42:52,950
 所以当我们最终找到最新的副本时
-so when we finally find up-to-date replicas 
+so when we finally find up-to-date
 
 898
-00:42:52,950 --> 00:43:06,730
-更新的意思是，一个副本，它的块版本等于master服务器知道的最新版本号
-and, what update means is a replica whose version of the chunk is equal to the version number that the master knows is the most up-to-date version number
+00:42:52,950 --> 00:42:59,770
+更新的意思是
+replicas and what update means is a
+
+899
+00:42:59,770 --> 00:43:02,260
+一个副本，它的块版本等于
+replica whose version of the chunk is
+
+900
+00:43:02,260 --> 00:43:04,720
+master服务器知道的最新版本号
+equal to the version number that the
+
+901
+00:43:04,720 --> 00:43:06,730
+master服务器知道的最新版本号
+master knows is the most up-to-date version number 
 
 902
-00:43:06,730 --> 00:43:10,630
-master服务器发出这些版本号
-so the master that hands out these version numbers
+00:43:06,730 --> 00:43:08,140
+master服务器
+it's the master that
+
+903
+00:43:08,140 --> 00:43:10,630
+发出这些版本号
+hands out these version numbers
 
 904
-00:43:10,630 --> 00:43:18,460
-master记得，哦，对于这个特定的块
-the master remembers, that oh, for this particular chunk, you know 
+00:43:10,630 --> 00:43:14,740
+master记得，哦
+the master remembers that oh for this
+
+905
+00:43:14,740 --> 00:43:18,460
+对于这个特定的块
+particular chunk you know the chunk
 
 906
-00:43:18,460 --> 00:43:23,550
-仅当主干服务器的版本号为17时，它才是最新的，这就是为什么它必须是非易失性的，存储在磁盘上的原因
-the chunk server is only up to date if it has version number 17 and this is why it has to be non-volatile stored on disk
+00:43:18,460 --> 00:43:19,569
+仅当主干服务器的版本号为17时
+server is only up to date if it has
+
+907
+00:43:19,569 --> 00:43:21,220
+它才是最新的
+version number 17 and this is why it has
+
+908
+00:43:21,220 --> 00:43:23,550
+这就是为什么它必须是非易失性的存储在磁盘上的原因
+to be non-volatile stored on disk
 
 909
-00:43:23,550 --> 00:43:31,000
-因为如果它在一次崩溃中丢失，并且有块服务器保存过时的块副本
-because if, if it was lost in a crash and there were chunk servers holding stale copies of chunks
+00:43:23,550 --> 00:43:26,560
+因为如果它在一次崩溃中丢失
+because if if it was lost in a crash and
+
+910
+00:43:26,560 --> 00:43:31,000
+并且有块服务器保存过时的块副本
+there were chunk servers holding stale
 
 911
-00:43:31,000 --> 00:43:36,819
-master服务器将无法区分持有上周旧数据块副本的服务器
-the master wouldn't be able to distinguish between chunk servers holding stale copies of a chunk from last week 
+00:43:31,000 --> 00:43:33,670
+master服务器
+copies of chunks the master wouldn't be
+
+912
+00:43:33,670 --> 00:43:35,140
+将无法区分
+able to distinguish between chunk
+
+913
+00:43:35,140 --> 00:43:36,819
+持有上周旧数据块副本的服务器
+servers holding stale copies of a chunk
 
 914
-00:43:36,819 --> 00:43:44,440
-和一个崩溃时保存了最新块副本的服务器
-and a chunk server that holds the copy of the chunk that was up-to-date as of the crash
+00:43:36,819 --> 00:43:39,310
+和一个崩溃时
+from last week and a chunk server that
+
+915
+00:43:39,310 --> 00:43:42,250
+保存了最新块副本的服务器
+holds the copy of the chunk that was
+
+916
+00:43:42,250 --> 00:43:44,440
+这就是为什么
+up-to-date as of the crash that's why
 
 917
-00:43:44,440 --> 00:43:49,470
-这就是为什么master服务器把版本号记在磁盘上的的原因
-that's why the master remembers the version number on disk, yeah
+00:43:44,440 --> 00:43:46,660
+master服务器把版本号记在磁盘上的的原因
+the master remembers the version number on disk 
+
+918
+00:43:46,660 --> 00:43:49,470
+yeah
 
 919
-00:43:54,450 --> 00:43:59,970
+00:43:54,450 --> 00:43:56,859
 如果你正在与所有块服务器通信
-if, you know, you were talking to all the chunk servers 
+if you knew you were talking to all the
+
+920
+00:43:56,859 --> 00:43:59,970
+观察是
+chunk servers okay so the observation is
 
 921
-00:43:59,970 --> 00:44:06,280
-这个观察结果是，如果master重启，master服务器无论如何都要与块服务器进行通信，为了找到哪个块服务器持有哪个块
-so the observation is, the master has to talk to the chunk servers anyway if it reboots in order to find which chunk server holds which chunk 
+00:43:59,970 --> 00:44:02,260
+如果master重启
+the master has to talk to the chunk
+
+922
+00:44:02,260 --> 00:44:04,660
+master服务器无论如何都要与块服务器进行通信
+servers anyway if it reboots in order to
+
+923
+00:44:04,660 --> 00:44:06,280
+为了找到哪个块服务器持有哪个块
+find which chunk server holds which chunk 
 
 924
 00:44:06,280 --> 00:44:08,890
 因为master不记得那些信息了
-because the master doesn't remember that 
+because the master doesn't
 
 925
 00:44:08,890 --> 00:44:12,150
-你可能会认为
-so you might think that
+你可能会想
+remember that so you might think that
 
 926
 00:44:12,150 --> 00:44:14,380
 你可以取最大的值
-you could just take the maximum 
+you could just take the maximum you
 
 927
-00:44:14,380 --> 00:44:17,079
-你可以和块服务器对话，找出他们拥有哪些块和版本
-you could just talk to the chunk servers find out what chunks and versions they hold 
+00:44:14,380 --> 00:44:15,579
+你可以和块服务器对话
+could just talk to the chunk servers
+
+928
+00:44:15,579 --> 00:44:17,079
+找出他们拥有哪些块和版本
+find out what trunks and versions they
 
 929
-00:44:17,079 --> 00:44:20,619
+00:44:17,079 --> 00:44:19,000
 并在响应的块服务器中获取最大值
-and take the maximum for a given chunk overall the responding chunk servers
+hold and take the maximum for a given
+
+930
+00:44:19,000 --> 00:44:20,619
+并在响应的块服务器中获取最大值
+chunk overall the responding chunk
 
 931
-00:44:20,619 --> 00:44:24,579
-如果所有持有块的块服务器都响应，那会是有效的
-and that would work if all the chunk servers holding a chunk responded
+00:44:20,619 --> 00:44:22,750
+如果所有持有块的块服务器都响应
+servers and that would work if all the
+
+932
+00:44:22,750 --> 00:44:24,579
+那会是有效的
+chunk servers holding a chunk responded
 
 933
-00:44:24,579 --> 00:44:28,480
+00:44:24,579 --> 00:44:26,920
 但风险是，主机重启时
-but the risk is that at the time the master reboots 
+but the risk is that at the time the
+
+934
+00:44:26,920 --> 00:44:28,480
+也许一些块服务器
+master reboots maybe some of the chunk
 
 935
 00:44:28,480 --> 00:44:30,400
-也许一些块服务器离线或断开连接
-maybe some of the chunk servers are offline or disconnected 
+离线或断开连接
+servers are offline or disconnected or
 
 936
 00:44:30,400 --> 00:44:32,770
 或无论什么原因，他们自己重新启动并且不响应
-or whatever themselves rebooting and don't respond
+whatever themselves rebooting and don't respond
 
 937
-00:44:32,770 --> 00:44:40,119
-因此，主服务器拿到的都是来自具有上周旧的块副本的服务器的响应
-and so all the master gets back is responses from chunk servers that have last week's copies of the block 
+00:44:32,770 --> 00:44:35,349
+因此，主服务器拿到的
+and so all the master gets back
+
+938
+00:44:35,349 --> 00:44:38,200
+都是来自具有上周旧的块副本的服务器的响应
+is responses from chunk servers that
+
+939
+00:44:38,200 --> 00:44:40,119
+都是来自具有上周旧的块副本的服务器的响应
+have last week's copies of the block and
 
 940
-00:44:40,119 --> 00:44:44,320
-而具有当前副本的块服务器尚未完成开机或是离线状态或是别的情况
-and the chunk servers that have the current copy haven't finished rebooting or offline or something
+00:44:40,119 --> 00:44:42,460
+而具有当前副本的块服务器
+the chunk servers that have the current
+
+941
+00:44:42,460 --> 00:44:44,320
+尚未完成开机
+copy haven't finished rebooting or
 
 942
 00:44:44,320 --> 00:44:54,940
-so, ok oh yes, if 
+或是离线状态或是别的情况
+offline or something so ok oh yes if 
 
 943
-00:44:54,940 --> 00:44:59,859
-如果服务器保存的最新副本永久失效
-if the server's holding the most recent copy are permanently dead 
+00:44:54,940 --> 00:44:56,619
+如果服务器保存的最新副本
+if the server's holding the most recent
+
+944
+00:44:56,619 --> 00:44:59,859
+永久失效，如果你已经
+copy are permanently dead if you've lost
 
 945
-00:44:59,859 --> 00:45:06,540
-如果你已经丢失了所有副本，所有所有最新版本，那么是的
-if you've lost all copies all of the most recent version of a chunk, then yes
+00:44:59,859 --> 00:45:02,980
+丢失了所有副本，所有最新版本，那么是的
+all copies all of the most recent
+
+946
+00:45:02,980 --> 00:45:06,540
+丢失了所有副本，所有最新版本，那么是的
+version of a chunk then yes
 
 947
 00:45:09,030 --> 00:45:11,130
-不
 No
 
 948
 00:45:11,130 --> 00:45:15,339
-好吧，问题说的是
-okay so the question is 
+好吧，问题说的是，master知道
+okay so the question is the master knows
 
 949
-00:45:15,339 --> 00:45:18,550
-master知道对于这个块寻找版本17
-the master knows that for this chunk is looking for version 17
+00:45:15,339 --> 00:45:17,560
+对于这个块寻找版本17
+that for this chunk is looking for
+
+950
+00:45:17,560 --> 00:45:18,550
+对于这个块寻找版本17
+version 17
 
 951
 00:45:18,550 --> 00:45:21,579
 假设它找不到块服务器
-supposing it finds no chunk server, you know
+supposing it finds no chunk server you
 
 952
-00:45:21,579 --> 00:45:25,780
-master定期与块服务器进行对话，以询问他们拥有哪些块，拥有什么版本
-and it talks to the chunk servers periodically to sort of ask them what chunks do you have, what versions you have 
+00:45:21,579 --> 00:45:22,690
+master定期与块服务器进行对话
+know and it talks to the chunk servers
+
+953
+00:45:22,690 --> 00:45:24,430
+以询问他们
+periodically to sort of ask them what
+
+954
+00:45:24,430 --> 00:45:25,780
+拥有哪些块，拥有什么版本
+chunks do you have what versions you have 
 
 955
-00:45:25,780 --> 00:45:30,369
-假设它没有块找到版本为17的块的服务器
-supposing it finds no server with chunk 17 with version 17 for this, for this chunk 
+00:45:25,780 --> 00:45:27,520
+假设它没有块找到
+supposing it finds no server with
+
+956
+00:45:27,520 --> 00:45:30,369
+版本为17的块的服务器
+chunk 17 with version 17 for this this
 
 957
-00:45:30,369 --> 00:45:42,880
-master要么先不回复并等待，要么告诉client，我无法回答，请稍后再试
-then the master will either say will either not respond yet and wait or it will tell the client, look, I can't answer that, try again later 
+00:45:30,369 --> 00:45:32,800
+master要么先不回复并等待
+chunk then the master will either say
+
+958
+00:45:32,800 --> 00:45:35,710
+master要么先不回复并等待
+well either not respond yet and wait or
+
+959
+00:45:35,710 --> 00:45:39,790
+要么告诉client，我无法回答，请稍后再试
+it will tell the client look I can't
+
+960
+00:45:39,790 --> 00:45:42,880
+要么告诉client，我无法回答，请稍后再试
+answer that try again later and this
 
 961
-00:45:42,880 --> 00:45:47,079
-就像建筑物中的电源故障并且所有服务器都崩溃了一样，我们正在缓慢地重新启动
-and this would come up, like there was a power failure in the building and all the server's crashed and we're slowly rebooting 
+00:45:42,880 --> 00:45:44,530
+就像建筑物中的电源故障
+would come up like there was a power
+
+962
+00:45:44,530 --> 00:45:45,849
+就像建筑物中的电源故障
+failure in the building and all the
+
+963
+00:45:45,849 --> 00:45:47,079
+所有服务器都崩溃了，我们正在缓慢地重新启动
+server's crashed and we're slowly rebooting 
 
 964
 00:45:47,079 --> 00:45:49,510
@@ -4044,104 +4307,209 @@ master可能先启动完成
 the master might come up first
 
 965
-00:45:49,510 --> 00:45:53,079
-部分块服务器可能已启动
-and you know, some fraction of the chunk servers might be up 
+00:45:49,510 --> 00:45:51,430
+一些块服务器可能已启动
+and you know some fraction of the chunk
+
+966
+00:45:51,430 --> 00:45:53,079
+其他的会从现在起五分钟后重启
+servers might be up and other ones would
 
 967
 00:45:53,079 --> 00:45:57,609
 其他的会从现在起五分钟后重启
-and other ones would reboot five minutes from now but
+reboot five minutes from now but 
 
 968
 00:45:57,609 --> 00:45:59,890
 所以我们必须准备等待
-so we have to be prepared to wait 
+so we have to be prepared to wait and 
 
 969
-00:45:59,890 --> 00:46:05,440
-它将永远等待，因为你不想使用该块的陈旧版本
-and it will wait forever because you don't want to use a stale version of that, of a chunk
+00:45:59,890 --> 00:46:02,290
+它将永远等待，因为
+it will wait forever because you don't want to
+
+970
+00:46:02,290 --> 00:46:05,440
+你不想使用该块的陈旧版本
+use a stale version of that of a chunk
 
 971
-00:46:05,440 --> 00:46:12,910
-master服务器需要整合具有最新版本的块服务器列表
-okay so, the master needs to assemble the list of chunk servers that have the most recent version 
+00:46:05,440 --> 00:46:09,190
+master服务器需要
+okay so the master needs to assemble the
+
+972
+00:46:09,190 --> 00:46:10,540
+整合具有最新版本的块服务器列表
+list of chunk servers that have the most
+
+973
+00:46:10,540 --> 00:46:12,910
+master服务器知道
+recent version the master knows the most
 
 974
 00:46:12,910 --> 00:46:14,619
-master服务器知道磁盘上存储的最新版本
-the master knows the most recent versions stored on disk
+磁盘上存储的最新版本
+recent versions stored on disk each
 
 975
-00:46:14,619 --> 00:46:19,810
-正如你所指出的，每个块服务器以及每个块也记得它存储的块的版本号
-each chunk server along with each chunk as you pointed out, also remembers the version number of the chunk that it's stores 
+00:46:14,619 --> 00:46:16,540
+正如你所指出的
+chunk server along with each chunk as
+
+976
+00:46:16,540 --> 00:46:18,280
+每个块服务器以及每个块
+you pointed out also remembers the
+
+977
+00:46:18,280 --> 00:46:19,810
+也记得它存储的块的版本号
+version number of the chunk that it's stores 
 
 978
-00:46:19,810 --> 00:46:25,690
-这样，当块服务器向master服务器报告说，看，我有这个块
-so that when chunk servers reported into the master saying look, I have this chunk 
+00:46:19,810 --> 00:46:22,540
+这样，当块服务器
+so that when chunk servers
+
+979
+00:46:22,540 --> 00:46:23,859
+向master服务器报告说，看，我有这个块
+reported into the master saying look I
+
+980
+00:46:23,859 --> 00:46:25,690
+master服务器可以
+have this chunk the master can ignore
 
 981
-00:46:25,690 --> 00:46:30,339
-master服务器可以忽略那些版本与master知道的最新版本不匹配的
-the master can ignore the ones whose version does not match the version the master knows is the most recent
+00:46:25,690 --> 00:46:27,760
+忽略那些版本与master知道的最新版本不匹配的
+the ones whose version does not match
+
+982
+00:46:27,760 --> 00:46:30,339
+忽略那些版本与master知道的最新版本不匹配的
+the version the master knows is the most recent 
 
 983
-00:46:30,339 --> 00:46:36,670
-记得我们client想要追加，master服务器没有primary
-okay so, remember we were the client want to append, the master doesn't have a primary 
+00:46:30,339 --> 00:46:34,869
+记得我们client想要追加
+okay so remember we were the
+
+984
+00:46:34,869 --> 00:46:36,670
+master服务器没有primary
+client want to append the master doesn't
 
 985
-00:46:36,670 --> 00:46:49,020
-master意识到，你可能需要等待具有该块最新版本的服务器集合，它选择一个作为primary服务器
-it figures out maybe you have to wait for the set of chunk servers that have the most recent version of that chunk, it picks a primary
+00:46:36,670 --> 00:46:39,579
+master意识到
+have a primary it figures out maybe you
+
+986
+00:46:39,579 --> 00:46:42,310
+你可能需要等待具有该块最新版本的服务器集合
+have to wait for the set of chunk
+
+987
+00:46:42,310 --> 00:46:43,960
+你可能需要等待具有该块最新版本的服务器集合
+servers that have the most recent
+
+988
+00:46:43,960 --> 00:46:49,020
+它选择一个作为primary服务器
+version of that chunk it picks a primary
 
 989
-00:46:50,040 --> 00:47:02,140
-所以我要在最新版本的副本中，选择其中一个作为primary服务器，将其他作为secondary服务器
-so I'm gonna pick one of them to be the primary and the others to be secondary servers among the replicas set at the most recent version
+00:46:50,040 --> 00:46:52,930
+所以我要在最新版本的副本中
+so I'm gonna pick one of them to be the
+
+990
+00:46:52,930 --> 00:46:56,859
+选择其中一个作为primary服务器
+primary and the others to be secondary servers
+
+992
+00:46:56,859 --> 00:46:58,210
+将其他作为secondary服务器
+among the replicas set at the most
+
+993
+00:46:58,210 --> 00:47:02,140
+然后master
+recent version the master then
 
 994
 00:47:02,140 --> 00:47:11,170
-然后master将版本号递增，并将其写入磁盘
-the master then increments the version number and writes that to disk 
+将版本号递增，并将其写入磁盘
+increments the version number and writes that to
 
 996
 00:47:11,170 --> 00:47:13,600
 所以崩溃时，它不会忘记（版本号）
-so it doesn't forget it the crashes
+disk so it doesn't forget it the crashes
 
 997
 00:47:13,600 --> 00:47:15,970
 然后它发送给primary和secondary
-and then it sends the primary and secondaries
+and then it sends the primary and
 
 998
-00:47:15,970 --> 00:47:22,840
-每个都有一个消息说，对于这个块，这是primary这是secondary
-and that's each of them a message saying look, for this chunk here's the primary here's the secondaries 
+00:47:15,970 --> 00:47:18,700
+每个都有一个消息说
+secondaries and that's each of them a
+
+999
+00:47:18,700 --> 00:47:20,710
+对于这个块
+message saying look for this chunk
+
+1000
+00:47:20,710 --> 00:47:22,840
+这是primary这是secondary
+here's the primary here's the
 
 1001
-00:47:22,840 --> 00:47:28,450
-收件人可能是其中之一，消息说对于这个块，这是新版本号
-you know, recipient maybe one of them and here's the new version number
+00:47:22,840 --> 00:47:26,650
+收件人可能是其中之一
+secondaries you know recipient maybe one
+
+1002
+00:47:26,650 --> 00:47:28,450
+消息里说，对于这个块，这是新版本号
+of them and here's the new version
 
 1003
-00:47:28,450 --> 00:47:39,490
+00:47:28,450 --> 00:47:32,170
 然后它会告诉primary，secondary此信息以及版本号
-so then it tells primary secondaries this information plus the version number 
+number so then it tells primary
 
-1006
-00:47:39,490 --> 00:47:41,920
-primary节点和secondary节点都将版本号写入磁盘
-the primaries and secondaries all write the version number to disk
+1004
+00:47:32,170 --> 00:47:37,060
+此信息以及版本号
+secondaries this information plus the
+
+1005
+00:47:37,060 --> 00:47:39,970
+primary节点和secondary节点
+version number the primaries and secondaries
+
+1007
+00:47:39,970 --> 00:47:41,920
+都将版本号写入磁盘
+all write the version number to disk 
 
 1008
 00:47:41,920 --> 00:47:43,780
 他们不会忘记，因为
-so they don't forget because, you know 
+so they don't forget because you know 
 
 1009
 00:47:43,780 --> 00:47:45,040
@@ -4149,9 +4517,14 @@ so they don't forget because, you know
 if there's a power failure or whatever 
 
 1010
-00:47:45,040 --> 00:47:51,210
-他们必须用他们持有的版本号向master服务器报告
-they have to report in to the master with the actual version number they hold, yes
+00:47:45,040 --> 00:47:47,140
+他们必须用他们持有的版本号
+they have to report in to the master with the
+
+1011
+00:47:47,140 --> 00:47:51,210
+向master服务器报告
+actual version number they hold yes
 
 1012
 00:48:04,230 --> 00:48:06,190
@@ -4160,73 +4533,127 @@ that's a great question
 
 1013
 00:48:06,190 --> 00:48:08,500
-我不知道
-so I don't know 
+我不知道，文章中有个暗示
+so I don't know there's hints in the
 
 1014
 00:48:08,500 --> 00:48:11,170
-文章中有个暗示 我对此略有错误
-there's hints in the paper that I'm slightly wrong about this
+我对此略有错误
+paper that I'm slightly wrong about this
 
 1015
-00:48:11,170 --> 00:48:16,030
-我认为你的问题向我解释了有关论文的一些事情
-so the paper says, I think your question was explaining something to me about the paper 
+00:48:11,170 --> 00:48:14,740
+我认为你的问题
+so the paper says I think your question
+
+1016
+00:48:14,740 --> 00:48:16,030
+向我解释了有关论文的一些事情
+was explaining something to me about the
 
 1017
-00:48:16,030 --> 00:48:22,480
-该论文说，如果master服务器重启并与块服务器进行对话
-the paper says, if the master reboots and talks to chunk servers
+00:48:16,030 --> 00:48:18,310
+该论文说
+paper the paper says if the master
+
+1018
+00:48:18,310 --> 00:48:22,480
+如果master服务器重启并与块服务器进行对话
+reboots and talks to chunk servers and
 
 1019
-00:48:22,480 --> 00:48:28,540
-并且其中一个块服务器重启时报告的版本号高于master服务器记住的版本号
-and one of the chunk servers reports a version number that's higher than the version number the master remembers
+00:48:22,480 --> 00:48:24,220
+并且其中一个块服务器重启时报告的版本号
+one of the chunk servers reboot reports
+
+1020
+00:48:24,220 --> 00:48:26,530
+高于master服务器记住的版本号
+a version number that's higher than the
+
+1021
+00:48:26,530 --> 00:48:28,540
+高于master服务器记住的版本号
+version number the master remembers the
 
 1022
-00:48:28,540 --> 00:48:38,860
-master服务器假设，当它分配新的primary并采用新的从块服务器获得的更高版本号时，发生了故障
-the master assumes that there was a failure while it was assigning a new primary and adopts the higher version number that it heard from a chunk server 
+00:48:28,540 --> 00:48:31,600
+master服务器假设
+master assumes that there was a failure
+
+1023
+00:48:31,600 --> 00:48:34,600
+当它分配新的primary，
+while it was assigning a new primary and
+
+1024
+00:48:34,600 --> 00:48:36,760
+并采用新的从块服务器获得的更高版本号时
+adopts the new the higher version number
+
+1025
+00:48:36,760 --> 00:48:38,860
+发生了故障
+that it heard from a chunk server 
 
 1026
 00:48:38,860 --> 00:48:42,250
 所以一定是这样
-so it must be the case that 
+so it must be the case that in order to handle
 
 1027
 00:48:42,250 --> 00:48:48,010
 为了处理此时的master服务器崩溃
-in order to handle a master crash at this point, that 
+a master crash at this point that 
 
 1028
-00:48:48,010 --> 00:49:02,530
-master服务器在告诉了primary节点后版本号之后，将自己的版本号写入磁盘
-the master writes its own version number to disk after telling the primaries 
+00:48:48,010 --> 00:48:55,869
+master服务器在告诉了primary节点后版本号之后
+the master writes its own version number to
+
+1029
+00:48:55,869 --> 00:49:02,530
+将自己的版本号写入磁盘
+disk after telling the primaries there's
 
 1030
 00:49:02,530 --> 00:49:03,550
-但是这里有一个问题，
-there's a bit of a problem here though because if the
+但是这里有一个问题
+a bit of a problem here though because
 
 1031
 00:49:03,550 --> 00:49:11,880
 什么 是不是有ACK
-what is that, is there an ACK
+if the was that is there an ACK
 
 1032
-00:49:12,410 --> 00:49:20,400
-好吧，所以master服务器可以告诉它们的primary节点和secondary节点
-all right, so maybe the master tells the primaries and backups, their primaries and secondaries 
+00:49:12,410 --> 00:49:17,250
+好吧，所以master服务器可能
+all right so maybe the master tells the
+
+1033
+00:49:17,250 --> 00:49:18,810
+告诉primary节点和secondary节点
+primaries and backups and that their
+
+1034
+00:49:18,810 --> 00:49:20,400
+告诉primary节点和secondary节点
+primaries and secondaries if they're a
 
 1035
 00:49:20,400 --> 00:49:21,720
-如果告诉primary, secondary新版本号
-if their primary secondary, tells them the new version number
+primary secondary tells him the new
 
 1036
-00:49:21,720 --> 00:49:27,870
-等待ACK，然后写入磁盘，或对此不满意的操作
-waits for the ACK and then writes to disk or something unsatisfying about this 
+00:49:21,720 --> 00:49:24,450
+等待ACK
+version number waits for the AK and then
+
+1037
+00:49:24,450 --> 00:49:27,870
+然后写入磁盘，或对此不满意的操作
+writes to disk or something unsatisfying about this 
 
 1038
 00:49:27,870 --> 00:49:37,770
@@ -4234,483 +4661,878 @@ waits for the ACK and then writes to disk or something unsatisfying about this
 I don't believe that works
 
 1039
-00:49:37,770 --> 00:49:46,650
-因为master服务器重启时，具有最新版本号的块服务器可能是离线的
-because of the possibility that the chunk servers with the most recent version numbers being offline at the time the master reboots 
+00:49:37,770 --> 00:49:40,380
+因为存在这种可能性
+because of the possibility that the
+
+1040
+00:49:40,380 --> 00:49:41,940
+master服务器重启时
+chunk servers with the most recent
+
+1041
+00:49:41,940 --> 00:49:44,190
+具有最新版本号的块服务器
+version numbers being offline at the
+
+1042
+00:49:44,190 --> 00:49:46,650
+可能是离线的，我们不希望
+time the master reboots we wouldn't want
 
 1043
-00:49:46,650 --> 00:49:50,610
+00:49:46,650 --> 00:49:48,360
 master服务器不知道当前版本号
-we wouldn't want the master, the master doesn't know the current version number 
+the master the master doesn't know the
+
+1044
+00:49:48,360 --> 00:49:50,610
+master服务器不知道当前版本号
+current version number it'll just accept
 
 1045
-00:49:50,610 --> 00:49:54,300
-它只会接受最高的版本号，这可能是旧版本号
-it'll just accept whatever highest version number here which could be an old version number 
+00:49:50,610 --> 00:49:51,960
+它只会接受最高的版本号
+whatever highest version number here
+
+1046
+00:49:51,960 --> 00:49:54,300
+这可能是旧版本号
+which could be an old version number 
 
 1047
 00:49:54,300 --> 00:49:57,000
 好吧，这是我无知的一个领域
-all right, so, this is a, an area of my ignorance
+alright so this is a an area of my
 
 1048
-00:49:57,000 --> 00:50:03,600
-我不太明白，master服务器是否首先更新其自己的版本号，然后告诉primary和secondary服务器，或是其他方式
-I don't really understand whether the master update its own version number on this first and then tells the primary secondary or the other way around 
+00:49:57,000 --> 00:49:58,260
+我不太明白
+ignorance I don't really understand
+
+1049
+00:49:58,260 --> 00:50:00,570
+master服务器是否首先更新其自己的版本号
+whether the master update system version
+
+1050
+00:50:00,570 --> 00:50:01,800
+然后告诉primary和secondary服务器
+number on this first and then tells the
+
+1051
+00:50:01,800 --> 00:50:03,600
+或是其他方式
+primary secondary or the other way around 
 
 1052
 00:50:03,600 --> 00:50:06,360
 我不确定它采用哪种方式
-and I'm not sure it works either way 
+and I'm not sure it works either
 
 1053
 00:50:06,360 --> 00:50:11,340
 但无论如何，某种方式
-okay, but in any case, one way or another 
+way okay but in any case one way or another 
 
 1054
-00:50:11,340 --> 00:50:14,340
-主机更新其版本号，告诉primary, secondary说
-the master update its version number tells the primary secondary 
+00:50:11,340 --> 00:50:12,810
+主机更新其版本号
+the master update is version
+
+1055
+00:50:12,810 --> 00:50:14,340
+告诉primary, secondary说，看
+number tells the primary secondary look
 
 1056
 00:50:14,340 --> 00:50:16,140
-你的primary和secondary，这里是一个新版本号
-look, your primaries and secondaries, here's a new version number
+你的primary和secondary
+your primaries and secondaries here's a
 
 1057
-00:50:16,140 --> 00:50:19,410
+00:50:16,140 --> 00:50:17,700
+这里是一个新版本号
+new version number and so now we have a
+
+1058
+00:50:17,700 --> 00:50:19,410
 现在我们有了一个可以接受写入的primary
-and so now we have a primary which is able to accept writes
+primary which is able to accept writes
 
 1059
-00:50:19,410 --> 00:50:35,130
-这就是primary的工作，是从客户端获取写入，并组织将这些写入执行于各个块服务器
-that's what the primaries job is to take writes from clients and organize applying those writes to the various chunk servers 
+00:50:19,410 --> 00:50:21,480
+这就是primary的工作
+alright that's what the primaries job
+
+1060
+00:50:21,480 --> 00:50:23,730
+是从客户端获取写入
+is to take writes from clients and
+
+1061
+00:50:23,730 --> 00:50:26,760
+并组织将这些写入执行于各个块服务器
+organize applying those writes to the
+
+1062
+00:50:26,760 --> 00:50:35,130
+并组织将这些写入执行于各个块服务器
+various chunk servers and you know the
 
 1063
 00:50:35,130 --> 00:50:36,450
 版本号的目的是
-and you know, the reason for the version number stuff is
+reason for the version number stuff is
 
 1064
-00:50:36,450 --> 00:50:49,940
-master能找到，哪些服务器具有最新的块
-so that the master will recognize the, which servers have this new, you know, the
+00:50:36,450 --> 00:50:44,270
+使master能找到
+so that the master will recognize the
+
+1065
+00:50:44,420 --> 00:50:49,940
+哪些服务器具有最新的块
+which servers have this new you know the
 
 1066
-00:50:50,240 --> 00:50:55,320
-master服务器赋予某些块服务器成为primary的能力
-master hands out the ability to be primary for some chunk server 
+00:50:50,240 --> 00:50:52,800
+master服务器授予某些块服务器成为primary的能力
+master hands out the ability to be
+
+1067
+00:50:52,800 --> 00:50:55,320
+master服务器授予某些块服务器成为primary的能力
+primary for some chunk server we want to
 
 1068
 00:50:55,320 --> 00:50:58,950
 我们希望能够识别出
-we want to be able to recognize 
+be able to recognize if the master
 
 1069
 00:50:58,950 --> 00:51:01,260
-如果主机崩溃，那你知道
-if the master crashes, you know, that it was, that was the primary
+如果主机崩溃
+crashes you know that it was that was
 
 1070
-00:51:01,260 --> 00:51:05,070
-只有那个primary和secondary
-that only that primary and it secondaries which actually process
+00:51:01,260 --> 00:51:03,840
+只有那个primary
+the primary that only that primary and
+
+1071
+00:51:03,840 --> 00:51:05,070
+和secondary
+it secondaries which were actually
 
 1072
-00:51:05,070 --> 00:51:08,250
+00:51:05,070 --> 00:51:06,720
 负责更新该块
-which were in charge of updating that chunk 
+processed which were in charge of
+
+1073
+00:51:06,720 --> 00:51:08,250
+负责更新该块
+updating that chunk that only those
 
 1074
-00:51:08,250 --> 00:51:12,630
-将来只允许那些primary和secondary成为块服务器
-that only those primaries and secondaries are allowed to be chunk servers in the future 
+00:51:08,250 --> 00:51:10,530
+将来只有那些primary和secondary
+primaries and secondaries are allowed to
+
+1075
+00:51:10,530 --> 00:51:12,630
+可以在未来成为块服务器
+be chunk servers in the future and the
 
 1076
-00:51:12,630 --> 00:51:17,270
-master实现这个目的的方式是使用版本号的逻辑
-and the way the master does this is with this version number logic
+00:51:12,630 --> 00:51:14,070
+master实现这个目的的方式是
+way the master does this is with this
+
+1077
+00:51:14,070 --> 00:51:17,270
+使用版本号的逻辑
+version number logic
 
 1078
 00:51:17,480 --> 00:51:21,500
-master告诉primary和secondary，他们被允许修改此块
-okay, so the master tells the primaries and secondaries that there it they're allowed to modify this block 
+master告诉primary和secondary，
+okay so the master tells the primaries
+
+1079
+00:51:21,500 --> 00:51:23,119
+他们被允许修改此块
+and secondaries that there it they're
+
+1080
+00:51:23,119 --> 00:51:24,740
+他们被允许修改此块
+allowed to modify this block 
 
 1081
-00:51:24,740 --> 00:51:29,390
-它给primary一个租约，告诉primary
-it also gives the primary a lease which basically tells the primary 
+00:51:24,740 --> 00:51:27,530
+它还给primary一个租约
+it also gives the primary a lease which
+
+1082
+00:51:27,530 --> 00:51:29,390
+告诉primary，看
+basically tells the primary look you're
 
 1083
 00:51:29,390 --> 00:51:31,099
 在接下来的60秒内你将是primary
-look, you're allowed to be primary for the next sixty seconds 
+allowed to be primary for the next sixty
 
 1084
 00:51:31,099 --> 00:51:33,200
 六十秒后，你必须停止
-after sixty seconds you have to stop 
+seconds after sixty Seconds you have to
 
 1085
-00:51:33,200 --> 00:51:39,290
-这是机制的一部分，确保我们不会最终有两个primary
-and this is part of the machinery for making sure that we don't end up with two primaries
+00:51:33,200 --> 00:51:37,280
+这是机制的一部分
+stop and this is part of the machinery
+
+1086
+00:51:37,280 --> 00:51:39,290
+确保我们不会有两个primary
+for making sure that we don't end up
 
 1087
 00:51:39,290 --> 00:51:41,869
-我待会再谈
-I'll talk about a bit later 
+确保我们不会有两个primary，我待会再谈
+with two primaries I'll talk about a bit later 
 
 1088
 00:51:41,869 --> 00:51:46,339
 好吧，现在假设我们是primary
-okay, so now we were primary 
+okay so now we were primary now
 
 1089
-00:51:46,339 --> 00:51:54,440
-现在master告诉client谁是primary，谁是secondary
-now the master tells the client who the primary and the secondaries are 
+00:51:46,339 --> 00:51:50,089
+现在master告诉client
+the master tells the client who the
+
+1090
+00:51:50,089 --> 00:51:54,440
+谁是primary，谁是secondary
+primary and the secondaries are and at
 
 1091
-00:51:54,440 --> 00:52:02,240
-此时，我们正在执行论文中的图二
-and at this point, we're we're executing in figure two in the paper 
+00:51:54,440 --> 00:51:59,050
+此时，我们正在执行
+this point we're we're executing in
+
+1092
+00:51:59,050 --> 00:52:02,240
+论文中的图二
+figure two in the paper the client now
 
 1093
 00:52:02,240 --> 00:52:04,040
 client现在知道谁是primary, 谁是secondary
-the client now knows who the primary secondaries are 
+knows who the primary secondaries are 
 
 1094
-00:52:04,040 --> 00:52:08,180
-以某种秩序，这篇论文解释了一种聪明的方法来管理
-in some order or another, and the paper explains a sort of clever way to manage this
+00:52:04,040 --> 00:52:05,660
+以某种秩序，这篇论文
+in some order or another and the paper
+
+1095
+00:52:05,660 --> 00:52:08,180
+解释了一种聪明的方法来管理
+explains a sort of clever way to manage this 
 
 1096
 00:52:08,180 --> 00:52:10,849
 以某种秩序
-in some order or another 
+in some order or another the client
 
 1097
-00:52:10,849 --> 00:52:15,230
-client端将要追加的数据副本发送给primary和所有secondary
-the client sends a copy of the data it wants to be appended to the primary and all the secondaries 
+00:52:10,849 --> 00:52:13,250
+client端将要追加的数据副本
+sends a copy of the data it wants to be
+
+1098
+00:52:13,250 --> 00:52:15,230
+发送给primary
+appended to the primary and all the
 
 1099
-00:52:15,230 --> 00:52:22,099
-并且primary和secondary将该数据写入一个临时位置
-and the primary and the secondaries write that data to a temporary location 
+00:52:15,230 --> 00:52:18,440
+和所有secondary，并且primary和
+secondaries and the primary and the
+
+1100
+00:52:18,440 --> 00:52:20,390
+secondary将该数据写入一个临时位置
+secondaries write that data to a
+
+1101
+00:52:20,390 --> 00:52:22,099
+它尚未附加到文件中
+temporary location it's not appended to
 
 1102
 00:52:22,099 --> 00:52:24,380
-它尚未附加到文件中
-it's not appended to the file yet 
+在它们都说yes
+the file yet after they've all said yes
 
 1103
-00:52:24,380 --> 00:52:31,130
-在它们都说yes我们有数据之后，client发送一条消息到primary说，看
-after they've all said, yes we have the data the client sends a message to the primary saying look
+00:52:24,380 --> 00:52:29,180
+我们有数据之后
+we have the data the client sends a
+
+1104
+00:52:29,180 --> 00:52:31,130
+client发送一条消息到primary说，看
+message to the primary saying look you
 
 1105
-00:52:31,130 --> 00:52:36,579
-你和所有secondary节点都有我要追加到此文件的数据
-you know, you and all the secondaries have the data I'd like to append it for this file
+00:52:31,130 --> 00:52:33,470
+你和所有secondary节点都有
+know you and all the secondaries have
+
+1106
+00:52:33,470 --> 00:52:35,569
+我要追加到此文件的数据
+the data I'd like to append it for this
+
+1107
+00:52:35,569 --> 00:52:36,579
+file
 
 1108
-00:52:36,579 --> 00:52:40,520
-primary可能正在同时从许多不同的client端接收这些请求
-the primary maybe is receiving these requests from lots of different clients concurrently
+00:52:36,579 --> 00:52:38,960
+primary可能正在同时
+the primary maybe is receiving these
+
+1109
+00:52:38,960 --> 00:52:40,520
+从许多不同的client端接收这些请求
+requests from lots of different clients
 
 1110
-00:52:40,520 --> 00:52:45,260
-它选择某种顺序，一次执行一个client请求
-it picks some order, execute the client request one at a time 
+00:52:40,520 --> 00:52:43,010
+它选择某种顺序
+concurrently it picks some order execute
+
+1111
+00:52:43,010 --> 00:52:45,260
+一次执行一个client请求
+the client request one at a time and for
 
 1112
 00:52:45,260 --> 00:52:48,260
-并且对于每个client的追加请求
-and for each client appends request 
+一次执行一个client请求
+each client appends request 
 
 1113
-00:52:48,260 --> 00:52:53,030
-primary查看文件末尾的偏移量，当前块的当前末尾
-the primary looks at the offset that's the end of the file, the current end of the current chunk 
+00:52:48,260 --> 00:52:50,450
+primary查看文件末尾的偏移量
+the primary looks at the offset that's the end of
+
+1114
+00:52:50,450 --> 00:52:53,030
+当前块的当前末尾
+the file the current end of the current chunk 
 
 1115
-00:52:53,030 --> 00:52:56,480
+00:52:53,030 --> 00:52:54,740
 确保块中有足够的剩余空间
-makes sure there's enough remaining space in the chunk and 
+makes sure there's enough
+
+1116
+00:52:54,740 --> 00:52:56,480
+确保块中有足够的剩余空间
+remaining space in the chunk and 
 
 1117
-00:52:56,480 --> 00:53:02,240
-然后将client记录写入当前块的末尾
-then tells, then writes the clients record to the end of the current chunk 
+00:52:56,480 --> 00:52:59,960
+然后将client记录
+then tells then writes the clients record to
+
+1118
+00:52:59,960 --> 00:53:02,240
+写入当前块的末尾
+the end of the current chunk and tells
 
 1119
-00:53:02,240 --> 00:53:12,010
-并告诉所有secondary服务器也将client来的数据写到末尾的相同偏移量处
-and tells all the secondaries to also write the clients data to the end, to the same offset, the same offset in their chunks
+00:53:02,240 --> 00:53:04,369
+并告诉所有secondary服务器
+all the secondaries to also write the
+
+1120
+00:53:04,369 --> 00:53:08,359
+也将client来的数据写到
+clients data to the end to the same
+
+1121
+00:53:08,359 --> 00:53:12,010
+末尾的相同偏移量处
+offset the same offset in their chunks
 
 1122
 00:53:12,010 --> 00:53:20,500
 primary选一个偏移量
-all right, so the primary picks an offset
+all right so the primary picks an offset
 
 1123
-00:53:20,500 --> 00:53:36,090
-包括primary的所有备份，被指示在偏移处写入新的附加记录
-all the replicas including the primary are told to write the new appended record at, at offset  
+00:53:20,500 --> 00:53:26,480
+包括primary的所有备份
+all the replicas including the primary
+
+1124
+00:53:26,480 --> 00:53:29,180
+被指示在偏移处写入新的附加记录
+are told to write
+
+1125
+00:53:29,180 --> 00:53:36,090
+被指示在偏移处写入新的附加记录
+the new appended record at at offset 
 
 1126
 00:53:36,090 --> 00:53:38,700
 这些secondary，它们可能会做，也可能不会
-the secondaries they may do it they may not do it 
+the secondary's they may do it they may not
 
 1127
-00:53:38,700 --> 00:53:45,480
-可能空间不足，可能它们崩溃了，可能从primary来的网络消息丢失了
-maybe run out of space, maybe they crashed, maybe the network message was lost from the primary 
+00:53:38,700 --> 00:53:41,250
+可能空间不足
+do it maybe run out of space maybe
+
+1128
+00:53:41,250 --> 00:53:42,810
+可能它们崩溃了
+they crashed maybe the network message
+
+1129
+00:53:42,810 --> 00:53:45,480
+可能从primary来的网络消息丢失了
+was lost from the primary 
 
 1130
-00:53:45,480 --> 00:53:50,760
-因此，如果secondary节点真的以该偏移量将数据写入其磁盘
-so if a secondary actually wrote the data to its disk at that offset 
+00:53:45,480 --> 00:53:47,970
+因此，如果secondary节点真的以该偏移量
+so if a secondary actually wrote the data to its
+
+1131
+00:53:47,970 --> 00:53:50,760
+将数据写入其磁盘，它将回复“yes”给primary
+disk at that offset it will reply yes to
 
 1132
 00:53:50,760 --> 00:53:52,859
-它将回复“yes”给primary
-it will reply yes to the primary 
+如果primary从所有secondary
+the primary if the primary collects a
 
 1133
 00:53:52,859 --> 00:53:57,740
-如果primary从所有secondary都收集到yes的回复
-if the primary collects a yes answer from all of the secondaries
+都收集到yes的回复
+yes answer from all of the secondaries
 
 1134
-00:53:58,520 --> 00:54:08,250
-如果他们都真的写出，并回复primary说，yes我做到了
-so, if they all of, all of them managed to actually write and reply to the primary saying yes I did it 
+00:53:58,520 --> 00:54:02,190
+如果他们都真的写出
+so if they all of all of them managed to
+
+1135
+00:54:02,190 --> 00:54:03,630
+并回复primary说
+actually write and reply to the primary
+
+1136
+00:54:03,630 --> 00:54:08,250
+yes我做到了
+saying yes I did it then the primary is
 
 1137
 00:54:08,250 --> 00:54:10,800
 那么primary服务器将向client端回复“success”
-then, the primary is going to reply reply success to the client
+going to reply reply success to the client 
 
 1138
-00:54:10,800 --> 00:54:21,510
-如果primary没有收到某一个secondary的回复
-if the primary doesn't get an answer from one of the secondaries 
+00:54:10,800 --> 00:54:18,930
+如果primary没有收到
+if the primary doesn't get an
+
+1139
+00:54:18,930 --> 00:54:21,510
+某一个secondary的回复
+answer from one of the secondaries 
 
 1140
-00:54:21,510 --> 00:54:28,980
-或某个secondary回复，sorry发生了一些不好的事情，我磁盘空间不足，我的磁盘挂了
-or the secondary reply sorry something bad happened, I ran out of disk space ,my disk died I don't know what 
+00:54:21,510 --> 00:54:23,580
+或某个secondary回复，sorry发生了一些不好的事情
+or the secondary reply sorry something bad
+
+1141
+00:54:23,580 --> 00:54:25,590
+我磁盘空间不足，我的磁盘挂了
+happened I ran out of disk space my disk died
+
+1142
+00:54:25,590 --> 00:54:28,980
+然后primary
+I don't know what, then the primary
 
 1143
 00:54:28,980 --> 00:54:37,950
-然后primary会回复“no”给client
-then the primary replies no to the client 
+会回复“no”给client
+replies no to the client and the paper
 
 1144
-00:54:37,950 --> 00:54:42,000
+00:54:37,950 --> 00:54:39,420
 论文说，如果client从primary得到像这种的错误
-and the paper says, oh if the client gets an error like that back in the primary 
+says oh if the client gets an error like
+
+1145
+00:54:39,420 --> 00:54:42,000
+论文说，如果client从primary得到像这种的错误
+that back in the primary the client is
 
 1146
-00:54:42,000 --> 00:54:46,020
+00:54:42,000 --> 00:54:44,369
 client应该重新发起整个追加的过程
-the client is supposed to reissue the entire append sequence starting again 
+supposed to reissue the entire append sequence 
+
+1147
+00:54:44,369 --> 00:54:46,020
+重新开始，与master通信
+starting again talking to the
 
 1148
-00:54:46,020 --> 00:54:50,369
-与master通信以找出文件末尾
-talking to the master to find out the most grease the chunk at the end of the file
+00:54:46,020 --> 00:54:48,530
+以找出文件末尾
+master to find out the most grease the
+
+1149
+00:54:48,530 --> 00:54:50,369
+以找出文件末尾
+chunk at the end of the file
 
 1150
-00:54:50,369 --> 00:54:54,300
-我想知道client端应该重新发起整个记录追加操作
-I want to know the client supposed to reissue the whole record append operation
+00:54:50,369 --> 00:54:52,500
+我想知道client端应该
+I want to know the client supposed to
+
+1151
+00:54:52,500 --> 00:54:54,300
+重新发起整个记录追加操作
+reissue the whole record append
 
 1152
 00:54:54,300 --> 00:55:01,650
 你可能会想，但他们不
-ah you would think, but they don't 
+operation ah you would think but they
 
 1153
 00:55:01,650 --> 00:55:05,180
 所以问题是
-so the question is, jeez, you know
+don't so the question is jeez you know
 
 1154
 00:55:05,180 --> 00:55:08,220
-primary服务器告诉所有副本执行追加操作
-the the primary tells all the replicas to do the append
+primary服务器告诉所有副本
+the the primary tells all the replicas
 
 1155
-00:55:08,220 --> 00:55:10,830
-也许其中一些服务器成功了，有些没有成功
-yeah, maybe some of them do some of them don't right 
+00:55:08,220 --> 00:55:09,869
+执行追加操作，也许其中一些服务器成功了
+to do the append yeah maybe some of them
+
+1156
+00:55:09,869 --> 00:55:10,830
+有些没有成功
+do some of them don't
 
 1157
-00:55:10,830 --> 00:55:14,460
-如果其中一些没有成功，那么我们会向client端报错误
-if some of them don't, then we apply an error to the client 
+00:55:10,830 --> 00:55:12,869
+如果其中一些没有成功
+right if some of them don't then we
+
+1158
+00:55:12,869 --> 00:55:14,460
+那么我们会向client端报错误
+apply an error to the client
 
 1159
 00:55:14,460 --> 00:55:16,109
 因此client认为，追加没有发生
-so the client thinks, oh the append didn't happen
+so the client thinks oh the append didn't happen
 
 1160
-00:55:16,109 --> 00:55:23,550
-但是追加成功的其他副本确实追加成功了
-but those other replicas where the append succeeded, they did append 
+00:55:16,109 --> 00:55:18,630
+但是追加成功的其他副本
+but those other replicas where the append
+
+1161
+00:55:18,630 --> 00:55:23,550
+确实追加成功了
+succeeded they did append so now we have
 
 1162
 00:55:23,550 --> 00:55:25,400
 所以现在我们有不数据的备份
-so now we have replicas that don‘t own the same data
+replicas donor the same data one of them
 
 1163
-00:55:25,400 --> 00:55:31,830
+00:55:25,400 --> 00:55:27,480
 返回错误的那个没有执行追加
-one of them, the one that returned error didn't do the append 
+the one that returned in error didn't do
 
 1164
 00:55:27,480 --> 00:55:28,890
-返回的“yes”的那些服务器，确实做了追加
-and the ones they returned yes did do the append 
+返回的“yes”的那些服务器
+the append and the ones they returned
+
+1165
+00:55:28,890 --> 00:55:31,830
+确实做了追加
+yes did do the append so that is just
 
 1166
 00:55:31,830 --> 00:55:35,119
 这就是GFS运作的方式
-so that is just the way GFS works
+the way GFS works
 
 1167
 00:55:44,590 --> 00:55:47,590
 如果一个读者随后读取了此文件
-yeah, so if a reader then reads this file
+yeah so if a reader then reads this file
 
 1168
 00:55:47,590 --> 00:55:50,330
 取决于哪个备份
-they, depending on what replica they be
+they depending on what replica they be
 
 1169
-00:55:50,330 --> 00:55:56,810
-他们可能会看到附加的记录，或者可能看不到，如果记录追加失败
-they may either see the appended record or they may not, if the record append failed
+00:55:50,330 --> 00:55:53,360
+他们可能会看到附加的记录
+they may either see the appended record
+
+1170
+00:55:53,360 --> 00:55:56,810
+或者可能看不到，如果记录追加失败
+or they may not if the record append
 
 1171
 00:55:56,810 --> 00:55:59,120
 但是如果记录追加成功
-but if the record append succeeded 
+but if the record append succeeded if
 
 1172
 00:55:59,120 --> 00:56:00,920
 如果client收到“success”成功消息
-if the client got a success message back
+the client got a success message back
 
 1173
-00:56:00,920 --> 00:56:05,420
-那么这意味着所有副本都以相同的偏移量追加了该记录
-then that means all of the replicas appended that record at the same offset
+00:56:00,920 --> 00:56:03,920
+那么这意味着所有副本
+then that means all of the replicas
+
+1174
+00:56:03,920 --> 00:56:05,420
+都以相同的偏移量追加了该记录
+appended that record at the same offset
 
 1175
 00:56:05,420 --> 00:56:10,160
 如果client得到“no”的回复
-if the client gets a no back 
+if the client gets a no back then zero
 
 1176
-00:56:10,160 --> 00:56:15,740
-那么零个或多个副本可能已经追加了该偏移量的记录，而其他副本则没有
-then zero or more of the replicas may have appended the record of that offset and the other ones not
+00:56:10,160 --> 00:56:14,090
+那么零个或多个副本
+or more of the replicas may have
+
+1177
+00:56:14,090 --> 00:56:15,740
+可能已经追加了该偏移量的记录
+appended the record of that all set and
 
 1178
 00:56:15,740 --> 00:56:20,240
-所以client得到了“No”
-so the client got a No
+而其他副本则没有，所以client得到了“No”
+the other ones not so the client got a No 
 
 1179
-00:56:20,240 --> 00:56:25,130
-那么这意味着也许有些备份有记录，有些则没有
-then that means that some replicas, maybe some replicas have the record and some don't 
+00:56:20,240 --> 00:56:22,280
+那么这意味着
+then that means that some replicas
+
+1180
+00:56:22,280 --> 00:56:25,130
+也许有些备份有记录，有些则没有
+maybe some replicas have the record and some don't 
 
 1181
-00:56:25,130 --> 00:56:32,980
-所以你读取的东西，你可能会看到记录，也可能不会看到
-so what you which were oughly read from, you know, you may or may not see the record yeah
+00:56:25,130 --> 00:56:27,860
+所以你读取的东西
+so what you which were
+
+1182
+00:56:27,860 --> 00:56:29,750
+你可能会看到记录
+roughly read from you know you may or
+
+1183
+00:56:29,750 --> 00:56:32,980
+也可能不会看到
+may not see the record yeah
 
 1184
 00:56:39,410 --> 00:56:45,319
+所有secondary文件都看到相同的版本号
 oh that all the replicas are the same
 
 1185
 00:56:45,319 --> 00:56:47,240
 所有secondary文件都看到相同的版本号
-all the secondaries see the same version number 
+all the secondaries are the same version
 
 1186
-00:56:47,240 --> 00:56:51,500
-版本号仅在master服务器分配新的primary服务器时更改
-so the version number only changes when the master assigns a new primary 
+00:56:47,240 --> 00:56:49,430
+版本号仅在
+number so the version number only
+
+1187
+00:56:49,430 --> 00:56:51,500
+master服务器分配新的primary服务器时更改
+changes when the master assigns a new
 
 1188
-00:56:51,500 --> 00:56:55,309
-这可能仅在primary出故障时才会发生
-which would ordinarily happen and probably only happen if the primary failed 
+00:56:51,500 --> 00:56:53,900
+这可能仅在primary出故障时
+primary which would ordinarily happen
+
+1189
+00:56:53,900 --> 00:56:55,309
+才会发生
+and probably only happen if the primary failed 
 
 1190
-00:56:55,309 --> 00:57:00,200
-所以我们在谈论的是具有新版本号的副本
-so what we're talking about is, is replicas that have the fresh version number all right 
+00:56:55,309 --> 00:56:58,270
+所以我们在谈论的是
+so what we're talking about is is
+
+1191
+00:56:58,270 --> 00:57:00,200
+具有新版本号的副本
+replicas that have the fresh version number 
 
 1192
-00:57:00,200 --> 00:57:09,319
-你无法分辨出这些副本是不同的，但可能他们就是不同的
-and you can't tell from looking at them, that they're missing, that the replicas are different， but maybe they're different 
+00:57:00,200 --> 00:57:02,660
+你无法分辨出
+alright and you can't tell from
+
+1193
+00:57:02,660 --> 00:57:03,740
+这些副本
+looking at them that they're missing
+
+1194
+00:57:03,740 --> 00:57:08,059
+是不同的
+that the replicas are different but
+
+1195
+00:57:08,059 --> 00:57:09,319
+但可能他们就是不同的
+maybe they're different and 
 
 1196
-00:57:09,319 --> 00:57:16,099
-这样做的理由是，可能不是所有备份都具有那个追加记录
-and the justification for this is that, yeah, you know, maybe the replicas don't all have that, the appended record 
+00:57:09,319 --> 00:57:11,390
+这样做的理由是
+the justification for this is that yeah you
+
+1197
+00:57:11,390 --> 00:57:13,160
+可能不是所有备份
+know maybe the replicas don't all have
+
+1198
+00:57:13,160 --> 00:57:16,099
+都具有那个追加记录
+that the appended record but that's the
 
 1199
-00:57:16,099 --> 00:57:22,940
-但是在这种情况下，primary回答是“No”，并且client端知道写入失败
-but that's the case in which the primary answer no to the clients and the client knows that the write failed 
+00:57:16,099 --> 00:57:18,200
+但是在这种情况下，primary回答是“No”
+case in which the primary answer no to
+
+1200
+00:57:18,200 --> 00:57:20,180
+并且client端知道
+the clients and the client knows that
+
+1201
+00:57:20,180 --> 00:57:22,940
+写入失败了
+the write failed and the reasoning
 
 1202
-00:57:22,940 --> 00:57:27,859
-这样做背后的原因是，client端将重新发布该追加
-and the reasoning behind this is that then the client library will reissue the append 
+00:57:22,940 --> 00:57:24,410
+这样做背后的原因是，client端
+behind this is that then the client
+
+1203
+00:57:24,410 --> 00:57:27,859
+将重新发布该追加
+library will reissue the append 
 
 1204
-00:57:27,859 --> 00:57:33,260
-这样追加的记录就会出现，你会想最终附加会成功
-so the appended record will show up, you know, eventually the append will succeed you would think 
+00:57:27,859 --> 00:57:29,480
+这样追加的记录就会出现
+so the appended record will show up you know
+
+1205
+00:57:29,480 --> 00:57:33,260
+最终附加会成功
+eventually the append succeed you
 
 1206
-00:57:33,260 --> 00:57:38,480
-因为client端，会继续发出（写请求）直到成功，然后
-because the client I'll keep reissuing it until succeeds and then
+00:57:33,260 --> 00:57:36,920
+因为client端，会继续
+would think because the client I'll keep
+
+1207
+00:57:36,920 --> 00:57:38,480
+发出（写请求）直到成功，然后
+reissuing it until succeeds and then
 
 1208
-00:57:38,480 --> 00:57:41,510
-当它成功时，这意味着会有更大的偏移量
-when it succeeds that means there's gonna be some offset, you know, 
+00:57:38,480 --> 00:57:39,770
+当它成功时，这意味着
+when it succeeds that means there's
+
+1209
+00:57:39,770 --> 00:57:41,510
+会有更大的偏移量
+gonna be some offset you know farther on
 
 1210
-00:57:41,510 --> 00:57:45,859
-该记录实际上出现在所有副本中的这个偏移量处
-farther on the file where that record actually occurs in all the replicas as well as
+00:57:41,510 --> 00:57:43,460
+该记录实际上
+the file where that record actually
+
+1211
+00:57:43,460 --> 00:57:45,859
+出现在所有副本中的这个偏移量处
+occurs in all the replicas as well as
 
 1212
-00:57:45,859 --> 00:57:52,690
-而那之前的偏移量处，追加的记录仅在少数备份中出现
-offsets preceding that would only occurs in a few of the replicas, yes
+00:57:45,859 --> 00:57:48,049
+而那之前的偏移量处
+offsets preceding that word only occurs
+
+1213
+00:57:48,049 --> 00:57:52,690
+追加的记录仅在少数备份中出现
+in a few of the replicas yes
 
 1214
 00:58:04,680 --> 00:58:11,779
@@ -4718,189 +5540,359 @@ offsets preceding that would only occurs in a few of the replicas, yes
 oh this is a great question
 
 1215
-00:58:11,779 --> 00:58:19,410
-对于基础网络而言，数据所采用的确切路径可能非常重要
-the exact path that the right data takes might be quite important with respect to the underlying network 
+00:58:11,779 --> 00:58:15,690
+对于基础网络而言
+the exact path that the right data takes
+
+1216
+00:58:15,690 --> 00:58:17,910
+数据所采用的确切路径
+might be quite important with respect to
+
+1217
+00:58:17,910 --> 00:58:19,410
+可能非常重要
+the underlying network and the paper
 
 1218
 00:58:19,410 --> 00:58:22,950
 而且论文里说，即使
-and the paper somewhere says, even though 
+somewhere says even though when the
 
 1219
 00:58:22,950 --> 00:58:24,539
 当论文第一次谈论它时
-when the paper first talks about it 
+paper first talks about it he claims
 
 1220
 00:58:24,539 --> 00:58:26,490
 他声称client将数据发送到每个副本
-he claims that the client sends the data to each replica 
+that the client sends the data to each
 
 1221
-00:58:26,490 --> 00:58:33,539
-实际上，稍后它改变了说法，说client端将数据仅发送到最近的副本
-in fact later on, it changes the tune and says, the client sends it to only the closest of the replicas 
+00:58:26,490 --> 00:58:29,309
+实际上
+replica in fact later on it changes the
+
+1222
+00:58:29,309 --> 00:58:31,289
+稍后它改变了说法
+tune and says the client sends it to
+
+1223
+00:58:31,289 --> 00:58:33,539
+说client端将数据仅发送到最近的副本
+only the closest of the replicas and
 
 1224
-00:58:33,539 --> 00:58:39,630
-然后该副本将数据转发到另一个副本 
-and then the replicas, then that replica forwards the data to another replica
+00:58:33,539 --> 00:58:36,359
+然后该副本
+then the replicas then that replica
+
+1225
+00:58:36,359 --> 00:58:37,829
+将数据转发到另一个副本 
+forwards the data to another replica
+
+1226
+00:58:37,829 --> 00:58:39,630
+沿着某种链条
+along I sort of chained until all the
 
 1227
-00:58:39,630 --> 00:58:43,770
-沿着某种链条，直到所有的副本都拿到数据，并且该链的路径用于最小化
-along sort of chain until all the replicas have the data and that path of that chain is taken to sort of minimize
+00:58:39,630 --> 00:58:41,940
+直到所有的副本都拿到数据
+replicas had the data and that path of
+
+1228
+00:58:41,940 --> 00:58:43,770
+并且该链的路径用于最小化
+that chain is taken to sort of minimize
 
 1229
-00:58:43,770 --> 00:59:00,390
-跨越数据中心的瓶颈内部交换机链接
-crossing a bottleneck inter switch links in a data center, yes 
+00:58:43,770 --> 00:58:46,859
+跨越数据中心的
+crossing bottleneck inter switch links
+
+1230
+00:58:46,859 --> 00:59:00,390
+瓶颈内部交换机链接
+in a data center yes the version number
 
 1231
-00:59:00,390 --> 00:59:06,119
-版本号只在master服务器认为没有primary时增加
-the version number only gets incremented if the master thinks there's no primary
+00:59:00,390 --> 00:59:03,539
+版本号只在master服务器
+only gets incremented if the master
+
+1232
+00:59:03,539 --> 00:59:06,119
+认为没有primary时增加
+thinks there's no primary so it's a so
 
 1233
-00:59:06,119 --> 00:59:13,710
-在通常的流程中，那个chunk已经有一个primary
-in the ordinary sequence there already be a primary for that chunk, the, the
+00:59:06,119 --> 00:59:09,359
+在通常的流程中
+in the ordinary sequence there already
+
+1234
+00:59:09,359 --> 00:59:13,710
+那个chunk已经有一个primary
+be a primary for that chunk the the
 
 1235
-00:59:13,710 --> 00:59:19,470
-master会记得，该块已经有一个primary和secondary
-the the master sort of will remember, oh gosh there's already a primary and secondary for that chunk and it'll just
+00:59:13,710 --> 00:59:16,680
+master会记得
+the the master sort of will remember oh
+
+1236
+00:59:16,680 --> 00:59:18,180
+该块已经有一个primary和secondary
+gosh there's already a primary and
+
+1237
+00:59:18,180 --> 00:59:19,470
+该块已经有一个primary和secondary
+secondary for that chunk and it'll just
 
 1238
-00:59:19,470 --> 00:59:22,079
-就不会进行这个master挑选（primary的过程），不会增加版本号
-it won't go through this master selection it won't increment the version number 
+00:59:19,470 --> 00:59:20,640
+就不会进行这个master挑选（primary的过程）
+it won't go through this master
+
+1239
+00:59:20,640 --> 00:59:22,079
+不会增加版本号
+selection it won't increment the version
 
 1240
-00:59:22,079 --> 00:59:29,270
-它只会告诉client端，看，这里是primary，没有发生版本号更改
-it'll just tell the client, look oh here's the primary with with no version number change
+00:59:22,079 --> 00:59:24,450
+它只会告诉client端，看
+number it'll just tell the client look
+
+1241
+00:59:24,450 --> 00:59:26,400
+这里是primary
+up here's the primary with with no
+
+1242
+00:59:26,400 --> 00:59:29,270
+没有发生版本号更改
+version number change
 
 1243
 00:59:42,340 --> 00:59:47,090
 我的理解是，如果这是
-my understanding is that, if this is this
+my understanding is that if this is this
 
 1244
-00:59:47,090 --> 00:59:51,050
+00:59:47,090 --> 00:59:49,130
 我想你是在问一个有趣的问题
-I think you're asking a, you're asking an interesting question 
+I think you're asking a you're asking an
+
+1245
+00:59:49,130 --> 00:59:51,050
+我想你是在问一个有趣的问题
+interesting question so in this scenario
 
 1246
-00:59:51,050 --> 00:59:54,590
-在这种情况下，primary向client端回复失败消息
-so in this scenario in which the primaries answered failure to the client 
+00:59:51,050 --> 00:59:52,940
+在这种情况下，primary向client端
+in which the primaries answered
+
+1247
+00:59:52,940 --> 00:59:54,590
+回复失败消息
+failure to the client you might think
 
 1248
-00:59:54,590 --> 00:59:57,860
-你可能会认为一定哪里出错了，应该在继续进行之前将其修复
-you might think something must be wrong with something, and that it should be fixed before you proceed 
+00:59:54,590 --> 00:59:56,000
+你可能会认为一定哪里出错了
+something must be wrong with something
+
+1249
+00:59:56,000 --> 00:59:57,860
+应该在继续进行之前将其修复
+and that it should be fixed before you proceed 
 
 1250
-00:59:57,860 --> 01:00:08,300
-事实上，据我所知，论文里没有立即，client尝试重试追加内容
-as far as I can tell the paper there's no an immediate anything the client retries the append, you know
+00:59:57,860 --> 00:59:59,870
+事实上，据我所知
+in fact as far as I can tell the
+
+1251
+00:59:59,870 --> 01:00:03,320
+论文里没有立即
+paper there's no immediate anything the
+
+1252
+01:00:03,320 --> 01:00:08,300
+client尝试重试追加内容
+client retries the append you know
 
 1253
-01:00:08,300 --> 01:00:11,570
-因为也许问题是网络消息丢失了，所以没有什么可以修复的
-because maybe the problem was a network message got lost so there's nothing to repair, right
+01:00:08,300 --> 01:00:10,010
+因为也许问题是网络消息丢失了
+because maybe the problem was a network
+
+1254
+01:00:10,010 --> 01:00:11,570
+所以没有什么可以修复的
+message got lost so there's nothing to repair 
 
 1255
-01:00:11,570 --> 01:00:15,080
+01:00:11,570 --> 01:00:12,980
 本该传递出去的网络消息丢失了
-you know the network message got lost which should be transmitted a
+right you know the network
+
+1256
+01:00:12,980 --> 01:00:13,850
+本该传递出去的网络消息丢失了
+message got lost we should be
+
+1257
+01:00:13,850 --> 01:00:15,080
+这是重传网络消息的一种复杂方式
+transmitted and this is sort of a
 
 1258
 01:00:15,080 --> 01:00:17,600
 这是重传网络消息的一种复杂方式
-and this is sort of complicated way of retransmitting the network message
+complicated way of retransmitting the
 
 1259
-01:00:17,600 --> 01:00:21,020
+01:00:17,600 --> 01:00:19,040
 也许那是最常见的失败类型
-maybe that's the most common kind of failure, in that case just
+network message maybe that's the most
+
+1260
+01:00:19,040 --> 01:00:21,020
+也许那是最常见的失败类型
+common kind of failure in that case just
 
 1261
 01:00:21,020 --> 01:00:22,790
 我们什么都不用改变
-we don't change anything
+we don't change anything it's still the
 
 1262
 01:00:22,790 --> 01:00:26,750
-所以相同的primary，相同的secondary
-so same primary, same secondaries 
+相同的primary，相同的secondary
+same primary same secondaries the client
 
 1263
-01:00:26,750 --> 01:00:29,270
-client端重试，也许这次可以，因为（这次）网络没有丢弃消息
-the client retries, maybe this time it'll work because the network doesn't discard a message 
+01:00:26,750 --> 01:00:28,130
+client端重试
+retries maybe this time it'll work
+
+1264
+01:00:28,130 --> 01:00:29,270
+也许这次可以
+because the network doesn't
 
 1265
 01:00:29,270 --> 01:00:31,490
-这是一个有趣的问题
-it's an interesting question
+因为（这次）网络没有丢弃消息
+discard a message it's an interesting
 
 1266
-01:00:31,490 --> 01:00:37,910
-这里出问题的是，secondary中的一个，出了严重的错误或故障
-what went wrong here is that, one of that, there was a serious error or Fault in one of the secondaries
+01:00:31,490 --> 01:00:32,900
+这是一个有趣的问题，这里出问题的是
+question though that if what went wrong
+
+1267
+01:00:32,900 --> 01:00:35,510
+secondary中的一个
+here is that one of that there was a
+
+1268
+01:00:35,510 --> 01:00:37,910
+出了严重的错误或故障
+serious error or Fault in one of the secondaries 
 
 1269
-01:00:37,910 --> 01:00:46,820
-我们想要的是master服务器重新配置那组副本，丢掉不工作的secondary服务器
-what we would like is for the master to reconfigure that set of replicas, to drop that secondary that's not working
+01:00:37,910 --> 01:00:41,150
+我们想要的是
+what we would like is for
+
+1270
+01:00:41,150 --> 01:00:43,880
+master服务器重新配置那组副本
+the master to reconfigure that set of
+
+1271
+01:00:43,880 --> 01:00:46,820
+丢掉不工作的secondary服务器
+replicas to drop that secondary that's
 
 1272
 01:00:46,820 --> 01:00:49,460
-然后它会
-and it would then 
+丢掉不工作的secondary服务器
+not working and it would then 
 
 1273
 01:00:49,460 --> 01:00:50,900
 因为它在执行此代码路径时选择了新的primary
-because it's choosing a new primary in executing this code path 
+because it's choosing a new primary in executing
 
 1274
-01:00:50,900 --> 01:00:54,890
-然后master会增加版本
-the master would then increment the version 
+01:00:50,900 --> 01:00:52,610
+然后master
+this code path the master would then
+
+1275
+01:00:52,610 --> 01:00:54,890
+会增加版本号
+increment the version and then we have a
 
 1276
 01:00:54,890 --> 01:00:56,750
-然后我们有一个新的primary和新的正常工作的secondary，以及一个新版本
-and then we have a new primary and new working secondaries with a new version
+然后我们有一个新的primary和新的正常工作的secondary
+new primary and new working secondaries
 
 1277
-01:00:56,750 --> 01:01:04,160
-还有一个不太好的secondary服务器，其中有一个旧版本和一个过时的数据副本
-and this not-so-great secondary with an old version and a stale copy of the data 
- 
+01:00:56,750 --> 01:01:00,170
+以及一个新版本，还有一个不太好的secondary服务器
+with a new version and this not-so-great
+
+1278
+01:01:00,170 --> 01:01:02,720
+其中有一个旧版本
+secondary with an old version and a
+
+1279
+01:01:02,720 --> 01:01:04,160
+和一个过时的数据副本
+stale copy of the data but because that
+
 1280
-01:01:04,160 --> 01:01:09,260
-但是因为它具有旧版本号，所以master服务器永远不会将其误认为新版本
-but because that has an old version, the master will never never mistake it for being fresh 
+01:01:04,160 --> 01:01:07,000
+但是因为它具有旧版本号
+has an old version the master will never
+
+1281
+01:01:07,000 --> 01:01:09,260
+所以master服务器永远不会将其误认为新版本
+never mistake it for being fresh 
 
 1282
-01:01:09,260 --> 01:01:12,470
-但是论文中没有证据表明这种情况会立即发生
-but there's no evidence in the paper that that happens immediately 
+01:01:09,260 --> 01:01:10,640
+但是论文中没有证据表明
+but there's no evidence in the paper that
+
+1283
+01:01:10,640 --> 01:01:12,470
+那会立即发生
+that happens immediately as far as
 
 1284
 01:01:12,470 --> 01:01:15,110
-论文上说
-what's said in the paper 
+论文上说，client只是重试
+what's said in the paper the client just retries 
 
 1285
 01:01:15,110 --> 01:01:17,180
-client只是重试，并希望它稍后能正常工作
-the client just retries and hopes it works again later
+并希望它稍后能正常工作
+and hopes it works again later
 
 1286
 01:01:17,180 --> 01:01:19,610
@@ -4913,124 +5905,219 @@ eventually the master will
 if the secondary is dead
 
 1288
-01:01:21,230 --> 01:01:25,850
-最终master会ping所有的块服务器，master将意识到
-eventually the master does ping all the chunk servers, will realize that 
+01:01:21,230 --> 01:01:23,990
+最终master会ping所有的块服务器
+eventually the master does ping all the
+
+1289
+01:01:23,990 --> 01:01:25,850
+master将意识到
+trunk servers will realize that and will
 
 1290
-01:01:25,850 --> 01:01:35,590
-并可能会更改primary和secondary的集合，并增加版本号，但仅在（重试）以后
-and will probably then change the set of primaries and secondaries and increment the version but only, only later
+01:01:25,850 --> 01:01:30,770
+并可能会更改
+probably then change the set of
+
+1291
+01:01:30,770 --> 01:01:32,090
+primary和secondary的集合
+primaries and secondaries and increment
+
+1292
+01:01:32,090 --> 01:01:35,590
+并增加版本号，但仅在（重试）以后
+the version but only only later
 
 1293
 01:01:40,380 --> 01:01:45,660
 租约是解决这个问题的答案
-the lease, the leases is the answer to the question
+the lease the leases that the answer to
 
 1294
-01:01:45,660 --> 01:01:52,500
-如果master认为primary已经死了怎么办
-what if the master thinks the primary is dead 
+01:01:45,660 --> 01:01:49,890
+如果master认为
+the question what if the master thinks
+
+1295
+01:01:49,890 --> 01:01:52,500
+primary已经死了怎么办，因为它无法访问到它
+the primary is dead because it can't reach it 
 
 1296
 01:01:52,500 --> 01:01:53,790
-因为它无法访问到它
-because it can't reach it right 
+假设我们处于一种情况
+right that's supposing we're in a situation 
 
 1297
 01:01:53,790 --> 01:01:55,470
-假设我们处于一种情况
-that's supposing we're in a situation where 
+在某个时候
+where at some point 
 
 1298
 01:01:55,470 --> 01:01:58,110
-在某个时候，master说，你是primary
-at some point the master said you're the primary 
+master说，你是primary
+the master said you're the primary and the
 
 1299
-01:01:58,110 --> 01:02:01,260
-master对它们定期执行ping操作检查服务器是否还活着
-and the master was like pinging them all the servers periodically to see if they're alive 
+01:01:58,110 --> 01:01:59,940
+master对它们定期执行ping操作
+master was like pinging them all the
+
+1300
+01:01:59,940 --> 01:02:01,260
+检查服务器是否还活着
+service periodically to see if they're alive 
 
 1301
 01:02:01,260 --> 01:02:02,610
-因为如果他们死了，想选一个新的primary
-because if they're dead and wants to pick a new primary 
+因为如果他们死了
+because if they're dead and wants
 
 1302
 01:02:02,610 --> 01:02:05,160
-master会向你发送一些ping消息
-the master sends some pings to you 
+想选一个新的primary
+to pick a new primary the master sends
 
 1303
-01:02:05,160 --> 01:02:09,690
+01:02:05,160 --> 01:02:07,080
+master会向你发送一些ping消息
+some pings to you you're the primary and
+
+1304
+01:02:07,080 --> 01:02:09,690
 你是primary，你没有回应
-you're the primary and you don't respond, right 
+you don't respond right so you would
 
 1305
-01:02:09,690 --> 01:02:14,060
-在那个时候，你会想，你没有回应我的ping
-so you would think that at that point where, gosh, you're not responding to my pings 
+01:02:09,690 --> 01:02:11,850
+在那个时候，你会想
+think that at that point where gosh
+
+1306
+01:02:11,850 --> 01:02:14,060
+你没有回应我的ping
+you're not responding to my pings 
 
 1307
-01:02:14,060 --> 01:02:20,790
-那么你可能会认为那时的master会指定一个新的primary
-then you might think the master at that point would designate a new primary 
+01:02:14,060 --> 01:02:16,560
+那么你可能会认为那时的master
+then you might think the master at that point
+
+1308
+01:02:16,560 --> 01:02:20,790
+会指定一个新的primary
+would designate a new primary 
 
 1309
 01:02:20,790 --> 01:02:23,820
 事实证明，这本身就是一个错误
-it turns out that by itself is a mistake 
+it turns out that by itself is a mistake and 
 
 1310
-01:02:23,820 --> 01:02:32,400
-原因是，为什么采用那个简单的设计是一个错误的原因是
-and the reason for that, the reason why it's a mistake to do that simple, you know, use that simple design is that 
+01:02:23,820 --> 01:02:26,130
+原因是，为什么
+the reason for that， the reason why it's a
+
+1311
+01:02:26,130 --> 01:02:30,090
+采用那个简单的设计
+mistake to do that simple did you know
+
+1312
+01:02:30,090 --> 01:02:32,400
+是一个错误的原因是
+use that simple design is that 
 
 1313
-01:02:32,400 --> 01:02:35,400
-我可能会ping你，而我没有得到回复的原因是因为
-I may be pinging you and the reason why I'm not getting responses is because then
+01:02:32,400 --> 01:02:33,870
+我可能会ping你
+I may be pinging you and the reason why I'm not
+
+1314
+01:02:33,870 --> 01:02:35,400
+而我没有得到回复的原因是因为
+getting responses is because then
 
 1315
-01:02:35,400 --> 01:02:38,190
+01:02:35,400 --> 01:02:36,570
 我和你之间的网络有问题
-there's something wrong with a network between me and you 
+there's something wrong with a network
+
+1316
+01:02:36,570 --> 01:02:38,190
+我和你之间的网络有问题
+between me and you so there's a
 
 1317
-01:02:38,190 --> 01:02:41,220
-所以有可能你还活着，你是primary，你还活着
-so there's a possibility that you're alive, you're the primary, you're alive 
+01:02:38,190 --> 01:02:39,870
+所以有可能你还活着
+possibility that you're alive you're the
+
+1318
+01:02:39,870 --> 01:02:41,220
+你是primary，你还活着，我ping你
+primary you're alive I'm pinging you the
 
 1319
 01:02:41,220 --> 01:02:42,750
-我ping你，网络丢弃了那个的数据包
-I'm pining you the network is dropping that packets 
+网络丢弃了那个的数据包
+network is dropping that packets 
 
 1320
-01:02:42,750 --> 01:02:46,320
-但你可以与其他client交谈，并且正在处理其他client的请求
-but you can talk to other clients and you're serving requests from other clients, you know 
+01:02:42,750 --> 01:02:44,280
+但你可以与其他client交谈
+but you can talk to other clients and you're
+
+1321
+01:02:44,280 --> 01:02:46,320
+并且正在处理其他client的请求
+serving requests from other clients you know 
 
 1322
-01:02:46,320 --> 01:02:51,840
-如果我的master为那个块指定了​​一个新的primary
-and if I, if I the master sort of designated a new primary for that chunk
+01:02:46,320 --> 01:02:49,140
+如果我，master
+and if I if I the master sort of
+
+1323
+01:02:49,140 --> 01:02:51,840
+为那个块指定了​​一个新的primary
+designated a new primary for that chunk
 
 1324
-01:02:51,840 --> 01:02:56,340
-现在我们有两个primary处理写操作，但是有两个不同的数据拷贝
-now we'd have two primaries processing writes but the different copies of the data 
+01:02:51,840 --> 01:02:54,600
+现在我们有两个primary处理写操作
+now we'd have two primaries processing writes 
+
+1325
+01:02:54,600 --> 01:02:56,340
+但是有两个不同的数据拷贝
+but two different copies of the data 
 
 1326
-01:02:56,340 --> 01:03:02,370
+01:02:56,340 --> 01:02:58,830
 我们会有完全分叉的数据
-and so, now we have totally diverging copies of the data 
+and so now we have totally
+
+1327
+01:02:58,830 --> 01:03:02,370
+我们会有完全分叉的数据
+diverging copies the data and 
 
 1328
-01:03:02,370 --> 01:03:12,570
-这种具有两个primary处理请求，且不知道彼此的错误，称为脑裂
-and that's called, that error having two primaries or whatever processing requests without knowing each other, it's called split brain 
+01:03:02,370 --> 01:03:07,560
+这种具有两个primary处理请求
+that's called that error having two primaries
+
+1329
+01:03:07,560 --> 01:03:10,770
+且不知道彼此的错误
+or whatever processing requests without
+
+1330
+01:03:10,770 --> 01:03:12,570
+称为脑裂
+knowing each other it's called split brain 
 
 1331
 01:03:12,570 --> 01:03:16,710
@@ -5039,38 +6126,73 @@ and I'm writing this on board
 
 1332
 01:03:16,710 --> 01:03:19,440
-因为这是一个重要的想法，它会再次出现
-because it's an important idea and it'll come up again 
+因为这是一个重要的想法
+because it's an important idea and 
 
 1333
-01:03:19,440 --> 01:03:24,540
+01:03:19,440 --> 01:03:23,160
+它会再次出现
+it'll come up again and it's caused or 
+
+1334
+01:03:23,160 --> 01:03:24,540
 这通常是由网络分区引起的
-and it's caused or ,it's usually said to be caused by network partition 
+it's usually said to be caused by network
 
 1335
-01:03:24,540 --> 01:03:35,640
-这是某种网络错误，其中master服务器无法与primary服务器通信，但primary服务器可以与client端通信
-that is some network error in which the master can't talk to the primary but the primary can talk to clients 
+01:03:24,540 --> 01:03:33,120
+这是某种网络错误，
+partition that is some network error in
+
+1336
+01:03:33,120 --> 01:03:34,260
+其中master服务器无法与primary服务器通信
+which the master can't talk to the
+
+1337
+01:03:34,260 --> 01:03:35,640
+但primary服务器可以与client端通信
+primary but the primary can talk to
 
 1338
 01:03:35,640 --> 01:03:38,330
 某种部分网络故障
-sort of partial network failure
+clients sort of partial network failure
 
 1339
-01:03:38,330 --> 01:03:46,470
-这些是构建这类存储系统中最难处理的问题之一 
-and you know, these are some of the, these are the hardest problems to deal with in building these kind of storage systems 
+01:03:38,330 --> 01:03:41,160
+这些是构建这类存储系统中最难处理的问题之一
+and you know these are some of the these
+
+1340
+01:03:41,160 --> 01:03:44,760
+这些是构建这类存储系统中最难处理的问题之一
+are the hardest problems to deal with
+
+1341
+01:03:44,760 --> 01:03:46,470
+这些是构建这类存储系统中最难处理的问题之一
+and building these kind of storage systems 
 
 1342
 01:03:46,470 --> 01:03:49,170
 好，那是问题所在
-okay, so that's the problem, is 
+okay so that's the problem is 
 
 1343
-01:03:49,170 --> 01:03:56,210
-我们想排除为同一块错误地指定两个primary的可能性
-we want to rule out the possibility of mistakingly designating two primaries for the same chunk 
+01:03:49,170 --> 01:03:51,690
+我们想排除
+we want to rule out the possibility of
+
+1344
+01:03:51,690 --> 01:03:54,280
+为同一块错误地
+mistakingly designating two primaries
+
+1345
+01:03:54,280 --> 01:03:56,210
+指定两个primary的可能性
+for the same chunk 
 
 1346
 01:03:56,210 --> 01:03:58,610
@@ -5078,109 +6200,189 @@ master为之采取的方式是
 the way the master achieves that is that 
 
 1347
-01:03:58,610 --> 01:04:05,590
-当它指定一个primary时，它给primary提供租约，租约是在一定时间内作为primary的权利
-when it designates a primary it says, it gives a primary a lease which is basically the right to be primary until a certain time
+01:03:58,610 --> 01:04:00,920
+当它指定一个primary时
+when it designates a primary it says it gives a
+
+1348
+01:04:00,920 --> 01:04:03,320
+它给primary提供租约
+primary a lease which is basically the
+
+1349
+01:04:03,320 --> 01:04:05,590
+租约是在一定时间内作为primary的权利
+right to be primary until a certain time
 
 1350
-01:04:05,590 --> 01:04:12,500
-master记得租约持续多长时间，
-the master knows, it remembers, knows how long the lease lasts 
+01:04:05,590 --> 01:04:08,990
+master记得
+the master knows it remembers and knows
+
+1351
+01:04:08,990 --> 01:04:12,500
+租约持续多长时间
+how long the least lasts and 
 
 1352
 01:04:12,500 --> 01:04:14,960
 并且primary知道租约能持续多久
-and the primary knows how long its lease lasts 
+the primary knows how long is lease lasts 
 
 1353
-01:04:14,960 --> 01:04:20,570
-如果租约到期，则primary服务器知道它已到期，将停止执行client端请求
-if the lease expires, the primary knows that it expires and will simply stop executing client requests 
+01:04:14,960 --> 01:04:18,800
+如果租约到期，primary服务器知道它已到期
+if the lease expires the primary knows that it
+
+1354
+01:04:18,800 --> 01:04:20,570
+将停止执行client端请求
+expires and will simply stop executing
 
 1355
-01:04:20,570 --> 01:04:24,830
-租约到期后它将忽略或拒绝client请求
-it'll ignore or reject client requests after the lease expired
+01:04:20,570 --> 01:04:23,150
+租约到期后
+client requests it'll ignore or reject
+
+1356
+01:04:23,150 --> 01:04:24,830
+它将忽略或拒绝client请求
+client requests after the lease expired
 
 1357
 01:04:24,830 --> 01:04:27,800
-因此，如果master不能与primary通信
-and therefore if the master can't talk to the primary
+因此，如果master不能
+and therefore if the master can't talk
 
 1358
-01:04:27,800 --> 01:04:31,220
-master想指定一个新的primary
-and the master would like to designate a new primary 
+01:04:27,800 --> 01:04:29,570
+与primary通信，master将会
+to the primary and the master would like
+
+1359
+01:04:29,570 --> 01:04:31,220
+指定一个新的primary
+to designate a new primary 
 
 1360
-01:04:31,220 --> 01:04:35,270
-master必须要等待上一个primary的租约到期
-the master must wait for the lease to expire for the previous primary 
+01:04:31,220 --> 01:04:33,830
+master必须要等待
+the master must wait for the lease to expire for
+
+1361
+01:04:33,830 --> 01:04:35,270
+上一个primary的租约到期
+the previous primary so that means
 
 1362
-01:04:35,270 --> 01:04:40,010
-因此，这意味着master将坐下来等待一个60秒的租约周期
-so that means master is going to sit on its hands for one lease period 60 seconds 
+01:04:35,270 --> 01:04:37,670
+因此，这意味着master将
+master is going to sit on its hands for
+
+1363
+01:04:37,670 --> 01:04:40,010
+坐下来等待一个60秒的租约周期
+one lease period 60 seconds 
 
 1364
-01:04:40,010 --> 01:04:44,510
-之后，可以确信旧的primary服务器将停止其primary角色
-after that it's guaranteed the old primary will stop operating its primary 
+01:04:40,010 --> 01:04:41,660
+之后，可以确信旧的primary服务器
+after that it's guaranteed the old primary will
+
+1365
+01:04:41,660 --> 01:04:44,510
+将停止其primary角色
+stop operating its primary and now 
 
 1366
-01:04:44,510 --> 01:04:54,460
-现在，master可以安全地指定新的primary，而不会产生这种可怕的裂脑情况
-and now the master can safely designate a new primary without producing this terrible split brain situation
+01:04:44,510 --> 01:04:46,160
+现在，master可以安全地指定新的primary
+the master can safely designate a new
+
+1367
+01:04:46,160 --> 01:04:50,810
+而不会产生这种可怕的裂脑情况
+primary without producing this terrible
+
+1368
+01:04:50,810 --> 01:04:54,460
+而不会产生这种可怕的裂脑情况
+split brain situation
 
 1369
-01:05:02,299 --> 01:05:15,920
-问题是说，为什么指定一个新的primary是坏的（设计）
-oh, so the question is why is designating a new primary bad 
+01:05:02,299 --> 01:05:14,119
+问题是说，为什么指定一个新的primary
+oh so the question is why is designated
+
+1370
+01:05:14,119 --> 01:05:15,920
+是坏的（设计） 
+a new primary bad since the clients
 
 1371
 01:05:15,920 --> 01:05:18,079
 既然client总是先问master
-since the clients always ask the master first and 
+always ask the master first and 
 
 1372
 01:05:18,079 --> 01:05:20,059
 所以master改变主意
-so the master changes its mind 
+so the master changes its mind then subsequent
 
 1373
 01:05:20,059 --> 01:05:22,819
 然后后续将client定向到新的primary
-then subsequent clients will direct the clients to the new primary
+clients will direct the clients to the new primary 
 
 1374
-01:05:22,819 --> 01:05:28,429
-原因之一是client端缓存以提高效率
-well one reason is that the clients cache, for efficiency
+01:05:22,819 --> 01:05:26,390
+原因之一是
+well one reason is that the
+
+1375
+01:05:26,390 --> 01:05:28,429
+client端缓存以提高效率
+clients cache for efficiency the clients
 
 1376
-01:05:28,429 --> 01:05:34,009
-client至少在短时间内缓存primary的身份信息
-the clients cache the identity of the primary for at least for short periods of time
+01:05:28,429 --> 01:05:31,279
+client至少在短时间内
+cache the identity of the primary for at
+
+1377
+01:05:31,279 --> 01:05:34,009
+缓存primary的身份信息
+least for short periods of time 
 
 1378
 01:05:34,009 --> 01:05:37,489
 即使他们没有（缓存），一个糟糕的事件序列是
-even if they didn't though, the bad sequence is that 
+even if they didn't though the bad sequence is
 
 1379
 01:05:37,489 --> 01:05:40,640
-我是master，你问我primary是谁
-I'm the, I'm the master you ask me who the primary is 
+我是master，你问我
+that I'm the prime the master you ask me
 
 1380
-01:05:40,640 --> 01:05:47,809
-我向你发送一条消息，说primary是服务器1，该消息在网络中传递
-I send you a message saying the primary is server one, right and that message is inflate in the network 
+01:05:40,640 --> 01:05:43,449
+primary是谁，我向你发送一条消息
+who the primary is I send you a message
+
+1381
+01:05:43,449 --> 01:05:46,369
+说primary是服务器1
+saying the primary is server one right
+
+1382
+01:05:46,369 --> 01:05:47,809
+该消息在网络中传递
+and that message is inflate in the network 
 
 1383
-01:05:47,809 --> 01:05:50,630
+01:05:47,809 --> 01:05:50,630、
 我是master
-and then I'm the master I, you know 
+and then I'm the master I you know 
 
 1384
 01:05:50,630 --> 01:05:52,160
@@ -5190,17 +6392,32 @@ I think somebody's failed whatever
 1385
 01:05:52,160 --> 01:05:53,269
 我认为primary已经出了故障
-I think that primary is failed 
+I think that primary is filled 
 
 1386
-01:05:53,269 --> 01:05:56,209
-我指定了新的primary，我发送给primary信息说你是primary
-I designated a new primary and I send the primary message saying you're the primary 
+01:05:53,269 --> 01:05:55,219
+我指定了新的primary
+I designated a new primary and I send the
+
+1387
+01:05:55,219 --> 01:05:56,209
+我发送给primary信息说，你是primary
+primary message saying you're the primary 
 
 1388
-01:05:56,209 --> 01:06:01,400
-然后我开始回答其他client，谁是primary，说那个就是primary
-and I start answering other clients who ask the primary is saying that that over there is the primary
+01:05:56,209 --> 01:05:57,619
+然后我开始回答其他client
+and I start answering other
+
+1389
+01:05:57,619 --> 01:06:00,349
+谁是primary
+clients who ask the primary is saying
+
+1390
+01:06:00,349 --> 01:06:01,400
+比如说那个服务器是primary
+that that over there is the primary
 
 1391
 01:06:01,400 --> 01:06:03,019
@@ -5208,34 +6425,59 @@ and I start answering other clients who ask the primary is saying that that over
 while the message to you is still in flight 
 
 1392
-01:06:03,019 --> 01:06:10,219
-你收到消息里的旧primary，你想，天哪，我刚从master那里得到这个
-you receive the message saying the old primaries the primary you think, gosh I just got this from the master 
+01:06:03,019 --> 01:06:04,880
+你收到消息里的旧primary，
+you receive the message saying
+
+1393
+01:06:04,880 --> 01:06:07,130
+你想
+the old primaries the primary you think
+
+1394
+01:06:07,130 --> 01:06:10,219
+天哪，我刚从master那里得到这个
+gosh I just got this from the master I'm
 
 1395
 01:06:10,219 --> 01:06:11,630
 我要去跟那个primary通信
-I'm gonna go talk to that primary 
+gonna go talk to that primary and
 
 1396
 01:06:11,630 --> 01:06:13,459
-如果没有一些更聪明的机制，你不可能意识到（primary是旧的）
-and without some much more clever scheme there's no way you could realize that
+如果没有一些更聪明的机制
+without some much more clever scheme
+
+1397
+01:06:13,459 --> 01:06:14,859
+你不可能意识到（primary是旧的）
+there's no way you could realize that
 
 1398
-01:06:14,859 --> 01:06:19,309
+01:06:14,859 --> 01:06:16,849
 即使你刚刚从master那里获得了这些信息
-even though you just got this information from the master <<<
+even though you just got this
+
+1399
+01:06:16,849 --> 01:06:19,309
+即使你刚刚从master那里获得了这些信息
+information from the master it's already
 
 1400
-01:06:19,309 --> 01:06:24,410
-它也已经过时，而且如果该primary接受了你的修改请求
-it's already out of date and if that primary serves your modification requests 
+01:06:19,309 --> 01:06:21,679
+它也已经过时
+out of date and if that primary serves
+
+1401
+01:06:21,679 --> 01:06:24,410
+而且如果该primary接受了你的修改请求
+your modification requests now we have
 
 1402
 01:06:24,410 --> 01:06:27,920
 现在我们必须要回复你“success”
-now we have to and and respond success to you, right
+to and and respond success to you right
 
 1403
 01:06:27,920 --> 01:06:35,349
@@ -5244,53 +6486,92 @@ then we have two conflicting replicas
 
 1404
 01:06:35,890 --> 01:06:38,890
-是
 yes
 
 1405
 01:06:41,910 --> 01:06:50,710
 请再说一次，你有一个新文件，且没有备份
-say that again you've a new file and no replicas
+again you've a new file and no replicas
 
 1406
-01:06:50,710 --> 01:06:55,180
-好的，如果你有一个新文件，没有备份，甚至是已有文件，没有备份
-okay so if you have a new file no replicas or even an existing file and no replicas 
+01:06:50,710 --> 01:06:53,410
+好的，如果你有一个新文件，没有备份
+okay so if you have a new file no
+
+1407
+01:06:53,410 --> 01:06:55,180
+甚至是已有文件，没有备份
+replicas or even an existing file and no replicas 
 
 1408
-01:06:55,180 --> 01:07:00,130
+01:06:55,180 --> 01:06:58,090
 你将会走我在黑板上画的路线
-the, you'll take the path I drew on the blackboard 
+the you'll take the path I drew
+
+1409
+01:06:58,090 --> 01:07:00,130
+你将会走我在黑板上画的路线
+on the blackboard the master will
 
 1410
-01:07:00,130 --> 01:07:04,270
-master会收到client的要求，说我想追加这个文件
-the master will receive a request from a client saying oh I'd like to append this file 
+01:07:00,130 --> 01:07:02,140
+master会收到client的要求说
+receive a request from a client saying
+
+1411
+01:07:02,140 --> 01:07:04,270
+我想追加这个文件
+oh I'd like to append this file and
 
 1412
-01:07:04,270 --> 01:07:08,200
-我想master会首先发现，没有任何块与该文件关联
-and then, well I guess the master will first see there's no chunks associated with that file 
+01:07:04,270 --> 01:07:06,430
+我猜master会首先发现
+then well I guess the master will first
+
+1413
+01:07:06,430 --> 01:07:08,200
+没有任何块与该文件关联
+see there's no chunks associated with that file 
 
 1414
-01:07:08,200 --> 01:07:15,730
-它将创造一个新的块标识符，可能通过调用随机数生成器
-and it will just make up a new chunk identifier or perhaps by calling the random number generator 
+01:07:08,200 --> 01:07:11,710
+它将创造一个新的
+and it will just make up a new
+
+1415
+01:07:11,710 --> 01:07:13,570
+块标识符
+chunk identifier or perhaps by calling
+
+1416
+01:07:13,570 --> 01:07:15,730
+可能通过调用随机数生成器
+the random number generator 
 
 1417
 01:07:15,730 --> 01:07:17,920
 然后在其块信息表中查看
-and then it'll look in its chunk information table and see
+and then it'll look in its chunk information
 
 1418
-01:07:17,920 --> 01:07:22,030
-发现，天哪，我没有关于那块的任何信息
-gosh I don't have any information about that chunk 
+01:07:17,920 --> 01:07:20,080
+发现，天哪
+table and see gosh I don't have any
+
+1419
+01:07:20,080 --> 01:07:22,030
+我没有关于那块的任何信息
+information about that chunk and 
 
 1420
-01:07:22,030 --> 01:07:26,410
-它会创建一个新记录，但一定是特殊情况代码
-and it'll make up a new record saying, but it must be special case code where it says, well
+01:07:22,030 --> 01:07:24,730
+它会创建一个新记录
+it'll make up a new record saying but it must
+
+1421
+01:07:24,730 --> 01:07:26,410
+但一定是特殊情况代码
+be special case code where it says well
 
 1422
 01:07:26,410 --> 01:07:28,720
@@ -5298,9 +6579,14 @@ and it'll make up a new record saying, but it must be special case code where it
 I don't know any version number 
 
 1423
-01:07:28,720 --> 01:07:32,740
-这个块不存在，我将要创建一个新的版本号1
-this chunk doesn't exist I'm just gonna make up a new version number one 
+01:07:28,720 --> 01:07:30,850
+这个块不存在，我要
+this chunk doesn't exist I'm just gonna make
+
+1424
+01:07:30,850 --> 01:07:32,740
+创建一个新的版本号1
+up a new version number one 
 
 1425
 01:07:32,740 --> 01:07:35,380
@@ -5308,19 +6594,44 @@ this chunk doesn't exist I'm just gonna make up a new version number one
 pick a random primary and set of secondaries
 
 1426
-01:07:35,380 --> 01:07:40,660
-并告诉它们，你们对此新的空块负责，请开始工作
-and tell them look, you are responsible for this new empty chunk, please get to work
+01:07:35,380 --> 01:07:37,900
+并告诉它们，
+and tell them look you are responsible
+
+1427
+01:07:37,900 --> 01:07:40,660
+你们对此新的空块负责，请开始工作
+for this new empty chunk please get to work 
 
 1428
-01:07:40,660 --> 01:07:52,
-论文说默认情况下每个块有三个备份，通常是一个primary和两个secondary
-the paper says, three replicas per chunk by default so typically a primary and two backups
+01:07:40,660 --> 01:07:47,020
+论文说默认情况下
+the paper says three replicas per
+
+1429
+01:07:47,020 --> 01:07:50,110
+每个块有三个备份，通常是一个primary
+chunk by default so typically a primary
+
+1430
+01:07:50,110 --> 01:07:52,710
+和两个secondary
+and two backups
 
 1431
-01:08:03,930 --> 01:08:19,890
-也许这里最重要的是，重复我们几分钟前的讨论
-okay, okay so the, maybe the most important thing here is just to repeat the discussion we had a few minutes ago
+01:08:03,930 --> 01:08:13,270
+也许
+okay okay so the maybe the most
+
+1432
+01:08:13,270 --> 01:08:16,299
+这里最重要的是
+important thing here is just to repeat
+
+1433
+01:08:16,299 --> 01:08:19,890
+重复我们几分钟前的讨论
+the discussion we had a few minutes ago
 
 1434
 01:08:21,540 --> 01:08:32,140
@@ -5329,33 +6640,58 @@ the intentional construction of GFS
 
 1435
 01:08:32,140 --> 01:08:33,790
-我们有这些记录追加是
+我们有这些记录追加
 we had these record appends is that 
 
 1436
 01:08:33,790 --> 01:08:41,009
 如果我们有三个备份
-if we have three, we have three replicas 
+if we have three we have three replicas you
 
 1437
-01:08:41,009 --> 01:08:46,719
-client可能会发送来一个记录A的追加
-you know maybe a client sends in and a record appends for record A 
+01:08:41,009 --> 01:08:43,779
+client可能会发送来
+know maybe a client sends in and a
+
+1438
+01:08:43,779 --> 01:08:46,719
+一个记录A的追加
+record appends for record A and 
 
 1439
-01:08:46,719 --> 01:08:52,120
-所有三个备份，primary和两个secondary成功追加了数据
-and all three replicas or the primary and both of the secondaries successfully append  the data the chunks
+01:08:46,719 --> 01:08:49,569
+所有三个备份，primary和两个secondary
+all three replicas or the primary and both of the
+
+1440
+01:08:49,569 --> 01:08:52,120
+成功追加了数据
+secondaries successfully append the data
 
 1441
-01:08:52,120 --> 01:08:57,930
-那种情况下，也许这个块中第一个记录是A，它们都一致，因为它们都追加了
-and maybe the first record in the chunk might be A in that case and they all agree because they all did it
+01:08:52,120 --> 01:08:54,069
+那种情况下
+the chunks and maybe the first record in
+
+1442
+01:08:54,069 --> 01:08:55,689
+也许这个块中第一个记录是A
+the chunk might be a in that case and
+
+1443
+01:08:55,689 --> 01:08:57,930
+它们都一致，因为它们都追加了
+they all agree because they all did it
 
 1444
-01:08:57,930 --> 01:09:03,339
-假设另一个client进来说，我要追加记录B
-supposing another client comes in says look I want append record B 
+01:08:57,930 --> 01:09:00,040
+假设另一个client进来说
+supposing another client comes in says
+
+1445
+01:09:00,040 --> 01:09:03,339
+我要追加记录B
+look I want append record B 
 
 1446
 01:09:03,339 --> 01:09:06,250
@@ -5363,94 +6699,184 @@ supposing another client comes in says look I want append record B
 but the message is lost to one of the replicas
 
 1447
-01:09:06,250 --> 01:09:13,390
-因为网络某种错误，但另外两个备份拿到了消息
-the network whatever supposably the message by mistake but the other two replicas get the message 
+01:09:06,250 --> 01:09:08,410
+因为网络某种错误
+the network whatever supposably the
+
+1448
+01:09:08,410 --> 01:09:11,589
+但另外两个备份拿到了消息
+message by mistake but the other two
+
+1449
+01:09:11,589 --> 01:09:13,390
+但另外两个备份拿到了消息
+replicas get the message and 
 
 1450
-01:09:13,390 --> 01:09:16,000
-其中一个是primary，另一个是secondary，它们都将文件追加
-and one of them's a primary and my other secondaries, they both append the file
+01:09:13,390 --> 01:09:14,380
+其中一个是primary
+one of them's a primary and my other
+
+1451
+01:09:14,380 --> 01:09:16,000
+另一个是secondary，它们都将文件追加
+secondaries they both append the file
 
 1452
-01:09:16,000 --> 01:09:21,759
-所以现在我们有两个备份有记录，另一个没有任何记录
-so now what we have is two of the replicas have B and the other one doesn't have anything 
+01:09:16,000 --> 01:09:19,390
+所以现在我们有两个备份有记录
+so now what we have is two the replicas
+
+1453
+01:09:19,390 --> 01:09:21,759
+另一个没有任何记录
+that B and the other one doesn't have anything 
 
 1454
-01:09:21,759 --> 01:09:29,109
-然后可能有第三个client想要追加C，也许
-and then, may be a third client wants to append C and maybe, the ,
+01:09:21,759 --> 01:09:26,410
+然后可能有第三个client
+and then may be a third client
+
+1455
+01:09:26,410 --> 01:09:29,109
+想要追加C
+wants to append C and maybe the remember
 
 1456
 01:09:29,109 --> 01:09:30,460
 记得这是primary
-remember that this is the primary, 
+that this is the primary 
 
 1457
-01:09:30,460 --> 01:09:35,109
-primary选择偏移量，primary要告诉secondary
-the primary picks the offset since the primary just gonna tell the secondaries
+01:09:30,460 --> 01:09:32,738
+primary选择偏移量，
+the primary picks the offset since the primary just
+
+1458
+01:09:32,738 --> 01:09:35,109
+primary要告诉secondary，看
+gonna tell the secondaries look
 
 1459
-01:09:35,109 --> 01:09:43,450
-看，这个时候把记录C写在这个块里，他们都在这里写C
-look, write record C at this point in the chunk they all write C here 
+01:09:35,109 --> 01:09:38,620
+这个时候把记录C写在这个块里
+write record C at this point in the
+
+1460
+01:09:38,620 --> 01:09:43,450
+他们都在这里写C
+chunk they all right C here 
 
 1461
-01:09:43,450 --> 01:09:50,439
-对于B的client来说，它的请求收到error信息
-now the client for B, the rule for a client for B that, for the client that gets us error back from its request is that 
+01:09:43,450 --> 01:09:45,040
+对于B的client来说
+now the client for B the rule for a client for
+
+1462
+01:09:45,040 --> 01:09:47,830
+它的请求收到error回复
+B that for the client that gets us error
+
+1463
+01:09:47,830 --> 01:09:50,439
+它的请求收到error回复
+back from its request is that 
 
 1464
-01:09:50,439 --> 01:09:57,640
-它会重新发送请求，因此现在要求追加记录B的客户端，将再次请求追加记录B
-it will resend the request, so now the client that asked to append record B will ask，again to append record B 
+01:09:50,439 --> 01:09:53,770
+它会重新发送请求
+it will resend the request so now the client
+
+1465
+01:09:53,770 --> 01:09:56,020
+因此现在要求追加记录B的客户端
+that asked to append record B will ask
+
+1466
+01:09:56,020 --> 01:09:57,640
+将再次请求追加记录B
+again to append record B and 
 
 1467
-01:09:57,640 --> 01:10:05,040
-这次也许没有网络损失，所有三个备份追加了记录B
-and this time maybe there's no network losses and all three replicas append record B 
+01:09:57,640 --> 01:10:00,340
+这次也许没有网络损失，
+this time maybe there's no network losses and all
+
+1468
+01:10:00,340 --> 01:10:05,040
+所有三个备份追加了记录B
+three replicas append record B
 
 1469
-01:10:05,040 --> 01:10:09,870
-对，这些备份都活着，都拥有最新的版本号
-right, and they're all lives there they all have the most fresh version number, and now
+01:10:05,040 --> 01:10:07,239
+对，这些备份都活着
+right and they're all lives there they all
+
+1470
+01:10:07,239 --> 01:10:09,870
+都拥有最新的版本号
+have the most fresh version number and
 
 1471
 01:10:09,870 --> 01:10:13,150
 如果client读取
-if a client reads
+now if a client reads
 
 1472
-01:10:13,150 --> 01:10:20,020
-他们所看到的取决于他们看的是哪个备份
-what they see depends on the which replicas they look at 
+01:10:13,150 --> 01:10:16,830
+他们所看到的取决于
+what they see depends on the chuck which
+
+1473
+01:10:17,820 --> 01:10:20,020
+他们看的是哪个备份
+replicas they look at it's gonna see in
 
 1474
 01:10:20,020 --> 01:10:22,929
 它将总共看到所有三个记录
-it's gonna see in total all three of the records 
+total all three of the records but 
 
 1475
 01:10:22,929 --> 01:10:25,030
 但它会看到不同的顺序，具体取决于
-but it'll see in different orders depending on
+it'll see in different orders depending on
 
 1476
-01:10:25,030 --> 01:10:33,730
-读取了哪个备份 A B C，一个重复的B，所以如果它读取此备份，将会看到B，然后C
-which replica reads A B C and then a repeat of B, so if it reads this replica it'll see B and then C 
+01:10:25,030 --> 01:10:28,750
+读取了哪个备份
+which replica reads it'll mean 
+
+1477
+01:10:28,750 --> 01:10:31,870
+我会看到A B C，然后一个重复的B
+I'll see A B C and then a repeat of B so 
+
+1478
+01:10:31,870 --> 01:10:33,730
+所以如果它读取此备份，将会看到B，然后C
+if itreads this replica it'll see B and then C 
 
 1479
-01:10:33,730 --> 01:10:41,920
-如果它读取这个备份，它会看到A，然后在文件填充中留一个空白，然后是C然后是B
-if it reads this replica， it'll see A and then a blank space in the file padding and then C and then B
+01:10:33,730 --> 01:10:36,969
+如果它读取这个备份
+if it reads this replica it'll see A
+
+1480
+01:10:36,969 --> 01:10:39,340
+它会看到A，然后在文件填充中留一个空白
+and then a blank space in the file
+
+1481
+01:10:39,340 --> 01:10:41,920
+然后是C然后是B
+padding and then C and then B so 
 
 1482
 01:10:41,920 --> 01:10:44,199
 所以如果你在这里阅读，你会看到C，然后是B
-so if you read here you see C then B 
+if you read here you see C then B 
 
 1483
 01:10:44,199 --> 01:10:47,320
@@ -5460,7 +6886,7 @@ if you read here you see B and then C
 1484
 01:10:47,320 --> 01:10:49,350
 不同的读者会看到不同的结果，
-so, different readers will see different results and
+so different readers will see different results and
 
 1485
 01:10:49,350 --> 01:10:52,330
@@ -5470,72 +6896,140 @@ maybe the worst situation is it
 1486
 01:10:52,330 --> 01:10:54,489
 一些client端从primary服务器收到错误
-some client gets an error back from the primary 
+some client gets an error back from the
 
 1487
-01:10:54,489 --> 01:11:00,159
-因为其中一个secondary，未能执行附加
-because one of the secondaries failed to do the append
+01:10:54,489 --> 01:10:58,360
+因为其中一个secondary
+primary because one of the secondaries
+
+1488
+01:10:58,360 --> 01:11:00,159
+未能执行附加操作
+failed to do the append and then 
 
 1489
 01:11:00,159 --> 01:11:02,260
 然后client端在重新发送请求之前挂掉
-and then the client dies before re-sending the request 
+the client dies before we sending the
 
 1490
 01:11:02,260 --> 01:11:04,030
-所以你可能遇到这种情形
-so then you might get a situation 
+所以你可能进入这种情形
+request so then you might get a
 
 1491
-01:11:04,030 --> 01:11:16,420
-你有记录D的情况，出现在某些备份中，而完全不出现在其他备份
-where you have record D showing up in some of the replicas and completely not showing up anywhere in the other replicas
+01:11:04,030 --> 01:11:07,030
+你的记录D
+situation where you have record D
+
+1492
+01:11:07,030 --> 01:11:11,890
+出现在某些备份中
+showing up in some of the replicas and
+
+1493
+01:11:11,890 --> 01:11:13,750
+而在其他备份则完全没有
+completely not showing up anywhere in
+
+1494
+01:11:13,750 --> 01:11:16,420
+所以你知道在这个方案下，
+the other replicas so you know under
 
 1495
-01:11:16,420 --> 01:11:26,800
-所以你知道在这个方案下，对于primary发送回一个成功的回复的追加操作，我们有很好的性质
-so you know under this scheme we have good properties for for appends that the primary sent back a successful answer for and 
+01:11:16,420 --> 01:11:19,659
+对于primary发送回一个成功的回复的追加操作，
+this scheme we have good properties for
+
+1496
+01:11:19,659 --> 01:11:23,620
+我们有很好的性质
+for appends that the primary sent back a successful answer 
+
+1497
+01:11:23,620 --> 01:11:26,800
+对于primary返回失败的追加操作
+for and sort of not so
 
 1498
-01:11:26,800 --> 01:11:32,949
-对于primary返回失败的追加曹错，就不是那么好的性质了
-sort of not so great properties for appends where the primary sent back a failure 
+01:11:26,800 --> 01:11:29,469
+对于primary返回失败的追加操作
+great properties for appends where the
+
+1499
+01:11:29,469 --> 01:11:32,949
+就不是那么好的性质了
+primary sent back of failure
 
 1500
-01:11:32,949 --> 01:11:37,540
-并且记录，备份绝对不同，不同的一组备份
-and the records, the replicas just absolutely be different, all different sets of replicas
+01:11:32,949 --> 01:11:35,530
+并且记录，备份绝对不同
+and the records the replicas just absolutely be
+
+1501
+01:11:35,530 --> 01:11:37,540
+不同的一组备份
+different all different sets of replicas
 
 1502
 01:11:37,540 --> 01:11:40,440
-是的
 yes
 
 1503
-01:11:44,400 --> 01:11:49,090
-我在论文中读到的是，client从流程的最开始就开始
-my reading in the paper is that the client starts at the very beginning of the process 
+01:11:44,400 --> 01:11:46,660
+我在论文中读到的是
+my reading in the paper is that the
+
+1504
+01:11:46,660 --> 01:11:49,090
+client从流程的最开始就开始
+client starts at the very beginning of
 
 1505
-01:11:49,090 --> 01:11:54,190
-并再次询问master服务器，该文件中的最后一块是什么
-and asked the master again what's the last chunk in this file, you know 
+01:11:49,090 --> 01:11:51,310
+并再次询问master服务器
+the process and asked the master again
+
+1506
+01:11:51,310 --> 01:11:54,190
+该文件中的最后一块是什么
+what's the last chunk in this file you know 
 
 1507
-01:11:54,190 --> 01:12:02,820
-因为如果其他人在文件中追加，则可能已更改
-because it might be might have changed if other people append in the file, yes
+01:11:54,190 --> 01:11:55,240
+因为如果其他人在文件中追加
+because it might be might have
+
+1508
+01:11:55,240 --> 01:11:56,710
+则可能已更改
+changed if other people are pending in
+
+1509
+01:11:56,710 --> 01:12:02,820
+the file yes
 
 1510
 01:12:17,760 --> 01:12:20,290
 我不能，我看不懂设计者心里想的
-so I can't, you know, I can't read the designers mind 
+so I can't you know I can't read the
 
 1511
-01:12:20,290 --> 01:12:27,640
-我观察到的是，该系统可以设计为使备份保持精确同步
-so the observation is the system could have been designed to keep the replicas in precise sync 
+01:12:20,290 --> 01:12:22,720
+我观察到的是，
+designers mind so the observation is the
+
+1512
+01:12:22,720 --> 01:12:24,760
+该系统可以设计为
+system could have been designed to keep
+
+1513
+01:12:24,760 --> 01:12:27,640
+使备份保持精确同步
+the replicas in precise sync 
 
 1514
 01:12:27,640 --> 01:12:30,820
@@ -5543,34 +7037,79 @@ so the observation is the system could have been designed to keep the replicas i
 it's absolutely true and you will do it in labs 2 & 3 
 
 1515
-01:12:30,820 --> 01:12:36,880
-你们将要设计一个进行备份的系统，该系统实际上使备份保持同步
-so you guys are going to design a system that does replication that actually keeps the replicas in sync
+01:12:30,820 --> 01:12:33,100
+你们将要
+so you guys are going to
+
+1516
+01:12:33,100 --> 01:12:34,930
+设计一个进行备份的系统
+design a system that does replication
+
+1517
+01:12:34,930 --> 01:12:36,880
+该系统真正的使备份保持同步
+that actually keeps the replicas in sync
 
 1518
-01:12:36,880 --> 01:12:43,180
-并且你将了解到，你需要采取多种技巧才能做到这一点
-and you'll learn, you know, there's some various techniques, various things you have to do in order to do that
+01:12:36,880 --> 01:12:38,490
+并且你将了解到
+and you'll learn you know there's some
+
+1519
+01:12:38,490 --> 01:12:41,020
+你需要采取多种技巧
+various techniques various things you
+
+1520
+01:12:41,020 --> 01:12:43,180
+才能做到这一点
+have to do in order to do that and 
 
 1521
-01:12:43,180 --> 01:12:47,740
-其中之一是，如果你希望备份保持同步，就必须遵循此规则
-and one of them is that ,there just has to be this rule, if you want the replicas to stay in sync 
+01:12:43,180 --> 01:12:46,150
+其中之一是，
+one of them is that there just has to be
+
+1522
+01:12:46,150 --> 01:12:47,740
+如果你希望备份保持同步，
+this rule if you want the replicas to
 
 1523
-01:12:47,740 --> 01:12:54,490
-必须遵循的规则是你不能将这些部分操作仅应用于某些，而不应用于其他
-it has to be this rule that you can't have these partial operations that are applied to only some and not others 
+01:12:47,740 --> 01:12:50,410
+就必须遵循的一个规则
+stay in sync it has to be this rule that
+
+1524
+01:12:50,410 --> 01:12:53,320
+必须遵循的规则是你不能将这些部分操作
+you can't have these partial operations
+
+1525
+01:12:53,320 --> 01:12:54,490
+仅应用于某些，而不应用于其他
+that are applied to only some and not
 
 1526
-01:12:54,490 --> 01:12:58,630
+01:12:54,490 --> 01:12:56,410
 这意味着必须有某种机制来
-and that means that there has to be some mechanism to, like where the system 
+others and that means that there has to
+
+1527
+01:12:56,410 --> 01:12:58,630
+这意味着必须有某种机制来
+be some mechanism to like where the system 
 
 1528
-01:12:58,630 --> 01:13:01,900
-即使client死了，系统，等一下
-even if the client dies where the system says wait a minute 
+01:12:58,630 --> 01:13:00,130
+即使client死了，
+even if the client dies where the
+
+1529
+01:13:00,130 --> 01:13:01,900
+系统或说，等一下
+system says we don't wait a minute 
 
 1530
 01:13:01,900 --> 01:13:04,060
@@ -5578,146 +7117,287 @@ even if the client dies where the system says wait a minute
 there was this operation I haven't finished it yet 
 
 1531
-01:13:04,060 --> 01:13:15,360
-因此，你构建的系统中，primary实际上要确保备份获得每条消息
-so you build systems in which the primary actually make sure the backups get every message
+01:13:04,060 --> 01:13:07,390
+因此，你构建的系统中
+so you build systems in which the
+
+1532
+01:13:07,390 --> 01:13:11,820
+primary实际上要确保备份
+primary actually make sure the backups
+
+1533
+01:13:11,820 --> 01:13:15,360
+获得了每条消息
+get every message
 
 1534
-01:13:29,460 --> 01:13:37,739
-如果第一次写B失败，你认为C应该写在B的位置
-if the first write of B failed, you think the C should go where the B is
+01:13:29,460 --> 01:13:34,390
+如果第一次写B失败
+if the first right B failed you think
+
+1535
+01:13:34,390 --> 01:13:37,739
+你认为C应该写在B的位置
+the C should go with the B
 
 1536
 01:13:37,770 --> 01:13:40,450
 然而它并没有，你可能认为它应该
-well it doesn't, you may think it should
+well it doesn't you may think it should
 
 1537
 01:13:40,450 --> 01:13:42,130
-但是系统实际运行的方式是
-but the way the system actually operates is that 
+但是这个系统实际运行的方式是
+but the way the system actually operates
 
 1538
-01:13:42,130 --> 01:13:57,730
-primary将C添加到块的末尾，在B的后面
-the primary will add C to the end of the chunk, after B 
+01:13:42,130 --> 01:13:46,690
+primary将C添加到块的末尾，
+is that the primary will add C to the
+
+1539
+01:13:46,690 --> 01:13:57,730
+在B的后面
+end of the chunk and the after B yeah I
 
 1540
 01:13:57,730 --> 01:13:59,890
-是的，这样做的原因之一是
-yeah I mean one reason for this is that 
+这样做的原因之一是
+mean one reason for this is that at the
 
 1541
-01:13:59,890 --> 01:14:03,010
-在写C的时候，primary实际上可能不知道B的命运是什么。
-at the time the write for C comes in, the primary may not actually know what the fate of B was
+01:13:59,890 --> 01:14:01,480
+在写C的时候
+time the right for C comes in the
+
+1542
+01:14:01,480 --> 01:14:03,010
+primary实际上可能不知道B的命运是什么
+primary may not actually know what the
 
 1543
-01:14:03,010 --> 01:14:07,510
-因为我们遇到了多个同时请求追加的client
-because we met multiple clients submitting appends concurrently
+01:14:03,010 --> 01:14:05,710
+因为我们遇到了多个
+fate of B was because we met multiple
+
+1544
+01:14:05,710 --> 01:14:07,510
+同时请求追加的client
+clients submitting appends concurrently
 
 1545
-01:14:07,510 --> 01:14:14,890
-而且为了获得高性能，你希望priamry服务器首先启动B的追加操作
-and, you know, for high performance you want the primary to start the append for B first 
+01:14:07,510 --> 01:14:10,600
+为了获得高性能
+and you know for high performance 
+
+1546
+01:14:10,600 --> 01:14:14,890
+你希望priamry服务器首先启动B的追加操作
+you want the primary to start the append for
 
 1547
-01:14:14,890 --> 01:14:21,750
-然后一旦我能够，就告诉所有人把C写在那个offset之后，以便所有这些事情并行发生
-and then as soon as I can, after that offset, tell everybody to do C so that all this stuff happens in parallel 
+01:14:14,890 --> 01:14:17,860
+然后一旦我能够，
+B first and then as soon as I can got
+
+1548
+01:14:17,860 --> 01:14:20,170
+就告诉所有人把C写在那个offset之后，
+the next stop set tell everybody did you
+
+1549
+01:14:20,170 --> 01:14:21,750
+这样所有这些事情就可以并行地发生
+see so that all this stuff happens in parallel 
 
 1550
-01:14:21,750 --> 01:14:33,760
-通过减慢速度，primary可以断定B完全失败了
-you know by slowing it down, you could you know, the primary could sort of decide that B has totally failed 
+01:14:21,750 --> 01:14:25,270
+通过减慢速度，
+you know by slowing it down you
+
+1551
+01:14:25,270 --> 01:14:31,750
+primary可以
+could you know the primary could sort of
+
+1552
+01:14:31,750 --> 01:14:33,760
+断定B完全失败了
+decide that B it totally failed and 
 
 1553
-01:14:33,760 --> 01:14:39,970
-然后发送另一轮消息，请撤消B的写操作
-and then send another round of messages, saying please undo the write of B 
+01:14:33,760 --> 01:14:35,560
+然后发送另一轮消息
+then send another round of messages saying
+
+1554
+01:14:35,560 --> 01:14:39,970
+请撤消B的写操作
+please undo the write of B and 
 
 1555
 01:14:39,970 --> 01:14:43,360
 那样会更复杂，更慢
-and that'll be more complex and slower I'm, you know
+there'll be more complex and slower I'm you know
 
 1556
-01:14:43,360 --> 01:14:48,730
-同样，这样做的理由是设计非常简单
-again the, the justification for this is that the design is pretty simple it, you know 
+01:14:43,360 --> 01:14:45,880
+同样，这样做的理由是
+again the the justification for this is
+
+1557
+01:14:45,880 --> 01:14:48,730
+这个设计非常简单
+that the design is pretty simple it you know 
 
 1558
 01:14:48,730 --> 01:14:53,820
-它揭示了应用程序的一些奇怪之处
+它暴露给应用程序一些奇怪之处
 it reveals some odd things to applications 
 
 1559
-01:14:53,820 --> 01:15:04,960
-希望是可以相对容易地编写应用程序，以容忍记录的顺序不同或别的
-and the hope was that applications could be relatively easily written to tolerate records being in different orders or who knows what 
+01:14:53,820 --> 01:14:58,060
+希望是
+and the hope was that
+
+1560
+01:14:58,060 --> 01:14:59,680
+可以相对容易地编写应用程序，
+applications could be relatively easily written 
+
+1561
+01:14:59,680 --> 01:15:01,750
+去容忍记录的顺序不同或别的
+to tolerate records being in
+
+1562
+01:15:01,750 --> 01:15:04,960
+去容忍记录的顺序不同或别的
+different orders or who knows what or 
 
 1563
-01:15:04,960 --> 01:15:13,300
-如果他们不能，应用程序可以要么自己安排选择一个顺序
-or if they couldn't, that applications could either make their own arrangements for picking an order themselves 
+01:15:04,960 --> 01:15:08,800
+如果他们不能，应用程序可以
+if they couldn't that applications could
+
+1564
+01:15:08,800 --> 01:15:11,080
+要么自己安排选择一个顺序
+either make their own arrangements for
+
+1565
+01:15:11,080 --> 01:15:13,300
+要么自己安排选择一个顺序
+picking an order themselves and 
 
 1566
 01:15:13,300 --> 01:15:14,860
 并在文件或其他内容中写入你知道的序列号
-and writing, you know, sequence numbers in the files or something 
+writing you know sequence numbers in the files
 
 1567
 01:15:14,860 --> 01:15:17,739
-or you could just have a 
+or something or you could just have a 
 
 1568
 01:15:17,739 --> 01:15:20,140
 如果应用程序真的对顺序非常敏感
-if application really was very sensitive to order 
+if application really was very sensitive to
 
 1569
-01:15:20,140 --> 01:15:24,220
+01:15:20,140 --> 01:15:21,910
 你就不能有从不同client端到同一文件的并发追加操作
-you could just not have concurrent appends from different clients to the same file 
+order you could just not have concurrent
+
+1570
+01:15:21,910 --> 01:15:24,220
+你就不能有从不同client端到同一文件的并发追加操作
+depends from different clients to the
 
 1571
 01:15:24,220 --> 01:15:27,520
-right, you could just, you know
+你就不能有从不同client端到同一文件的并发追加操作
+same file right you could just you know
 
 1572
-01:15:27,520 --> 01:15:31,390
-顺序很重要的文件，例如说电影文件
-files where order is very important like say it's a movie file, you
+01:15:27,520 --> 01:15:29,410
+顺序很重要的文件
+files where order is very important 
+
+1573
+01:15:29,410 --> 01:15:31,390
+例如说电影文件
+like say it's a movie file you know 
 
 1574
-01:15:31,390 --> 01:15:35,840
-知道你不想混杂电影文件中的字节
-know, you don't want to scramble the bytes in a movie file, you just write the Movie file 
+01:15:31,390 --> 01:15:32,750
+你不想混杂电影文件中的字节
+you don't want to scramble
+
+1575
+01:15:32,750 --> 01:15:35,840
+你不想混杂电影文件中的字节
+bytes in a movie file you just write the
 
 1576
-01:15:35,840 --> 01:15:45,040
-你就用一个client端连续地将电影写入文件的，而不是并发地追加记录
-you write the movie to the file by one client in sequential order and not with concurrent record appends
+01:15:35,840 --> 01:15:37,550
+你就用一个client
+Movie file you write the movie to the
+
+1577
+01:15:37,550 --> 01:15:40,100
+连续地将电影写入文件的
+file by one client in sequential order
+
+1578
+01:15:40,100 --> 01:15:45,040
+而不是并发地追加记录
+and not with concurrent record appends
 
 1579
 01:15:49,150 --> 01:15:56,680
-okay, all right
+okay all right
 
 1580
-01:15:56,680 --> 01:16:06,770
-有人问如何把这种设计变成一个提供了强大一致性的系统
-the, somebody asked basically what would it take to turn this design into one which actually provided strong consistency
+01:15:56,680 --> 01:16:04,400
+有人问如何把这种设计
+the somebody asked basically what would
+
+1581
+01:16:04,400 --> 01:16:06,770
+变成一个提供了强大一致性的系统
+it take to turn this design into one
+
+1582
+01:16:06,770 --> 01:16:08,120
+变成一个提供了强大一致性的系统
+which actually provided strong
 
 1583
-01:16:08,120 --> 01:16:18,680
-（它的）一致性更接近我们的没有任何意外的单服务器模型
-consistency closer to our sort of single server model where there's no surprises 
+01:16:08,120 --> 01:16:11,960
+（它的）一致性更接近
+consistency consistency closer to our
+
+1584
+01:16:11,960 --> 01:16:13,790
+我们的没有任何意外的单服务器模型
+sort of single server model where
+
+1585
+01:16:13,790 --> 01:16:18,680
+我们的没有任何意外的单服务器模型
+there's no surprises I don't actually
 
 1586
-01:16:18,680 --> 01:16:22,340
-我实际上不知道，因为这需要全新的复杂设计
-I don't actually know, because you know that requires an entire new complex design 
+01:16:18,680 --> 01:16:20,180
+我实际上不知道
+know because you know that requires an
+
+1587
+01:16:20,180 --> 01:16:22,340
+因为这需要全新的复杂设计
+entire new complex design 
 
 1588
 01:16:22,340 --> 01:16:24,560
@@ -5725,49 +7405,74 @@ I don't actually know, because you know that requires an entire new complex desi
 it's not clear how to mutate GFS to be that design 
 
 1589
-01:16:24,560 --> 01:16:27,440
+01:16:24,560 --> 01:16:26,330
 但我可以为你列出一些你需要考虑的事情
-but I can list for you, lists for you some things that you would want to think about 
+but I can list for you lists for you some
+
+1590
+01:16:26,330 --> 01:16:27,440
+如果你想
+things that you would want to think
 
 1591
-01:16:27,440 --> 01:16:34,460
-如果你想将GFS升级到具有很强的一致性的系统
-if you wanted to upgrade GFS to a a system did have strong consistency
+01:16:27,440 --> 01:16:32,350
+将GFS升级到
+about if you wanted to upgrade GFS to a
+
+1592
+01:16:32,350 --> 01:16:34,460
+具有很强的一致性的系统
+assistance did have strong consistency
 
 1593
-01:16:34,460 --> 01:16:40,940
-一个是你可能需要primary来检测重复的请求
-one is that you probably need the primary to detect duplicate requests 
+01:16:34,460 --> 01:16:37,370
+一个（要考虑的）是你可能
+one is that you probably need the
+
+1594
+01:16:37,370 --> 01:16:40,940
+需要让primary来检测重复的请求
+primary to detect duplicate requests so
 
 1595
-01:16:40,940 --> 01:16:44,960
-这样当第二个B到达primary时，primary知晓
-so that when this second B comes in the primary is aware that 
+01:16:40,940 --> 01:16:43,460
+这样当第二个B到达
+that when this second B comes in the
+
+1596
+01:16:43,460 --> 01:16:44,960
+primary能够知晓
+primary is aware that oh actually you know 
 
 1597
 01:16:44,960 --> 01:16:47,030
 哦，实际上我们早些时候已看到了该请求
-oh actually you know we already saw that request earlier
+we already saw that request earlier
 
 1598
-01:16:47,030 --> 01:16:52,160
-并且已经执行了或没有执行，并尝试确保B不会在文件中出现两次
-and did it or didn't do it and to try to make sure that B doesn't show up twice in the file 
+01:16:47,030 --> 01:16:50,570
+并且已经执行了或没有执行
+and did it or didn't do it and to try to
+
+1599
+01:16:50,570 --> 01:16:52,160
+并且要确保B不会在文件中出现两次
+make sure that B doesn't show up twice
 
 1600
 01:16:52,160 --> 01:16:54,140
 所以一个是你将需要重复检测
-so one is you're gonna need duplicate detection 
+in the file so one is you're gonna need duplicate detection 
 
 1601
 01:16:54,140 --> 01:16:59,570
 另一个问题
-another issues you probably 
+another issues you
 
 1602
 01:16:59,570 --> 01:17:02,660
 如果一个secondary执行secondary
-if a secondary is acting a secondary 
+probably if a secondary is acting a secondary 
 
 1603
 01:17:02,660 --> 01:17:05,000
@@ -5775,34 +7480,74 @@ if a secondary is acting a secondary
 you really need to design the system 
 
 1604
-01:17:05,000 --> 01:17:08,180
+01:17:05,000 --> 01:17:06,920
 使得，如果primary告诉secondary做某事
-so that if the primary tells a secondary to do something
+so that if the primary tells a
+
+1605
+01:17:06,920 --> 01:17:08,180
+使得，如果primary告诉secondary做某事
+secondary to do something
 
 1606
-01:17:08,180 --> 01:17:12,560
-secondary真的执行，而不仅仅是返回错误
-the secondary actually does it and doesn't just return error, right 
+01:17:08,180 --> 01:17:10,010
+secondary真的执行
+the secondary actually does it and
+
+1607
+01:17:10,010 --> 01:17:12,560
+而不仅仅是返回错误
+doesn't just return error right 
 
 1608
-01:17:12,560 --> 01:17:24,170
-对于一个严格一致的系统，如果secondary能够终止primary请求而无任何代价，这样是不行的
-for a strictly consistent system, having the secondaries be able to just sort of blow off primary requests with really no compensation is not okay 
+01:17:12,560 --> 01:17:15,260
+对于一个严格一致的系统
+for a strictly consistent system having the
+
+1609
+01:17:15,260 --> 01:17:16,880
+如果secondary能够
+secondaries be able to just sort of blow
+
+1610
+01:17:16,880 --> 01:17:20,210
+终止primary请求
+off primary requests with really no
+
+1611
+01:17:20,210 --> 01:17:24,170
+而无任何代价，这样是不行的 所以我认为
+compensation is not okay so I think the
 
 1612
 01:17:24,170 --> 01:17:25,730
-所以我认为, secondary必须接受并执行请求
-so I think the secondaries have to accept requests and execute them 
+,secondary必须接受并执行请求
+secondaries have to accept requests and execute them 
 
 1613
-01:17:25,730 --> 01:17:32,180
-或者如果secondary磁盘有某种永久性损坏，例如错误地拔出了磁盘，这
-or if a secondary has some sort of permanent damage, like it's disk got unplugged by mistake this 
+01:17:25,730 --> 01:17:28,460
+或者如果secondary磁盘有某种永久性损坏
+or if a secondary has some
+
+1614
+01:17:28,460 --> 01:17:30,050
+或者如果secondary磁盘有某种永久性损坏
+sort of permanent damage like it's disk
+
+1615
+01:17:30,050 --> 01:17:32,180
+例如错误地拔出了磁盘
+got unplugged by mistake this 
 
 1616
-01:17:32,180 --> 01:17:36,200
+01:17:32,180 --> 01:17:34,160
 你需要一种机制将secondary从系统中移除
-you need to have a mechanism to like take the secondary out of the system 
+you need to have a mechanism to like take the
+
+1617
+01:17:34,160 --> 01:17:36,200
+你需要一种机制将secondary从系统中移除
+secondary out of the system 
 
 1618
 01:17:36,200 --> 01:17:39,140
@@ -5810,14 +7555,19 @@ you need to have a mechanism to like take the secondary out of the system
 so the primary can proceed with the remaining secondaries 
 
 1619
-01:17:39,140 --> 01:17:44,950
-但这两点GFS都没有做，至少没有做对
-but GFS kind of does neither at least not right away
+01:17:39,140 --> 01:17:41,750
+但这两点GFS都没有做
+but GFS kind of doesn't
+
+1620
+01:17:41,750 --> 01:17:44,950
+至少没有做对
+either at least not right away
 
 1621
 01:17:45,200 --> 01:17:49,350
 所以这也意味着
-and so, that also means that 
+and so that also means that when the
 
 1622
 01:17:49,350 --> 01:17:50,910
@@ -5825,48 +7575,94 @@ and so, that also means that
 when the primary asks secondary's to append something 
 
 1623
-01:17:50,910 --> 01:17:54,810
-secondary必须小心，不要将数据暴露给读者
-the secondaries have to be careful not to expose that data to readers 
+01:17:50,910 --> 01:17:52,800
+secondary必须小心
+the secondaries have to be
+
+1624
+01:17:52,800 --> 01:17:54,810
+不要将数据暴露给读者
+careful not to expose that data to readers 
 
 1625
-01:17:54,810 --> 01:18:02,610
-直到primary确信所有secondary都能够执行附加操作
-until the primary is sure that all the secondaries really will be able to execute the append 
+01:17:54,810 --> 01:17:57,600
+直到primary确信
+until the primary is sure that
+
+1626
+01:17:57,600 --> 01:17:59,250
+所有secondary都能够
+all the secondaries really will be able
+
+1627
+01:17:59,250 --> 01:18:02,610
+执行附加操作 因此，你可能
+to execute the append so you might need
 
 1628
 01:18:02,610 --> 01:18:05,400
-因此，你可能需要在写操作有多个阶段
-so, you might need sort of multiple phases in the writes of
+需要在写操作有多个阶段
+sort of multiple phases in the writes of
 
 1629
 01:18:05,400 --> 01:18:06,900
 第一阶段，primary请求secondary
-first phase in which the primary asks the secondaries 
+first phase in which the primary asks
 
 1630
-01:18:06,900 --> 01:18:13,560
-我真的想让你执行此操作，你能执行此操作吗，但实际上尚未执行此操作
-look, you know, I really like you to do this operation, can you do it, but don't don't actually do it yet
+01:18:06,900 --> 01:18:09,030
+我真的想让你执行此操作
+the secondaries look you know I really
+
+1631
+01:18:09,030 --> 01:18:11,310
+你能执行此操作吗
+like you to do this operation can you do it 
+
+1632
+01:18:11,310 --> 01:18:13,560
+但并不是真的执行此操作
+but don't don't actually do it yet
 
 1633
-01:18:13,560 --> 01:18:17,670
-如果所有secondary都答应能够进行操作
-and if all the secondaries answer with a promise to be able to do the operation
+01:18:13,560 --> 01:18:15,810
+如果所有secondary都答应
+and if all the secondaries answer with a
+
+1634
+01:18:15,810 --> 01:18:17,670
+能够进行操作
+promise to be able to do the operation
 
 1635
-01:18:17,670 --> 01:18:22,080
-只有这个时候，primary说，好的去吧，每个人都执行你所承诺的操作
-only then the primary says alright everybody go ahead and do that operation you promised 
+01:18:17,670 --> 01:18:20,550
+只有这个时候，primary说
+only then the primary says alright
+
+1636
+01:18:20,550 --> 01:18:22,080
+好的去吧，每个人都执行你所承诺的操作
+everybody go ahead and do that operation
 
 1637
 01:18:22,080 --> 01:18:24,570
-and people, you know, that's
+好的去吧，每个人都执行你所承诺的操作
+you promised and people you know 
 
 1638
-01:18:24,570 --> 01:18:32,540
-这是许多现实世界中强一致的系统的工作方式，这种技巧称为两阶段提交
-the way a lot of real world systems, strong consistent systems work and that trick it's called two-phase commit
+01:18:24,570 --> 01:18:27,210
+这是许多现实世界中
+that's the way a lot of real world systems
+
+1639
+01:18:27,210 --> 01:18:28,950
+强一致的系统的工作方式
+strong consistent systems work and that
+
+1640
+01:18:28,950 --> 01:18:32,540
+这种技巧称为两阶段提交
+trick it's called two-phase commit
 
 1641
 01:18:32,630 --> 01:18:34,590
@@ -5874,129 +7670,268 @@ the way a lot of real world systems, strong consistent systems work and that tri
 another issue is that if the primary crashes 
 
 1642
-01:18:34,590 --> 01:18:44,340
-存在一组primary发给secondary的最后的操作
-there will have been some last set of operations that the primary had launched started to the secondaries 
+01:18:34,590 --> 01:18:38,370
+已经有最后的一组
+there will have been some last
+
+1643
+01:18:38,370 --> 01:18:40,410
+primary发给secondary的操作开始了
+set of operations that the primary had
+
+1644
+01:18:40,410 --> 01:18:44,340
+primary发给secondary的操作开始了
+launched started to the secondaries 
 
 1645
-01:18:44,340 --> 01:18:51,660
-primary在确定所有secondary拿到拷贝之前就崩溃了
-but the primary crashed before it was sure but whether those all the secondaries got their copied the operation or not 
+01:18:44,340 --> 01:18:46,890
+但primary在确定所有secondary拿到拷贝之前就崩溃了
+but the primary crashed before it was sure
+
+1646
+01:18:46,890 --> 01:18:48,900
+但primary在确定所有secondary拿到拷贝之前就崩溃了
+whether those all the secondaries got
+
+1647
+01:18:48,900 --> 01:18:51,660
+但primary在确定所有secondary拿到拷贝之前就崩溃了
+there copied the operation or not 
 
 1648
 01:18:51,660 --> 01:18:54,510
 所以如果primary崩溃
-so if the primary crashes 
+so if the primary crashes you know 
 
 1649
-01:18:54,510 --> 01:18:57,780
-一个新的primary，其中一个secondary将接任primary
-you know, a new primary, one of the secondaries is going to take over as primary 
+01:18:54,510 --> 01:18:56,040
+一个新的primary，其中一个secondary
+a new primary one of the secondaries is going
+
+1650
+01:18:56,040 --> 01:18:57,780
+将接任primary
+to take over as primary but at that
 
 1651
-01:18:57,780 --> 01:19:05,580
-但是在那时上，新的primary和其余的secondary在最后的几次操作中可能会有所不同
-but at that point, the second, the new primary and the remaining secondaries may differ in the last few operations 
+01:18:57,780 --> 01:19:01,200
+但是在那时上，新的primary
+point the second the new primary and the
+
+1652
+01:19:01,200 --> 01:19:03,240
+和其余的secondary
+remaining secondaries may differ in the
+
+1653
+01:19:03,240 --> 01:19:05,580
+在最后的几次操作中可能会有所不同 
+last few operations because maybe some
 
 1654
-01:19:05,580 --> 01:19:09,030
-因为也许其中一些在primary服务器崩溃之前没有收到消息
-because maybe some of them didn't get the message before the primary crashed
+01:19:05,580 --> 01:19:07,200
+因为也许其中一些在primary服务器崩溃之前
+of them didn't get the message before
+
+1655
+01:19:07,200 --> 01:19:09,030
+没有收到消息
+the primary crashed and so 
 
 1656
-01:19:09,030 --> 01:19:15,300
-因此，新的primary开始时必须与secondary显式重新同步，以
-and so the new primary has to start by explicitly resynchronizing with the secondaries 
+01:19:09,030 --> 01:19:11,490
+因此，新的primary开始时必须与secondary
+the new primer has to start by explicitly
+
+1657
+01:19:11,490 --> 01:19:15,300
+显式地重新同步
+resynchronizing with the secondaries to
 
 1658
-01:19:15,300 --> 01:19:20,750
-确保他们的操作历史的尾部是一样的
-to make sure that, the sort of, the tail of their operation histories are the same
+01:19:15,300 --> 01:19:17,010
+以确保他们的操作历史的尾部是一样的
+make sure that the sort of the tail of
+
+1659
+01:19:17,010 --> 01:19:20,750
+以确保他们的操作历史的尾部是一样的
+their operation histories are the same
 
 1660
 01:19:21,080 --> 01:19:24,060
-为了解决这个问题
-finally, to deal with this problem of 
+最后，为了解决这个问题
+finally to deal with this problem of oh
 
 1661
 01:19:24,060 --> 01:19:25,530
 有时候secondary会有所不同
-oh you know, there may be times when the secondaries differ 
+you know there may be times when the
 
 1662
-01:19:25,530 --> 01:19:33,000
-或client可能会从master那里得到过时的secondary
-or the client may have a slightly stale indication from the master of which secondary to talk to
+01:19:25,530 --> 01:19:28,500
+或client可能会从master那里
+secondaries differ or the client may
+
+1663
+01:19:28,500 --> 01:19:31,200
+得到过时的secondary
+have a slightly stale indication from
+
+1664
+01:19:31,200 --> 01:19:33,000
+得到过时的secondary
+the master of which secondary to talk to
 
 1665
-01:19:33,000 --> 01:19:38,010
-系统要么需要发送所有client端读取给primary服务器
-the system either needs to send all client reads through the primary 
+01:19:33,000 --> 01:19:35,940
+系统要么需要发送
+the system either needs to send all
+
+1666
+01:19:35,940 --> 01:19:38,010
+所有client端读取给primary服务器
+client reads through the primary 
 
 1667
-01:19:38,010 --> 01:19:43,860
+01:19:38,010 --> 01:19:41,490
 因为只有primary才可能知道实际发生了哪些操作
-because only the primary is likely to know which operations have really happened
+because only the primary is likely to know which
+
+1668
+01:19:41,490 --> 01:19:43,860
+因为只有primary才可能知道实际发生了哪些操作
+operations have really happened 
 
 1669
-01:19:43,860 --> 01:19:47,400
-或者我们需要给secondary一个租约系统，就像primary那样
-or we need a lease system for the secondaries just like we have for the primary 
+01:19:43,860 --> 01:19:45,570
+要么我们需要给secondary一个租约系统
+or we need a lease system for the secondaries
+
+1670
+01:19:45,570 --> 01:19:47,400
+就像primary那样
+just like we have for the primary so
 
 1671
-01:19:47,400 --> 01:19:55,030
-因此，众所周知，当secondary可以或不能合法回应client时
-so that it's well understood that when secondary can or can't legally respond to a client 
+01:19:47,400 --> 01:19:50,700
+因此，众所周知
+that it's well understood that when
+
+1672
+01:19:50,700 --> 01:19:55,030
+当secondary可以或不能合法回应client时
+secondary can or can't legally respond
 
 1673
-01:19:55,030 --> 01:19:58,570
-这些就是我所知道的，必须在此系统中修复
-and so these are the things I'm aware of that would have to be fixed in this system 
+01:19:55,030 --> 01:19:56,650
+我被告知，这些事情
+a client and so these are the things I'm
+
+1674
+01:19:56,650 --> 01:19:58,570
+必须在此系统中修复
+aware of that would have to be fixed in this system 
 
 1675
-01:19:58,570 --> 01:20:02,230
+01:19:58,570 --> 01:20:00,550
 增加了复杂性和技巧，使其具有很强的一致性
-to added complexity and chitchat to make it have strong consistency 
+tor added complexity and
+
+1676
+01:20:00,550 --> 01:20:02,230
+增加了复杂性和技巧，使其具有很强的一致性
+chitchat to make it have strong consistency 
 
 1677
 01:20:02,230 --> 01:20:05,050
-而你实际上就是
-and you're actually, the way
+and you're actually the way
 
 1678
 01:20:05,050 --> 01:20:08,020
-我得到这份列表是通过思考lab内容
+我通过思考lab内容得到这份列表
 I got that list was by thinking about the labs 
 
 1679
-01:20:08,020 --> 01:20:18,940
-你最终会做我刚才所说的所有事情，作为lab2，lab3的一部分，以建立严格一致的系统
-you're gonna end up doing all the things I just talked about as part of labs two and three to build a strictly consistent system 
+01:20:08,020 --> 01:20:09,940
+你最终会做
+you're gonna end up doing all
+
+1680
+01:20:09,940 --> 01:20:12,099
+我刚才所说的所有事情
+the things I just talked about as part
+
+1681
+01:20:12,099 --> 01:20:13,989
+作为lab2，lab3的一部分
+of labs two and three to build a
+
+1682
+01:20:13,989 --> 01:20:18,940
+建立严格一致的系统
+strictly consistent system okay so 
 
 1683
 01:20:18,940 --> 01:20:21,099
 好吧，让我花一分钟的时间
-okay so, let me spend one minute on there's actually
+let me spend one minute on there's actually
 
 1684
-01:20:21,099 --> 01:20:32,770
-我在笔记中链接到一个回顾性访谈，内容涉及GFS在Google生涯的前五年或十年中表现的如何出色
-I have a link in the notes to a sort of retrospective interview about how well GFS played out over the first five or ten years of his life at Google
+01:20:21,099 --> 01:20:23,079
+我在笔记中有一个链接
+I have a link in the notes to a sort of
+
+1685
+01:20:23,079 --> 01:20:25,840
+一个回顾性访谈，关于
+retrospective interview about how well
+
+1686
+01:20:25,840 --> 01:20:28,389
+GFS在Google生涯的前五年
+GFS played out over the first five or
+
+1687
+01:20:28,389 --> 01:20:32,770
+或十年中表现的如何出色
+ten years of his life at Google 
 
 1688
-01:20:32,770 --> 01:20:40,570
-因此，高层次的总结是，它取得了巨大的成功，许多Google应用程序都使用了它
-so the high-level summary is that the most, that was tremendously successful and many many Google applications used it 
+01:20:32,770 --> 01:20:36,219
+高层次的总结是
+so the high-level summary is that the most is
+
+1689
+01:20:36,219 --> 01:20:37,690
+它取得了巨大的成功
+that was tremendously successful and
+
+1690
+01:20:37,690 --> 01:20:40,570
+许多Google的应用都使用了它
+many many Google applications used it in
 
 1691
-01:20:40,570 --> 01:20:45,250
-后来，许多Google基础架构被构建为一层，例如BigTable
-and a number of Google infrastructure was built as a layer like big file for example, BigTable I mean 
+01:20:40,570 --> 01:20:43,000
+许多Google基础架构
+a number of Google infrastructure was
+
+1692
+01:20:43,000 --> 01:20:45,250
+被构建为一层
+built as a layer like big file for
 
 1693
-01:20:45,250 --> 01:20:50,190
-我的意思是被构建为GFS之上的一层，MapReduce也是这样
-was built as a layer on top of GFS and MapReduce also
+01:20:45,250 --> 01:20:47,409
+例如BigTable
+example BigTable I mean was built as a
+
+1694
+01:20:47,409 --> 01:20:50,190
+被构建为GFS之上的一层，MapReduce也是这样
+layer on top of GFS and MapReduce also
 
 1695
 01:20:50,190 --> 01:20:54,550
@@ -6005,82 +7940,171 @@ so widely used within Google
 
 1696
 01:20:54,550 --> 01:20:57,460
-可能最严重的限制是
-may be the most serious limitation is that there
+可能最严重的局限是
+may be the most serious limitation is that 
 
 1697
-01:20:57,460 --> 01:21:01,510
-单一的master，而master为每个块中的每个文件都有一个表条目
-was a single master and the master had to have a table entry for every file and every chunk 
+01:20:57,460 --> 01:20:59,289
+单一的master，而master必须为每个块，
+there was a single master and the master had
+
+1698
+01:20:59,289 --> 01:21:01,510
+每个文件都有一个表条目
+to have a table entry for every file and
 
 1699
-01:21:01,510 --> 01:21:06,820
-这意味着GFS的使用量增加了，并且它们涉及的文件越来越多
-and that mean does the GFS use grew and there're about more and more files 
+01:21:01,510 --> 01:21:04,510
+这意味着随着GFS的使用量增加，
+every chunk and that mean does the GFS
+
+1700
+01:21:04,510 --> 01:21:06,820
+它们涉及的文件越来越多
+use grew and they're about more and more files 
 
 1701
-01:21:06,820 --> 01:21:11,980
-主机就用完内存，用完了RAM来存储文件，并且
-the master just ran out of memory, ran out of RAM to store the files and
+01:21:06,820 --> 01:21:08,650
+主机就用完了内存
+the master just ran out of memory
+
+1702
+01:21:08,650 --> 01:21:11,980
+用完了RAM来存储文件
+ran out of RAM to store the files and
 
 1703
-01:21:11,980 --> 01:21:18,309
-你可以增加更多的RAM，但是一台计算机可以拥有多少RAM是有限度的，因此
-you know, you can put more RAM on but there's limits to how much RAM a single machine can have and so 
+01:21:11,980 --> 01:21:13,690
+你可以增加更多的RAM
+you know you can put more RAM on but
+
+1704
+01:21:13,690 --> 01:21:15,010
+但是一台计算机可以拥有多少RAM是有限度的
+there's limits to how much RAM a single
+
+1705
+01:21:15,010 --> 01:21:18,309
+但是一台计算机可以拥有多少RAM是有限度的
+machine can have and so that was the
 
 1706
 01:21:18,309 --> 01:21:19,599
-这是人们遇到的最直接的问题
-that was the most of, the most immediate problem people ran into
+因此这是人们遇到的最直接的问题
+most of the most immediate problem
 
 1707
-01:21:19,599 --> 01:21:28,030
-此外，来自成千上万个client端的单个master服务器上的负载开始过大
-in addition the load on a single master from thousands of clients started to be too much 
+01:21:19,599 --> 01:21:24,159
+此外，单个master服务器上的负载
+people ran into in addition the load on
+
+1708
+01:21:24,159 --> 01:21:25,869
+来自成千上万个client端的
+a single master from thousands of clients 
+
+1709
+01:21:25,869 --> 01:21:28,030
+这开始变得过大
+started to be too much 
 
 1710
-01:21:28,030 --> 01:21:30,940
-在master服务器中，cpu每秒只能处理数百个请求
-the master only, the cpu can only process several many hundreds of requests per second
+01:21:28,030 --> 01:21:29,650
+在master服务器中
+in the master only, the cpu can only
+
+1711
+01:21:29,650 --> 01:21:30,940
+cpu每秒只能处理数百个请求
+process however many hundreds of
 
 1712
-01:21:30,940 --> 01:21:39,880
-尤其是将内容写到磁盘上，很快就会有太多的client端
-especially the write things to disk and pretty soon there got to be too many clients 
+01:21:30,940 --> 01:21:33,070
+特别是硬盘的写操作
+requests per second especially the write
+
+1713
+01:21:33,070 --> 01:21:35,739
+很快就会有过多的client
+things to disk and pretty soon there got
+
+1714
+01:21:35,739 --> 01:21:39,880
+很快就会有过多的client
+to be too many clients 
 
 1715
-01:21:39,880 --> 01:21:47,500
-另一个问题是，一些应用程序发现很难处理这种有点奇怪的语义，最后一个问题是
-another problem is, some applications found it hard to deal with this kind of, sort of odd semantics and a final problem is that
+01:21:39,880 --> 01:21:41,409
+另一个问题是，一些应用程序发现
+another problem with a some applications found it hard
+
+1716
+01:21:41,409 --> 01:21:44,260
+很难处理这种有点奇怪的语义
+to deal with this kind of sort of odd
+
+1717
+01:21:44,260 --> 01:21:47,500
+最后一个问题是
+semantics and a final problem is that
 
 1718
-01:21:47,500 --> 01:21:52,059
-主机的故障切换并不是自动的
-the master that was not an automatic story for master failover
+01:21:47,500 --> 01:21:49,599
+master服务器的故障切换并不是自动的
+the master that was not an automatic
+
+1719
+01:21:49,599 --> 01:21:52,059
+master服务器的故障切换并不是自动的
+story for master failover
 
 1720
 01:21:52,059 --> 01:21:54,400
 在我们阅读的GFS论文的原文里
-in the original, in the GFS paper as we read it 
+in the original in the GFS paper as we
 
 1721
-01:21:54,400 --> 01:22:00,460
-需要人工干预来处理已永久崩溃且需要更换的master主机
-like required human intervention to deal with a master that had sort of permanently crashed and needs to be replaced 
+01:21:54,400 --> 01:21:56,440
+需要人工干预
+read it like required human intervention
+
+1722
+01:21:56,440 --> 01:21:59,170
+来处理已永久崩溃且需要更换的master主机
+to deal with a master that had sort of
+
+1723
+01:21:59,170 --> 01:22:00,460
+来处理已永久崩溃且需要更换的master主机
+permanently crashed and needs to be replaced 
 
 1724
-01:22:00,460 --> 01:22:09,360
-可能要花几十分钟甚至更长的时间，对于某些应用程序的故障恢复，时间太长了
-and that could take tens of minutes or more That was just too long for failure recovery for some applications
+01:22:00,460 --> 01:22:03,579
+那可能要花几十分钟
+and that could take tens of
+
+1725
+01:22:03,579 --> 01:22:05,980
+甚至更长的时间
+minutes or more I was just too long for
+
+1726
+01:22:05,980 --> 01:22:09,360
+对于某些应用程序的故障恢复，时间太长了
+failure recovery for some applications
 
 1727
 01:22:09,360 --> 01:22:13,630
 好极了，我们星期四见
-okay excellent, I'll see you on Thursday
+okay excellent I'll see you on Thursday
 
 1728
-01:22:13,630 --> 00:00:00,000
-在整个学期中，我们将听到更多关于所有这些主题的信息
-and we'll hear more about all these themes over the semester
+01:22:13,630 --> 01:22:15,970
+我们将听到这个更多课程主题的信息
+and we'll hear more about all these
 
+1729
+01:22:15,970 --> 00:00:00,000
+我们将听到这个更多课程主题的信息
+themes over the semester
 
