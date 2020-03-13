@@ -1730,102 +1730,127 @@ little use of academic ideas in industry
 
 347
 00:15:49,589 --> 00:15:52,239
+但从这篇论文发表之后
 but starting at around the time this
 
 348
 00:15:52,239 --> 00:15:54,759
+像 Google 这样的大型网站才开始真正建立严格意义上分布式系统
 paper was published big websites like
 
 349
 00:15:54,759 --> 00:15:57,399
+像 Google 这样的大型网站才开始真正建立严格意义上分布式系统
 Google started to actually build serious
 
 350
 00:15:57,399 --> 00:16:01,569
+这件事让人热血沸腾 其中就包括我
 distributed systems and it was like very
 
 351
 00:16:01,569 --> 00:16:03,699
+这件事让人热血沸腾 其中就包括我
 exciting for people like me who were on
 
 352
 00:16:03,699 --> 00:16:06,879
+作为学术界的一份子
 academic side of this to see see real
 
 353
 00:16:06,879 --> 00:16:10,119
+我切实体会到了所有想法在工业界得以实现
 uses of these ideas where Google was
 
 354
 00:16:10,119 --> 00:16:11,769
+在 Google, 有海量的数据
 coming from was you know they had some
 
 355
 00:16:11,769 --> 00:16:14,470
+这些数据多到单个磁盘远远无法存储
 vast vast data sets far larger than
 
 356
 00:16:14,470 --> 00:16:16,360
+这些数据多到单个磁盘远远无法存储
 could be stored in a single disk like an
 
 357
 00:16:16,360 --> 00:16:20,769
+就比如说整个互联网抓取的网页副本
 entire crawl copy of the web or a little
 
 358
 00:16:20,769 --> 00:16:22,119
+或者在这篇文章后边一点点有个巨大的 YouTube 视频
 bit after this paper they had giant
 
 359
 00:16:22,119 --> 00:16:25,480
+他们就会有一份比如中间文件的东西 用来建立索引用于搜索
 YouTube videos they had things like the
 
 360
 00:16:25,480 --> 00:16:27,669
+他们就会有一份比如中间文件的东西 用来建立索引用于搜索
 intermedia files for building a search
 
 361
 00:16:27,669 --> 00:16:28,299
+他们就会有一份比如中间文件的东西 用来建立索引用于搜索
 index
 
 362
 00:16:28,299 --> 00:16:30,790
+他们的 web 服务器显然会有大量的日志文件
 they also apparently kept enormous log
 
 363
 00:16:30,790 --> 00:16:32,679
+他们的 web 服务器显然会有大量的日志文件
 files from all their web servers so they
 
 364
 00:16:32,679 --> 00:16:34,029
+以便用作未来分析
 could later analyze them so they had
 
 365
 00:16:34,029 --> 00:16:36,910
+他们有大量的数据集 并且使用大量的磁盘来存储他们
 some big big data sets they used both to
 
 366
 00:16:36,910 --> 00:16:39,339
+他们有大量的数据集 并且使用大量的磁盘来存储他们
 store them and many many disks to store
 
 367
 00:16:39,339 --> 00:16:41,139
+借助 MapReduce 这样的工具可以快速的处理这些数据
 them and they needed to be able to
 
 368
 00:16:41,139 --> 00:16:42,399
+借助 MapReduce 这样的工具可以快速的处理这些数据
 process them quickly with things like
 
 369
 00:16:42,399 --> 00:16:44,709
+因此他们需要能高度并行化的访问海量数据
 MapReduce so they needed high speed
 
 370
 00:16:44,709 --> 00:16:47,529
+因此他们需要能高度并行化的访问海量数据
 parallel access to these vast amounts of
 
 371
 00:16:47,529 --> 00:16:51,819
+okay 所以他们的目标之一就是
 data okay so what they were looking for
 
 372
@@ -1834,14 +1859,17 @@ one goal was just that the thing be big
 
 373
 00:16:53,669 --> 00:17:00,009
+他们还需要一个文件系统 从某种意义上来说
 and fast they also wanted a file system
 
 374
 00:17:00,009 --> 00:17:02,470
+这个文件系统要能全面的满足许多不同的应用程序获取数据
 that was sort of global in the sense
 
 375
 00:17:02,470 --> 00:17:04,148
+这个文件系统要能全面的满足许多不同的应用程序获取数据
 that many different applications could
 
 376

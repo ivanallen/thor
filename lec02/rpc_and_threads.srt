@@ -7890,6 +7890,7 @@ something if there's nothing waiting on
 
 1680
 01:18:11,139 --> 01:18:13,590
+如果没有等待在channel
 the channel
 
 1681
@@ -7983,14 +7984,11 @@ afraid we're out of time we'll continue
 this actually we have a presentation
 
 1699
-01:20:15,800 --> 01:20:18,260
+01:20:15,800 --> 01:20:16,260
 在那儿会聊更多关于go的话题
 scheduled by the TAs which will talk
 
 1700
-01:20:18,260 --> 00:00:00,000
-
+01:20:16,260 --> 001:20:18,260
+在那儿会聊更多关于go的话题
 more about go
-
-
-
