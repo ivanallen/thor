@@ -1785,7 +1785,7 @@ entire crawl copy of the web or a little
 
 358
 00:16:20,769 --> 00:16:22,119
-或者在这篇文章后边一点点有个巨大的 YouTube 视频
+或者在这篇文章后边一点有个巨大的 YouTube 视频
 bit after this paper they had giant
 
 359
@@ -1850,11 +1850,12 @@ parallel access to these vast amounts of
 
 371
 00:16:47,529 --> 00:16:51,819
-okay 所以他们的目标之一就是
+okay 所以他们的目标是
 data okay so what they were looking for
 
 372
 00:16:51,819 --> 00:16:53,669
+这个存储系统需要 大容量 速度快
 one goal was just that the thing be big
 
 373
@@ -1864,304 +1865,377 @@ and fast they also wanted a file system
 
 374
 00:17:00,009 --> 00:17:02,470
-这个文件系统要能全面的满足许多不同的应用程序获取数据
+这个文件系统必须是 Global 的（覆盖在整个数据中心上）
 that was sort of global in the sense
 
 375
 00:17:02,470 --> 00:17:04,148
-这个文件系统要能全面的满足许多不同的应用程序获取数据
+从某种意义上来说 各种不同的应用程序都能从中读取数据
 that many different applications could
 
 376
 00:17:04,148 --> 00:17:06,490
+有一种建立大型存储系统的方法
 get at it one way to build a big storage
 
 377
 00:17:06,490 --> 00:17:07,990
+假设你有一些特殊的应用程序或是采集程序
 system is to you know you have some
 
 378
 00:17:07,990 --> 00:17:09,398
+假设你有一些特殊的应用程序或是采集程序
 particular application or mining you
 
 379
 00:17:09,398 --> 00:17:11,260
+你可以编写一个专用的存储系统 专门适应这些特别的应用程序
 build storage sort of dedicated and
 
 380
 00:17:11,260 --> 00:17:13,119
+你可以编写一个专用的存储系统 专门适应这些特别的应用程序
 tailored to that application and if
 
 381
 00:17:13,119 --> 00:17:14,829
+如果你隔壁办公室的人也需要用到大型存储
 somebody else in the next office needs
 
 382
 00:17:14,829 --> 00:17:17,079
+他们就得自己去编写自己的存储系统 而无法复用你的程序
 big storage well they can build their
 
 383
 00:17:17,079 --> 00:17:17,680
+他们就得自己去编写自己的存储系统 而无法复用你的程序
 own thing
 
 384
 00:17:17,680 --> 00:17:21,099
+你要是有一个通用的 Global 且可利用的存储系统
 right but if you have a universal server
 
 385
 00:17:21,099 --> 00:17:25,300
+你要是有一个通用的 Global 且可利用的存储系统
 kind of global reusable storage system
 
 386
 00:17:25,300 --> 00:17:28,030
+这意味着 如果我存储大量从 web 中抓取的数据
 and that means that if I store a huge
 
 387
 00:17:28,030 --> 00:17:29,710
-amount of data si you know I'm crawling
+这意味着 如果我存储大量从 web 中抓取的数据
+amount of data set you know I'm crawling
 
 388
 00:17:29,710 --> 00:17:31,600
+并且你也想查看我抓取的 web 页
 the web and you want to look at my
 
 389
 00:17:31,600 --> 00:17:35,290
+并且你也想看我抓取的 web 页
 crawled web web pages because we're all
 
 390
 00:17:35,290 --> 00:17:36,580
+因为我们都在相同的沙盒中折腾
 using we're all playing in the same
 
 391
 00:17:36,580 --> 00:17:38,740
+且使用了相同的存储系统
 sandbox we're all using the same storage
 
 392
 00:17:38,740 --> 00:17:40,750
+只要访问控制允许的话 你就可以读取我存的文件
 system you can just read my files you
 
 393
 00:17:40,750 --> 00:17:43,480
+只要访问控制允许的话 你就可以读取我存的文件
 know maybe access controls permitting so
 
 394
 00:17:43,480 --> 00:17:45,190
+所以就有了构建文件系统的想法
 the idea was to build a sort of file
 
 395
 00:17:45,190 --> 00:17:47,110
+任何在 Google 的人 都可以给任何文件命名或是读取它
 system where anybody you know anybody
 
 396
 00:17:47,110 --> 00:17:50,080
+任何在 Google 的人 都可以给任何文件命名或是读取它
 inside Google could name and read any of
 
 397
 00:17:50,080 --> 00:17:57,010
+目的就是为了共享
 the files to allow sharing in order to
 
 398
 00:17:57,010 --> 00:17:58,540
+为了能得到大容量 速度快的特性
 get a in order to get bigness and
 
 399
 00:17:58,540 --> 00:18:00,300
+他们需要把数据进行分割
 fastness they need to split the data
 
 400
 00:18:00,300 --> 00:18:04,990
+每个文件都将自动地被 GFS 分割到许多 server 上
 through every file will be automatically
 
 401
 00:18:04,990 --> 00:18:07,900
+每个文件都将自动地被 GFS 分割到许多 server 上
 split by GFS over many servers so that
 
 402
 00:18:07,900 --> 00:18:08,950
+只要有许多客户端大量读取文件 这样读写操作将会自动变快（注：并行化读写）
 writes and reads would just
 
 403
 00:18:08,950 --> 00:18:10,780
+只要有许多客户端大量读取文件 这样读写操作将会自动变快（注：并行化读写）
 automatically be fast as long as you
 
 404
 00:18:10,780 --> 00:18:12,730
+只要有许多客户端大量读取文件 这样读写操作将会自动变快（注：并行化读写）
 were reading from lots and lots of
 
 405
 00:18:12,730 --> 00:18:14,770
+只要有许多客户端大量读取文件 这样读写操作将会自动变快（注：并行化读写）
 reading a file from lots of clients you
 
 406
 00:18:14,770 --> 00:18:17,860
-get high aggregate throughput and also
+你就能获得更高的呑吐量
+get higher aggregate throughput and also
 
 407
 00:18:17,860 --> 00:18:20,230
+而且能够让单个文件比单个磁盘还要大
 be able to for a single file be able to
 
 408
 00:18:20,230 --> 00:18:21,670
+而且能够让单个文件比单个磁盘还要大
 have single files that were bigger than
 
 409
 00:18:21,670 --> 00:18:24,730
+因为我们构建的东西在数百台服务器之上
 any single disk because we're building
 
 410
 00:18:24,730 --> 00:18:26,170
+因为我们构建的东西在数百台服务器之上
 something out of hundreds of servers we
 
 411
 00:18:26,170 --> 00:18:36,430
-want automatic feel your recovery we
+所以我们希望这些服务器能够自动的从错误中恢复
+want automatic failure recovery we
 
 412
 00:18:36,430 --> 00:18:37,480
+如果数百台机器中 每时每刻都有机器发生故障
 don't want to build a system where every
 
 413
 00:18:37,480 --> 00:18:38,860
+如果数百台机器中 每时每刻都有机器发生故障
 time one of our hundreds of servers a
 
 414
 00:18:38,860 --> 00:18:40,540
+这时候你必须得有个人跑到机器去 对着 server 干一些事情
 fail some human being has to go to the
 
 415
 00:18:40,540 --> 00:18:42,490
+这时候你必须得有个人跑到机器去 对着 server 干一些事情
 machine room and do something with the
 
 416
 00:18:42,490 --> 00:18:44,830
+比如重启它 或者是迁移数据 或是别的什么也好
 server or to get it up and running or
 
 417
 00:18:44,830 --> 00:18:46,870
+比如重启它 或者是迁移数据 或是别的什么也好
 transfers data or something well this
 
 418
 00:18:46,870 --> 00:18:50,130
+你肯定不愿意用这样的服务 是吧 它都不能自我修复
 isn't just fix itself um there were some
 
 419
 00:18:50,130 --> 00:18:54,370
+还有一些并非是目标 比如 GFS 被设计成只在单数据中心上运行
 sort of non goals like one is that GFS
 
 420
 00:18:54,370 --> 00:18:55,930
+还有一些并非是目标 比如 GFS 被设计成只在单数据中心上运行
 was designed to run in a single data
 
 421
 00:18:55,930 --> 00:18:57,340
+我们并不会讨论如何把副本放到世界各地
 center so we're not talking about
 
 422
 00:18:57,340 --> 00:18:59,950
+我们并不会讨论如何把副本放到世界各地
 placing replicas all over the world a
 
 423
 00:18:59,950 --> 00:19:02,410
+单个 GFS 只安装在一个大机房里 只会运行在一个数据中心上
 single GFS installation just lived in
 
 424
 00:19:02,410 --> 00:19:05,200
-one one data center one big machine run
+单个 GFS 只安装在一个大机房里 只会运行在一个数据中心上
+one one data center one big machine room
 
 425
 00:19:05,200 --> 00:19:12,190
+让这样的系统能够在副本彼此相距甚远的情况下工作
 so getting this style system to work
 
 426
 00:19:12,190 --> 00:19:14,860
-where the replicas are far distant from
+让这样的系统能够在副本彼此相距甚远的情况下工作
+with the replicas are far distant from
 
 427
 00:19:14,860 --> 00:19:17,550
+是一个有价值的目标 但是这还是挺难的
 each other is a valuable goal but
 
 428
 00:19:17,550 --> 00:19:22,720
+这个单数据中心并不是面向客户的服务
 difficult so single data centers this is
 
 429
 00:19:22,720 --> 00:19:25,540
+这个单数据中心并不是面向客户的服务
 not a service to customers GFS was for
 
 430
 00:19:25,540 --> 00:19:27,920
+GFS 是 Google 工程师开发的内部使用的工具
 internal use by
 
 431
 00:19:27,920 --> 00:19:30,210
+GFS 是 Google 工程师开发的内部使用的工具
 applications written by Google engineers
 
 432
 00:19:30,210 --> 00:19:32,400
+所以他们并不会直接出售这套程序
 so it wasn't they weren't directly
 
 433
 00:19:32,400 --> 00:19:33,810
+但他们可能会出售他们使用的服务
 selling this they might be selling
 
 434
 00:19:33,810 --> 00:19:37,170
+GFS 是内部使用的 他们不会直接出售的
 services they used GFS internally but
 
 435
 00:19:37,170 --> 00:19:38,520
+GFS 是内部使用的 他们不会直接出售的
 they weren't selling it directly so it's
 
 436
 00:19:38,520 --> 00:19:45,660
+GFS 是内部使用的 他们不会直接出售的
 just for internal use and it was
 
 437
 00:19:45,660 --> 00:19:48,630
+而且它是为大型顺序文件读写以多种方式定制的
 tailored in a number of ways for big
 
 438
 00:19:48,630 --> 00:19:51,180
+而且它是为大型顺序文件读写以多种方式定制的
 sequential file reads and writes there's
 
 439
 00:19:51,180 --> 00:19:54,180
+有一个完全不同的领域 比如为小块数据专门优化的存储系统
 a whole nother domain like a system of
 
 440
 00:19:54,180 --> 00:19:56,490
+有一个完全不同的领域 比如为小块数据专门优化的存储系统
 storage systems that are optimized for
 
 441
 00:19:56,490 --> 00:19:58,590
+有一个完全不同的领域 比如为小块数据专门优化的存储系统
 small pieces of data like a bank that's
 
 442
 00:19:58,590 --> 00:20:00,090
+比如银行余额需要有一个数据库
 holding bank balances probably wants a
 
 443
 00:20:00,090 --> 00:20:02,100
-database that can read and write an
+它可以读、写和更新 100 字节存有人们银行余额的记录
+database that can read and write and
 
 444
 00:20:02,100 --> 00:20:04,380
+它可以读、写和更新 100 字节存有人们银行余额的记录
 update you know 100 byte records that
 
 445
 00:20:04,380 --> 00:20:07,230
+它可以读、写和更新 100 字节存有人们银行余额的记录
 hold people's bank balances but GFS is
 
 446
 00:20:07,230 --> 00:20:10,230
+GFS 可不是这样的系统 它就是为了处理“大文件”
 not that system so it's really for big
 
 447
 00:20:10,230 --> 00:20:12,600
+比如 GB TB 大小的文件
 or big is you know terabytes gigabytes
 
 448
 00:20:12,600 --> 00:20:21,350
+只是为了大文件的顺序访问 而不是随机访问
 some big sequential not random access
 
 449
