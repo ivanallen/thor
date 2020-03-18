@@ -8694,7 +8694,7 @@ simplified MapReduce so have fun with
 that
 
 1741
-01:19:28,349 --> 00:00:00,000
+01:19:28,349 --> 01:19:32,000
 周四见
 and see you on Thursday
 
