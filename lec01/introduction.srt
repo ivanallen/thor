@@ -5085,7 +5085,7 @@ milliseconds to communicate to a data
 
 1018
 00:45:31,670 --> 00:45:33,380
-
+与横跨洲际的数据中心进行通信
 center across the continent in order to
 
 1020
