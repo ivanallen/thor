@@ -1,6964 +1,8700 @@
 1
 00:00:00,800 --> 00:00:05,210
+让我们开始课程
 all right let's get started
 
 2
 00:00:05,210 --> 00:00:11,820
+本课程是 6.824 分布式系统
 this is 6.824 distributed systems so
 
 3
 00:00:11,820 --> 00:00:13,230
+本节课我们从分布式系统的
 I'd like to start with just a brief
 
 4
 00:00:13,230 --> 00:00:14,639
+整体概要开始讲起
 explanation of what I think a
 
 5
 00:00:14,639 --> 00:00:18,960
+大家都知道本课程的核心是
 distributed system is you know the core
 
 6
 00:00:18,960 --> 00:00:21,630
+一系列计算集群通过网络
 of it is a set of cooperating computers
 
 7
 00:00:21,630 --> 00:00:23,190
+共同完成
 that are communicating with each other
 
 8
 00:00:23,190 --> 00:00:26,190
-over networked to get some coherent TAsk
+某一串连贯的任务
+over networked to get some coherent task
 
 9
 00:00:26,190 --> 00:00:29,730
+因此，我们在本课程中
 done and so the kinds of examples that
 
 10
 00:00:29,730 --> 00:00:31,530
+重点介绍的一些案例包括：
 we'll be focusing on in this class are
 
 11
 00:00:31,530 --> 00:00:34,970
+大型网站的储存系统
 things like storage for big websites or
 
 12
 00:00:34,970 --> 00:00:38,660
+大规模数据集运算，如 MapReduce
 big data computations such as MapReduce
 
 13
 00:00:38,660 --> 00:00:41,760
-and also somewhat more exotic things
+以及一些更为奇妙的技术
+and also some what more exotic things
 
 14
 00:00:41,760 --> 00:00:43,950
+比如点对点的文件共享
 like peer-to-peer file sharing so
 
 15
 00:00:43,950 --> 00:00:45,870
+这只是我们学习过程中的一些例子
 they're all just examples the kinds of
 
 16
 00:00:45,870 --> 00:00:48,329
+我们同样会关注
 case studies we'll look at and the
 
 17
 00:00:48,329 --> 00:00:49,800
+为何分布式计算之所以如此重要
 reason why all this is important is that
 
 18
 00:00:49,800 --> 00:00:51,600
+是因为许多重要的基础设施
 a lot of critical infrastructure out
 
 19
 00:00:51,600 --> 00:00:53,489
+都是在此基础上建立的
 there is built out of distributed
 
 20
 00:00:53,489 --> 00:00:56,250
+他们都需要多台计算机
 systems infrastructure that requires
 
 21
 00:00:56,250 --> 00:00:57,570
+或者说本质上是
 more than one computer to get its job
 
 22
 00:00:57,570 --> 00:00:59,579
+多台物理隔离的计算机
 done or it's sort of inherently needs to
 
 23
 00:00:59,579 --> 00:01:04,019
+共同完成自己的工作
 be spread out physically so the reasons
 
 24
 00:01:04,019 --> 00:01:06,300
+以及为何人们要创建这种运算架构
 why people build this stuff so first of
 
 25
 00:01:06,300 --> 00:01:08,190
+我会先介绍分布式系统
 all before I even talk about distributed
 
 26
 00:01:08,190 --> 00:01:10,500
+也是提醒大家
 systems sort of remind you that you know
 
 27
 00:01:10,500 --> 00:01:12,420
-if you're designing a system redesigning
+在你设计一个系统时
+if you're designing a system or designing
 
 28
 00:01:12,420 --> 00:01:14,280
+或者面对一个你需要解决的问题时
 you need to solve some problem if you
 
 29
 00:01:14,280 --> 00:01:16,409
+你需要知道他是否可以在
 can possibly solve it on a single
 
 30
 00:01:16,409 --> 00:01:18,570
+不需要分布式系统的单机上解决
 computer you know without building a
 
 31
 00:01:18,570 --> 00:01:20,100
+如果可以那就应该用单机解决
 distributed system you should do it that
 
 32
 00:01:20,100 --> 00:01:23,340
+因为很多的工作都可以在
 way and there's many many jobs you can
 
 33
 00:01:23,340 --> 00:01:25,080
+一台计算机上完成
 get done on a single computer and it's
 
 34
 00:01:25,080 --> 00:01:29,220
+这通常比分布式系统简单很多
 always easier so distributed systems you
 
 35
 00:01:29,220 --> 00:01:30,780
+在选择使用分布式系统解决问题前
 know you should try everything else
 
 36
 00:01:30,780 --> 00:01:32,400
+你需要充分尝试别的思路
 before you try building distributed
 
 37
 00:01:32,400 --> 00:01:34,020
+因为分布式系统会让问题解决
 systems because they're not they're not
 
 38
 00:01:34,020 --> 00:01:36,630
+变得复杂
 simpler so the reason why people are
 
 39
 00:01:36,630 --> 00:01:39,060
+我们也会说是什么促使了人们
 driven to use lots of cooperating
 
 40
 00:01:39,060 --> 00:01:41,640
+通过计算集群来达到
 computers are they need to get
 
 41
 00:01:41,640 --> 00:01:43,350
+更高的计算性能
 high-performance and the way to think
 
 42
 00:01:43,350 --> 00:01:45,180
+以及思考他们是如何实现
 about that is they want to get achieve
 
 43
 00:01:45,180 --> 00:01:50,520
+并行管理大量CPU 大量内存
 some sort of parallelism lots of CPUs
 
 44
 00:01:50,520 --> 00:01:52,409
+大量磁盘臂也在同时移动
 lots of memories lots of disk arms
 
 45
 00:01:52,409 --> 00:01:56,580
+以及为何要在
 moving in parallel another reason why
 
 46
 00:01:56,580 --> 00:01:58,290
+计算集群中处理
 people build this stuff is to be able to
 
 47
 00:01:58,290 --> 00:02:01,070
+容错问题
 tolerate faults
 
 48
 00:02:05,310 --> 00:02:07,900
+比如两台计算机运行
 have two computers do the exact same
 
 49
 00:02:07,900 --> 00:02:09,580
+完全相同的任务
 thing if one of them fails you can cut
 
 50
 00:02:09,580 --> 00:02:12,610
+以防在其中一台发生问题
 over to the other one another is that
 
 51
 00:02:12,610 --> 00:02:15,070
+以及一些
 some problems are just naturally spread
 
 52
 00:02:15,070 --> 00:02:17,560
+物理上的问题
 out in space like you know you want to
 
 53
 00:02:17,560 --> 00:02:19,420
+比如你在用网银转账之类的操作
 do interbank transfers of money or
 
 54
 00:02:19,420 --> 00:02:21,820
-something well you know bank a has this
+我们假设
+something well you know bank A has this
 
 55
 00:02:21,820 --> 00:02:23,980
+银行A在纽约有一台服务器
 computer in New York City and Bank B as
 
 56
 00:02:23,980 --> 00:02:26,110
+银行B在伦敦有一台服务器
 this computer in London you know you
 
 57
 00:02:26,110 --> 00:02:27,790
+这就需要一种
 just have to have some way for them to
 
 58
 00:02:27,790 --> 00:02:29,709
+克服两个银行服务器之间
 talk to each other and cooperate in
 
 59
 00:02:29,709 --> 00:02:31,330
+物理距离的
 order to carry that out so there's some
 
 60
 00:02:31,330 --> 00:02:36,310
+通信方式
 natural sort of physical reasons systems
 
 61
 00:02:36,310 --> 00:02:37,360
+这是一个不可避免
 that are inherently physically
 
 62
 00:02:37,360 --> 00:02:40,000
+的空间问题
 distributed for the final reason that
 
 63
 00:02:40,000 --> 00:02:42,040
+最后人们为了解决
 people build this stuff is in order to
 
 64
 00:02:42,040 --> 00:02:44,320
+一些安全问题
 achieve some sort of security goal so
 
 65
 00:02:44,320 --> 00:02:46,660
+比如有一些代码并不被信任
 often by if there's some code you don't
 
 66
 00:02:46,660 --> 00:02:49,090
+但是你有需要和他进行交互
 trust or you know you need to interact
 
 67
 00:02:49,090 --> 00:02:50,920
+这些代码不会立刻做出坏事
 with somebody but you know they may not
 
 68
 00:02:50,920 --> 00:02:53,170
+或者说这些代码只是
 be immediate malicious or maybe their
 
 69
 00:02:53,170 --> 00:02:55,420
+可能会有一些bug导致不被信任
 code has bugs in it so you don't want to
 
 70
 00:02:55,420 --> 00:02:57,160
+你可能需要将代码
 have to trust it you may want to split
 
 71
 00:02:57,160 --> 00:02:59,350
+分多处运行
 up the computation so you know your
 
 72
 00:02:59,350 --> 00:03:01,000
+在你的计算机上
 stuff runs over there and that computer
 
 73
 00:03:01,000 --> 00:03:02,500
+和我的计算机上都会运行
 my stuff runs here on this computer and
 
 74
 00:03:02,500 --> 00:03:04,150
+两份代码需要通过
 they only talk to each other to some
 
 75
 00:03:04,150 --> 00:03:06,580
+某个狭义的网络协议通信
 sort of narrow narrowly defined network
 
 76
 00:03:06,580 --> 00:03:10,330
+我们可能会担心
 protocol assuming we may be worried
 
 77
 00:03:10,330 --> 00:03:13,570
+这里的安全问题
 about you know security and that's
 
 78
 00:03:13,570 --> 00:03:14,980
+我们把它分成更多的计算机
 achieved by splitting things up into
 
 79
 00:03:14,980 --> 00:03:16,420
+就可能出现孤立的问题
 multiple computers so that they can be
 
 80
 00:03:16,420 --> 00:03:21,459
+这门课我们会一直讨论
 isolated the most of this course is
 
 81
 00:03:21,459 --> 00:03:23,920
+性能和容错
 going to be about performance and fault
 
 82
 00:03:23,920 --> 00:03:26,410
+剩下两点我们会通过
 tolerance although the other two often
 
 83
 00:03:26,410 --> 00:03:28,630
+对某些案例的研究
 work themselves in by way of the sort of
 
 84
 00:03:28,630 --> 00:03:30,070
+来学习
 constraints on the case studies that
 
 85
 00:03:30,070 --> 00:03:32,799
+下面我们来看
 we're going to look at you know all
 
 86
 00:03:32,799 --> 00:03:34,390
+这些分布式系统的问题
 these distributed systems so these
 
 87
 00:03:34,390 --> 00:03:36,430
+因为系统中存在很多部分
 problems are because they have many
 
 88
 00:03:36,430 --> 00:03:39,810
+这些部分又在并发执行
 parts and the parts execute concurrently
 
 89
 00:03:39,810 --> 00:03:42,220
+正因为有多台计算机
 because there are multiple computers you
 
 90
 00:03:42,220 --> 00:03:43,510
+所以才会遇到并发编程
 get all the problems that come up with
 
 91
 00:03:43,510 --> 00:03:45,190
+以及各种复杂交互
 concurrent programming all the sort of
 
 92
 00:03:45,190 --> 00:03:46,720
+所带来的各种问题
 complex interactions and we're
 
 93
 00:03:46,720 --> 00:03:49,660
+我们还要考虑一些时序问题
 timing-dependent stuff and that's part
 
 94
 00:03:49,660 --> 00:03:51,780
+这让分布式系统这门课变得很难
 of what makes distributed systems hard
 
 95
 00:03:51,780 --> 00:03:54,340
+另一个很难的问题是
 another thing that makes distributed
 
 96
 00:03:54,340 --> 00:03:56,920
+你会有多个实例
 systems hard is that because again you
 
 97
 00:03:56,920 --> 00:03:59,410
+再加上网络
 have multiple pieces plus a network you
 
 98
 00:03:59,410 --> 00:04:02,440
+所以会遇到一些意想不到的报错
 can have very unexpected failure
 
 99
 00:04:02,440 --> 00:04:04,540
+如果只有一台计算机
 patterns that is if you have a single
 
 100
 00:04:04,540 --> 00:04:06,280
+通常它只会正常工作
 computer it's usually the case either
 
 101
 00:04:06,280 --> 00:04:08,350
+或者可能会崩溃
 computer works or maybe it crashes or
 
 102
 00:04:08,350 --> 00:04:11,050
+或者是电源有问题之类的
 suffers a power failure or something but
 
 103
 00:04:11,050 --> 00:04:12,280
+工作或崩溃 这相对简单
 it pretty much either works or doesn't
 
 104
 00:04:12,280 --> 00:04:14,470
+分布式系统却不是这样
 work distributed systems made up of lots
 
 105
 00:04:14,470 --> 00:04:15,940
+因为多台计算机中
 of computers you can have partial
 
 106
 00:04:15,940 --> 00:04:18,399
+可能会遇到一部分实例停止
 failures that is some pieces stopped
 
 107
 00:04:18,399 --> 00:04:20,140
+导致的局部错误
 working other people other pieces
 
 108
 00:04:20,140 --> 00:04:22,450
+但是其他部分依旧在正常运行
 continue working or maybe the computers
 
 109
 00:04:22,450 --> 00:04:24,280
+或者这些计算机都在正常运行
 are working but some part of the network
 
 110
 00:04:24,280 --> 00:04:28,000
+但是网络断了或者不稳定
 is broken or unreliable so partial
 
 111
 00:04:28,000 --> 00:04:30,870
+局部错误也是使这门课
 failures is another reason why
 
 112
 00:04:30,870 --> 00:04:50,229
+很难的原因之一
 distributed systems are hard and a final
 
 113
 00:04:50,229 --> 00:04:51,880
+最后一点很难的问题是
 reason why it's hard is that you know
 
 114
 00:04:51,880 --> 00:04:53,289
+人们设计分布式系统
 them the original reason to build the
 
 115
 00:04:53,289 --> 00:04:54,780
+的根本原因是为了
 distributed system is often to get
 
 116
 00:04:54,780 --> 00:04:57,610
+获得更高的性能
 higher performance to get you know a
 
 117
 00:04:57,610 --> 00:04:59,380
+比如一千台计算机
 thousand computers worth of performance
 
 118
 00:04:59,380 --> 00:05:01,659
+一千个磁盘臂达到的性能
 or a thousand disk arms were the
 
 119
 00:05:01,659 --> 00:05:03,580
+但是实际上
 performance but it's actually very
 
 120
 00:05:03,580 --> 00:05:06,820
+一千台机器到底有几千台性能
 tricky to obtain that thousand X speed
 
 121
 00:05:06,820 --> 00:05:09,310
+是一个棘手的问题
 up with a thousand computers there's
 
 122
 00:05:09,310 --> 00:05:12,010
+这有很多难点
 often a lot of roadblocks thrown in your
 
 123
 00:05:12,010 --> 00:05:20,080
-way so the Elven takes a bit of careful
+人们倍加小心地设计
+way so they often takes a bit of careful
 
 124
 00:05:20,080 --> 00:05:22,960
+实际的系统 让你觉得
 design to make the system actually give
 
 125
 00:05:22,960 --> 00:05:24,270
+它的性能达到了你投入的预期
 you the performance you feel you deserve
 
 126
 00:05:24,270 --> 00:05:26,440
+那么解决这些问题
 so solving these problems of course
 
 127
 00:05:26,440 --> 00:05:27,690
+就是本课的全部
 going to be all about you know
 
 128
 00:05:27,690 --> 00:05:31,960
+我想选择来上这门课
 addressing these issues the reason to
 
 129
 00:05:31,960 --> 00:05:33,729
+来解决这些问题
 take the course is because often the
 
 130
 00:05:33,729 --> 00:05:35,409
+是因为问题和解决方案
 problems and the solutions are quite
 
 131
 00:05:35,409 --> 00:05:38,320
+在技术上都很有趣
 just technically interesting they're
 
 132
 00:05:38,320 --> 00:05:40,330
+有些很难的问题
 hard problems for some of these problems
 
 133
 00:05:40,330 --> 00:05:42,640
+有着很漂亮的解决方案
 there's pretty good solutions known for
 
 134
 00:05:42,640 --> 00:05:44,500
+但是有些问题就没有那么好的
 other problems they're not such great
 
 135
 00:05:44,500 --> 00:05:47,740
+解决方案
 solutions now distributed systems are
 
 136
 00:05:47,740 --> 00:05:50,919
+分布式系统正在现实生活中被运用
 used by a lot of real-world systems out
 
 137
 00:05:50,919 --> 00:05:53,349
+像很多大型网站
 there like big websites often involved
 
 138
 00:05:53,349 --> 00:05:55,240
+他们把大量的计算机
 you know vast numbers computers that are
 
 139
 00:05:55,240 --> 00:05:57,970
+放在一起作为分布式系统
 you know put together as distributed
 
 140
 00:05:57,970 --> 00:06:00,430
+当我刚开始教这门课的时候
 systems when I first started teaching
 
 141
 00:06:00,430 --> 00:06:03,490
+分布式系统还是一种
 this course it was distributed systems
 
 142
 00:06:03,490 --> 00:06:05,229
+学术上的好奇尝试
 were something of an academic curiosity
 
 143
 00:06:05,229 --> 00:06:07,659
+人们只是发现
 you know people thought oh you know at a
 
 144
 00:06:07,659 --> 00:06:09,760
+有时需要一些小型扩容
 small scale they were used sometimes and
 
 145
 00:06:09,760 --> 00:06:11,080
+并且预感在未来
 people felt that oh someday they'd be
 
 146
 00:06:11,080 --> 00:06:14,740
+这可能很重要
 might be important but now particularly
 
 147
 00:06:14,740 --> 00:06:16,690
+但是随着大型网站的兴起和推动
 driven by the rise of giant websites
 
 148
 00:06:16,690 --> 00:06:18,970
+出现了大量的数据
 that have you know vast amounts of data
 
 149
 00:06:18,970 --> 00:06:21,960
+和充满服务器的仓库
 and entire warehouses full of computers
 
 150
 00:06:21,960 --> 00:06:23,650
+再过去的二十年中
 distributed systems in the last
 
 151
 00:06:23,650 --> 00:06:25,860
+分布式系统已经是
 twenty years have gotten to be very
 
 152
 00:06:25,860 --> 00:06:29,259
+计算架构中很重要的一部分
 seriously important part of computing
 
 153
 00:06:29,259 --> 00:06:32,889
+这意味着
 infrastructure this means that there's
 
 154
 00:06:32,889 --> 00:06:34,479
+大量的精力投入到
 been a lot of attention paid to them a
 
 155
 00:06:34,479 --> 00:06:36,250
+解决相关问题的工作中
 lot of problems have been solved but
 
 156
 00:06:36,250 --> 00:06:37,690
+但是同样有少数问题
 there's still quite a few unsolved
 
 157
 00:06:37,690 --> 00:06:39,940
+没有被解决
 problems so if you're a graduate student
 
 158
 00:06:39,940 --> 00:06:42,490
+如果你对这方面研究感兴趣
 or you're interested in research there's
 
 159
 00:06:42,490 --> 00:06:45,310
+还有很多关于分布式系统的问题
 a lot to you let a lot of problems yet
 
 160
 00:06:45,310 --> 00:06:47,289
+等着你去解决
 to be solved in distributed systems that
 
 161
 00:06:47,289 --> 00:06:49,720
+你们可以关注相关研究
 you could look into his research and
 
 162
 00:06:49,720 --> 00:06:51,639
+最后 如果你是一位热衷动手的同学
 finally if you like building stuff this
 
 163
 00:06:51,639 --> 00:06:54,220
+这会是一门不错的课程
 is a good class because it has a lab
 
 164
 00:06:54,220 --> 00:06:56,050
+因为他有一系列实验
 sequence in which you'll construct some
 
 165
 00:06:56,050 --> 00:06:58,690
+你会编写出重点为高性能和容错的
 fairly realistic distributed systems
 
 166
 00:06:58,690 --> 00:07:00,610
+相当真实的
 focused on performance and fault
 
 167
 00:07:00,610 --> 00:07:01,180
+分布式系统
 tolerance
 
 168
 00:07:01,180 --> 00:07:04,600
+所以你会有很多机会
 so you've got a lot of practice building
 
 169
 00:07:04,600 --> 00:07:06,789
+去构建一个分布式系统
 districts just building distributed
 
 170
 00:07:06,789 --> 00:07:09,550
+并且让他们正常工作
 systems and making them work all right
 
 171
 00:07:09,550 --> 00:07:12,419
+好了 让我们在说技术内容之前
 let me talk about course structure a bit
 
 172
 00:07:12,419 --> 00:07:16,539
+说一下课程结构
 before I get started on real technical
 
 173
 00:07:16,539 --> 00:07:19,060
+你们可能是通过百度找到了
 content you should be able to find the
 
 174
 00:07:19,060 --> 00:07:22,780
+这门课的网站
 course website using Google and on the
 
 175
 00:07:22,780 --> 00:07:24,820
+网站上有一些实验作业
 course website is the lab assignments
 
 176
 00:07:24,820 --> 00:07:28,150
+课程时间表 和一个Piazza（某国外课程论坛）页面链接
 and course schedule and also link to a
 
 177
 00:07:28,150 --> 00:07:31,210
+你可以在那里发布问题并获得解答
 Piazza page where you can post questions
 
 178
 00:07:31,210 --> 00:07:35,320
+课程主要的教学人员有
 get answers the course staff I'm Robert
 
 179
 00:07:35,320 --> 00:07:36,970
+我 Robert Morris 会进行课堂授课
 Morris I'll be giving the lectures I
 
 180
 00:07:36,970 --> 00:07:39,250
+也有四个助教
 also have four TAs you guys want to stand
 
 181
 00:07:39,250 --> 00:07:44,349
+你们想站起来和大家打个招呼嘛
 up and show your faces the TAs are
 
 182
 00:07:44,349 --> 00:07:47,949
+助教会重点解决实验问题
 experts at in particular at doing the
 
 183
 00:07:47,949 --> 00:07:49,690
+在工作时间
 solving the labs they'll be holding
 
 184
 00:07:49,690 --> 00:07:51,400
+他们也会在办公室解答
 office hours so if you have questions
 
 185
 00:07:51,400 --> 00:07:53,080
+各位关于实验的问题
 about the labs you can come you should
 
 186
 00:07:53,080 --> 00:07:55,360
+你可以去办公室或将课程相关问题
 go to office hours or you could post
 
 187
 00:07:55,360 --> 00:07:59,650
+发到Piazza上
 questions to Piazza the course has a
 
 188
 00:07:59,650 --> 00:08:04,030
+这门课有几个重要组成部分
 couple of important components one is
 
 189
 00:08:04,030 --> 00:08:09,099
+一个是课堂授课
 this lectures there's a paper for almost
 
 190
 00:08:09,099 --> 00:08:16,380
+几乎每节课都有论文阅读 以及两次考试
 every lecture there's two exams
 
 191
 00:08:17,789 --> 00:08:22,650
+两次编程实验
 there's the labs programming labs and
 
 192
 00:08:22,650 --> 00:08:25,479
+以及一个可选的期末大作业
 there's an optional final project that
 
 193
 00:08:25,479 --> 00:08:28,740
+你可以用一个实验来代替它
 you can do instead of one of the labs
 
 194
 00:08:36,039 --> 00:08:38,320
+授课内容会围绕分布式系统
 the lectures will be about two big ideas
 
 195
 00:08:38,320 --> 00:08:42,070
+主要是上面两个问题（性能和容错）
 in distributed systems they'll also be a
 
 196
 00:08:42,070 --> 00:08:43,809
+同样也有几堂课会说一些关于
 couple of lectures that are more about
 
 197
 00:08:43,809 --> 00:08:47,140
+编程实验的内容
 sort of lab programming stuff a lot of
 
 198
 00:08:47,140 --> 00:08:48,640
+许多课程我们以案例分析为
 our lectures will be taken up by case
 
 199
 00:08:48,640 --> 00:08:50,589
+主要形式
 studies a lot of the way that I sort of
 
 200
 00:08:50,589 --> 00:08:53,650
+我会在课前提供一些
 try to bring out the content of
 
 201
 00:08:53,650 --> 00:08:55,210
+关于分布式系统的论文
 distributed systems is by looking at
 
 202
 00:08:55,210 --> 00:08:58,110
+有些学术研究 也有一些工业界
 papers some academics some written by
 
 203
 00:08:58,110 --> 00:09:01,960
+关于现实问题的
 people in industry describing real
 
 204
 00:09:01,960 --> 00:09:05,100
+现实解决方案
 solutions to real problems
 
 205
 00:09:05,589 --> 00:09:07,589
+授课内容会被录像
 these lectures actually be videotaped
 
 206
 00:09:07,589 --> 00:09:10,270
+我希望课程可以上传到网络
 and I'm hoping to post them online so
 
 207
 00:09:10,270 --> 00:09:12,940
+这样你们可以在别的地方
 that you can so if you're not here or
 
 208
 00:09:12,940 --> 00:09:15,279
+观看授课视频
 you want to review the lectures you'll
 
 209
 00:09:15,279 --> 00:09:16,270
+你们也可以回顾课程视频
 be able to look at the videotape
 
 210
 00:09:16,270 --> 00:09:20,110
+这里的论文每周会发布一次
 lectures the papers again there's one to
 
 211
 00:09:20,110 --> 00:09:22,060
+主要为学术研究中
 read per week most of a research paper
 
 212
 00:09:22,060 --> 00:09:24,610
+的一些经典论文
 some of them are classic papers like
 
 213
 00:09:24,610 --> 00:09:26,440
+比如像今天我希望你们阅读
 today's paper which I hope some of you
 
 214
 00:09:26,440 --> 00:09:28,390
+关于MapReduce的论文 这篇论文很老
 have read on MapReduce it's an old paper
 
 215
 00:09:28,390 --> 00:09:31,390
+但是这篇论文不论在学术界还是工业界
 but it was the beginning of its spurred
 
 216
 00:09:31,390 --> 00:09:33,310
+都激发了巨大的
 an enormous amount of interesting work
 
 217
 00:09:33,310 --> 00:09:35,860
+关于分布式系统的兴趣
 both academic and in the real world so
 
 218
 00:09:35,860 --> 00:09:37,029
+有一些经典论文 也有一些最近发布的论文
 some are classic and some are more
 
 219
 00:09:37,029 --> 00:09:40,060
+他们会讨论一些
 recent papers sort of talking about more
 
 220
 00:09:40,060 --> 00:09:41,500
+最近人们关心的
 up-to-date research what people are
 
 221
 00:09:41,500 --> 00:09:44,529
+最新研究成果
 currently worried about and from the
 
 222
 00:09:44,529 --> 00:09:46,060
+我希望这些论文可以让弄清楚
 papers we'll be hoping to tease out what
 
 223
 00:09:46,060 --> 00:09:49,120
+一些基本问题 比如研究者们有哪些想法
 the basic problems are what ideas people
 
 224
 00:09:49,120 --> 00:09:50,529
+这可能会也可能不会
 have had that might or might not be
 
 225
 00:09:50,529 --> 00:09:52,180
+对解决分布式系统的问题有用
 useful in solving distributed system
 
 226
 00:09:52,180 --> 00:09:54,970
+我们有时会讨论这些论文中的
 problems we'll be looking at sometimes
 
 227
 00:09:54,970 --> 00:09:56,650
+一些实施细节
 in implementation details in some of
 
 228
 00:09:56,650 --> 00:09:58,720
+因为包括很多
 these papers because a lot of this has
 
 229
 00:09:58,720 --> 00:10:01,120
+软件系统的实际组成
 to do with actual construction of of
 
 230
 00:10:01,120 --> 00:10:03,430
+我们同样需要花一些时间
 software based systems and we're also
 
 231
 00:10:03,430 --> 00:10:04,900
+去看对人们对系统的评价
 going to spend a certain time looking at
 
 232
 00:10:04,900 --> 00:10:07,540
+人们是如何通过
 evaluations people evaluating how fault
 
 233
 00:10:07,540 --> 00:10:09,310
+评估系统容错性
 tolerant their systems by measuring them
 
 234
 00:10:09,310 --> 00:10:11,200
+评估系统性能
 or people measuring how much performance
 
 235
 00:10:11,200 --> 00:10:12,790
+或者是否有性能提升
 or whether they got performance
 
 236
 00:10:12,790 --> 00:10:17,950
+来评价这个系统
 improvement at all so I'm hoping that
 
 237
 00:10:17,950 --> 00:10:19,810
+我希望你们可以在来到课堂之前
 you'll read the papers before coming to
 
 238
 00:10:19,810 --> 00:10:22,660
+完成论文的阅读
 class the lectures are maybe not going
 
 239
 00:10:22,660 --> 00:10:24,220
+如果没有提前阅读
 to make as much sense if you haven't
 
 240
 00:10:24,220 --> 00:10:26,110
+课堂授课不一定有足够的时间
 already read the lecture because there's
 
 241
 00:10:26,110 --> 00:10:28,209
+我们没有足够的时间来解释
 not enough time to both explaining all
 
 242
 00:10:28,209 --> 00:10:30,820
+论文中的每一个概念
 the content of the paper and have a sort
 
 243
 00:10:30,820 --> 00:10:32,830
+同时还要兼顾一些
 of interesting reflection on what the
 
 244
 00:10:32,830 --> 00:10:35,050
-paper means online class so you really
+有趣的拓展
+paper means on the class so you really
 
 245
 00:10:35,050 --> 00:10:37,209
+我认真的希望大家来
 got to read the papers before I come
 
 246
 00:10:37,209 --> 00:10:38,620
+课堂之前阅读论文
 into class and hopefully one of the
 
 247
 00:10:38,620 --> 00:10:40,030
+我也希望快速高效的读论文
 things you'll learn in this class is how
 
 248
 00:10:40,030 --> 00:10:42,470
+会是这堂课的一个收获
 to read a paper rapidly and efficiently
 
 249
 00:10:42,470 --> 00:10:44,940
+比如跳过一些
 and skip over the parts that maybe
 
 250
 00:10:44,940 --> 00:10:47,430
+并不太重要的部分
 aren't that important and sort of focus
 
 251
 00:10:47,430 --> 00:10:51,360
+而琢磨作者重要的想法
 on teasing out the important ideas on
 
 252
 00:10:51,360 --> 00:10:53,730
+我们课程网站上每一个日程的链接
 the website there's for every link to
 
 253
 00:10:53,730 --> 00:10:56,730
+都有一个思考问题
 by the schedule there's a question that
 
 254
 00:10:56,730 --> 00:10:59,160
+你应该在读完每篇论文后
 you should submit an answer for
 
 255
 00:10:59,160 --> 00:11:00,750
+回答这个问题
 every paper I think the answers are due
 
 256
 00:11:00,750 --> 00:11:02,790
+最好在零点前提交
 at midnight and we also ask that you
 
 257
 00:11:02,790 --> 00:11:04,020
+我们也需要你在网站上提出
 submit a question you have about the
 
 258
 00:11:04,020 --> 00:11:08,070
+关于论文的一些问题
 paper through the website in order both
 
 259
 00:11:08,070 --> 00:11:09,390
+也可以让我思考一下我对课程的准备
 to give me something to think about as
 
 260
 00:11:09,390 --> 00:11:11,280
+如果我有时间
 I'm preparing the lecture and if I have
 
 261
 00:11:11,280 --> 00:11:13,890
+我会至少通过电子邮件
 time I'll try to answer at least a few
 
 262
 00:11:13,890 --> 00:11:17,280
+回答一部分问题
 of the questions by email and the
 
 263
 00:11:17,280 --> 00:11:18,600
+这些问题和回答都需要
 question and the answer for each paper
 
 264
 00:11:18,600 --> 00:11:22,140
+在零点前提交
 due midnight the night before there's
 
 265
 00:11:22,140 --> 00:11:24,660
+有两次考试
 two exams there's a midterm exam in
 
 266
 00:11:24,660 --> 00:11:26,850
+一次是随堂期中
 class I think on the last class meeting
 
 267
 00:11:26,850 --> 00:11:32,640
+大概在春假前最后一节课
 before spring break and there's a final
 
 268
 00:11:32,640 --> 00:11:36,000
+并且会在学期期末周
 exam during final exam week at the end
 
 269
 00:11:36,000 --> 00:11:37,770
+迎来期末考试
 of the semester the exams are going to
 
 270
 00:11:37,770 --> 00:11:42,120
+考试内容主要为论文和实验中的内容
 focus mostly on papers and the labs and
 
 271
 00:11:42,120 --> 00:11:44,130
+这是我建议最好的准备方式
 probably the best way to prepare for
 
 272
 00:11:44,130 --> 00:11:46,320
+当然参加课堂授课
 them as well as attending lecture and
 
 273
 00:11:46,320 --> 00:11:49,230
+阅读论文
 reading the papers a good way to prepare
 
 274
 00:11:49,230 --> 00:11:51,360
+应该是大家这20年
 for the exams is to look at all exams we
 
 275
 00:11:51,360 --> 00:11:55,680
+准备期末考的好方法
 have links to 20 years of old exams and
 
 276
 00:11:55,680 --> 00:11:57,240
+你们应该可以了解
 solutions and so you look at those and
 
 277
 00:11:57,240 --> 00:11:58,710
+我会在考试中
 sort of get a feel for what kind of
 
 278
 00:11:58,710 --> 00:12:01,350
+提出哪一类问题
 questions that I like to ask and indeed
 
 279
 00:12:01,350 --> 00:12:03,170
+因为我们不可避免地会读到
 because we read many of the same papers
 
 280
 00:12:03,170 --> 00:12:05,550
+一些重复的论文
 inevitably I ask questions each year
 
 281
 00:12:05,550 --> 00:12:08,910
+会有一些类似的问题
 that can't help but resemble questions
 
 282
 00:12:08,910 --> 00:12:15,420
+出现在历年的题目中
 asked in previous years the labs there's
 
 283
 00:12:15,420 --> 00:12:17,490
+关于四次实验
 four programming labs the first one of
 
 284
 00:12:17,490 --> 00:12:25,650
+第一次实验需要在下周五前完成
 them is due Friday next week lab one is
 
 285
 00:12:25,650 --> 00:12:31,980
+这是一个简单的MapReduce实验
 a simple MapReduce lab to implement your
 
 286
 00:12:31,980 --> 00:12:33,810
+根据你们在论文中读到的来写
 own version of the paper they write
 
 287
 00:12:33,810 --> 00:12:35,100
+我们几分钟后会讨论
 today in which I'll be discussing in a
 
 288
 00:12:35,100 --> 00:12:36,050
+这篇论文
 few minutes
 
 289
 00:12:36,050 --> 00:12:40,320
+第二个实验使用Raft算法
 lab 2 involves using a technique called
 
 290
 00:12:40,320 --> 00:12:43,620
-raft in order to get fault taught in
+为了实现容错
+raft in order to get fault tolerate in
 
 291
 00:12:43,620 --> 00:12:47,190
+这是一个理论上
 order to sort of allow in theory allow
 
 292
 00:12:47,190 --> 00:12:49,680
+通过复制来让系统容错的算法
 any system to be made fault tolerant by
 
 293
 00:12:49,680 --> 00:12:51,210
+这就是Raft算法
 replicating it and having this raft
 
 294
 00:12:51,210 --> 00:12:53,850
+他管理复制
 technique manage the replication and
 
 295
 00:12:53,850 --> 00:12:55,250
+管理一种自动剔除
 manage sort of automatic cut over
 
 296
 00:12:55,250 --> 00:12:57,660
+有问题的副本服务器
 if there's a fault if one of the
 
 297
 00:12:57,660 --> 00:13:00,150
+这个就是Raft算法的容错实验
 replicated servers fails so this is raft for
 
 298
 00:13:00,150 --> 00:13:08,700
-fault tolerance in lad 3 you'll use your
+在第三个实验中
+fault tolerance in lab 3 you'll use your
 
 299
 00:13:08,700 --> 00:13:11,370
+你需要使用你的Raft算法实现
 raft implementation in order to build a
 
 300
 00:13:11,370 --> 00:13:18,990
+来建立一个可以容错的KV服务器
 fault tolerant key-value server it'll be
 
 301
 00:13:18,990 --> 00:13:22,640
+他可以完成复制并容错
 replicated and fault tolerant in a lab 4
 
 302
 00:13:22,640 --> 00:13:25,950
+在第四个实验中你需要
 you'll take your replicated key-value
 
 303
 00:13:25,950 --> 00:13:28,200
+把你写的KV服务器分发到
 server and clone it into a number of
 
 304
 00:13:28,200 --> 00:13:30,390
+一系列的独立集群中
 independent groups and you'll split the
 
 305
 00:13:30,390 --> 00:13:33,870
+这样你会切分你的KV存储系统
 data in your key value storage system
 
 306
 00:13:33,870 --> 00:13:35,160
+通过这些独立的副本集群
 across all of these individual
 
 307
 00:13:35,160 --> 00:13:36,780
+进行加速
 replicated groups to get parallel
 
 308
 00:13:36,780 --> 00:13:39,660
+并行的对集群进行多个复制
 speed-up by running multiple replicated
 
 309
 00:13:39,660 --> 00:13:42,240
+你同样需要负责
 groups in parallel and you'll also be
 
 310
 00:13:42,240 --> 00:13:47,790
+不同服务期间
 responsible for moving the various
 
 311
 00:13:47,790 --> 00:13:50,070
+许多数据块的移动
 chunks of data between different servers
 
 312
 00:13:50,070 --> 00:13:52,500
+来让他们在运行过程中不损失
 as they come and go without dropping any
 
 313
 00:13:52,500 --> 00:13:54,810
+任何的数据
 balls so this is a what's often called a
 
 314
 00:13:54,810 --> 00:14:03,330
+我们通常把它叫做 分片式KV服务
 sharded key value service sharding
 
 315
 00:14:03,330 --> 00:14:04,830
+分片是指我们将数据放到了
 refers to splitting up the data
 
 316
 00:14:04,830 --> 00:14:07,410
+多个服务器上的多个分区
 partitioning the data among multiple
 
 317
 00:14:07,410 --> 00:14:10,290
+来实现并行加速
 servers in order to get parallel speed
 
 318
 00:14:10,290 --> 00:14:16,610
+如果你不想做实验四
 up if you want instead of doing lab 4
 
 319
 00:14:16,610 --> 00:14:19,740
+你也可以选择你自己的项目
 you can do a project of your own choice
 
 320
 00:14:19,740 --> 00:14:21,480
+如果你对分布式系统
 and the idea here is if you have some
 
 321
 00:14:21,480 --> 00:14:23,700
+有一些自己的想法
 idea for a distributed system you know
 
 322
 00:14:23,700 --> 00:14:26,010
+比如我们课堂上讨论到的
 in the style of some of the distributed
 
 323
 00:14:26,010 --> 00:14:27,330
+某个类型的分布式系统
 systems we talked about in the class if
 
 324
 00:14:27,330 --> 00:14:28,530
+或者说你有一些
 you have your own idea that you want to
 
 325
 00:14:28,530 --> 00:14:30,300
+自己的追求
 pursue and you like to build something
 
 326
 00:14:30,300 --> 00:14:32,100
+并且对这个想法进行评估
 and measure whether it worked in order
 
 327
 00:14:32,100 --> 00:14:34,500
+看他们能不能正确运行
 to explore your idea you can do a
 
 328
 00:14:34,500 --> 00:14:38,370
+你可以选择做这个项目
 project and so for a project you'll pick
 
 329
 00:14:38,370 --> 00:14:40,170
+这个项目中你需要联系一些你的同学
 some teammates because we require that
 
 330
 00:14:40,170 --> 00:14:44,070
+因为我们需要以2-3人的
 projects are done in teams of two or
 
 331
 00:14:44,070 --> 00:14:47,430
+小组形式完成
 three people so like some teammates and
 
 332
 00:14:47,430 --> 00:14:49,050
+其中有人需要把想法发给我
 send your project idea to us and we'll
 
 333
 00:14:49,050 --> 00:14:50,940
+我来确定下是否合适
 think about it and say yes or no and
 
 334
 00:14:50,940 --> 00:14:53,580
+或者是给你一些建议
 maybe give you some advice and then if
 
 335
 00:14:53,580 --> 00:14:55,230
+如果我觉得合适
 you go ahead and do if we say yes and
 
 336
 00:14:55,230 --> 00:14:56,610
+你也想做这个项目
 you want to do a project you do that and
 
 337
 00:14:56,610 --> 00:14:59,160
+你就可以用它在本学期末
 instead of lab 4 and it's due at the end
 
 338
 00:14:59,160 --> 00:15:00,870
+代替实验四
 of the semester and you know you'll you
 
 339
 00:15:00,870 --> 00:15:05,250
+你需要做一些系统设计
 should do some design work and build a
 
 340
 00:15:05,250 --> 00:15:06,960
+并构建一个真实的系统
 real system and then in the last day of
 
 341
 00:15:06,960 --> 00:15:08,940
+在最后一节课前演示
 class you'll demonstrate your system
 
 342
 00:15:08,940 --> 00:15:11,370
+同时需要交一个简短的
 as well as handing in a short sort of
 
 343
 00:15:11,370 --> 00:15:12,900
+关于你如何构建它的书面报告
 written report to us about what you
 
 344
 00:15:12,900 --> 00:15:17,730
+我会在课程网站上
 built and I posted on the website some
 
 345
 00:15:17,730 --> 00:15:20,070
+提出一些或许对你们有帮助的
 some ideas which might or may not be
 
 346
 00:15:20,070 --> 00:15:22,350
+大胆的想法
 useful for you to sort of spur thoughts
 
 347
 00:15:22,350 --> 00:15:25,140
+关于你应该如何构建这个项目
 about what projects you might build but
 
 348
 00:15:25,140 --> 00:15:27,690
+当然最好的项目应该是
 really the best projects are one where
 
 349
 00:15:27,690 --> 00:15:30,090
+你自己有一个很好的想法
 sort of you have a good idea for the
 
 350
 00:15:30,090 --> 00:15:32,700
+你需要选择一个
 project and the idea is if you want to
 
 351
 00:15:32,700 --> 00:15:34,920
+和课程讨论内容
 do a project you should choose an idea
 
 352
 00:15:34,920 --> 00:15:36,810
+相关的系统
 that's sort of in the same vein as the
 
 353
 00:15:36,810 --> 00:15:39,150
+作为你的
 systems that were talked about in this
 
 354
 00:15:39,150 --> 00:15:40,640
+项目
 class
 
 355
 00:15:40,640 --> 00:15:44,040
+回到实验部分
 okay back to labs the lab grade they
 
 356
 00:15:44,040 --> 00:15:46,020
+实验成绩会有一系列
 we give you you hand in your lab code
 
 357
 00:15:46,020 --> 00:15:47,940
+针对你代码的测试构成
 and we run some tests against it and
 
 358
 00:15:47,940 --> 00:15:49,710
-you're great early based on how many
+你的成绩就是在我们所有的测试中
+your grade will based on how many
 
 359
 00:15:49,710 --> 00:15:51,870
+你通过了多少个
 tests you pass we give you all the tests
 
 360
 00:15:51,870 --> 00:15:55,170
+我们会公开全部的测试数据
 that we use those no hidden tests so if
 
 361
 00:15:55,170 --> 00:15:56,850
+如果你完成的实验
 you implement the lab and it reliably
 
 362
 00:15:56,850 --> 00:15:58,950
+可靠的通过了全部测试
 passes all the tests and chances are
 
 363
 00:15:58,950 --> 00:16:00,750
+全部通过很有可能的
 good unless there's something funny
 
 364
 00:16:00,750 --> 00:16:02,310
+除非出现一些有趣的问题
 going on which there sometimes is
 
 365
 00:16:02,310 --> 00:16:04,650
+一般来说
 chances are good that if you your coop
 
 366
 00:16:04,650 --> 00:16:06,060
+只要你在运行时通过了全部测试
 passes all the tests when you run it or
 
 367
 00:16:06,060 --> 00:16:07,560
+你提交给我们运行也会通过全部测试
 pass all the tests when we run it and
 
 368
 00:16:07,560 --> 00:16:10,320
-you'll get a four score full score so
+这样就会得到满分
+you'll get a full score full score so
 
 369
 00:16:10,320 --> 00:16:11,520
+希望你们不会有任何
 hopefully there'll be no mystery about
 
 370
 00:16:11,520 --> 00:16:13,830
+关于实验的问题
 what score you're likely to get on the
 
 371
 00:16:13,830 --> 00:16:18,780
+我需要提醒你的是
 labs let me warn you that debugging
 
 372
 00:16:18,780 --> 00:16:21,930
+debug这些代码很耗时间
 these labs can be time-consuming because
 
 373
 00:16:21,930 --> 00:16:23,550
+因为他们是分布式系统
 they're distributed systems and a lot of
 
 374
 00:16:23,550 --> 00:16:26,820
+他们有很多并发和通信的问题
 concurrency and communication sort of
 
 375
 00:16:26,820 --> 00:16:30,000
+可能发生一些奇怪而困难的错误
 strange difficult to debug errors can
 
 376
 00:16:30,000 --> 00:16:34,020
+你们应该尽早开始实验
 crop up so you really ought to start the
 
 377
 00:16:34,020 --> 00:16:37,380
+不要在提交实验的
 labs early don't don't even have a lot
 
 378
 00:16:37,380 --> 00:16:39,210
+最后时刻还要
 of trouble if you be elapsed to the last
 
 379
 00:16:39,210 --> 00:16:41,370
+处理很多麻烦
 moment you got to start early if your
 
 380
 00:16:41,370 --> 00:16:43,680
+如果有对实验有问题
 problems please come to the TAs office
 
 381
 00:16:43,680 --> 00:16:45,780
+可以在工作时间来到助教办公室
 hours and please feel free to ask
 
 382
 00:16:45,780 --> 00:16:49,080
+你可以在Piazza上自由提问
 questions about the labs on Piazza and
 
 383
 00:16:49,080 --> 00:16:51,270
+当然我也希望
 indeed I hope if you know the answer
 
 384
 00:16:51,270 --> 00:16:52,770
+如果你知道一个问题的答案
 that you'll answer people's questions on
 
 385
 00:16:52,770 --> 00:16:56,339
+你可以在Piazza回答别人的提问
 Piazza as well all right any questions
 
 386
 00:16:56,339 --> 00:17:04,760
+还有什么关于课程的问题吗
 about the mechanics of the course yes
 
 387
 00:17:10,339 --> 00:17:13,140
+你问了这些部分
 so the question is what is how does how
 
 388
 00:17:13,140 --> 00:17:15,329
+在总成绩的占比是多少
 do the different factor these things
 
 389
 00:17:15,329 --> 00:17:17,550
+我其实不记得了
 factoring the grade I forget but it's
 
 390
 00:17:17,550 --> 00:17:20,180
+不过你在课程网站上
 all on the it's on the website under
 
 391
 00:17:20,180 --> 00:17:24,900
+应该能找到答案
 something I think though it's the labs
 
 392
 00:17:24,900 --> 00:17:29,570
+我想实验应该是占比最大的
 are the single most important component
 
 393
 00:17:29,570 --> 00:17:36,350
-okay alright so this is a course about
+那我们开始 我们这门课是
+okay all right so this is a course about
 
 394
 00:17:36,350 --> 00:17:39,780
+关于应用的基础设施的
 about infrastructure for applications
 
 395
 00:17:39,780 --> 00:17:41,460
-and so all through this course there's
+所以即便课程中我们会
+and so although this course there's
 
 396
 00:17:41,460 --> 00:17:42,809
+分开说一些
 going to be a sort of split in the way I
 
 397
 00:17:42,809 --> 00:17:45,179
+不同的应用
 talk about things between applications
 
 398
 00:17:45,179 --> 00:17:47,550
+别人 或者一些用户之类
 which are sort of other people the
 
 399
 00:17:47,550 --> 00:17:49,980
+在这些基础设施上
 customer somebody else writes but the
 
 400
 00:17:49,980 --> 00:17:51,390
+编写的应用
 applications are going to use the
 
 401
 00:17:51,390 --> 00:17:53,160
+但是我们在本课程中
 infrastructure that we're thinking about
 
 402
 00:17:53,160 --> 00:17:55,740
+应该关注的是这些基础设施
 in this course and so the kinds of
 
 403
 00:17:55,740 --> 00:17:58,950
+这些基础设施可能会
 infrastructure that tend to come up a
 
 404
 00:17:58,950 --> 00:18:13,620
+涉及许多储存 通信 
 lot our storage communication and
 
 405
 00:18:13,620 --> 00:18:16,920
+和计算问题
 computation and we'll talk about systems
 
 406
 00:18:16,920 --> 00:18:19,050
+我们会讨论包含所有
 that provide all three of these kinds of
 
 407
 00:18:19,050 --> 00:18:23,370
+这三个部分的基础设施
 infrastructure the the storage it turns
 
 408
 00:18:23,370 --> 00:18:24,900
+但事实证明我们最关注的
 out that storage is going to be the one
 
 409
 00:18:24,900 --> 00:18:27,990
+是储存部分
 we focus most on because it's a very
 
 410
 00:18:27,990 --> 00:18:30,980
+这是一个定义明确并有用的抽象概念
 well-defined and useful abstraction and
 
 411
 00:18:30,980 --> 00:18:32,820
+并且通常比较直白
 usually fairly straightforward
 
 412
 00:18:32,820 --> 00:18:34,320
+人们对于如何构建和使用储存系统
 abstraction so people know a lot about
 
 413
 00:18:34,320 --> 00:18:36,230
+人们对于如何构建和使用储存系统
 how to build how to use and build
 
 414
 00:18:36,230 --> 00:18:40,350
+包括去构建一种
 storage systems and how to build sort of
 
 415
 00:18:40,350 --> 00:18:41,670
+可复制容错的 高性能的分布式储存实例
 replicated fault tolerant
 
 416
 00:18:41,670 --> 00:18:43,679
+可复制容错的 高性能的分布式储存实例
 high-performance distributed
 
 417
 00:18:43,679 --> 00:18:46,410
+我们还会讨论一些
 implementations of storage we'll also
 
 418
 00:18:46,410 --> 00:18:48,720
+我们现在正在使用的计算系统
 talk about some some of our computation
 
 419
 00:18:48,720 --> 00:18:50,970
+比如 MapReduce
 systems like MapReduce for today is a
 
 420
 00:18:50,970 --> 00:18:54,750
+我们也会说一些
 computation system and we will talk
 
 421
 00:18:54,750 --> 00:18:57,120
+关于通信的问题
 about communications some but mostly
 
 422
 00:18:57,120 --> 00:18:58,710
+但是出发点是我们
 from the point is a tool that we need to
 
 423
 00:18:58,710 --> 00:19:00,510
+建立分布式系统所用的工具
 use to build distributed systems like
 
 424
 00:19:00,510 --> 00:19:01,980
+比如一台计算机可能
 computers have to talk to each other
 
 425
 00:19:01,980 --> 00:19:03,750
+需要通过网络相互通信
 over a network you know maybe you need
 
 426
 00:19:03,750 --> 00:19:06,330
+但是可能需要保证一定的可靠性
 reliability or something and so we'll
 
 427
 00:19:06,330 --> 00:19:08,670
+所以我们会提到一点
 talk a bit about what we're actually
 
 428
 00:19:08,670 --> 00:19:11,970
+实际上我们更多是
 mostly consumers of communication if you
 
 429
 00:19:11,970 --> 00:19:12,980
+使用已有的通信方式
 want to learn about communication
 
 430
 00:19:12,980 --> 00:19:17,040
+如果你想了解更多关于通信系统的问题
 systems as sort of how they work that's
 
 431
 00:19:17,040 --> 00:19:20,780
-more the topic of six eight to nine
+可以参与6.829的课程
+more the topic of six eight two nine
 
 432
 00:19:20,780 --> 00:19:24,750
+因此对于储存和计算
 so for storage and computation a lot of
 
 433
 00:19:24,750 --> 00:19:27,200
+很多学习目标都是
 our goal is to be able to discover
 
 434
 00:19:27,200 --> 00:19:31,620
+需要研究一些抽象方法
 abstractions where use of simplifying
 
 435
 00:19:31,620 --> 00:19:34,440
+比如如何简化这些
 the interface to these storage and
 
 436
 00:19:34,440 --> 00:19:36,660
+分布式储存和计算基础设施的接口设计
 computation distributed storage and
 
 437
 00:19:36,660 --> 00:19:38,760
+分布式储存和计算基础设施的接口设计
 computation infrastructure so that it's
 
 438
 00:19:38,760 --> 00:19:40,860
+我们就能以此构建应用
 easy to build applications on top of it
 
 439
 00:19:40,860 --> 00:19:43,500
+最重要的是
 and what that really means is that we
 
 440
 00:19:43,500 --> 00:19:45,270
+我们希望通过构建这种抽象的接口
 need to we'd like to be able to build
 
 441
 00:19:45,270 --> 00:19:47,370
+将这些分布式特性隐藏在整个系统内而不被用户感知
 abstraction that hide the distributed
 
 442
 00:19:47,370 --> 00:19:51,240
+将这些分布式特性隐藏在整个系统内而不被用户感知
 nature of these of these systems so the
 
 443
 00:19:51,240 --> 00:19:54,300
+这是个几乎无法完全实现的梦想
 dream which is rarely fully achieved but
 
 444
 00:19:54,300 --> 00:19:56,580
+但是我们确实希望建立这样的
 the dream would be to be able to build
 
 445
 00:19:56,580 --> 00:19:58,710
+一个看上去完全是非分布式系统的储存接口
 an interface that looks to an
 
 446
 00:19:58,710 --> 00:20:00,630
+一个看上去完全是非分布式系统的储存接口
 application is if it's a non-distributed
 
 447
 00:20:00,630 --> 00:20:02,310
+就像一个普通的文件系统
 storage system just like a file system
 
 448
 00:20:02,310 --> 00:20:03,750
+或者是一个大家都已经熟知如何写代码
 or something that everybody already
 
 449
 00:20:03,750 --> 00:20:05,280
+或者是一个大家都已经熟知如何写代码
 knows how to program and has a pretty
 
 450
 00:20:05,280 --> 00:20:08,100
+或者是一个大家都已经熟知如何写代码
 simple model semantics we'd love to be
 
 451
 00:20:08,100 --> 00:20:09,990
+我们希望有一个看上去
 able to build interfaces that look and
 
 452
 00:20:09,990 --> 00:20:13,770
+具有正常非分布式行为的
 act just like non-distributed storage
 
 453
 00:20:13,770 --> 00:20:17,600
+文件系统和计算系统
 and computation systems but are actually
 
 454
 00:20:17,600 --> 00:20:20,370
+但是实际上其中又有着
 you know vast extremely high performance
 
 455
 00:20:20,370 --> 00:20:22,590
+极高的计算性能和容错的分布式系统
 fault tolerant distributed systems
 
 456
 00:20:22,590 --> 00:20:27,890
+我们都需要建立这个抽象
 underneath so we both have abstractions
 
 457
 00:20:30,020 --> 00:20:33,030
+但是随着课程进行
 and you know as you'll see as a course
 
 458
 00:20:33,030 --> 00:20:37,950
+我们会知道
 goes on we sort of you know only part of
 
 459
 00:20:37,950 --> 00:20:39,810
+很少有人能找到一个抽象
 the way there it's rare that you find an
 
 460
 00:20:39,810 --> 00:20:41,820
+觉有这些分布式系统的
 abstraction for a distributed version of
 
 461
 00:20:41,820 --> 00:20:44,730
+储存和计算特性
 storage or computation that has simple
 
 462
 00:20:44,730 --> 00:20:49,110
+又有着非分布式系统一样
 behavior behave just like the non just
 
 463
 00:20:49,110 --> 00:20:51,120
+人人都能理解的
 non-distributed version of storage that
 
 464
 00:20:51,120 --> 00:20:52,920
+简单的行为
 everybody understands but people getting
 
 465
 00:20:52,920 --> 00:20:59,640
+这方便我们还在尝试努力
 better at this and we're gonna try to
 
 466
 00:20:59,640 --> 00:21:01,680
+课程中我们会学习人们在
 study the ways and what people have
 
 467
 00:21:01,680 --> 00:21:03,860
+建立这些抽象的过程中做的努力
 learned about building such abstractions
 
 468
 00:21:03,860 --> 00:21:08,760
+那么我们在考虑抽象时
 ok so what kind of what kind of topics
 
 469
 00:21:08,760 --> 00:21:10,170
+首先需要看一个怎样的话题呢
 show up is we're considering these
 
 470
 00:21:10,170 --> 00:21:13,590
+第一个话题
 abstractions the first one this first
 
 471
 00:21:13,590 --> 00:21:15,840
+也是一个概括性话题
 topic general topic that we'll see a lot
 
 472
 00:21:15,840 --> 00:21:18,690
+我们会看到的很多系统
 a lot of the systems we looked at have
 
 473
 00:21:18,690 --> 00:21:24,920
+都和他们的实现有关
 to do with implementation so for example
 
 474
 00:21:24,920 --> 00:21:27,570
+比如你看到很多人
 the kind of tools that you see a lot for
 
 475
 00:21:27,570 --> 00:21:30,150
+在构建他们的系统时会用到
 for ways people learn how to build these
 
 476
 00:21:30,150 --> 00:21:31,650
+类似远程过程调用（RPC）
 systems are things like remote procedure
 
 477
 00:21:31,650 --> 00:21:32,590
+类似远程过程调用（RPC）
 call
 
 478
 00:21:32,590 --> 00:21:35,529
+RPC 的目标就是
 whose goal is to mask the fact that
 
 479
 00:21:35,529 --> 00:21:36,970
+试图掩盖我们正在
 we're communicating over an unreliable
 
 480
 00:21:36,970 --> 00:21:44,850
-Network another kind of implementation
+不可靠网络上通信的事实
+network another kind of implementation
 
 481
 00:21:44,850 --> 00:21:49,230
+另一个我们会看到的实现是线程
 topic that we'll see a lot is threads
 
 482
 00:21:49,230 --> 00:21:51,940
+这是一种编程技术
 which are a programming technique that
 
 483
 00:21:51,940 --> 00:21:55,029
+让我们可以驾驭多核心计算机
 allows us to harness what allows us to
 
 484
 00:21:55,029 --> 00:21:56,860
+让我们可以驾驭多核心计算机
 harness multi-core computers but maybe
 
 485
 00:21:56,860 --> 00:21:58,749
+但是对于本课程而言 更重要的是
 more important for this class threads
 
 486
 00:21:58,749 --> 00:22:00,309
+线程提供了一种结构化的并发操作方式
 are a way of structuring concurrent
 
 487
 00:22:00,309 --> 00:22:03,100
+线程提供了一种结构化的并发操作方式
 operations in a way that's hopefully
 
 488
 00:22:03,100 --> 00:22:06,279
+为的是简化程序员对这些
 simplifies the programmer view of those
 
 489
 00:22:06,279 --> 00:22:09,100
+并发操作的视角
 concurrent operations and because we're
 
 490
 00:22:09,100 --> 00:22:10,330
+因为我们会经常用到线程
 gonna use threads a lot it turns out
 
 491
 00:22:10,330 --> 00:22:12,279
+我们知道
 we're going to need to also you know
 
 492
 00:22:12,279 --> 00:22:13,779
+在实现这个层次上
 just as from an implementation level
 
 493
 00:22:13,779 --> 00:22:15,159
+我们需要花费许多时间
 spend a certain amount of time thinking
 
 494
 00:22:15,159 --> 00:22:16,840
+来思考并发控制
 about concurrency control things like
 
 495
 00:22:16,840 --> 00:22:25,179
+比如锁
 locks and the main place that these
 
 496
 00:22:25,179 --> 00:22:26,590
+关于这些实现思想会在课程中涉及
 implementation ideas will come up in the
 
 497
 00:22:26,590 --> 00:22:28,600
+我们也会在许多论文里看到
 class they'll be touched on in many of
 
 498
 00:22:28,600 --> 00:22:30,190
+但是你需要在实验里面对大多数这些问题
 the papers but you're gonna come face
 
 499
 00:22:30,190 --> 00:22:31,869
+但是你需要在实验里面对大多数这些问题
 the face of all this in a big way in the
 
 500
 00:22:31,869 --> 00:22:34,210
+你需要构建分布式系统统
 labs you need to build distributed you
 
 501
 00:22:34,210 --> 00:22:35,710
+如何进行分布式系统的编程
 know do the programming for distributed
 
 502
 00:22:35,710 --> 00:22:38,080
+就像很多大家都知道的重要工具一样
 system and these are like a lot of sort
 
 503
 00:22:38,080 --> 00:22:41,080
+就像很多大家都知道的重要工具一样
 of important tools you know beyond just
 
 504
 00:22:41,080 --> 00:22:43,659
+当然不是普通的编程
 sort of ordinary programming these are
 
 505
 00:22:43,659 --> 00:22:45,009
+这是一些你构建分布式系统
 some of the critical tools that you'll
 
 506
 00:22:45,009 --> 00:22:50,279
+需要使用的关键工具
 need to use to build distributed systems
 
 507
 00:22:50,279 --> 00:22:54,129
+另一个重要主题
 another big topic that comes up in all
 
 508
 00:22:54,129 --> 00:22:55,389
+很多论文里都会提到的：性能
 the papers we're going to talk about is
 
 509
 00:22:55,389 --> 00:23:05,440
+构建分布式系统的更高目标
 performance usually the high-level goal
 
 510
 00:23:05,440 --> 00:23:07,570
+是具有人们所谓的 可扩展的速度提升
 of building a distributed system is to
 
 511
 00:23:07,570 --> 00:23:11,850
+是具有人们所谓的 可扩展的速度提升
 get what people call scalable speed-up
 
 512
 00:23:11,850 --> 00:23:17,460
+我们正在努力提高可扩展性
 so we're looking for scalability and
 
 513
 00:23:17,460 --> 00:23:21,039
+我这里说的可扩展性 和
 what I mean by scalability or scalable
 
 514
 00:23:21,039 --> 00:23:23,529
+可扩展的速度提升 指的是
 speed-up is that if I have some problem
 
 515
 00:23:23,529 --> 00:23:26,110
+如果我用一台计算机解决了一些问题
 that I'm solving with one computer and I
 
 516
 00:23:26,110 --> 00:23:29,559
+当我买第二台计算机
 buy a second computer to help me execute
 
 517
 00:23:29,559 --> 00:23:31,779
+去计算这个问题时
 my problem if I can now solve the
 
 518
 00:23:31,779 --> 00:23:34,090
+只要一半的时间
 problem in half the time or maybe solve
 
 519
 00:23:34,090 --> 00:23:37,450
+或者说比如说是每分钟内
 twice as many problem instances you know
 
 520
 00:23:37,450 --> 00:23:39,850
+可以解决两倍数量的问题
 per minute on two computers as I had on
 
 521
 00:23:39,850 --> 00:23:42,340
+两台计算机有两倍算力 就是我说的可扩展性
 one then that's an example of
 
 522
 00:23:42,340 --> 00:23:44,320
+两台计算机有两倍算力 就是我说的可扩展性
 scalability so
 
 523
 00:23:44,320 --> 00:23:47,560
+（板书）2 x 计算资源数量
 sort of two times you know computers or
 
 524
 00:23:47,560 --> 00:23:54,090
+可以得到两倍的性能 或者说吞吐量
 resources gets me you know two times
 
 525
 00:23:54,090 --> 00:24:01,090
+可以得到两倍的性能 或者说吞吐量
 performance or throughput and this is a
 
 526
 00:24:01,090 --> 00:24:02,920
+这是一个很强的工具
 huge hammer if you can build a system
 
 527
 00:24:02,920 --> 00:24:05,170
-that actually has this behavior Namie
+如果你真的构建了一个系统
+that actually has this behavior named
 
 528
 00:24:05,170 --> 00:24:07,330
+只要提高几倍的机器的数量
 that if you increase the number of
 
 529
 00:24:07,330 --> 00:24:08,830
+只要提高几倍的机器的数量
 computers you throw at the problem by
 
 530
 00:24:08,830 --> 00:24:12,190
+系统就能同样提高几倍的性能或者吞吐量
 some factor you get that factor more
 
 531
 00:24:12,190 --> 00:24:14,650
+系统就能同样提高几倍的性能或者吞吐量
 throughput more performance out of the
 
 532
 00:24:14,650 --> 00:24:17,890
+这是一个巨大的胜利
 system that's a huge win because you can
 
 533
 00:24:17,890 --> 00:24:21,010
+因为只要有钱就可以为所欲为买计算机
 buy computers with just money right
 
 534
 00:24:21,010 --> 00:24:23,410
+就能达到这种效果
 whereas if in order to get the
 
 535
 00:24:23,410 --> 00:24:27,040
+这种性能的提升
 alternative to this is that in order to
 
 536
 00:24:27,040 --> 00:24:28,630
+否则就需要去给程序员
 get more performance you have to pay
 
 537
 00:24:28,630 --> 00:24:31,380
+付钱去重构这些软件
 programmers to restructure your software
 
 538
 00:24:31,380 --> 00:24:33,550
+来优化它的运行
 to get better performance to make it
 
 539
 00:24:33,550 --> 00:24:35,920
+或者提供一些特殊的技术
 more efficient or to apply some sort of
 
 540
 00:24:35,920 --> 00:24:37,900
+比如一个更好的算法之类
 specialized techniques better algorithms
 
 541
 00:24:37,900 --> 00:24:39,970
+或者就要花高价雇程序员
 or something if you have to pay
 
 542
 00:24:39,970 --> 00:24:42,940
+来修补这些代码
 programmers to fix your code to be
 
 543
 00:24:42,940 --> 00:24:45,460
+从而提高运行速度
 faster that's an expensive way to go
 
 544
 00:24:45,460 --> 00:24:47,590
+我们都希望比如从十台计算机
 we'd love to be able just oh by thousand
 
 545
 00:24:47,590 --> 00:24:49,690
+提升到一千台计算机
 computers instead of ten computers and
 
 546
 00:24:49,690 --> 00:24:51,610
+就能扛住一百倍的流量
 get a hundred times more throughput
 
 547
 00:24:51,610 --> 00:24:53,740
-that's fanTAstic and so this sort of
+那这也太棒了
+that's fantastic and so this sort of
 
 548
 00:24:53,740 --> 00:24:56,830
+因此当人们构建一个
 scalability idea is a huge idea in the
 
 549
 00:24:56,830 --> 00:24:58,060
+巨大的购物网站的时候
 backs of people's heads when they're
 
 550
 00:24:58,060 --> 00:24:59,560
+有一整栋楼的计算机在运行
 like building things like big websites
 
 551
 00:24:59,560 --> 00:25:01,600
+他们共同完成网站的运行
 that run on are you know building full
 
 552
 00:25:01,600 --> 00:25:04,510
+这是一个很棒的
 of computers if the building full of
 
 553
 00:25:04,510 --> 00:25:06,670
+可扩展性的思路
 computers is there to get a sort of
 
 554
 00:25:06,670 --> 00:25:09,610
+但是另一方面
 corresponding amount of performance but
 
 555
 00:25:09,610 --> 00:25:12,040
+你需要仔细设计系统
 you have to be careful about the design
 
 556
 00:25:12,040 --> 00:25:13,450
+才能获得这样的性能 
 in order to actually get that
 
 557
 00:25:13,450 --> 00:25:19,780
+呃 我在课程中可能会画图
 performance so often the way this looks
 
 558
 00:25:19,780 --> 00:25:21,910
+比如我们来看这样一个图
 when we're looking at diagrams or I'm
 
 559
 00:25:21,910 --> 00:25:23,530
+比如我们来看这样一个图
 writing diagrams in this course is that
 
 560
 00:25:23,530 --> 00:25:25,480
-I'm not supposing we're building a
+我们假设我们在
+I'm supposing we're building a
 
 561
 00:25:25,480 --> 00:25:27,700
+建立一个常规网站
 website ordinarily you might have a
 
 562
 00:25:27,700 --> 00:25:32,080
+一般来说一个网站有一个 HTTP 服务器
 website that you know has a HTTP server
 
 563
 00:25:32,080 --> 00:25:36,390
+让我们先写一些用户
 let's say it has some types of users
 
 564
 00:25:36,900 --> 00:25:42,190
+和很多浏览器
 many web browsers and they talk to a web
 
 565
 00:25:42,190 --> 00:25:44,890
+他们在和一台web服务器通信
 server running Python or PHP or whatever
 
 566
 00:25:44,890 --> 00:25:49,300
+比如是Python或者PHP写的服务
 sort of web server and the web server
 
 567
 00:25:49,300 --> 00:25:52,740
+以及访问一些数据库
 talks to some kind of database
 
 568
 00:25:54,230 --> 00:25:56,490
+网站只有一两个用户的时候
 you know when you have one or two users
 
 569
 00:25:56,490 --> 00:25:58,620
+一台计算机就可以负担
 you can just have one computer running
 
 570
 00:25:58,620 --> 00:26:00,720
+或者是一台跑web服务
 both and maybe a computer for the web
 
 571
 00:26:00,720 --> 00:26:02,399
+一台跑数据库
 server and a computer from the database
 
 572
 00:26:02,399 --> 00:26:03,840
+但是有可能你的网站
 but maybe all of a sudden you get really
 
 573
 00:26:03,840 --> 00:26:05,340
+一夜之间火了起来
 proper popular and you'll be up and
 
 574
 00:26:05,340 --> 00:26:08,580
+你发现可能有一亿人
 you've you know 100 million people sign
 
 575
 00:26:08,580 --> 00:26:13,500
+注册你网站的账户 
 up your service ID how do you how do you
 
 576
 00:26:13,500 --> 00:26:15,179
-fix your c-certainly can it support
+你怎么去维护你的网站
+fix your site certainly can it support
 
 577
 00:26:15,179 --> 00:26:17,899
+一台机器承受一亿用户的流量不太可能
 millions of people on a single computer
 
 578
 00:26:17,899 --> 00:26:20,639
+当然如果做了特殊的
 except by extremely careful
 
 579
 00:26:20,639 --> 00:26:24,629
+劳动密集型优化除外
 labor-intensive optimization but you
 
 580
 00:26:24,629 --> 00:26:27,779
+但很显然你没有那个时间
 don't have time for so typically the way
 
 581
 00:26:27,779 --> 00:26:29,519
+所以你要做的第一件事情
 you're going to speed things up the
 
 582
 00:26:29,519 --> 00:26:31,110
+就是购买更多的web服务器
 first thing you do is buy more web
 
 583
 00:26:31,110 --> 00:26:33,539
+然后把不同用户分到不同机器上
 servers and just split the user so that
 
 584
 00:26:33,539 --> 00:26:35,580
+一些用户或者特定的用户
 you know how few users or some fraction
 
 585
 00:26:35,580 --> 00:26:37,230
+去访问第一台服务器
 the user go to a web server 1 and the
 
 586
 00:26:37,230 --> 00:26:39,750
+另一半用户则去访问第二台
 other half you send them to a web server
 
 587
 00:26:39,750 --> 00:26:45,960
+然而因为一些原因
 2 and because maybe you're building I
 
 588
 00:26:45,960 --> 00:26:47,759
+比如你在建立reddit这种网站
 don't know what reddit or something
 
 589
 00:26:47,759 --> 00:26:49,440
+所有的用户都需要
 where all the users need to see the same
 
 590
 00:26:49,440 --> 00:26:51,210
+最终查看相同的数据
 data ultimately you have all the web
 
 591
 00:26:51,210 --> 00:26:54,029
+你所有的web服务器都开始
 servers talk to the backend and you can
 
 592
 00:26:54,029 --> 00:26:55,559
+和数据库通信
 keep on adding web servers for a long
 
 593
 00:26:55,559 --> 00:27:01,679
+当然你可以一直加web服务器
 time here and so this is a way of
 
 594
 00:27:01,679 --> 00:27:03,029
+提高后端代码并行效率
 getting parallel speed up on the web
 
 595
 00:27:03,029 --> 00:27:04,259
+但是如果你是在跑
 server code you know if you're running
 
 596
 00:27:04,259 --> 00:27:05,909
+PHP或Python代码
 PHP or Python maybe it's not too
 
 597
 00:27:05,909 --> 00:27:09,570
+效率可能提高不了多少
 efficient as long as each individual web
 
 598
 00:27:09,570 --> 00:27:11,490
+因为单台服务器没有提高多少效率
 server doesn't put too much load on the
 
 599
 00:27:11,490 --> 00:27:12,840
+在数据库这里你也要
 database you can add a lot of web
 
 600
 00:27:12,840 --> 00:27:17,700
+加同样多的机器避免问题
 servers before you run into problems but
 
 601
 00:27:17,700 --> 00:27:20,669
+但是不幸的是
 this kind of scalability is rarely
 
 602
 00:27:20,669 --> 00:27:23,610
+这种可扩展性很少是无限的
 infinite unfortunately certainly not
 
 603
 00:27:23,610 --> 00:27:25,289
+这种可扩展性很少是无限的
 without serious thought and so what
 
 604
 00:27:25,289 --> 00:27:26,700
+这个系统慢慢会变成
 tends to happen with these systems is
 
 605
 00:27:26,700 --> 00:27:29,309
+你现在又了10台 20台 甚至100台web服务器
 that at some point after you have 10 or
 
 606
 00:27:29,309 --> 00:27:31,379
+你现在又了10台 20台 甚至100台web服务器
 20 or 100 web servers all talking to the
 
 607
 00:27:31,379 --> 00:27:33,450
+都在和同一个数据库通信
 same database now all of a sudden the
 
 608
 00:27:33,450 --> 00:27:35,100
+突然数据库这里成了瓶颈
 database starts to be a bottleneck and
 
 609
 00:27:35,100 --> 00:27:37,049
+再加更多的web服务器也无济于事
 adding more web servers no longer helps
 
 610
 00:27:37,049 --> 00:27:38,909
+所以很少有一个
 so it's rare that you get full scale
 
 611
 00:27:38,909 --> 00:27:42,710
+你可以通过无限制添加服务器
 ability to sort of infinite numbers of
 
 612
 00:27:42,710 --> 00:27:44,850
+就能完全解决扩展性的问题
 adding infinite numbers of computers
 
 613
 00:27:44,850 --> 00:27:46,710
+随着你加了
 some point you run out of gas because
 
 614
 00:27:46,710 --> 00:27:48,600
+越累越多的机器
 the place at which you are adding more
 
 615
 00:27:48,600 --> 00:27:51,419
+机器本身的数量已经不是瓶颈了
 computers is no longer the bottleneck by
 
 616
 00:27:51,419 --> 00:27:52,740
+因为你有了很多的web服务器
 having lots and lots of web servers we
 
 617
 00:27:52,740 --> 00:27:54,269
+瓶颈转移到了别的地方
 basically moved the bottleneck
 
 618
 00:27:54,269 --> 00:27:56,549
+我想是web服务器到数据库
 I think it's limiting performance from
 
 619
 00:27:56,549 --> 00:28:01,649
+限制了性能
 the web servers to the database and at
 
 620
 00:28:01,649 --> 00:28:03,450
+实际上你不可避免地
 this point actually you almost certainly
 
 621
 00:28:03,450 --> 00:28:05,730
+要做一些架构设计
 have to do a bit of design work because
 
 622
 00:28:05,730 --> 00:28:07,590
+因为很少有
 it's rare that you can
 
 623
 00:28:07,590 --> 00:28:09,929
+这么直接的从一台数据库
 there's any straightforward way to take
 
 624
 00:28:09,929 --> 00:28:13,409
+读数据的例子
 a single database and sort of refactor
 
 625
 00:28:13,409 --> 00:28:17,460
+一台数据库你可以轻易排序
 things with it or you can take data
 
 626
 00:28:17,460 --> 00:28:19,350
-sorta in a single database and refactor
+但你需要重构
+sort in a single database and refactor
 
 627
 00:28:19,350 --> 00:28:23,090
+把它分成多台数据库服务器
 it so it's split over multiple databases
 
 628
 00:28:23,840 --> 00:28:26,840
+但这同样需要大量工作
 but it's often a fair amount of work and
 
 629
 00:28:26,840 --> 00:28:29,309
+因为他很笨重
 because it's awkward but people many
 
 630
 00:28:29,309 --> 00:28:32,070
+但是很多人确实需要这样做
 people actually need to do this we're
 
 631
 00:28:32,070 --> 00:28:33,389
+我们在本课程中
 gonna see a lot of examples in this
 
 632
 00:28:33,389 --> 00:28:34,889
+会看到很多例子
 course in which the distributed system
 
 633
 00:28:34,889 --> 00:28:37,529
+人们讨论的一个分布式系统
 people are talking about is a storage
 
 634
 00:28:37,529 --> 00:28:40,860
+是一个储存系统
 system because the authors were running
 
 635
 00:28:40,860 --> 00:28:42,659
+因为作者在运行大型网站
 you know something like a big website
 
 636
 00:28:42,659 --> 00:28:45,809
+并且单个服务器或者是
 that ran out of gas on a single database
 
 637
 00:28:45,809 --> 00:28:49,429
+储存服务器都用光了
 or storage servers anyway so the
 
 638
 00:28:49,429 --> 00:28:51,600
+于是这个扩展的故事是
 scalability story is we love to build
 
 639
 00:28:51,600 --> 00:28:56,330
+我们希望可以这样简单的加钱买机器实现可扩展性
 systems that scale this way but you know
 
 640
 00:28:56,330 --> 00:28:59,100
+但是这点很难实现
 it's hard to make it or takes work off
 
 641
 00:28:59,100 --> 00:29:01,950
+于是这些设计工作
 and design work to push this idea
 
 642
 00:29:01,950 --> 00:29:11,879
+其实会一直把这些想法推进下去
 infinitely far ok so another big topic
 
 643
 00:29:11,879 --> 00:29:16,249
+另一个重要的话题是容错
 that comes up a lot is fault tolerance
 
 644
 00:29:22,249 --> 00:29:24,690
+如果你建立了一个单机系统
 if you're building a system with a
 
 645
 00:29:24,690 --> 00:29:27,450
+其实很好的使用单台计算机
 single computer in it well a single
 
 646
 00:29:27,450 --> 00:29:29,549
+可以让他保持运行很多年
 computer often can stay up for years
 
 647
 00:29:29,549 --> 00:29:31,139
+就像我办公室的服务器已经
 like I have servers in my office that
 
 648
 00:29:31,139 --> 00:29:33,529
+运行了很多年而不会崩溃一样
 have been up for years without crashing
 
 649
 00:29:33,529 --> 00:29:35,909
+电脑是可靠的
 you know the computer is pretty reliable
 
 650
 00:29:35,909 --> 00:29:37,740
+操作系统是可靠的
 the operating systems reliable
 
 651
 00:29:37,740 --> 00:29:39,690
+我办公室的电源也是可靠的
 apparently the power in my building is
 
 652
 00:29:39,690 --> 00:29:41,639
+所以一台计算机
 pretty reliable so it's not uncommon to
 
 653
 00:29:41,639 --> 00:29:43,139
+正常工作很长时间
 have single computers it's just stay up for
 
 654
 00:29:43,139 --> 00:29:46,590
+是并不少见的
 amazing amount of time however if you're
 
 655
 00:29:46,590 --> 00:29:48,149
+然而如果你建立了一个
 building systems out of thousands of
 
 656
 00:29:48,149 --> 00:29:50,820
+数千台计算机组成的集群
 computers then even if each computer can
 
 657
 00:29:50,820 --> 00:29:53,700
+那么即使每台计算机可以与一千台计算机一起运行一年
 be expected to stay up for a year with a
 
 658
 00:29:53,700 --> 00:29:55,320
+那么即使每台计算机可以与一千台计算机一起运行一年
 thousand computers that means you're
 
 659
 00:29:55,320 --> 00:29:57,119
+这也意味着这一千台计算机中
 going to have like about three computer
 
 660
 00:29:57,119 --> 00:30:00,029
+每天大约有3台计算机故障
 failures per day in your set of a
 
 661
 00:30:00,029 --> 00:30:02,549
+所以大型分布式系统中的一个大问题是
 thousand computers so solving big
 
 662
 00:30:02,549 --> 00:30:04,379
+所以大型分布式系统中的一个大问题是
 problems with big distributed systems
 
 663
 00:30:04,379 --> 00:30:07,830
+我们把一个很罕见的错误
 turns sort of very rare fault tolerance
 
 664
 00:30:07,830 --> 00:30:10,529
+我们把一个很罕见的错误
 very rare failure very rare failure
 
 665
 00:30:10,529 --> 00:30:12,179
+转变成了一个在一千台的
 problems into failure problems that
 
 666
 00:30:12,179 --> 00:30:14,549
+分布式系统中
 happen just all the time in a system
 
 667
 00:30:14,549 --> 00:30:15,809
+常见的错误
 with a thousand computers there's almost
 
 668
 00:30:15,809 --> 00:30:18,029
+甚至在这种集群中
 certainly always something broken it's
 
 669
 00:30:18,029 --> 00:30:20,580
+一直在发生的错误
 always some computer that's either
 
 670
 00:30:20,580 --> 00:30:23,070
+总有一些机器会崩溃
 crashed or mysteriously you know running
 
 671
 00:30:23,070 --> 00:30:24,840
+或者神秘地错误运行了
 incorrectly or slowly or doing the wrong
 
 672
 00:30:24,840 --> 00:30:26,940
+或者卡顿 执行错误任务 之类
 thing or maybe there's some piece of the
 
 673
 00:30:26,940 --> 00:30:28,890
+再有一千台计算机的网络中
 network with a thousand computers we got
 
 674
 00:30:28,890 --> 00:30:31,230
+有许多的网络电缆
 a lot of network cables and a lot of
 
 675
 00:30:31,230 --> 00:30:33,600
+许多的网络交换机
 network switches and so you know there's
 
 676
 00:30:33,600 --> 00:30:35,100
+你要知道总有人会踩着电缆
 always some network cable that somebody
 
 677
 00:30:35,100 --> 00:30:37,200
+所以这是不可靠的
 stepped on and is unreliability or
 
 678
 00:30:37,200 --> 00:30:38,820
+或者网络电缆掉线了
 network cable that fell out or some
 
 679
 00:30:38,820 --> 00:30:40,740
-networks which whose fan is broken and
+或者某些交换机风扇坏了
+networks switch whose fan is broken and
 
 680
 00:30:40,740 --> 00:30:43,260
+然后他们过热就不工作了
 the switch overheated and failed there's
 
 681
 00:30:43,260 --> 00:30:44,850
+在你构建分布式系统的过程中
 always some little problem somewhere in
 
 682
 00:30:44,850 --> 00:30:48,769
+各种地方总有一些小问题
 your building sized distributed system
 
 683
 00:30:48,769 --> 00:30:52,559
+因此这个这个分布式系统的扩容
 so big scale turns problems from very
 
 684
 00:30:52,559 --> 00:30:54,029
+把一个几乎不必要考虑的小问题
 rare events you really don't have to
 
 685
 00:30:54,029 --> 00:30:56,549
+变成了一个持续不断的问题
 worry about that much into just constant
 
 686
 00:30:56,549 --> 00:30:59,279
+这意味着对错误而言
 problems that means the failure has to
 
 687
 00:30:59,279 --> 00:31:02,070
+正确回复 或者掩盖错误
 be really or the response the masking of
 
 688
 00:31:02,070 --> 00:31:03,720
+以及继续处理的能力
 failures the ability to proceed without
 
 689
 00:31:03,720 --> 00:31:05,639
+必须要在架构设计时就建立
 failures just has to be built into the
 
 690
 00:31:05,639 --> 00:31:08,899
+因为错误总会发生
 design because there's always failures
 
 691
 00:31:08,899 --> 00:31:12,899
+毕竟为应用开发者
 and you know it's part of building you
 
 692
 00:31:12,899 --> 00:31:14,460
+提供方便的抽象接口
 know convenient abstractions for
 
 693
 00:31:14,460 --> 00:31:16,620
+是我们真正要做的
 application programmers we really need
 
 694
 00:31:16,620 --> 00:31:17,639
+但是我们需要构建
 that but to be able to build
 
 695
 00:31:17,639 --> 00:31:19,350
+尽可能多的基础设施
 infrastructure that as much as possible
 
 696
 00:31:19,350 --> 00:31:21,899
+才可能向应用开发者
 hides the failures from application
 
 697
 00:31:21,899 --> 00:31:23,929
+隐藏和掩盖
 programmers or masks them or something
 
 698
 00:31:23,929 --> 00:31:26,460
+这样每个应用开发者
 so that every application programmer
 
 699
 00:31:26,460 --> 00:31:28,080
+就不需要一个复杂的代码
 doesn't have to have a complete
 
 700
 00:31:28,080 --> 00:31:30,510
+来处理各种各样的
 complicated story for all the different
 
 701
 00:31:30,510 --> 00:31:35,100
+类型的错误
 kinds of failures that can occur there's
 
 702
 00:31:35,100 --> 00:31:37,830
+比如说容错到底指什么
 a bunch of different notions that you
 
 703
 00:31:37,830 --> 00:31:41,159
+这会有一些不同的概念表述
 can have about what it means to be fault
 
 704
 00:31:41,159 --> 00:31:43,559
+这会有一些不同的概念表述
 tolerant about a little more but you
 
 705
 00:31:43,559 --> 00:31:46,679
+但你应该明确的知道
 know exactly what we mean by that we'll
 
 706
 00:31:46,679 --> 00:31:48,090
+尽管表述有很多
 see a lot of a lot of different flavors
 
 707
 00:31:48,090 --> 00:31:50,880
+尽管表述有很多
 but among the more common ideas you see
 
 708
 00:31:50,880 --> 00:31:58,350
+有一个共同的思想就是可用性
 one is availability so you know some
 
 709
 00:31:58,350 --> 00:32:01,470
+某些系统经过精心设计
 systems are designed so that under some
 
 710
 00:32:01,470 --> 00:32:03,929
+以便在某种特定类型的错误下
 kind certain kinds of failures not all
 
 711
 00:32:03,929 --> 00:32:05,460
+当然特定类型不可能是所有类型
 failures but certain kinds of failures
 
 712
 00:32:05,460 --> 00:32:09,120
+系统可以正常运行
 the system will keep operating despite
 
 713
 00:32:09,120 --> 00:32:13,139
+他们可以提供给你完整的服务
 the failure while providing you know
 
 714
 00:32:13,139 --> 00:32:16,409
+他们可以提供给你完整的服务
 undamaged service the same kind of
 
 715
 00:32:16,409 --> 00:32:17,820
+就像他们没有发生任何错误
 service it would have provided even if
 
 716
 00:32:17,820 --> 00:32:19,500
+就像他们没有发生任何错误
 there had been no failure so some
 
 717
 00:32:19,500 --> 00:32:21,289
+某些系统的有这样一个可用的场景
 systems are available in that sense that
 
 718
 00:32:21,289 --> 00:32:24,149
+你建立了冗余的服务
 up and up you know so if you build a
 
 719
 00:32:24,149 --> 00:32:25,950
+比如说有两个备份
 replicated service that maybe has two
 
 720
 00:32:25,950 --> 00:32:28,909
+即便一个备份发生了问题
 copies you know one of the replicas
 
 721
 00:32:28,909 --> 00:32:31,770
+即便一个备份发生了问题
 replica servers fail fails maybe the
 
 722
 00:32:31,770 --> 00:32:34,530
+可能另一个服务器还能正常运行
 other server can continue operating
 
 723
 00:32:34,530 --> 00:32:37,050
+除非这两个都发生了错误
 they both fail of course you can't you
 
 724
 00:32:37,050 --> 00:32:40,530
+我们不能在这个例子中
 know you can't promise availability in
 
 725
 00:32:40,530 --> 00:32:42,150
+给出可用性的承诺
 that case so available systems usually
 
 726
 00:32:42,150 --> 00:32:44,670
+我们的可用性都是建立在特定错误类型上的
 say well under certain set of failures
 
 727
 00:32:44,670 --> 00:32:46,140
+我们的可用性都是建立在特定错误类型上的
 we're going to continue providing
 
 728
 00:32:46,140 --> 00:32:48,450
+这样才能继续正常服务
 service we're going to be available more
 
 729
 00:32:48,450 --> 00:32:50,790
+如果出现了超出范围的错误
 failures than that occur it won't be
 
 730
 00:32:50,790 --> 00:32:52,730
+就不再可用了
 available anymore
 
 731
 00:32:52,730 --> 00:32:55,080
+另一种容错
 another kind of fault tolerance you
 
 732
 00:32:55,080 --> 00:32:57,930
+在除了可用性之外
 might you might have or in addition to
 
 733
 00:32:57,930 --> 00:32:59,130
+他们自身的可恢复性也是一方面
 availability or by itself as
 
 734
 00:32:59,130 --> 00:33:06,480
+他们自身的可恢复性也是一方面
 recoverability and what this means is
 
 735
 00:33:06,480 --> 00:33:08,160
+这意味着如果出现问题
 that if something goes wrong maybe the
 
 736
 00:33:08,160 --> 00:33:10,200
+他会停止工作
 service will stop working that it is
 
 737
 00:33:10,200 --> 00:33:13,040
+他只是单纯的不响应请求了
 it'll simply stop responding to requests
 
 738
 00:33:13,040 --> 00:33:15,780
+等到有人来进行修复后
 and it will wait for someone to come
 
 739
 00:33:15,780 --> 00:33:17,430
+在修复完成后
 along and repair or whatever went wrong
 
 740
 00:33:17,430 --> 00:33:19,650
+如果没有发生一些更糟糕的事情
 but after the repair occurs the system
 
 741
 00:33:19,650 --> 00:33:21,900
+系统给可以继续正常运行
 will be able to continue as if nothing
 
 742
 00:33:21,900 --> 00:33:24,420
+系统给可以继续正常运行
 bad had gone wrong right so this is sort
 
 743
 00:33:24,420 --> 00:33:25,590
+这比可用性要弱一些
 of a weaker requirement than
 
 744
 00:33:25,590 --> 00:33:27,810
+因为在出现故障的组件
 availability because here we're not
 
 745
 00:33:27,810 --> 00:33:29,640
+被修复之前
 going to do anything while while the
 
 746
 00:33:29,640 --> 00:33:31,140
+他不会做任何事情
 failed come until the failed component
 
 747
 00:33:31,140 --> 00:33:33,720
+但是这一切都建立在没有损失正确性的前提下
 has been repaired but the fact that we
 
 748
 00:33:33,720 --> 00:33:37,230
+但是这一切都建立在没有损失正确性的前提下
 can get up get going again without you
 
 749
 00:33:37,230 --> 00:33:39,510
+但是这一切都建立在没有损失正确性的前提下
 know but without any loss of correctness
 
 750
 00:33:39,510 --> 00:33:41,880
+所以这仍然是一个重要的要求
 is still a significant requirement it
 
 751
 00:33:41,880 --> 00:33:43,500
+对于一个可恢复的系统
 means you know recoverable systems
 
 752
 00:33:43,500 --> 00:33:45,690
+你通常要在系统崩溃前做一些事情
 typically need to do things like save
 
 753
 00:33:45,690 --> 00:33:48,000
+比如将最新日期存盘
 their latest date on disk or something
 
 754
 00:33:48,000 --> 00:33:49,230
+才能在恢复后取回来
 where they can get it back
 
 755
 00:33:49,230 --> 00:33:51,090
+比如供电恢复之后
 you know after the power comes back up
 
 756
 00:33:51,090 --> 00:33:56,010
+对于一个高可用的系统
 and even among available systems in
 
 757
 00:33:56,010 --> 00:33:57,870
+在实际生活中
 order for a system to be useful in real
 
 758
 00:33:57,870 --> 00:34:01,890
+我们为了让一个系统好用
 life usually what the way available
 
 759
 00:34:01,890 --> 00:34:04,290
-systems are SPECT is that they're
+我们让系统保持可用
+systems are aspect is that they're
 
 760
 00:34:04,290 --> 00:34:07,350
+直到一定量的错误发生
 available until some number of failures
 
 761
 00:34:07,350 --> 00:34:09,149
+如果有太多的错误发生
 have happened if too many failures have
 
 762
 00:34:09,149 --> 00:34:11,668
+这个系统就会停止工作
 happened an available system will stop
 
 763
 00:34:11,668 --> 00:34:14,820
+或者停止对一切的响应
 working or you know will stop responding
 
 764
 00:34:14,820 --> 00:34:18,870
+但是一旦足够的问题被修复
 at all but when enough things have been
 
 765
 00:34:18,870 --> 00:34:21,330
+系统会继续工作
 repaired it'll continue operating so a
 
 766
 00:34:21,330 --> 00:34:23,429
+所以一个好的高可用系统
 good available system will sort of be
 
 767
 00:34:23,429 --> 00:34:25,139
+应该也是可恢复的
 recoverable as well in a sensitive to
 
 768
 00:34:25,139 --> 00:34:26,820
+敏感的察觉发生了很多错误
 many failures occur
 
 769
 00:34:26,820 --> 00:34:28,469
+然后停止响应
 it'll stop answering but then will
 
 770
 00:34:28,469 --> 00:34:35,520
+但是在之后依旧正确工作
 continue correctly after that so this is
 
 771
 00:34:35,520 --> 00:34:38,429
+我们很喜欢这一点
 what we love - this is what we'd love to
 
 772
 00:34:38,429 --> 00:34:43,290
+我们会看到的最有效的工具是
 obtain the biggest hammer what we'll see
 
 773
 00:34:43,290 --> 00:34:45,120
+解决这种问题的多种方法
 a number of approaches to solving these
 
 774
 00:34:45,120 --> 00:34:47,780
+解决这种问题的多种方法
 problems there's really sort of
 
 775
 00:34:47,780 --> 00:34:50,179
+实际上在这一部分中
 things that are the most important tools
 
 776
 00:34:50,179 --> 00:34:52,639
+最重要的工具是
 we have in this department one is
 
 777
 00:34:52,639 --> 00:34:55,850
+非易失性存储
 non-volatile storage so that you know
 
 778
 00:34:55,850 --> 00:34:58,420
+一些类似于电源崩溃故障
 something crash power fails or whatever
 
 779
 00:34:58,420 --> 00:35:01,310
+即便是整栋楼的电源故障
 there's a building wide power failure we
 
 780
 00:35:01,310 --> 00:35:02,750
+我们可以用非易失性存储
 can use non-volatile store it's like
 
 781
 00:35:02,750 --> 00:35:05,330
+像硬盘 闪存 SSD 之类的储存工具
 hard drives or flash or solid-state
 
 782
 00:35:05,330 --> 00:35:07,430
+像硬盘 闪存 SSD 之类的储存工具
 drives or something to sort of store a
 
 783
 00:35:07,430 --> 00:35:12,680
+我们存放一些检查点
 check point or a log of the state of a
 
 784
 00:35:12,680 --> 00:35:14,480
+或者关于系统状态的日志
 system and then when the power comes
 
 785
 00:35:14,480 --> 00:35:16,760
+在备用电源恢复或者故障修好了
 back up or somebody repairs our power
 
 786
 00:35:16,760 --> 00:35:18,020
+我们得到通知可以去
 suppliers notice what we'll be able to
 
 787
 00:35:18,020 --> 00:35:20,510
-read our latest state off the hard drive
+读取最新的硬盘状态
+read our latest state of the hard drive
 
 788
 00:35:20,510 --> 00:35:24,620
+并且继续从那里继续操作
 and continue from there so so one tool
 
 789
 00:35:24,620 --> 00:35:29,390
+（板书）非易失性存储
 is sort of non-volatile storage and the
 
 790
 00:35:29,390 --> 00:35:31,010
+于是出现了许多非易失性存储的管理工具
 management of non-volatile storage just
 
 791
 00:35:31,010 --> 00:35:32,840
-Ning comes up a lot because non-volatile
+于是出现了许多非易失性存储的管理工具
+comes up a lot because non-volatile
 
 792
 00:35:32,840 --> 00:35:35,000
+因为非易失性存储更新起来很昂贵
 storage tends to be expensive to update
 
 793
 00:35:35,000 --> 00:35:37,460
+因此构建高性能容错系统非常繁琐
 and so a huge amount of the sort of
 
 794
 00:35:37,460 --> 00:35:39,140
+因此构建高性能容错系统非常繁琐
 nitty-gritty of building sort of
 
 795
 00:35:39,140 --> 00:35:42,470
+因此构建高性能容错系统非常繁琐
 high-performance fault-tolerant systems
 
 796
 00:35:42,470 --> 00:35:45,290
+所以一个聪明的方法是
 is in you know clever ways to avoid
 
 797
 00:35:45,290 --> 00:35:47,600
+避免写入非易失性存储
 having to write the non-volatile storage
 
 798
 00:35:47,600 --> 00:35:49,970
+这在过去很常用
 too much in the old days and even today
 
 799
 00:35:49,970 --> 00:35:53,000
+即便在今天 写入非易失性存储
 you know what writing non-volatile
 
 800
 00:35:53,000 --> 00:35:55,790
+也需要移动磁盘臂
 storage meant was moving a disk arm and
 
 801
 00:35:55,790 --> 00:35:58,060
+等待磁盘盘面旋转
 waiting for a disk platter to rotate
 
 802
 00:35:58,060 --> 00:36:00,920
+这两个过程都很缓慢
 both of which are agonizingly slow on
 
 803
 00:36:00,920 --> 00:36:04,220
+现在3GHz的微处理器 
 the scale of you know three gigahertz
 
 804
 00:36:04,220 --> 00:36:06,970
+即便已经在闪存读写上好了很多
 microprocessors good things like flash
 
 805
 00:36:06,970 --> 00:36:08,990
 life is quite a bit better but still
+即便已经在闪存读写上好了很多
 
 806
 00:36:08,990 --> 00:36:10,760
+依旧会遇到很多性能不够的情况
 requires a lot of thought to get good
 
 807
 00:36:10,760 --> 00:36:12,950
+我们拥有的另一个重要的容错的工具
 performance out of and the other big
 
 808
 00:36:12,950 --> 00:36:14,360
+我们拥有的另一个重要的容错的工具
 tool we have for fault tolerance is
 
 809
 00:36:14,360 --> 00:36:20,000
+是复制
 replication and the management of
 
 810
 00:36:20,000 --> 00:36:22,760
+复制的管理对你们可能有些棘手
 replicated copies is sort of tricky you
 
 811
 00:36:22,760 --> 00:36:26,510
-know that sort of he problem lurking in
+任何一个复制系统中
+know that sort of key problem looking in
 
 812
 00:36:26,510 --> 00:36:28,490
+都有一个非常关键的问题
 any replicated system where we have two
 
 813
 00:36:28,490 --> 00:36:30,800
+比如我们有两台本应该有着
 servers each with a supposedly identical
 
 814
 00:36:30,800 --> 00:36:34,160
+完全相同的副本的系统
 copy of the system state the key problem
 
 815
 00:36:34,160 --> 00:36:36,020
+这个关键的问题就是
 that comes up is always that the two
 
 816
 00:36:36,020 --> 00:36:38,600
+这两个副本总会意外的
 replicas will accidentally drift out of
 
 817
 00:36:38,600 --> 00:36:41,330
+偏离同步的状态 不再正确
 sync and will stop being replicas right
 
 818
 00:36:41,330 --> 00:36:43,310
+实际上对于任何一个设计
 and this is just you know with the back
 
 819
 00:36:43,310 --> 00:36:45,410
+我们都能看到这种
 of the every design that we're gonna see
 
 820
 00:36:45,410 --> 00:36:47,780
+通过使用复制实现的容错
 for using replication to get fault
 
 821
 00:36:47,780 --> 00:36:51,260
-tolerance and lab - a lot - you're all
+实验2就是一个
+tolerance and in lab 2 you're all
 
 822
 00:36:51,260 --> 00:36:53,800
+通过管理管理复制实现的容错
 about management management of
 
 823
 00:36:53,800 --> 00:36:57,450
+通过管理管理复制实现的容错
 replicated copies for fault tolerance
 
 824
 00:36:57,450 --> 00:37:02,359
-as you'll see it's pretty complex a
+你们会看到这非常复杂
+as you'll see it's pretty complex
 
 825
 00:37:03,740 --> 00:37:10,230
+最后一个话题 也是一个跨领域的话题
 final topic final cross-cutting topic is
 
 826
 00:37:10,230 --> 00:37:17,549
+是一致性
 consistency so it's an example of what I
 
 827
 00:37:17,549 --> 00:37:19,430
+例如我们正在构建分布式存储系统
 mean by consistency supposing we're
 
 828
 00:37:19,430 --> 00:37:22,079
+例如我们正在构建分布式存储系统
 building a distributed storage system
 
 829
 00:37:22,079 --> 00:37:24,420
+假设这是一个键/值服务(KV服务)
 and it's a key/value service so it just
 
 830
 00:37:24,420 --> 00:37:26,609
+它只支持两种操作
 supports two operations maybe there's a
 
 831
 00:37:26,609 --> 00:37:29,819
+一个是「放入」(Put)
 put operation and you give it a key and
 
 832
 00:37:29,819 --> 00:37:33,089
+提供一个key和一个value放入
 a value and that the storage system sort
 
 833
 00:37:33,089 --> 00:37:36,210
+系统背后可能是一个
 of stashes away the value under as the
 
 834
 00:37:36,210 --> 00:37:38,069
+通过一个大型的表之类
 value for this key maintains it's just a
 
 835
 00:37:38,069 --> 00:37:40,079
+实现了这种操作
 big table of keys and values and then
 
 836
 00:37:40,079 --> 00:37:43,920
+另一个是「取出」(Get)
 there's a get operation you the client
 
 837
 00:37:43,920 --> 00:37:47,250
+你用客户端发送一个key
 sends it a key and the storage service
 
 838
 00:37:47,250 --> 00:37:49,530
+储存服务找到这个key对应的value
 is supposed to you know respond with the
 
 839
 00:37:49,530 --> 00:37:50,819
+作为返回值发回来
 value of the value it has stored for
 
 840
 00:37:50,819 --> 00:37:52,799
+除了KV系统之外
 that key right and this is kind of good
 
 841
 00:37:52,799 --> 00:37:54,780
+我很难找到把别的例子作为
 when I can't think of anything else as
 
 842
 00:37:54,780 --> 00:37:56,490
+分布式系统的例子
 an example of a distributed system all
 
 843
 00:37:56,490 --> 00:38:00,480
+这是一个还不错的例子
 Oh without key value services and
 
 844
 00:38:00,480 --> 00:38:01,950
+这个例子也很实用
 they're very useful right they're just
 
 845
 00:38:01,950 --> 00:38:05,309
+这可以算是一种
 sort of a kind of fundamental simple
 
 846
 00:38:05,309 --> 00:38:09,299
+简单版本的储存系统
 version of a storage system so of course
 
 847
 00:38:09,299 --> 00:38:11,700
+当然如果你是以为应用程序员
 if you're an application programmer it's
 
 848
 00:38:11,700 --> 00:38:15,150
+如果对这两个操作有解释
 helpful if these two operations kind of
 
 849
 00:38:15,150 --> 00:38:16,799
+是非常有帮助的
 have meanings attached to them that you
 
 850
 00:38:16,799 --> 00:38:18,630
+你可以去查手册
 can go look in the manual and the manual
 
 851
 00:38:18,630 --> 00:38:21,299
+手册会向你解释
 says you know what it what it means what
 
 852
 00:38:21,299 --> 00:38:23,520
+以及你正确调用Get后
 you'll get back if you call get right
 
 853
 00:38:23,520 --> 00:38:25,530
+它会返回什么
 and sort of what it means for you to
 
 854
 00:38:25,530 --> 00:38:28,109
+以及正确的调用Put后 这很棒
 call put all right so it'll be great there's
 
 855
 00:38:28,109 --> 00:38:29,430
+因为它们的含义对应着某种规范
 some sort of spec for what they meant
 
 856
 00:38:29,430 --> 00:38:31,440
+没有这些关于Put/Get的描述
 otherwise like who knows how can you
 
 857
 00:38:31,440 --> 00:38:32,880
+你又应该怎么写代码呢
 possibly write an application without a
 
 858
 00:38:32,880 --> 00:38:35,250
+你又应该怎么写代码呢
 description of what putting get are
 
 859
 00:38:35,250 --> 00:38:38,369
+这就是我们关于一致性的话题
 supposed to do and this is the topic of
 
 860
 00:38:38,369 --> 00:38:40,200
+以及为何这是一个
 consistency and the reason why it's
 
 861
 00:38:40,200 --> 00:38:42,329
+在分布式系统中有趣的话题
 interesting in distributed systems is
 
 862
 00:38:42,329 --> 00:38:46,200
+处于性能和容错两方面考虑
 that both for performance and for fault
 
 863
 00:38:46,200 --> 00:38:48,299
+处于性能和容错两方面考虑
 tolerant reasons fault tolerance reason
 
 864
 00:38:48,299 --> 00:38:50,400
+我们通常有多个数据副本
 we often have more than one copy of the
 
 865
 00:38:50,400 --> 00:38:53,880
+我们通常有多个数据副本
 data floating around so you know in a
 
 866
 00:38:53,880 --> 00:38:55,500
+所以在一个非分布式系统中
 non-distributed system where you just
 
 867
 00:38:55,500 --> 00:38:59,130
+我们只有一台服务器一张表
 have a single server with a single table
 
 868
 00:38:59,130 --> 00:39:02,579
+他们通常（虽然也不总是）
 there's often although not always but
 
 869
 00:39:02,579 --> 00:39:04,200
+是没有相对而言没有歧义的
 there's often like relatively no
 
 870
 00:39:04,200 --> 00:39:05,940
-ambiguity about what pudding get could
+当你做 Put Get 的时候
+ambiguity about what put get could
 
 871
 00:39:05,940 --> 00:39:07,360
+一般就是正确的
 possibly mean right in
 
 872
 00:39:07,360 --> 00:39:08,980
-to ative Lee you know what put means is
+你知道Put操作就是
+to correctly you know what put means is
 
 873
 00:39:08,980 --> 00:39:10,870
+更新这个表
 update the table and what get means is
 
 874
 00:39:10,870 --> 00:39:12,550
+Get操作就是从当前版本的表里取回值
 just get me the version that's stored in
 
 875
 00:39:12,550 --> 00:39:17,050
+但是在分布式系统中
 the table which but in a distributed
 
 876
 00:39:17,050 --> 00:39:18,640
+数据可能有超过一个副本
 system where there's more than one copy
 
 877
 00:39:18,640 --> 00:39:20,590
+可能是因为复制或缓存的原因
 in the data due to replication or
 
 878
 00:39:20,590 --> 00:39:23,890
+可能是因为复制或缓存的原因
 caching or who knows what there may be
 
 879
 00:39:23,890 --> 00:39:30,130
+于是有了很多个不同版本的KV对出现
 lots of different versions of this key
 
 880
 00:39:30,130 --> 00:39:32,380
+于是有了很多个不同版本的KV对出现
 value pair floating around like if one
 
 881
 00:39:32,380 --> 00:39:34,030
+如果其中有一个客户端
 of the replicas you know if supposing
 
 882
 00:39:34,030 --> 00:39:36,910
+Put进了一个新的副本
 some client issues a put and you know
 
 883
 00:39:36,910 --> 00:39:43,030
+在服务器就有了两个副本
 there's two copies of the the server so
 
 884
 00:39:43,030 --> 00:39:48,070
+（板书）他们都有KV表
 they both have a key value table right
 
 885
 00:39:48,070 --> 00:39:51,550
+比如两个表1对应的值是20
 and maybe key one has value twenty on
 
 886
 00:39:51,550 --> 00:39:55,360
+比如两个表1对应的值是20
 both of them and then some client issues
 
 887
 00:39:55,360 --> 00:39:58,990
+这里有一个客户端
 a put nice we have client over here and
 
 888
 00:39:58,990 --> 00:40:00,310
+他希望更新
 it's gonna send a put it wants to update
 
 889
 00:40:00,310 --> 00:40:03,490
+把1对应的值改成了21
 the value of one to be twenty-one all
 
 890
 00:40:03,490 --> 00:40:04,960
+比如这可能是一个计数器
 right maybe it's counting stuff in this
 
 891
 00:40:04,960 --> 00:40:09,550
+于是他发送一个Put
 key value server so sends a put with key
 
 892
 00:40:09,550 --> 00:40:13,750
+Key为1 Value为21
 one and value twenty one it sends it to
 
 893
 00:40:13,750 --> 00:40:15,840
+他发送给了第一台服务器
 the first server and it's about to send
 
 894
 00:40:15,840 --> 00:40:18,010
+他需要同步每一个副本
 the same put you know wants to update
 
 895
 00:40:18,010 --> 00:40:20,380
+就在他正准备给第二台服务器
 both copies right it keeps them in sync
 
 896
 00:40:20,380 --> 00:40:22,300
+发送同样的请求时
 it's about to send this put but just
 
 897
 00:40:22,300 --> 00:40:23,530
+这个客户端崩溃了
 before it sends to put to the second
 
 898
 00:40:23,530 --> 00:40:26,950
+可能是电源故障
 server crashes I power failure or bug an
 
 899
 00:40:26,950 --> 00:40:28,690
+或者操作系统bug之类
 operating system or something so now the
 
 900
 00:40:28,690 --> 00:40:30,640
+现在留下了一个不太好的状态
 state were left in sadly is that we sent
 
 901
 00:40:30,640 --> 00:40:35,470
+我们发送的Put值更新了
 this put and so we've updated one of the
 
 902
 00:40:35,470 --> 00:40:37,300
+两个副本中一个的状态
 two replicas didn't have value twenty
 
 903
 00:40:37,300 --> 00:40:38,590
+一个是21 另一个仍是20
 one but the other ones still with twenty
 
 904
 00:40:38,590 --> 00:40:40,870
+现在有人来尝试用一个Get来读取
 now somebody comes along and reads with
 
 905
 00:40:40,870 --> 00:40:42,910
+他们想要得到Key为1对应的值
 a get and they might get they want to
 
 906
 00:40:42,910 --> 00:40:45,070
+他们想要得到Key为1对应的值
 read the value associated with key one
 
 907
 00:40:45,070 --> 00:40:46,420
+他们可能得到了21或者20
 they might get twenty one or they might
 
 908
 00:40:46,420 --> 00:40:48,100
+这取决于他们的请求
 get twenty depending on who they talk to
 
 909
 00:40:48,100 --> 00:40:50,350
+发送到了哪个服务器
 and even if the rule is you always talk
 
 910
 00:40:50,350 --> 00:40:52,600
+即便始终把第一台服务器放在首位
 to the top server first if you're
 
 911
 00:40:52,600 --> 00:40:53,830
+我们构建容错系统时
 building a fault-tolerant system the
 
 912
 00:40:53,830 --> 00:40:56,020
+实际规则应该是
 actual rule has to be oh you talk to the
 
 913
 00:40:56,020 --> 00:40:58,000
+你先去请求第一台服务器
 top server first unless it's failed in
 
 914
 00:40:58,000 --> 00:41:00,810
+遇到某些情况再请求下面这台
 which case you talk to the bottom server
 
 915
 00:41:00,810 --> 00:41:03,640
+所以不管怎么说 你有总有一天
 so either way someday you risk exposing
 
 916
 00:41:03,640 --> 00:41:06,610
+有风险遇到陈旧的数据副本
 this stale copy of the data to some
 
 917
 00:41:06,610 --> 00:41:08,650
+很有可能的是
 future again it could be that many gets
 
 918
 00:41:08,650 --> 00:41:10,630
+许多的Get都得到了21
 get the updated twenty one and then like
 
 919
 00:41:10,630 --> 00:41:12,730
+但是比如下周突然有一个Get
 next week all of a sudden some get
 
 920
 00:41:12,730 --> 00:41:14,920
+请求到了一周前的旧数据
 yields you know a week old copy of the
 
 921
 00:41:14,920 --> 00:41:19,370
+这就会导致不一致
 data so that's not very consistent
 
 922
 00:41:19,370 --> 00:41:23,720
+这显然是会发生的
 right so in order but you know it's the
 
 923
 00:41:23,720 --> 00:41:25,870
+我们总会有不小心
 kind of thing that could happen right
 
 924
 00:41:25,870 --> 00:41:29,210
+所以我们需要实际写下
 we're not careful so you know we need to
 
 925
 00:41:29,210 --> 00:41:32,420
+关于Put和Get操作的一些规则
 have we need to actually write down what
 
 926
 00:41:32,420 --> 00:41:33,920
+关于Put和Get操作的一些规则
 the rules are going to be about puts and
 
 927
 00:41:33,920 --> 00:41:36,650
+就像在这种危险的复制中
 gets given this danger of due to
 
 928
 00:41:36,650 --> 00:41:39,230
+实际上
 replication and it turns out there's
 
 929
 00:41:39,230 --> 00:41:42,650
+关于一致性的不同定义有很多
 many different definitions you can have
 
 930
 00:41:42,650 --> 00:41:47,030
+许多听起来相对直白
 of consistency you know many of them are
 
 931
 00:41:47,030 --> 00:41:48,470
+许多听起来相对直白
 relatively straightforward many of them
 
 932
 00:41:48,470 --> 00:41:52,940
+比如我这里说的
 sound like well I get yields the you
 
 933
 00:41:52,940 --> 00:41:55,250
+Put一定要是一个完整的Put
 know value put by the most recently
 
 934
 00:41:55,250 --> 00:42:00,170
+这就是所谓的强一致性
 completed put all right so that's
 
 935
 00:42:00,170 --> 00:42:02,960
+这就是所谓的强一致性
 usually called strong consistency it
 
 936
 00:42:02,960 --> 00:42:05,390
+事实证明 构建一个
 turns out also it's very useful to build
 
 937
 00:42:05,390 --> 00:42:06,740
+相对弱的一致性也很有用
 systems that have much weaker
 
 938
 00:42:06,740 --> 00:42:08,660
+比如说
 consistency there for example do not
 
 939
 00:42:08,660 --> 00:42:11,990
+我们不保证任何类似Get的操作
 guarantee anything like a get sees the
 
 940
 00:42:11,990 --> 00:42:15,170
+可以看到最新的Put写入的值
 value written by the most recent put and
 
 941
 00:42:15,170 --> 00:42:18,440
+（板书）强一致性
 the reason so there's there strongly
 
 942
 00:42:18,440 --> 00:42:23,030
+（板书）强一致性
 consistent systems they usually have
 
 943
 00:42:23,030 --> 00:42:25,130
+是可以保证Get得到最新的Put的版本
 some version that gets seen most recent
 
 944
 00:42:25,130 --> 00:42:27,290
+是可以保证Get得到最新的Put的版本
 puts although you have to there's a lot
 
 945
 00:42:27,290 --> 00:42:28,820
+当然还有很多别的工作要做
 of details to work out there's also
 
 946
 00:42:28,820 --> 00:42:32,180
-weekly consistent many sort of flavors
+另一方面还有弱一致性
+weakly consistent many sort of flavors
 
 947
 00:42:32,180 --> 00:42:33,830
-of weekly consistent systems that do not
+对于弱一致性系统
+of weakly consistent systems that do not
 
 948
 00:42:33,830 --> 00:42:36,650
+他们不会做任何保证
 make any such guarantee that you know
 
 949
 00:42:36,650 --> 00:42:38,870
+这些保证可能是
 may guarantee well you're you know if
 
 950
 00:42:38,870 --> 00:42:41,690
+某个人做了Put
 someone does a put then you may not see
 
 951
 00:42:41,690 --> 00:42:43,610
+你可能看不到这个Put的结果 而是旧的值
 the put you may see old values that
 
 952
 00:42:43,610 --> 00:42:45,740
+你可能看不到这个Put的结果 而是旧的值
 weren't updated by the put for an
 
 953
 00:42:45,740 --> 00:42:49,070
+甚至可能在一个无限的时间里都是这样
 unbounded amount of time maybe and the
 
 954
 00:42:49,070 --> 00:42:51,290
+人们之所以对弱一致性感兴趣
 reason for people being very interested
 
 955
 00:42:51,290 --> 00:42:53,860
-in weak consistency schemes is that
+人们之所以对弱一致性方案感兴趣
+in weakly consistency schemes is that
 
 956
 00:42:53,860 --> 00:42:57,020
-strong consistency that is having Rezac
+因为强一致性虽然可以
+strong consistency that is having these
 
 957
 00:42:57,020 --> 00:43:00,860
-Chua lessee be guaranteed to see the
+让我看到的就是
+actually I see be guaranteed to see the
 
 958
 00:43:00,860 --> 00:43:02,690
+保证是最新的值
 most recent right that's a very
 
 959
 00:43:02,690 --> 00:43:07,190
+但是这个实现可能很昂贵
 expensive spec to implement because what
 
 960
 00:43:07,190 --> 00:43:08,810
+因为这意味着
 it means is almost certainly that you
 
 961
 00:43:08,810 --> 00:43:10,490
+总有部分需要做很多的通信
 have to somebody has to do a lot of
 
 962
 00:43:10,490 --> 00:43:12,470
+来完成某一种强一致性概念的实现
 communication in order to actually
 
 963
 00:43:12,470 --> 00:43:14,180
+来完成某一种强一致性概念的实现
 implement some notion of strong
 
 964
 00:43:14,180 --> 00:43:16,450
+如果你有多个副本
 consistency if you have multiple copies
 
 965
 00:43:16,450 --> 00:43:20,750
+这意味着不管是写入还是读取
 it means that either the writer or the
 
 966
 00:43:20,750 --> 00:43:22,490
+都需要询问每一个副本
 reader or maybe both has to consult
 
 967
 00:43:22,490 --> 00:43:26,330
+比如在我们的例子中
 every copy like in this case where you
 
 968
 00:43:26,330 --> 00:43:28,340
+我们要知道客户端崩溃了
 know maybe a client crash left one
 
 969
 00:43:28,340 --> 00:43:30,470
+更新了一个值 但另一个没更新
 updated but not the other if we wanted
 
 970
 00:43:30,470 --> 00:43:31,820
+如果我们要实现强一致性
 to implement strong
 
 971
 00:43:31,820 --> 00:43:33,710
+有一个简单的方法是
 consistency see in them maybe a simple way
 
 972
 00:43:33,710 --> 00:43:35,210
+让客户端同时读取两个副本
 in this system we'd have readers read
 
 973
 00:43:35,210 --> 00:43:37,010
+如果有一个更大一些
 both of the copies or if there's more
 
 974
 00:43:37,010 --> 00:43:39,560
+那这个就是最新的值
 than one copy all the copies and use the
 
 975
 00:43:39,560 --> 00:43:41,270
+我们这样就找到了
 most recently written value that they
 
 976
 00:43:41,270 --> 00:43:44,870
+但这十分昂贵
 find but that's expensive that's a lot
 
 977
 00:43:44,870 --> 00:43:49,640
+客户端要很多交流才得到一个值
 of chitchat to read one value so in
 
 978
 00:43:49,640 --> 00:43:51,620
+所以为了尽可能地避免通信
 order to avoid communication as much as
 
 979
 00:43:51,620 --> 00:43:54,680
+特别是副本隔得足够远
 possible particularly if replicas are
 
 980
 00:43:54,680 --> 00:43:56,810
+人们会建立一个弱一致性系统
 far away people build weak systems that
 
 981
 00:43:56,810 --> 00:43:59,480
+在这种情况下
 might actually allow the stale read of
 
 982
 00:43:59,480 --> 00:44:02,840
+它实际上允许读取这个旧的值
 an old value in this case although
 
 983
 00:44:02,840 --> 00:44:05,540
+当然为了让弱一致性更有用
 there's often more semantics attached to
 
 984
-00:44:05,540 --> 00:44:06,980
-that to try to make these weak schemes
+00:44:05,540 --> 00:44:08,980
+人们还会定义许多语义
+that to try to make these weak schemes more useful
 
 985
-00:44:06,980 --> 00:44:10,370
-more useful and we're this communication
+00:44:08,980 --> 00:44:10,370
+我们这里其实是一个通信问题
+and we're this communication
 
 986
 00:44:10,370 --> 00:44:13,420
+强一致性需要更昂贵的通信
 problem you know strong consistency
 
 987
 00:44:13,420 --> 00:44:16,850
+强一致性需要更昂贵的通信
 requiring expensive communication where
 
 988
 00:44:16,850 --> 00:44:19,370
+这会让人陷入麻烦
 this really runs you into trouble is
 
 989
 00:44:19,370 --> 00:44:21,500
+如果我们把副本用于容错
 that if we're using replication for
 
 990
 00:44:21,500 --> 00:44:24,530
+我们实际上希望他们可以
 fault tolerance then we really want the
 
 991
 00:44:24,530 --> 00:44:26,600
+有着不同的故障概率
 replicas to have independent failure
 
 992
 00:44:26,600 --> 00:44:29,210
+也就是不相关的故障
 probability to have uncorrelated failure
 
 993
 00:44:29,210 --> 00:44:31,850
+比如
 so for example putting both of the
 
 994
 00:44:31,850 --> 00:44:34,850
-replicas of our data in the same iraq in
+把所有的副本放在同一个机房的
+replicas of our data in the same rack in
 
 995
 00:44:34,850 --> 00:44:37,100
+同一个机架上
 the same machine room it's probably a
 
 996
 00:44:37,100 --> 00:44:38,360
+这可能是一个糟糕的主意
 really bad idea
 
 997
 00:44:38,360 --> 00:44:39,830
+因为如果有人绊倒了
 because if someone trips over the power
 
 998
 00:44:39,830 --> 00:44:42,410
+那台机架的电源线
 cable to that rack both of our copies of
 
 999
 00:44:42,410 --> 00:44:44,090
+我们的两个副本都会完蛋
 our data are going to die because
 
 1000
 00:44:44,090 --> 00:44:46,190
+因为它们都连接到同一
 they're both attached to the same power
 
 1001
 00:44:46,190 --> 00:44:49,730
+机架中的同一电源线上了
 cable in the same rack so in the search
 
 1002
 00:44:49,730 --> 00:44:53,240
+因此，为了使副本
 for making replicas as independent and
 
 1003
 00:44:53,240 --> 00:44:54,980
+尽可能独立且容错
 failure as possible in order to get
 
 1004
 00:44:54,980 --> 00:44:57,860
+以获得良好的容错能力
 decent fault tolerance people would love
 
 1005
 00:44:57,860 --> 00:45:00,320
+人们希望将不同的副本尽可能地分开远放
 to put different replicas as far apart
 
 1006
 00:45:00,320 --> 00:45:02,960
+例如放在不同的城市
 as possible like in different cities or
 
 1007
 00:45:02,960 --> 00:45:05,210
+或大陆的相对的两侧
 maybe on opposite sides of the continent
 
 1008
 00:45:05,210 --> 00:45:07,100
+这样，能摧毁一个数据中心的地震
 so an earthquake that destroys one data
 
 1009
 00:45:07,100 --> 00:45:09,260
+就极不可能
 center will be extremely unlikely to
 
 1010
 00:45:09,260 --> 00:45:11,840
+也摧毁另一个作为备份的数据中心
 also destroy the other data center that
 
 1011
 00:45:11,840 --> 00:45:15,860
+如大家所知，我们希望
 as the other copy you know so we'd love
 
 1012
 00:45:15,860 --> 00:45:17,420
+能够做到这一点，如果你这样做
 to be able to do that if you do that
 
 1013
 00:45:17,420 --> 00:45:20,660
+那么另一个副本是在数千
 then the other copy is thousands of
 
 1014
 00:45:20,660 --> 00:45:23,660
+英里开外
 miles away and the rate at which light
 
 1015
 00:45:23,660 --> 00:45:26,480
+按光传播的速度来算，它可能会耗费
 travels means that it may take on the
 
 1016
 00:45:26,480 --> 00:45:28,550
+几毫秒或几十毫秒
 order of milliseconds or tens of
 
 1017
 00:45:28,550 --> 00:45:31,670
+与横跨洲际的数据中心进行通信
 milliseconds to communicate to a data
 
 1018
 00:45:31,670 --> 00:45:33,380
+与横跨洲际的数据中心进行通信
 center across the continent in order to
 
 1019
 00:45:33,380 --> 00:45:36,590
+只为更新数据的另一个副本
 update the other copy of the data and so
 
 1020
 00:45:36,590 --> 00:45:38,450
+这使得通信
 that makes this the communication
 
 1021
 00:45:38,450 --> 00:45:40,610
+需要强一致性和
 required for strong consistency for good
 
 1022
 00:45:40,610 --> 00:45:42,350
+高一致性，极可能非常耗时
 consistency potentially extremely
 
 1023
 00:45:42,350 --> 00:45:44,450
+就像每次你想做一部歌剧一样
 expensive like every time you want to do
 
 1024
 00:45:44,450 --> 00:45:45,319
+就像每次你想做一部歌剧一样
 one of these put opera
 
 1025
 00:45:45,319 --> 00:45:46,999
+又或者取决于你如何实现它
 or maybe again depending on how you
 
 1026
 00:45:46,999 --> 00:45:49,099
+你可能必须坐在那里
 implement it you might have to sit there
 
 1027
 00:45:49,099 --> 00:45:50,509
+等待10或20或30毫秒
 waiting for like 10 or 20 or 30
 
 1028
 00:45:50,509 --> 00:45:52,940
+去同时通信到两个
 milliseconds in order to talk to both
 
 1029
 00:45:52,940 --> 00:45:54,650
+数据中心的副本，用来确保
 copies of the data to ensure that
 
 1030
 00:45:54,650 --> 00:45:56,749
+它们都已更新或已被检查
 they're both updated or or both checked
 
 1031
 00:45:56,749 --> 00:46:01,359
+以便获得最新的副本
 to find the latest copy and that
 
 1032
 00:46:01,359 --> 00:46:04,039
+那当然耗损巨大
 tremendous expense right this is 10 or
 
 1033
 00:46:04,039 --> 00:46:06,079
+这可是机器上的10或20或30毫秒
 20 or 30 milliseconds on machines that
 
 1034
 00:46:06,079 --> 00:46:07,789
+毕竟（用这些时间）我可以执行约十亿
 after all I'll execute like a billion
 
 1035
 00:46:07,789 --> 00:46:09,499
+每秒的指令数，故而我们浪费了
 instructions per second so we're wasting
 
 1036
 00:46:09,499 --> 00:46:11,539
+过多的潜在可执行指令
 a lot of potential instructions while we
 
 1037
 00:46:11,539 --> 00:46:14,509
+在我们等待人们用比较差的系统时
 wait people often go much weaker systems
 
 1038
 00:46:14,509 --> 00:46:16,009
+你只能更新
 you're allowed to only update the
 
 1039
 00:46:16,009 --> 00:46:17,779
+仅向你轮询的
 nearest copy you're only consulted
 
 1040
 00:46:17,779 --> 00:46:20,089
+最近的副本，我的意思是
 nearest copy I mean there's a huge sort
 
 1041
 00:46:20,089 --> 00:46:23,140
+现实世界的很多学术研究
 of amount of academic and real-world
 
 1042
 00:46:23,140 --> 00:46:26,839
+都在研究如何构建
 research on how to structure weak
 
 1043
 00:46:26,839 --> 00:46:28,099
+弱一致性保证，那样他们
 consistency guarantees so they're
 
 1044
 00:46:28,099 --> 00:46:30,380
+对应用程序才真正有用，以及如何
 actually useful to applications and how
 
 1045
 00:46:30,380 --> 00:46:31,759
+利用它们来
 to take advantage of them in order to
 
 1046
 00:46:31,759 --> 00:46:36,349
+实质性获得高性能
 actually get high performance alright so
 
 1047
 00:46:36,349 --> 00:46:40,150
+这些就是本课程中技术思想的快速预览
 that's a lightning preview of the
 
 1048
 00:46:40,150 --> 00:46:43,729
+这些就是本课程中技术思想的快速预览
 technical ideas in the course any
 
 1049
 00:46:43,729 --> 00:46:46,339
+有没有对刚才所讲的内容不懂的
 questions about this before I start
 
 1050
 00:46:46,339 --> 00:46:50,869
+在我讲MapReduce之前，好吧
 talking about MapReduce all right I want
 
 1051
 00:46:50,869 --> 00:46:54,049
-to switch to Map Reduce that's a sort of
+我想切换到MapReduce（的内容）
+to switch to MapReduce that's a sort of
 
 1052
 00:46:54,049 --> 00:46:55,519
+主要是详细案例研究
 detailed case study that's actually
 
 1053
 00:46:55,519 --> 00:46:57,949
+这些案例实际上会阐明
 going to illustrate most of the ideas
 
 1054
 00:46:57,949 --> 00:47:02,420
+我们现在在这里所讲内容的大部分思想
 that we've been talking about here now
 
 1055
 00:47:02,420 --> 00:47:07,779
+现在有一个系统
 produces a system that was originally
 
 1056
 00:47:07,779 --> 00:47:11,989
+该系统由Google 设计，构造和使用
 designed and built and used by Google I
 
 1057
 00:47:11,989 --> 00:47:15,140
+我认为这篇论文可以追溯到2004年
 think the paper dates back to 2004 the
 
 1058
 00:47:15,140 --> 00:47:17,269
+那时他们面临的问题是
 problem they were faced with was that
 
 1059
 00:47:17,269 --> 00:47:20,900
+他们要在TB级的数据上进行大量计算
 they were running huge computations on
 
 1060
 00:47:20,900 --> 00:47:22,759
+他们要在TB级的数据上进行大量计算
 terabytes and terabytes of data like
 
 1061
 00:47:22,759 --> 00:47:27,170
+比如创建所有网页内容的索引
 creating an index of all of the content
 
 1062
 00:47:27,170 --> 00:47:29,660
+或分析整个网络的链接结构
 of the web or analyzing the link
 
 1063
 00:47:29,660 --> 00:47:32,359
+或分析整个网络的链接结构
 structure of the entire web in order to
 
 1064
 00:47:32,359 --> 00:47:35,029
+以便识别出最重要的页面或
 identify the most important pages or the
 
 1065
 00:47:35,029 --> 00:47:37,219
+最权威的页面，正如大家知道的那样
 most authoritative pages as you know the
 
 1066
 00:47:37,219 --> 00:47:39,140
+那时，整个网络甚至有
 whole web is what's even in those days
 
 1067
 00:47:39,140 --> 00:47:45,079
+数十TB的数据，构建
 tens of terabytes of data building index
 
 1068
 00:47:45,079 --> 00:47:47,029
+网络索引基本上等于
 of the web is basically equivalent to a
 
 1069
 00:47:47,029 --> 00:47:49,729
+跑遍所有的数据
 sort running sort of the entire data
 
 1070
 00:47:49,729 --> 00:47:52,069
+大家知道，这些相当
 sort you know ones like reasonably
 
 1071
 00:47:52,069 --> 00:47:55,339
+耗时，还有对整个内容进行排序
 expensive and to run a sort on the
 
 1072
 00:47:55,339 --> 00:47:56,630
+就像我一直用
 entire content to the way I've been a
 
 1073
 00:47:56,630 --> 00:47:58,130
+单台电脑那样
 single computer
 
 1074
 00:47:58,130 --> 00:47:59,990
+要花多长时间，但，你知道
 how long would have taken but you know
 
 1075
 00:47:59,990 --> 00:48:01,940
+那（可能是）几周，几个月或几年，甚至更多
 it's weeks or months or years or
 
 1076
 00:48:01,940 --> 00:48:04,309
+Google当时是
 something so Google the time was
 
 1077
 00:48:04,309 --> 00:48:06,200
+极其渴望能
 desperate to be able to run giant
 
 1078
 00:48:06,200 --> 00:48:08,539
+在数以千计的计算机上进行巨型数据计算
 computations on giant data on thousands
 
 1079
 00:48:08,539 --> 00:48:10,670
+以便
 of computers in order that the
 
 1080
 00:48:10,670 --> 00:48:12,980
+计算可以快速完成
 computations could finish rapidly it's
 
 1081
 00:48:12,980 --> 00:48:14,210
+对他们来说购买大量计算机是值得的
 worth it to them to buy lots of
 
 1082
 00:48:14,210 --> 00:48:16,400
+那样他们的工程师
 computers so that their engineers
 
 1083
 00:48:16,400 --> 00:48:17,720
+就不必浪费很多时间
 wouldn't have to spend a lot of time
 
 1084
 00:48:17,720 --> 00:48:19,519
+在看报纸或看其他东西上
 reading the newspaper or something
 
 1085
 00:48:19,519 --> 00:48:22,039
+在等待他们的大型计算任务完成时
 waiting for their big compute jobs to
 
 1086
 00:48:22,039 --> 00:48:27,410
+所以，有一段时间，他们让他们的
 finish and so for a while they had their
 
 1087
 00:48:27,410 --> 00:48:29,630
+聪明的工程师，手写
 clever engineer or sort of handwrite you
 
 1088
 00:48:29,630 --> 00:48:30,619
+如果你需要写一个网站
 know if you needed to write a web
 
 1089
 00:48:30,619 --> 00:48:32,930
+索引器或某种Lincoln支出
 indexer or some sort of Lincoln outlay a
 
 1090
 00:48:32,930 --> 00:48:35,809
+眨眼分析工具
 blink analysis tool you know Google
 
 1091
 00:48:35,809 --> 00:48:37,130
+Google买了电脑，他们那时说
 bought the computers and they say here
 
 1092
 00:48:37,130 --> 00:48:38,599
+工程师确实会写
 engineers you know do write but never
 
 1093
 00:48:38,599 --> 00:48:39,890
+但他们从不写你在电脑上喜欢的任何软件
 whatever software you like on these
 
 1094
 00:48:39,890 --> 00:48:41,269
+但他们从不写你在电脑上喜欢的任何软件
 computers and you know they would
 
 1095
 00:48:41,269 --> 00:48:44,230
+他们费力写那种一次性的
 laborious ly write the sort of one-off
 
 1096
 00:48:44,230 --> 00:48:46,279
+手动咬合的软件
 manually bitten software to take
 
 1097
 00:48:46,279 --> 00:48:47,660
+来入手他们正在解决的任何问题
 whatever problem they were working on
 
 1098
 00:48:47,660 --> 00:48:49,609
+所以以某种方式将其分包到大量
 and so to somehow farm it out to a lot
 
 1099
 00:48:49,609 --> 00:48:51,470
+电脑上，管理
 of computers and organize that
 
 1100
 00:48:51,470 --> 00:48:56,809
+运算，再取回数据，如果你
 computation and get the data back if you
 
 1101
 00:48:56,809 --> 00:48:58,539
+只雇用熟练分布式系统专家的工程师
 only hire engineers who are skilled
 
 1102
 00:48:58,539 --> 00:49:01,789
+就够了
 distributed systems experts maybe that's
 
 1103
 00:49:01,789 --> 00:49:04,190
+尽管即使那样也很
 ok although even then it's probably very
 
 1104
 00:49:04,190 --> 00:49:07,490
+浪费工程任务量，但他们
 wasteful of engineering effort but they
 
 1105
 00:49:07,490 --> 00:49:09,289
+想雇用有其他方面特长的人
 wanted to hire people who were skilled
 
 1106
 00:49:09,289 --> 00:49:15,009
+不一定是
 at something else and not necessarily
 
 1107
 00:49:15,160 --> 00:49:16,910
+想把所有时间花在
 engineers who wanted to spend all their
 
 1108
 00:49:16,910 --> 00:49:18,559
+编写分布式系统软件的工程师
 time writing distributed system software
 
 1109
 00:49:18,559 --> 00:49:20,359
+他们实际上需要某种
 so they really needed some kind of
 
 1110
 00:49:20,359 --> 00:49:22,309
+框架，那将很容易
 framework that would make it easy to
 
 1111
 00:49:22,309 --> 00:49:26,089
+让他们的工程师
 just have their engineers write the kind
 
 1112
 00:49:26,089 --> 00:49:28,130
+写出他们想做的任何分析的内容
 of guts of whatever analysis they wanted
 
 1113
 00:49:28,130 --> 00:49:30,140
+诸如排序算法、网络索引
 to do like the sort algorithm or a web
 
 1114
 00:49:30,140 --> 00:49:32,990
+链接分析器或其他任何的东西
 index or link analyzer or whatever just
 
 1115
 00:49:32,990 --> 00:49:34,549
+就写写那个应用程序的内容
 write the guts of that application and
 
 1116
 00:49:34,549 --> 00:49:36,740
+但无法在数千个电脑上运行它
 not be able to run it on a thousands of
 
 1117
 00:49:36,740 --> 00:49:39,710
+不用考虑
 computers without worrying about the
 
 1118
 00:49:39,710 --> 00:49:41,539
+如何在数千台计算机上分发任务的详细信息
 details of how to spread the work over
 
 1119
 00:49:41,539 --> 00:49:43,730
+如何在数千台计算机上分发任务的详细信息
 the thousands of computers how to
 
 1120
 00:49:43,730 --> 00:49:45,950
+如何组织所有的数据移动也是必需（考虑）的
 organize whatever data movement was
 
 1121
 00:49:45,950 --> 00:49:48,349
+如何应对不可避免的错误
 required how to cope with the inevitable
 
 1122
 00:49:48,349 --> 00:49:50,630
+于是他们找寻
 failures so they were looking for a
 
 1123
 00:49:50,630 --> 00:49:52,009
+易于使用的框架
 framework that would make it easy for
 
 1124
 00:49:52,009 --> 00:49:54,740
+让非专家也能够撰写和
 non specialists to be able to write and
 
 1125
 00:49:54,740 --> 00:50:00,319
+运行巨型分布式计算
 run giant distributed computations and
 
 1126
 00:50:00,319 --> 00:50:03,609
+这就是MapReduce的全部意义
 so that's what MapReduce is all about
 
 1127
 00:50:03,609 --> 00:50:06,470
+设计思想是程序员只
 and the idea is that the programmer just
 
 1128
 00:50:06,470 --> 00:50:09,930
+编写应用程序，设计师
 write the application designer
 
 1129
 00:50:09,930 --> 00:50:12,000
+分布式计算的使用者
 consumer of this distributed computation
 
 1130
 00:50:12,000 --> 00:50:14,369
-I'm just be able to write a simple map
+我就能写简单的Map
+I'm just be able to write a simple Map
 
 1131
 00:50:14,369 --> 00:50:16,079
-function and a simple reduce function
+函数和简单的Reduce函数
+function and a simple Reduce function
 
 1132
 00:50:16,079 --> 00:50:18,240
+即使不知道任何分布式相关的内容
 that don't know anything about
 
 1133
 00:50:18,240 --> 00:50:20,640
+MapReduce框架
 distribution and the MapReduce framework
 
 1134
 00:50:20,640 --> 00:50:25,079
+会处理剩下的
 would take care of everything else so an
 
 1135
 00:50:25,079 --> 00:50:27,869
+什么是MapReduce的抽象视图
 abstract view of how what MapReduce is
 
 1136
 00:50:27,869 --> 00:50:30,900
+取决于它启动时是否假设
 up to is it starts by assuming that
 
 1137
 00:50:30,900 --> 00:50:33,030
+有一些输入，这些输入
 there's some input and the input is
 
 1138
 00:50:33,030 --> 00:50:35,430
+以某种方式被分成一堆
 split up into some a whole bunch of
 
 1139
 00:50:35,430 --> 00:50:37,559
+不同的文件或块
 different files or chunks in some way so
 
 1140
 00:50:37,559 --> 00:50:43,109
+我们假设
 we're imagining that no yeah you know
 
 1141
 00:50:43,109 --> 00:50:51,119
+输入文件一，放入文件二，依此类推
 input file one and put file two etc you
 
 1142
 00:50:51,119 --> 00:50:54,240
+这些输入也许是
 know these inputs are maybe you know web
 
 1143
 00:50:54,240 --> 00:50:55,920
+从网上抓取的网页或更
 pages crawled from the web or more
 
 1144
 00:50:55,920 --> 00:50:58,020
+可能是包含了许多网站的大文件
 likely sort of big files that contain
 
 1145
 00:50:58,020 --> 00:51:00,180
+每个都包含许多
 many web each of which contains many web
 
 1146
 00:51:00,180 --> 00:51:03,420
-files crawl from the web all right and
+从网上抓取的网页文件
+files crawled from the web all right and
 
 1147
 00:51:03,420 --> 00:51:04,819
-the way Map Reduce
+MapReduce启动的方式
+the way MapReduce
 
 1148
 00:51:04,819 --> 00:51:07,950
-starts is that you're to find a map
+是你要查找Map函数
+starts is that you're to find a Map
 
 1149
 00:51:07,950 --> 00:51:09,660
+MapReduce框架
 function and the MapReduce framework is
 
 1150
 00:51:09,660 --> 00:51:15,890
-gonna run your map function on each of
+会在每个输入文件上运行Map函数
+gonna run your Map function on each of
 
 1151
 00:51:15,890 --> 00:51:22,200
+当然可以
 the input files and of course you can
 
 1152
 00:51:22,200 --> 00:51:23,190
+这里我们可以看到一些明显的可用的并行
 see here there's some obvious
 
 1153
 00:51:23,190 --> 00:51:26,970
-parallelism available can run the maps
+可以并行地运行Maps
+parallelism available can run the Maps
 
 1154
 00:51:26,970 --> 00:51:28,349
-in parallel so the each of these map
+每个Map
+in parallel so the each of these Map
 
 1155
 00:51:28,349 --> 00:51:30,059
+函数只关注输入和输出
 functions only looks as this input and
 
 1156
 00:51:30,059 --> 00:51:32,400
-produces output the output that a map
+函数只关注输入和输出
+produces output the output that a Map
 
 1157
 00:51:32,400 --> 00:51:33,990
+Map函数输出列表
 function is required to produce is a
 
 1158
 00:51:33,990 --> 00:51:36,750
+它将文件作为输入
 list you know it takes a file as input
 
 1159
 00:51:36,750 --> 00:51:39,750
+该文件是输入数据的一部分
 and the file is some fraction of the
 
 1160
 00:51:39,750 --> 00:51:42,180
+它生成一个key value对列表
 input data and it produces a list of key
 
 1161
 00:51:42,180 --> 00:51:45,619
-value pairs as output the map function
+用做输出，Map函数
+value pairs as output the Map function
 
 1162
 00:51:45,619 --> 00:51:48,510
+例如，假设，我们
 and so for example let's suppose we're
 
 1163
 00:51:48,510 --> 00:51:50,579
+在编写最简单的MapReduce示例
 writing the simplest possible MapReduce
 
 1164
 00:51:50,579 --> 00:51:56,400
+单词计数，MapReduce的任务目标
 example a word count MapReduce job goal
 
 1165
 00:51:56,400 --> 00:51:58,170
+是计算每个单词出现的次数
 is to count the number of occurrences of
 
 1166
 00:51:58,170 --> 00:52:00,390
-each word so your map function might
+你的Map函数可能
+each word so your Map function might
 
 1167
 00:52:00,390 --> 00:52:02,819
+emit key value对，其中key是
 emit key value pairs where the key is
 
 1168
 00:52:02,819 --> 00:52:06,930
+单词而value是1
 the word and the value is just one so
 
 1169
 00:52:06,930 --> 00:52:08,910
-for every word at C so then this map
+对于c的每个单词，Map
+for every word at c so then this Map
 
 1170
 00:52:08,910 --> 00:52:10,410
+函数会将输入分割成
 function will split the input up into
 
 1171
 00:52:10,410 --> 00:52:11,760
+单词或随处可见
 words or everywhere ditzies
 
 1172
 00:52:11,760 --> 00:52:14,309
+它emit该单词作为key，并把1作为value
 it emits that word as the key and 1 as
 
 1173
 00:52:14,309 --> 00:52:16,170
+然后再进行整体计算
 the value and then later on will count
 
 1174
 00:52:16,170 --> 00:52:18,359
+得出最终输出
 up all those ones in order to get the
 
 1175
 00:52:18,359 --> 00:52:21,420
+也许输入1中
 final output so you know maybe input 1
 
 1176
 00:52:21,420 --> 00:52:23,229
+有单词a
 has the word
 
 1177
 00:52:23,229 --> 00:52:26,469
+和单词b
 a in it and the word B in it and so the
 
 1178
 00:52:26,469 --> 00:52:28,569
-output the map is going to produce is
+Map的输出将会是
+output the Map is going to produce is
 
 1179
 00:52:28,569 --> 00:52:32,680
-key a value one key B value one maybe
+key a value 1，key b value 1
+key a value one key b value one maybe
 
 1180
 00:52:32,680 --> 00:52:35,650
-the second not communication sees a file
+也许第二个Map通信是一个文件
+the second Map communication sees a file
 
 1181
 00:52:35,650 --> 00:52:38,890
-that has a B in it and nothing else so
+其中只有一个b
+that has a b in it and nothing else so
 
 1182
 00:52:38,890 --> 00:52:43,119
+输出则是b 1
 it's going to implement output b1 maybe
 
 1183
 00:52:43,119 --> 00:52:46,089
-this third input has an A in it and a C
+也许第三个输入中有一个a和一个c
+this third input has an a in it and a c
 
 1184
 00:52:46,089 --> 00:52:50,140
-in it alright so we run all these maps
+我们在所有输入文件上运行Map
+in it alright so we run all these Maps
 
 1185
 00:52:50,140 --> 00:52:53,380
+得到一个中间量
 on all the input files and we get this
 
 1186
 00:52:53,380 --> 00:52:55,059
+这篇论文中叫做
 intermediate with the paper calls
 
 1187
 00:52:55,059 --> 00:52:57,130
+中间输出
 intermediate output which is for every
 
 1188
 00:52:57,130 --> 00:53:00,420
-map a set of key value pairs as output
+每个Map用一组key value对作为输出
+Map a set of key value pairs as output
 
 1189
 00:53:00,420 --> 00:53:03,130
+第二阶段的计算
 then the second stage of the computation
 
 1190
 00:53:03,130 --> 00:53:07,059
-is to run the reduces and the idea is
+是运行Reduces，想法是
+is to run the Reduces and the idea is
 
 1191
 00:53:07,059 --> 00:53:09,459
+MapReduce框架收集
 that the MapReduce framework collects
 
 1192
 00:53:09,459 --> 00:53:12,609
-together all instances from all maps of
+每个key词的所有Map的所有实例
+together all instances from all Maps of
 
 1193
 00:53:12,609 --> 00:53:15,130
+所以MapReduce框架
 each key word so the MapReduce framework
 
 1194
 00:53:15,130 --> 00:53:16,869
+会收集所有a的（Map实例）
 is going to collect together all of the
 
 1195
 00:53:16,869 --> 00:53:20,739
-A's you know from every map every key
+从每个Map中
+as you know from every Map every key
 
 1196
 00:53:20,739 --> 00:53:22,599
+每个key为a的key value对
 value pair whose key was a it's gonna
 
 1197
 00:53:22,599 --> 00:53:28,289
+全部都会被收集并供
 take collect them all and hand them to
 
 1198
 00:53:30,390 --> 00:53:33,069
+程序员调用
 one call of the programmer to find
 
 1199
 00:53:33,069 --> 00:53:35,529
-reduce function and then it's gonna take
+以便寻找Reduce函数
+Reduce function and then it's gonna take
 
 1200
 00:53:35,529 --> 00:53:38,319
-all the B's and collect them together of
+然后是所有的b，收集在一起
+all the bs and collect them together of
 
 1201
 00:53:38,319 --> 00:53:39,699
+当然，需要真正的收集
 course you know requires a real
 
 1202
 00:53:39,699 --> 00:53:42,339
+因为它们是key b的不同的实例
 collection because they were different
 
 1203
 00:53:42,339 --> 00:53:44,019
-instances of key B were produced by
+因为它们是key b的不同的实例
+instances of key b were produced by
 
 1204
 00:53:44,019 --> 00:53:46,989
-different indications of map on
+是由不同计算机上的不同Map生成的
+different indications of Map on
 
 1205
 00:53:46,989 --> 00:53:48,609
+所以我们不讨论
 different computers so we're not talking
 
 1206
 00:53:48,609 --> 00:53:50,680
+数据移动，我，我们要
 about data movement I'm so we're gonna
 
 1207
 00:53:50,680 --> 00:53:53,339
-collect all the B keys and hand them to
+收集所有b keys，把他们给
+collect all the b keys and hand them to
 
 1208
 00:53:53,339 --> 00:53:58,719
-a different call to reduce that has all
+另一个Reduce调用
+a different call to Reduce that has all
 
 1209
 00:53:58,719 --> 00:54:01,959
-of the B keys as its arguments and same
+那把所有的b keys作为参数
+of the b keys as its arguments and same
 
 1210
 00:54:01,959 --> 00:54:07,630
-as C so there's going to be the
+c也一样
+as c so there's going to be the
 
 1211
 00:54:07,630 --> 00:54:09,160
+MapReduce框架给每个key安排了一个Reduce调用
 MapReduce framework will arrange for one
 
 1212
 00:54:09,160 --> 00:54:11,769
-call to reduce for every key that
+这些key
+call to Reduce for every key that
 
 1213
 00:54:11,769 --> 00:54:17,140
+出现在我们这些简单计数示例的每个数学输出中
 occurred in any of the math output and
 
 1214
 00:54:17,140 --> 00:54:19,449
+出现在我们这些简单计数示例的每个数学输出中
 you know for our sort of silly word
 
 1215
 00:54:19,449 --> 00:54:23,499
-count example all these reduces have to
+所有这些Reduce必须
+count example all these Reduces have to
 
 1216
 00:54:23,499 --> 00:54:25,059
+做或其中任何一个必须做的，就只是
 do or any one of them has to do is just
 
 1217
 00:54:25,059 --> 00:54:28,329
+计算传递给它的项目数
 count the number of items passed to it
 
 1218
 00:54:28,329 --> 00:54:29,650
+甚至不用看具体的项目
 doesn't even have to look at the items
 
 1219
 00:54:29,650 --> 00:54:31,059
+因为它知道每个都是
 because it knows that each of them is
 
 1220
 00:54:31,059 --> 00:54:34,479
+单词，都负责加1，即value
 the word is responsible for plus one is
 
 1221
 00:54:34,479 --> 00:54:35,769
+你不必看我们刚刚计数的这些value
 the value you don't have to look at
 
 1222
 00:54:35,769 --> 00:54:36,880
+你不必看我们刚刚计数的这些value
 those ones we've just count
 
 1223
 00:54:36,880 --> 00:54:41,590
-so this reduce is going to produce a and
+所以这个Reduce将输出一个a
+so this Reduce is going to produce a and
 
 1224
 00:54:41,590 --> 00:54:44,580
-then the count of its inputs this reduce
+然后是它的输入数量，这个Reduce
+then the count of its inputs this Reduce
 
 1225
 00:54:44,580 --> 00:54:47,680
+它会生成与之关联的key
 it's going to produce the key associated
 
 1226
 00:54:47,680 --> 00:54:50,350
+然后计算其value
 with it and then count of its values
 
 1227
 00:54:50,350 --> 00:54:57,040
+也是2，这是一个
 which is also two so this is what a
 
 1228
 00:54:57,040 --> 00:55:01,990
+典型的看起来高级别的MapReduce任务
 typical MapReduce job looks like the
 
 1229
 00:55:01,990 --> 00:55:07,200
+为了完整性
 high level just for completeness the
 
 1230
 00:55:07,200 --> 00:55:09,100
+一些术语
 well some a little bit of terminology
 
 1231
 00:55:09,100 --> 00:55:12,480
+这整个计算称为任务
 the whole computation is called the job
 
 1232
 00:55:12,480 --> 00:55:16,900
-anyone invocation of MapReduce is called
+MapReduce的每个调用都称为一个任务
+any one invocation of MapReduce is called
 
 1233
 00:55:16,900 --> 00:55:19,000
-a TAsk so we have the entire job and
+我们有整个任务
+a task so we have the entire job and
 
 1234
 00:55:19,000 --> 00:55:21,010
-it's made up of a bunch of math TAsks
+它由一堆数学任务组成
+it's made up of a bunch of math tasks
 
 1235
 00:55:21,010 --> 00:55:27,220
-and then a bunch of produced TAsks so
+然后是一堆生成的任务
+and then a bunch of produced tasks so
 
 1236
 00:55:27,220 --> 00:55:29,860
+这是单词计数的一个例子
 it's an example for this word count you
 
 1237
 00:55:29,860 --> 00:55:31,150
-know the what the map and reduce
+大家知道Map和Reduce
+know the what the Map and Reduce
 
 1238
 00:55:31,150 --> 00:55:40,750
-functions would look like the map
+函数长什么样
+functions would look like the Map
 
 1239
 00:55:40,750 --> 00:55:45,130
-function takes a key in the value as
+Map函数用key和value作为参数
+function takes a key and a value as
 
 1240
 00:55:45,130 --> 00:55:46,420
+我们现在讨论的函数
 arguments and now we're talking about
 
 1241
 00:55:46,420 --> 00:55:48,070
+是用普通的编程语言写的
 functions like written in an ordinary
 
 1242
 00:55:48,070 --> 00:55:51,520
+诸如C ++或Java或谁知道的呢
 programming language like C++ or Java or
 
 1243
 00:55:51,520 --> 00:55:54,820
-who knows what so this is just code
+这只是码人
+so this is just code
 
 1244
 00:55:54,820 --> 00:55:57,160
+普通人可以写
 people ordinary people can write what a
 
 1245
 00:55:57,160 --> 00:55:58,870
-map function for word count would do is
+字数统计Map函数可以做的是分割
+Map function for word count would do is
 
 1246
 00:55:58,870 --> 00:56:02,920
-split the the key is the file name which
+k是文件名
+split the the k is the file name which
 
 1247
 00:56:02,920 --> 00:56:05,110
+通常会被忽略，我们真正在意的是
 typically is ignored we really care what
 
 1248
 00:56:05,110 --> 00:56:07,600
-the file name was and the V is the
+文件名，而v是
+the file name was and the v is the
 
 1249
 00:56:07,600 --> 00:56:12,250
-content of this maps input file so V is
+该Map输入文件的内容，v
+content of this Maps input file so v is
 
 1250
 00:56:12,250 --> 00:56:14,400
+包含了所有的文本
 you know just contains all this text
 
 1251
 00:56:14,400 --> 00:56:21,760
-we're gonna split V into words and then
+我们将把v分割成单词
+we're gonna split v into words and then
 
 1252
 00:56:21,760 --> 00:56:24,630
+每个词
 for each word
 
 1253
 00:56:30,890 --> 00:56:34,130
+我们都会emit，emit需要两个参数
 we're just gonna emit and emit takes two
 
 1254
 00:56:34,130 --> 00:56:36,890
-arguments mitts you know calmly map can
+emit，只调用Map，
+arguments emit you know call only Map can
 
-1255
 00:56:36,890 --> 00:56:38,420
-make emit is provided by the MapReduce
+make emit provided by the MapReduce
+emit，只调用Map，
+可以做由MapReduce框架提供的emit
 
 1256
 00:56:38,420 --> 00:56:41,299
+我们生成的框架
 framework we get to produce we hand emit
 
 1257
 00:56:41,299 --> 00:56:44,890
+我们给emit传递一个key（也就是该单词）
 a key which is the word and a value
 
 1258
 00:56:44,890 --> 00:56:49,730
+和一个value（也就是字符串'1'）
 which is the string one so that's it for
 
 1259
 00:56:49,730 --> 00:56:53,089
-the map function and a word count map
+这就是Map函数和字数统计的Map函数
+the Map function and a word count Map
 
 1260
 00:56:53,089 --> 00:56:54,859
+MapReduce从字面上看
 function and MapReduce literally it
 
 1261
 00:56:54,859 --> 00:56:56,559
+可能就这么简单
 could be this simple
 
 1262
 00:56:56,559 --> 00:57:00,309
+有希望做一些..
 so there's sort of promise to make the
 
 1263
 00:57:00,309 --> 00:57:02,599
-and you know this map function doesn't
+这个Map函数并不知道
+and you know this Map function doesn't
 
 1264
 00:57:02,599 --> 00:57:04,190
+任何分布式和
 know anything about distribution or
 
 1265
 00:57:04,190 --> 00:57:06,170
+多台计算机或...事实上我们需要
 multiple computers or the fact we need
 
 1266
 00:57:06,170 --> 00:57:07,970
+我们需要跨网络移动数据
 we need to move data across the network
 
 1267
 00:57:07,970 --> 00:57:09,020
+或谁知道的什么
 or who knows what
 
 1268
 00:57:09,020 --> 00:57:13,400
+这非常简单明了
 this is extremely straightforward and
 
 1269
 00:57:13,400 --> 00:57:19,549
-the reduce function for a word count the
+字数统计的Reduce函数
+the Reduce function for a word count the
 
 1270
 00:57:19,549 --> 00:57:21,890
-reduce is called with you know remember
+Reduce被调用，记住，
+Reduce is called with you know remember
 
 1271
 00:57:21,890 --> 00:57:23,329
-each reduce is called with sort of all
+每个Reduce都会和所有有给定key的实例一起被调用
+each Reduce is called with sort of all
 
 1272
 00:57:23,329 --> 00:57:25,430
-the instances of a given key on the
+每个Reduce都会和所有有给定key的实例一起被调用
+the instances of a given key and the
 
 1273
 00:57:25,430 --> 00:57:27,170
-MapReduce framework calls reduce with
+MapReduce框架调用Reduce
+MapReduce framework calls Reduce with
 
 1274
 00:57:27,170 --> 00:57:30,079
+同时调用其负责的key
 the key that it's responsible for and a
-
-1275
-00:57:30,079 --> 00:57:33,410
-vector of all the values that the maps
 
 1276
 00:57:33,410 --> 00:57:38,390
+同时调用其负责的key
 produced associated with that key the
 
 1277
 00:57:38,390 --> 00:57:40,640
+key是单词，而value全是1
 key is the word the values are all ones
 
 1278
 00:57:40,640 --> 00:57:41,960
+这里我们不关心他们，我们只是
 we don't like here about them we only
 
 1279
 00:57:41,960 --> 00:57:44,510
+关心他们有多少
 care about how many they were and so
 
 1280
 00:57:44,510 --> 00:57:47,420
-reduce has its own omit function that
+Reduce有它自己的emit函数
+Reduce has its own emit function that
 
 1281
 00:57:47,420 --> 00:57:51,200
+该函数只emit一个value
 just takes a value to be emitted as the
 
 1282
 00:57:51,200 --> 00:57:53,779
+作为最终输出，作为这个key的value
 final output as the value for the this
 
 1283
 00:57:53,779 --> 00:57:57,829
-key so we're gonna admit a length of
+我们要emit这个数字的长度
+key so we're gonna emit a length of
 
 1284
 00:57:57,829 --> 00:58:01,789
-this array so this is also about as
+这个数组，这就是关于，有..是..
+this array so this is all about as
 
 1285
 00:58:01,789 --> 00:58:04,279
-simplest reduce functions have are and
+MapReduce中的最简单的Reduce函数的全部
+simplest Reduce functions have are and
 
 1286
 00:58:04,279 --> 00:58:08,049
-in Map Reduce namely extremely simple
+非常简单
+in MapReduce namely extremely simple
 
 1287
 00:58:08,049 --> 00:58:11,480
+不需要容错知识
 and requiring no knowledge about fault
 
 1288
 00:58:11,480 --> 00:58:15,859
+或其他任何知识
 tolerance or anything else alright any
 
 1289
 00:58:15,859 --> 00:58:20,529
+对基本框架有什么疑惑吗
 questions about the basic framework yes
 
 1290
 00:58:27,390 --> 00:58:30,550
+[音乐]
 [Music]
 
 1291
 00:58:36,099 --> 00:58:39,229
+你的意思是你可以给出Reduce的输出
 you mean can you feed the output of the
 
 1292
 00:58:39,229 --> 00:58:48,289
-reducers sort of oh yes oh yes in in in
+有点..哦是..哦是..
+Reduces sort of oh yes oh yes in in in
 
 1293
 00:58:48,289 --> 00:58:50,059
+在现实生活中可以
 in real life all right
 
 1294
 00:58:50,059 --> 00:58:53,269
+在现实生活中这是日常的
 in real life it is routine among
 
 1295
 00:58:53,269 --> 00:58:55,939
+MapReduce用户定义一个
 MapReduce users to you know define a
 
 1296
 00:58:55,939 --> 00:58:58,219
+MapReduce任务，需要一些输入和
 MapReduce job that took some inputs and
 
 1297
 00:58:58,219 --> 00:59:00,169
+生成一些输出
 produce some outputs and then have a
 
 1298
 00:59:00,169 --> 00:59:01,969
+第二个MapReduce任务
 second MapReduce job you know you're
 
 1299
 00:59:01,969 --> 00:59:03,939
+做一些非常复杂的多阶段
 doing some very complicated multistage
 
 1300
 00:59:03,939 --> 00:59:08,899
+分析或迭代算法
 analysis or iterative algorithm like
 
 1301
 00:59:08,899 --> 00:59:10,429
+例如PageRank
 PageRank for example which is the
 
 1302
 00:59:10,429 --> 00:59:13,119
+Google所用的评估算法
 algorithm Google uses to sort of
 
 1303
 00:59:13,119 --> 00:59:16,189
+估测不同的网页有多重要或多有影响力
 estimate how important or influential
 
 1304
 00:59:16,189 --> 00:59:18,229
+估测不同的网页有多重要或多有影响力
 different webpages are that's an
 
 1305
 00:59:18,229 --> 00:59:21,079
+迭代算法是渐进的
 iterative algorithm is sort of gradually
 
 1306
 00:59:21,079 --> 00:59:22,939
+收敛于答案
 converges on an answer and if you
 
 1307
 00:59:22,939 --> 00:59:24,439
+如果你用MapReduce实现
 implement in MapReduce which I think
 
 1308
 00:59:24,439 --> 00:59:26,539
+我想他们最初就是这样
 they originally did you have to run the
 
 1309
 00:59:26,539 --> 00:59:28,909
+你必须多次运行MapReduce任务
 MapReduce job multiple times and the
 
 1310
 00:59:28,909 --> 00:59:30,619
+每个输出都是
 output of each one is sort of you know
 
 1311
 00:59:30,619 --> 00:59:34,359
+更新的网页列表
 list of webpages with an updated sort of
 
 1312
 00:59:34,359 --> 00:59:36,649
+更新的内容是每个网页的价值，权重或重要性
 value or weight or importance for each
 
 1313
 00:59:36,649 --> 00:59:38,359
+得到一个输出
 webpage so it was routine to take this
 
 1314
 00:59:38,359 --> 00:59:40,279
+并用它作为另一个MapReduce任务的输入是很日常的
 output and then use it as the input to
 
 1315
 00:59:40,279 --> 00:59:53,749
+哦，是的，是的
 another MapReduce job oh yeah well yeah
 
 1316
 00:59:53,749 --> 00:59:56,029
+你需要根据输出设定一些内容
 you need to sort of set things up the
 
 1317
 00:59:56,029 --> 00:59:58,279
-output you need to rate the reduced
+你需要评估Reduce函数
+output you need to rate the Reduce
 
 1318
 00:59:58,279 --> 00:59:59,269
+在某种程度上了解
 function sort of in the knowledge that
 
 1319
 00:59:59,269 --> 01:00:02,659
+哦，我需要按一定格式或信息
 oh I need to produce data that's in the
 
 1320
 01:00:02,659 --> 01:00:05,419
+所需生成数据
 format or as the information required
 
 1321
 01:00:05,419 --> 01:00:07,939
+给下一个MapReduce任务，我的意思是这
 for the next MapReduce job I mean this
 
 1322
 01:00:07,939 --> 01:00:09,229
+实际上引出了一些
 actually brings up a little bit of a
 
 1323
 01:00:09,229 --> 01:00:11,499
+MapReduce框架的缺点
 shortcoming in the MapReduce framework
 
 1324
 01:00:11,499 --> 01:00:16,309
+这很棒，如果你..
 which is it's great if you are if the
 
 1325
 01:00:16,309 --> 01:00:18,679
+如果你需要运行的算法很容易
 algorithm you need to run is easily
 
 1326
 01:00:18,679 --> 01:00:20,809
+表达成数学形式，随后是
 expressible as a math followed by this
 
 1327
 01:00:20,809 --> 01:00:23,869
+按key对数据进行洗牌
 sort of shuffling of the data by key
 
 1328
 01:00:23,869 --> 01:00:26,179
-followed by a reduce and that's it
+接着是Reduce，仅此而已
+followed by a Reduce and that's it
 
 1329
 01:00:26,179 --> 01:00:28,069
-my MapReduce is fanTAstic for algorithms
+我的MapReduce有极好的算法
+My MapReduce is fantastic for algorithms
 
 1330
 01:00:28,069 --> 01:00:30,589
+可以以这种形式展示
 that can be cast in that form and we're
 
 1331
 01:00:30,589 --> 01:00:32,119
-furthermore each of the maps has to be
+此外我们...每个Map都必须
+furthermore each of the Maps has to be
 
 1332
 01:00:32,119 --> 01:00:33,400
+完全独立
 completely independent and
 
 1333
 01:00:33,400 --> 01:00:39,520
+必须是纯函数性的
 are required to be functional pure
 
 1334
 01:00:39,520 --> 01:00:42,760
+函数性函数
 functional functions that just look at
 
 1335
 01:00:42,760 --> 01:00:44,470
+只需看看他们的参数，仅此而已
 their arguments and nothing else
 
 1336
 01:00:44,470 --> 01:00:46,480
+那就像一个限制
 you know that's like it's a restriction
 
 1337
 01:00:46,480 --> 01:00:48,640
+事实证明，很多人想要
 and it turns out that many people want
 
 1338
 01:00:48,640 --> 01:00:49,990
+运行更长的管道
 to run much longer pipelines that
 
 1339
 01:00:49,990 --> 01:00:51,430
+涉及很多很多不同种类的
 involve lots and lots of different kinds
 
 1340
 01:00:51,430 --> 01:00:53,170
+处理过程，并与MapReduce一起使用
 of processing and with MapReduce you
 
 1341
 01:00:53,170 --> 01:00:54,370
+你不得不拼装
 have to sort of cobble that together
 
 1342
 01:00:54,370 --> 01:00:58,390
+多个MapReduce，不同的
 from multiple MapReduce distinct
 
 1343
 01:00:58,390 --> 01:01:00,730
+MapReduce任务和更高级的系统
 MapReduce jobs and more advanced systems
 
 1344
 01:01:00,730 --> 01:01:02,050
+这些我们将在后面讨论
 which we will talk about later in the
 
 1345
 01:01:02,050 --> 01:01:04,870
+这节课更擅长让你
 course are much better at allowing you
 
 1346
 01:01:04,870 --> 01:01:06,520
+指定完整的计算管道
 to specify the complete pipeline of
 
 1347
 01:01:06,520 --> 01:01:08,410
+他们会做优化
 computations and they'll do optimization
 
 1348
 01:01:08,410 --> 01:01:10,900
+框架实现了所有
 you know the framework realizes all the
 
 1349
 01:01:10,900 --> 01:01:13,000
+你要做的事情和组织
 stuff you have to do and organize much
 
 1350
 01:01:13,000 --> 01:01:15,670
+更复杂有效地优化
 more complicated efficiently optimize
 
 1351
 01:01:15,670 --> 01:01:19,590
+更复杂的计算
 much more complicated computations
 
 1352
 01:01:39,660 --> 01:01:41,650
+从程序员的角度来看
 from the programmers point of view it's
 
 1353
 01:01:41,650 --> 01:01:44,080
-just about map and reduce from our point
+只是Map和Reduce，从我们的角度来看
+just about Map and Reduce from our point
 
 1354
 01:01:44,080 --> 01:01:45,610
+这将关乎
 of view it's going to be about the
 
 1355
 01:01:45,610 --> 01:01:49,320
+任务进程和任务服务器
 worker processes and the worker servers
 
 1356
 01:01:49,320 --> 01:01:53,320
+他们是MapReduce框架的一部分
 that that are they're part of MapReduce
 
 1357
 01:01:53,320 --> 01:01:55,390
+除其他情况外
 framework that among many other things
 
 1358
 01:01:55,390 --> 01:02:00,000
-call the map and reduce functions so
+调用Map和Reduce函数
+call the Map and Reduce functions so
 
 1359
 01:02:00,000 --> 01:02:01,930
+是的，从我们的角度来看，我们比较关心
 yeah from our point of view we care a
 
 1360
 01:02:01,930 --> 01:02:04,240
+环境框架是如何组织这些的
 lot about how this is organized by the
 
 1361
 01:02:04,240 --> 01:02:06,190
+环境框架是如何组织这些的
 surrounding framework this is sort of
 
 1362
 01:02:06,190 --> 01:02:08,380
+从程序员的角度来看
 the programmers view with all the
 
 1363
 01:02:08,380 --> 01:02:14,340
+所有分发的内容都弄完了
 distributive stuff stripped out yes
 
 1364
 01:02:15,960 --> 01:02:25,150
+对不起，我得..再说一遍，哦，你的意思是
 sorry I gotta say it again oh you mean
 
 1365
 01:02:25,150 --> 01:02:32,170
+实时数据是什么情况
 where does the immediate data go okay so
 
 1366
 01:02:32,170 --> 01:02:35,440
+现在有两个问题，一个是当你
 there's two questions one is when you
 
 1367
 01:02:35,440 --> 01:02:38,020
-call a map what happens to the data and
+调用Map，数据会发生什么变化，
+call a Map what happens to the data and
 
 1368
 01:02:38,020 --> 01:02:42,330
+另一个问题是函数怎样运行
 the other is where the functions run so
 
 1369
 01:02:46,910 --> 01:02:50,240
+实际答案是，首先
 the actual answer is that first where
 
 1370
 01:02:50,240 --> 01:02:53,029
+这些东西是如何运行
 the stuffs run there's a number of say
 
 1371
 01:02:53,029 --> 01:02:56,539
+有许多，比如一千台服务器，实际上
 a thousand servers um actually the right
 
 1372
 01:02:56,539 --> 01:02:58,190
+这里需要关注的内容是在这篇论文里找出一个
 thing to look at here is figure one in
 
 1373
 01:02:58,190 --> 01:03:02,660
+在这个基础上，现实世界里
 the paper sitting underneath this in the
 
 1374
 01:03:02,660 --> 01:03:04,430
+有许多
 real world there's some big collection
 
 1375
 01:03:04,430 --> 01:03:09,019
+服务器集群，我们称它们为
 of servers and we'll call them maybe
 
 1376
 01:03:09,019 --> 01:03:12,410
+工作服务器或工作站
 worker servers or workers and there's
 
 1377
 01:03:12,410 --> 01:03:14,660
+同时也有单台master服务器
 also a single master server that's
 
 1378
 01:03:14,660 --> 01:03:16,519
+来管理整个计算过程
 organizing the whole computation and
 
 1379
 01:03:16,519 --> 01:03:18,890
+这时发生的情况是master
 what's going on here is the master
 
 1380
 01:03:18,890 --> 01:03:22,490
+服务器知道有
 server for know knows that there's some
 
 1381
 01:03:22,490 --> 01:03:24,559
+许多输入文件
 number of input files you know five
 
 1382
 01:03:24,559 --> 01:03:27,799
+如五千个输入文件
 thousand input files and it farms out in
 
 1383
 01:03:27,799 --> 01:03:29,539
-vacations of map to the different
+通过Map分包到不同的worker服务器
+vacations of Map to the different
 
 1384
 01:03:29,539 --> 01:03:30,890
+它将消息发送给
 workers so it'll send a message to
 
 1385
 01:03:30,890 --> 01:03:34,180
-worker seven saying please run you know
+worker服务器，说请运行吧
+worker sever saying please run you know
 
 1386
 01:03:34,180 --> 01:03:37,759
-this map function on such-and-such an
+Map函数，在某某输入文件上
+this Map function on such-and-such an
 
 1387
 01:03:37,759 --> 01:03:41,750
+接着worker函数
 input file and then the worker function
 
 1388
 01:03:41,750 --> 01:03:43,400
+MapReduce的一部分
 which is you know part of MapReduce and
 
 1389
 01:03:43,400 --> 01:03:47,170
-knows all about Map Reduce well then
+非常了解MapReduce
+knows all about MapReduce well then
 
 1390
 01:03:47,170 --> 01:03:50,089
+会读取文件，读取输入，无论是什么
 read the file read the input whatever
 
 1391
 01:03:50,089 --> 01:03:54,109
-whichever input file and call this map
+无论是哪个，输入文件，然后调用Map函数
+whichever input file and call this Map
 
 1392
 01:03:54,109 --> 01:03:56,599
+同时以文件名value作为其函数参数
 function with the file name value as its
 
 1393
 01:03:56,599 --> 01:04:00,400
+然后工作进程
 arguments then that worker process will
 
 1394
 01:04:00,400 --> 01:04:02,750
-employees what implements in it and
+会进行内部实现
+implement what implements in it and
 
 1395
 01:04:02,750 --> 01:04:05,960
-every time the map calls emit the worker
+每次Map调用emit
+every time the Map calls emit the worker
 
 1396
 01:04:05,960 --> 01:04:10,279
+工作进程会将这些数据写到本地磁盘的文件
 process will write this data to files on
 
 1397
 01:04:10,279 --> 01:04:12,769
-the local disk so what happens to map
+Map emits是什么情况呢
+the local disk so what happens to Map
 
 1398
 01:04:12,769 --> 01:04:17,420
+它们在
 emits and is they produce files on the
 
 1399
 01:04:17,420 --> 01:04:19,819
-map workers local disk that are
+在Map worker服务器的本地磁盘上生成文件
+Map workers local disk that are
 
 1400
 01:04:19,819 --> 01:04:21,950
+累计worker上的Map生成的所有的key和value
 accumulating all the keys and values
 
 1401
 01:04:21,950 --> 01:04:26,529
-produced by the maps run on that worker
+累计worker上的Map生成的所有的key和value
+produced by the Maps run on that worker
 
 1402
 01:04:26,529 --> 01:04:30,200
-so at the end of the maps phase what
+在Map阶段结束时
+so at the end of the Maps phase what
 
 1403
 01:04:30,200 --> 01:04:32,089
+留给我们的就是那些worker机器
 we're left with is all those worker
 
 1404
 01:04:32,089 --> 01:04:35,089
+每台机器有
 machines each of which has the output of
 
 1405
 01:04:35,089 --> 01:04:37,970
-some of whatever maps were run on that
+一些在上面运行的Map
+some of whatever Maps were run on that
 
 1406
 01:04:37,970 --> 01:04:42,369
+worker机器上，然后MapReduce
 worker machine then the MapReduce
 
 1407
 01:04:42,369 --> 01:04:45,710
+worker安排将数据移到
 workers arrange to move the data to
 
 1408
 01:04:45,710 --> 01:04:46,819
+它需要的地方
 where it's going to be needed for the
 
 1409
 01:04:46,819 --> 01:04:50,240
-reduces so and since and a you know in a
+供Reduce调用
+Reduces so and since and a you know in a
 
 1410
 01:04:50,240 --> 01:04:53,240
+在典型的大型计算中
 typical big computation you know this
 
 1411
 01:04:53,240 --> 01:04:55,220
-this reduce indication is going to need
+Reduce指令需要
+this Reduce indication is going to need
 
 1412
 01:04:55,220 --> 01:04:59,089
-all map output that
+所有提到了key a的Map输出
+all Map output that
 
 1413
 01:04:59,089 --> 01:05:01,559
+那会变成事实的
 mentioned the key a but it's gonna turn
 
 1414
 01:05:01,559 --> 01:05:04,289
+这是一个简单的例子
 out you know this is a simple example
 
 1415
 01:05:04,289 --> 01:05:08,599
-but probably in general every single map
+但一般来说，每个Map
+but probably in general every single Map
 
 1416
 01:05:08,599 --> 01:05:10,470
+指令会生成很多
 indication will have produce lots of
 
 1417
 01:05:10,470 --> 01:05:12,960
+key，包括a的某些实例
 keys including some instances of key a
 
 1418
 01:05:12,960 --> 01:05:15,390
+所以通常，在我们
 so typically in order before we can even
 
 1419
 01:05:15,390 --> 01:05:17,460
-run this reduce function the MapReduce
+运行MapReduce框架的Reduce函数之前
+run this Reduce function the MapReduce
 
 1420
 01:05:17,460 --> 01:05:20,190
+是MapReduce worker
 framework that is the MapReduce worker
 
 1421
 01:05:20,190 --> 01:05:22,589
+在我们数千台服务器中的一台上运行
 running on one of our thousand servers
 
 1422
 01:05:22,589 --> 01:05:24,269
+将不得不去与
 is going to have to go talk to every
 
 1423
 01:05:24,269 --> 01:05:26,579
+上千个服务器中的另外的每个单个服务器进行通信
 single other of the thousand servers and
 
 1424
 01:05:26,579 --> 01:05:28,529
+说，看，我要运行Reduce
 say look you know I'm gonna run the
 
 1425
 01:05:28,529 --> 01:05:31,170
-reduce for key a please look at the
+获取key a，请看一下
+Reduce for key a please look at the
 
 1426
 01:05:31,170 --> 01:05:33,210
-intermediate map output stored in your
+存储在你的磁盘上的中间Map输出
+intermediate Map output stored in your
 
 1427
 01:05:33,210 --> 01:05:35,880
-disk and fish out all of the instances
+完成 key a 的所有实例
+disk and finish out all of the instances
 
 1428
 01:05:35,880 --> 01:05:38,160
+把他们通过网络发送给我
 of key a and send them over the network
 
 1429
 01:05:38,160 --> 01:05:41,069
-to me so the reduce worker is going to
+Reduce worker将执行指令
+to me so the Reduce worker is going to
 
 1430
 01:05:41,069 --> 01:05:43,529
+它会从每个worker获取
 do that it's going to fetch from every
 
 1431
 01:05:43,529 --> 01:05:45,960
+key的所有实例
 worker all of the instances of the key
 
 1432
 01:05:45,960 --> 01:05:47,400
+它负责
 that it's responsible for that the
 
 1433
 01:05:47,400 --> 01:05:50,339
+master让它去做的事
 master has told it to be responsible for
 
 1434
 01:05:50,339 --> 01:05:51,839
+一旦它收集完所有数据
 and once it's collected all of that data
 
 1435
 01:05:51,839 --> 01:05:55,819
-then it can call reduce and the reduce
+它就可以调用Reduce
+then it can call Reduce and the Reduce
 
 1436
 01:05:55,819 --> 01:05:58,470
-function itself calls reduce omit which
+Reduce函数本身调用Reduce emit
+function itself calls Reduce emit which
 
 1437
 01:05:58,470 --> 01:06:01,890
-is different from the map in it and what
+emit与其中的Map不同
+is different from the Map in it and what
 
 1438
 01:06:01,890 --> 01:06:04,710
-reduces emit does is writes the output
+Reduces emit 把输出写到
+Reduces emit does is writes the output
 
 1439
 01:06:04,710 --> 01:06:12,150
+谷歌使用的集群文件服务中的文件里
 to a file in a cluster file service that
 
 1440
 01:06:12,150 --> 01:06:14,519
+这里有些东西
 Google uses so here's something I
 
 1441
 01:06:14,519 --> 01:06:17,970
+我还没提过，我没有提到
 haven't mentioned I haven't mentioned
 
 1442
 01:06:17,970 --> 01:06:21,329
+输入所在的位置以及
 where the input lives and where the
 
 1443
 01:06:21,329 --> 01:06:25,529
+输出所在的位置，他们都在文件里，因为
 output lives they're both files because
 
 1444
 01:06:25,529 --> 01:06:28,799
+一段输入，我们需要灵活性
 any piece of input we want the
 
 1445
 01:06:28,799 --> 01:06:31,319
+需要它能在任何worker服务器上读取任意一段输入
 flexibility to be able to read any piece
 
 1446
 01:06:31,319 --> 01:06:34,589
+也就是
 of input on any worker server that means
 
 1447
 01:06:34,589 --> 01:06:36,799
+我们需要某种网络文件系统
 we need some kind of network file system
 
 1448
 01:06:36,799 --> 01:06:42,509
+存储输入数据
 to store the input data and so indeed
 
 1449
 01:06:42,509 --> 01:06:44,099
+实际上这篇论文谈到了这个，即
 the paper talks about this thing called
 
 1450
 01:06:44,099 --> 01:06:50,160
+GFS或Google文件系统，而GFS是
 GFS or Google file system and GFS is a
 
 1451
 01:06:50,160 --> 01:06:51,990
+集群文件系统，GFS实际上
 cluster file system and GFS actually
 
 1452
 01:06:51,990 --> 01:06:54,210
+在完全相同的一组worker上运行
 runs on exactly the same set of workers
 
 1453
 01:06:54,210 --> 01:06:56,720
-that work our servers that run MapReduce
+这些worker servers运行MapReduce
+that worker servers that run MapReduce
 
 1454
 01:06:56,720 --> 01:07:00,630
+输入GFS只是自动...
 and the input GFS just automatically
 
 1455
 01:07:00,630 --> 01:07:02,220
+这是一个你能读取我的文件的文件系统
 when you you know it's a file system you
 
 1456
 01:07:02,220 --> 01:07:03,839
+这是一个你能读取我的文件的文件系统
 can read in my files it just
 
 1457
 01:07:03,839 --> 01:07:06,119
+GFS会自动拆分你的任何大文件
 automatically splits up any big file you
 
 1458
 01:07:06,119 --> 01:07:08,490
+将其存储在跨服务器和跨64MB的块上
 store on it across lots of servers and
 
 1459
 01:07:08,490 --> 01:07:12,320
+如果你写
 64 megabyte chunks so if you write
 
 1460
 01:07:12,320 --> 01:07:14,360
+如果你查看了10 TB的已爬
 if you view of ten terabytes of crawled
 
 1461
 01:07:14,360 --> 01:07:17,750
+网页内容，你只需把他们写到
 web page contents and you just write
 
 1462
 01:07:17,750 --> 01:07:20,120
+GFS，甚至作为一个大文件
 them to GFS even as a single big file
 
 1463
 01:07:20,120 --> 01:07:23,030
+GFS将自动把大数据拆分成64 KB的块
 GFS will automatically split that vast
 
 1464
 01:07:23,030 --> 01:07:25,010
+GFS将自动把大数据拆分成64 KB的块
 amount of data up into 64 kilobyte
 
 1465
 01:07:25,010 --> 01:07:28,010
+使其均匀地分布在所有
 chunks distributed evenly over all of
 
 1466
 01:07:28,010 --> 01:07:30,950
+GFS服务器上，也就是说
 the GFS servers which is to say all the
 
 1467
 01:07:30,950 --> 01:07:32,510
+Google提供的所有服务器都可以用
 servers that Google has available and
 
 1468
 01:07:32,510 --> 01:07:34,580
-that's fanTAstic that's just what we
+这非常美妙，这正是我们需要的
+that's fantastic that's just what we
 
 1469
 01:07:34,580 --> 01:07:36,860
+如果我们接下来要运行MapReduce任务
 need if we then want to run a MapReduce
 
 1470
 01:07:36,860 --> 01:07:39,650
+抓取的整个网站作为输入
 job that takes the entire crawled web as
 
 1471
 01:07:39,650 --> 01:07:42,650
+数据均匀分割后
 input the data is already stored in a
 
 1472
 01:07:42,650 --> 01:07:44,540
+存储在所有的跨服务器上了
 way that split up evenly across all the
 
 1473
 01:07:44,540 --> 01:07:47,780
-servers and so that means that the map
+这意味着
+servers and so that means that the Map
 
 1474
 01:07:47,780 --> 01:07:49,940
+Map worker，我们要启动
 workers you know we're gonna launch you
 
 1475
 01:07:49,940 --> 01:07:51,440
+我们有一千台服务器
 know if we have a thousand servers we're
 
 1476
 01:07:51,440 --> 01:07:53,000
-gonna launch a thousand map workers each
+我们要启动一千个Map  worker
+gonna launch a thousand Map workers each
 
 1477
 01:07:53,000 --> 01:07:55,850
+每个输入数据读取，1000秒
 reading one 1000s at the input data and
 
 1478
 01:07:55,850 --> 01:07:57,080
+他们可以并行地读取
 they're going to be able to read the
 
 1479
 01:07:57,080 --> 01:08:01,460
+一千个GFS文件服务器里的数据
 data in parallel from a thousand GFS
 
 1480
 01:08:01,460 --> 01:08:04,490
+总的庞大的
 file servers thus getting now tremendous
 
 1481
 01:08:04,490 --> 01:08:07,730
+读取吞吐量
 total read throughput you know the read
 
 1482
 01:08:07,730 --> 01:08:10,960
-through put up a thousand servers
+一千台服务器上的
+throughput up a thousand servers
 
 1483
 01:08:20,990 --> 01:08:23,490
+你可能在想也许Google
 so so are you thinking maybe that Google
 
 1484
 01:08:23,490 --> 01:08:25,470
+有一组物理机器
 has one set of physical machines among
 
 1485
 01:08:25,470 --> 01:08:27,779
+介于GFS和一组单独运行MapReduce任务的物理机器之间
 GFS and a separate set of physical
 
 1486
 01:08:27,779 --> 01:08:40,489
+介于GFS和一组单独运行MapReduce任务的物理机器之间
 machines that run MapReduce jobs okay
 
 1487
 01:08:40,580 --> 01:08:44,790
+对，所以问题是
 right so the question is what does this
 
 1488
 01:08:44,790 --> 01:08:48,630
+这里的箭头实际上涉及了什么内容
 arrow here actually involve and the
 
 1489
 01:08:48,630 --> 01:08:50,220
+答案是实际上那是随着时间改变的
 answer that actually it sort of changed
 
 1490
 01:08:50,220 --> 01:08:51,630
+自Google
 over the years as Google's
 
 1491
 01:08:51,630 --> 01:08:55,800
+涉足这个系统后
 involve this system but you know what
 
 1492
 01:08:55,800 --> 01:08:58,200
+在一般情况下，如果我们有
 this in those general case if we have
 
 1493
 01:08:58,200 --> 01:09:01,080
+大文件存储在某个大网络文件系统中
 big files stored in some big Network
 
 1494
 01:09:01,080 --> 01:09:02,880
+像GFS
 file system like you know it's like GFS
 
 1495
 01:09:02,880 --> 01:09:05,130
+可能有点像你在Athena上使用过的AFS
 is a bit like AFS you might have used on
 
 1496
 01:09:05,130 --> 01:09:07,229
+你去跟某些数据集通信
 Athena where you go talk to some
 
 1497
 01:09:07,229 --> 01:09:09,810
+你的数据在集群服务器里被拆分
 collection and your data split over a big
 
 1498
 01:09:09,810 --> 01:09:11,040
+你必须在网络上和那些服务器通信
 collection of servers you have to go talk
 
 1499
 01:09:11,040 --> 01:09:12,149
+你必须在网络上和那些服务器通信
 to those servers over the network to
 
 1500
 01:09:12,149 --> 01:09:14,580
+去检索你的数据，在那种情况下
 retrieve your data in that case what
 
 1501
 01:09:14,580 --> 01:09:17,840
+该箭头可能代表的是Map
 this arrow might represent is the Map
 
 1502
 01:09:17,840 --> 01:09:20,520
+MapReduce任务进程必须关闭
 MapReduce worker process has to go off
 
 1503
 01:09:20,520 --> 01:09:22,649
+跨网通信到
 and talk across the network to the
 
 1504
 01:09:22,649 --> 01:09:25,800
+正确的GFS服务器上，或者
 correct GFS server or maybe servers that
 
 1505
 01:09:25,800 --> 01:09:28,350
+存储部分输入的服务器
 store it's part of the input and fetch
 
 1506
 01:09:28,350 --> 01:09:30,950
+通过网络获取，连接到MapReduce
 it over the network to the MapReduce
 
 1507
 01:09:30,950 --> 01:09:33,450
-worker machine in order to pass the map
+worker机器，传递Map
+worker machine in order to pass the Map
 
 1508
 01:09:33,450 --> 01:09:35,310
+那当然是最一般的情况
 and that's certainly the most general
 
 1509
 01:09:35,310 --> 01:09:37,920
+以上就是MapReduce最终是
 case and that was eventually how
 
 1510
 01:09:37,920 --> 01:09:40,800
+如何工作的
 MapReduce actually worked in the world
 
 1511
 01:09:40,800 --> 01:09:44,819
+在这篇论文里面，如果你做了
 of this paper though and and if you did
 
 1512
 01:09:44,819 --> 01:09:45,930
+那里有很多网络通信
 that that's a lot of network
 
 1513
 01:09:45,930 --> 01:09:47,910
+你通信10TB的数据
 communication are you talking about ten
 
 1514
 01:09:47,910 --> 01:09:49,350
+我们就从他们的数据中心网络移动了10TB
 terabytes of data and we have moved 10
 
 1515
 01:09:49,350 --> 01:09:51,600
+我们就从他们的数据中心网络移动了10TB
 terabytes across their data center
 
 1516
 01:09:51,600 --> 01:09:54,270
+数据中心
 network which you know data center
 
 1517
 01:09:54,270 --> 01:09:55,740
+网络是每秒GB级的
 networks wanting gigabits per second but
 
 1518
 01:09:55,740 --> 01:09:57,780
+但仍然需要很多时间
 it's still a lot of time to move tens of
 
 1519
 01:09:57,780 --> 01:10:02,460
+去移动数十TB的数据，为了尝试...
 terabytes of data in order to try to and
 
 1520
 01:10:02,460 --> 01:10:04,170
+实际上在这篇2004年的论文中
 indeed in the world of this paper in
 
 1521
 01:10:04,170 --> 01:10:07,350
+他们最具约束力的瓶颈
 2004 the most constraining bottleneck in
 
 1522
 01:10:07,350 --> 01:10:08,850
+是MapReduce系统中的网络吞吐量
 their MapReduce system was Network
 
 1523
 01:10:08,850 --> 01:10:11,610
+因为它们要在网络上运行
 throughput because they were running on
 
 1524
 01:10:11,610 --> 01:10:13,590
+如果你深读了
 a network if you sort of read as far as
 
 1525
 01:10:13,590 --> 01:10:18,770
+评估部分
 the evaluation section their network
 
 1526
 01:10:18,770 --> 01:10:24,750
+他们的网络，有成千上万的
 their network as was they had thousands
 
 1527
 01:10:24,750 --> 01:10:27,230
+机器
 of machines
 
 1528
 01:10:27,479 --> 01:10:30,909
+他们会集成机器
 whatever and they would collect machines
 
 1529
 01:10:30,909 --> 01:10:32,920
+他们会插入机器
 they would plug machines and you know
 
 1530
 01:10:32,920 --> 01:10:35,110
+机器的每个机架
 each rack of machines and you know an
 
 1531
 01:10:35,110 --> 01:10:36,519
+机架的以太网交换机或者其他
 Ethernet switch for that rack or
 
 1532
 01:10:36,519 --> 01:10:38,110
+他们全部
 something but then you know they all
 
 1533
 01:10:38,110 --> 01:10:40,449
+需要互相通信
 need to talk to each other but there was
 
 1534
 01:10:40,449 --> 01:10:43,989
+还有路由以太网交换机
 a route Ethernet switch that all of the
 
 1535
 01:10:43,989 --> 01:10:45,519
-Rockies are net switches talked to and
+所有的网络交换机要与之通信
+Rackies are net switches talked to and
 
 1536
 01:10:45,519 --> 01:10:47,889
+如果你只是
 this one and you know so if you just
 
 1537
 01:10:47,889 --> 01:10:51,039
-pick some Map Reduce worker and some GFS
+选择一些MapReduce worker和一些GFS服务器
+pick some MapReduce worker and some GFS
 
 1538
 01:10:51,039 --> 01:10:52,960
+可能最少是
 server you know chances are at least
 
 1539
 01:10:52,960 --> 01:10:54,880
+他们之间必须跨通信的时间的一半
 half the time the communication between
 
 1540
 01:10:54,880 --> 01:10:56,199
+他们之间必须跨通信的时间的一半
 them has to pass through this one
 
 1541
 01:10:56,199 --> 01:10:58,409
+这一个不会改变他们的路线
 wouldn't switch their routes which had
 
 1542
 01:10:58,409 --> 01:11:01,479
+仅占总吞吐量的一部分
 only some amount of total throughput
 
 1543
 01:11:01,479 --> 01:11:05,650
+我忘了
 which I forget you know some number of
 
 1544
 01:11:05,650 --> 01:11:09,909
+每秒几GB，我忘记具体的数据了
 gigabits per second and I forget the
 
 1545
 01:11:09,909 --> 01:11:13,590
+但是当我做除法时
 number well but when I did the division
 
 1546
 01:11:13,590 --> 01:11:17,889
+被除数是
 that is divided up to the total
 
 1547
 01:11:17,889 --> 01:11:19,119
+路线中可用的总吞吐量
 throughput available in the routes which
 
 1548
 01:11:19,119 --> 01:11:21,639
+他们在这篇论文实验中使用的大约是2000台服务器
 by the roughly 2000 servers that they
 
 1549
 01:11:21,639 --> 01:11:23,769
+他们在这篇论文实验中使用的大约是2000台服务器
 used in the papers experiments what I
 
 1550
 01:11:23,769 --> 01:11:26,170
+我得到的结论是
 got was that each machine share of the
 
 1551
 01:11:26,170 --> 01:11:27,999
+路由交换机或整个网络
 route switch or of the total network
 
 1552
 01:11:27,999 --> 01:11:30,610
+容量的每台机器分量仅为每秒50MB
 capacity was only 50 megabits per second
 
 1553
 01:11:30,610 --> 01:11:36,309
+在他们的设置中
 per second in their setup 50 megabits
 
 1554
 01:11:36,309 --> 01:11:41,530
+每台机器每秒50MB
 per second per machine and then might
 
 1555
 01:11:41,530 --> 01:11:43,090
+看起来好像是很多50MB
 seem like a lot 50 megabits gosh
 
 1556
 01:11:43,090 --> 01:11:45,429
+但实际上
 millions and millions but it's actually
 
 1557
 01:11:45,429 --> 01:11:47,440
+只有非常小的一部分能比肩磁盘运行的速度
 quite small compared to how fast disks
 
 1558
 01:11:47,440 --> 01:11:51,999
+或者CPU运行的速度
 run or CPUs run and so this with their
 
 1559
 01:11:51,999 --> 01:11:53,769
+他们的网络，每秒50MB
 network this 50 megabits per second was
 
 1560
 01:11:53,769 --> 01:11:56,440
+有一个巨大的限制，所以他们
 like a tremendous limit and so they
 
 1561
 01:11:56,440 --> 01:11:57,760
+脑中坚定要
 really stood on their heads in the
 
 1562
 01:11:57,760 --> 01:12:00,010
+在论文中提到的设计中
 design described in the paper to avoid
 
 1563
 01:12:00,010 --> 01:12:02,979
+避免使用网络
 using the network and they played a
 
 1564
 01:12:02,979 --> 01:12:05,860
+他们使用了一堆技巧
 bunch of tricks to avoid sending stuff
 
 1565
 01:12:05,860 --> 01:12:07,059
+尽一切可能避免在网络上发送东西
 over the network when they possibly
 
 1566
 01:12:07,059 --> 01:12:10,570
+其中之一是他们...
 could avoid it one of them was they
 
 1567
 01:12:10,570 --> 01:12:14,380
+他们在同一组机器中使用gfs服务器和
 would they ran the gfs servers and the
 
 1568
 01:12:14,380 --> 01:12:16,809
+MapReduce workers
 MapReduce workers on the same set of
 
 1569
 01:12:16,809 --> 01:12:19,059
+他们有一千台机器
 machines so they have a thousand
 
 1570
 01:12:19,059 --> 01:12:23,079
+运行GFS
 machines they'd run GFS they implement
 
 1571
 01:12:23,079 --> 01:12:25,090
+他们在一千台机器实现GFS服务
 their GFS service on that thousand
 
 1572
 01:12:25,090 --> 01:12:27,099
+并在同一千台机器上运行MapReduce
 machines and run MapReduce on the same
 
 1573
 01:12:27,099 --> 01:12:29,530
+并在同一千台机器上运行MapReduce
 thousand machines and then when the
 
 1574
 01:12:29,530 --> 01:12:33,429
-master was splitting up the map work and
+master分拆Map任务
+master was splitting up the Map work and
 
 1575
 01:12:33,429 --> 01:12:34,630
+分包到不同的worker服务器
 sort of farming it out to different
 
 1576
 01:12:34,630 --> 01:12:39,390
+那很智能
 workers it would cleverly when it was
 
 1577
 01:12:39,390 --> 01:12:41,550
-about to run the map that was going to
+当它即将运行Map时
+about to run the Map that was going to
 
 1578
 01:12:41,550 --> 01:12:44,640
+map读取输入文件1
 read from input file one it would figure
 
 1579
 01:12:44,640 --> 01:12:47,790
+它会从GFS中找出来哪个服务器
 out from GFS which server actually holds
 
 1580
 01:12:47,790 --> 01:12:50,340
+的本地磁盘中有输入文件1
 input file one on its local disk and it
 
 1581
 01:12:50,340 --> 01:12:53,070
-would send the map for that input file
+它将把输入文件发送给Map
+would send the Map for that input file
 
 1582
 01:12:53,070 --> 01:12:55,710
+到同一机器上的MapReduce软件
 to the MapReduce software on the same
 
 1583
 01:12:55,710 --> 01:12:59,190
+因此默认情况下此箭头
 machine so that by default this arrow
 
 1584
 01:12:59,190 --> 01:13:01,980
+实际上是读取
 was actually local local read from the
 
 1585
 01:13:01,980 --> 01:13:03,450
+本地磁盘，并且不涉及
 local disk and did not involve the
 
 1586
 01:13:03,450 --> 01:13:05,160
+网络，这取决于
 network and you know depending on
 
 1587
 01:13:05,160 --> 01:13:07,290
+故障或负载或其他
 failures or load or whatever that
 
 1588
 01:13:07,290 --> 01:13:10,020
+也不可能总是那样做，但几乎所有
 couldn't always do that but almost all
 
 1589
 01:13:10,020 --> 01:13:11,970
-the maps would be run on the very same
+Map都会在相同的机器上运行
+the Maps would be run on the very same
 
 1590
 01:13:11,970 --> 01:13:13,620
+和存储数据，从而节省
 machine and stored the data thus saving
 
 1591
 01:13:13,620 --> 01:13:17,400
+大量时间
 them vast amount of time that they would
 
 1592
 01:13:17,400 --> 01:13:19,020
+而如果在网络中移动输入，这些时间则是必须要等待的
 otherwise had to wait to move the input
 
 1593
 01:13:19,020 --> 01:13:22,770
+他们玩的下一个窍门是
 data across the network the next trick
 
 1594
 01:13:22,770 --> 01:13:26,250
-they played is that map as I mentioned
+我提过的，Map
+they played is that Map as I mentioned
 
 1595
 01:13:26,250 --> 01:13:28,470
+在输出存储到机器的本地磁盘之前
 before stores this output on the local
 
 1596
 01:13:28,470 --> 01:13:29,940
-disk of the machine that you run the map
+你就运行Map
+disk of the machine that you run the Map
 
 1597
 01:13:29,940 --> 01:13:31,860
+又一次，存储Map的输出
 on so again storing the output of the
 
 1598
 01:13:31,860 --> 01:13:33,270
-map does not require network
+不需要网络通信
+Map does not require network
 
 1599
 01:13:33,270 --> 01:13:35,480
+他不是实时
 communication he's not immediately
 
 1600
 01:13:35,480 --> 01:13:38,000
+因为输出存储在了磁盘中
 because the output stored in the disk
 
 1601
 01:13:38,000 --> 01:13:42,360
+但是我们肯定知道，不管怎样，
 however we know for sure that one way or
 
 1602
 01:13:42,360 --> 01:13:45,060
+为了全部分组
 another in order to group together all
 
 1603
 01:13:45,060 --> 01:13:46,980
+按照MapReduce定义的方式
 of you know by the way the MapReduce is
 
 1604
 01:13:46,980 --> 01:13:49,650
+为了把与给定key关联的所有的value全部分组
 defined in order to group together all
 
 1605
 01:13:49,650 --> 01:13:51,510
+为了把与给定key关联的所有的value全部分组
 of the values associated with the given
 
 1606
 01:13:51,510 --> 01:13:55,260
+并将其传递给单个调用
 key and pass them to a single invocation
 
 1607
 01:13:55,260 --> 01:13:57,750
+在某些机器上生成（数据），这将
 to produce on some machine this is going
 
 1608
 01:13:57,750 --> 01:13:59,940
+需要网络通讯
 to require network communication we're
 
 1609
 01:13:59,940 --> 01:14:02,190
+我们想要获取
 gonna you know we want to need to fetch
 
 1610
 01:14:02,190 --> 01:14:03,840
+所有这些，把他们给到单台
 all these and give them a single
 
 1611
 01:14:03,840 --> 01:14:05,970
+必须在网络上移动的机器
 machine that have to be moved across the
 
 1612
 01:14:05,970 --> 01:14:08,670
+所以这个洗牌
 network and so this shuffle this
 
 1613
 01:14:08,670 --> 01:14:11,690
-movement of the keys from is kind of
+keys的这种移动方式
+movement of the keys from its kind of
 
 1614
 01:14:11,690 --> 01:14:14,850
+最初按行存储在同一台运行Map的机器上的
 originally stored by row and on the same
 
 1615
 01:14:14,850 --> 01:14:16,740
-machine that ran the map we need them
+我们实际上需要它们
+machine that ran the Map we need them
 
 1616
 01:14:16,740 --> 01:14:18,780
+按列存储在
 essentially to be stored on by column on
 
 1617
 01:14:18,780 --> 01:14:19,800
+机器上
 the machine that's going to be
 
 1618
 01:14:19,800 --> 01:14:22,020
-responsible for reduce this
+负责Reduce
+responsible for Reduce this
 
 1619
 01:14:22,020 --> 01:14:23,610
+这种将行存储的变为
 transformation of row storage
 
 1620
 01:14:23,610 --> 01:14:25,440
+列存储的转换本质上称为
 essentially column storage is called the
 
 1621
 01:14:25,440 --> 01:14:28,530
+这篇论文称为，洗牌。它确实很需要
 paper calls a shuffle and it really that
 
 1622
 01:14:28,530 --> 01:14:30,480
+在网络上移动的每条数据
 required moving every piece of data
 
 1623
 01:14:30,480 --> 01:14:33,000
-across the network from the map that
+通过Map生成传到
+across the network from the Map that
 
 1624
 01:14:33,000 --> 01:14:34,470
-produced it to the reduce that would
+Reduce
+produced it to the Reduce that would
 
 1625
 01:14:34,470 --> 01:14:36,300
+还需要它（洗牌），现在它像
 need it and now it's like the expensive
 
 1626
 01:14:36,300 --> 01:14:41,870
+是MapReduce代价最大的一部分
 part of the MapReduce yeah
 
 1627
 01:14:51,840 --> 01:14:53,860
+你是对的，你可以想象一个不同的
 you're right you can imagine a different
 
 1628
 01:14:53,860 --> 01:14:55,239
+定义，在里面你有更多的
 definition in which you have a more kind
 
 1629
 01:14:55,239 --> 01:14:57,989
-of streaming reduce I don't know I
+Reduce流。我不知道
+of streaming Reduce I don't know I
 
 1630
 01:14:57,989 --> 01:15:00,070
+我还没仔细想过这个
 haven't thought this through I don't
 
 1631
 01:15:00,070 --> 01:15:02,050
+我不知道为什么...那是否可行
 know why whether that would be feasible
 
 1632
 01:15:02,050 --> 01:15:04,239
+当然，至于程序员界面而言
 or not certainly as far as programmer
 
 1633
 01:15:04,239 --> 01:15:06,070
+目标
 interface like if the goal their
 
 1634
 01:15:06,070 --> 01:15:09,940
+他们的第一目标是否确实是能够
 number-one goal really was to be able to
 
 1635
 01:15:09,940 --> 01:15:11,980
+易于编程的
 make it easy to program by people who
 
 1636
 01:15:11,980 --> 01:15:13,989
+对于只是不知道系统发生了什么的人来说
 just had no idea of what was going on in
 
 1637
 01:15:13,989 --> 01:15:16,660
+可能是，你知道的
 the system so it may be that you know
 
 1638
 01:15:16,660 --> 01:15:18,460
-this speck this is really the way reduce
+小缺陷
+this speck this is really the way Reduce
 
 1639
 01:15:18,460 --> 01:15:22,660
+这正是Reduce函数的样子
 functions look and you know in C++ or
 
 1640
 01:15:22,660 --> 01:15:24,850
+在C ++或像这样的流版
 something like a streaming version of
 
 1641
 01:15:24,850 --> 01:15:28,090
+现在看起来的样子
 this is now starting to look I don't
 
 1642
 01:15:28,090 --> 01:15:30,190
+我不知道它究竟是啥样
 know how it look probably not this
 
 1643
 01:15:30,190 --> 01:15:33,250
+或许没这么简单
 simple but you know maybe it could be
 
 1644
 01:15:33,250 --> 01:15:35,320
+也许可以用那种方式做
 done that way and indeed many modern
 
 1645
 01:15:35,320 --> 01:15:37,960
+实际上很多现代系统...
 systems people got a lot more
 
 1646
 01:15:37,960 --> 01:15:41,530
+人们对现代事物了解更多
 sophisticated with modern things that
 
 1647
 01:15:41,530 --> 01:15:43,420
+如MapReduce的后继者们
 are the successors the MapReduce and
 
 1648
 01:15:43,420 --> 01:15:45,430
+他们确实经常涉及处理
 they do indeed involve processing
 
 1649
 01:15:45,430 --> 01:15:48,640
+数据流，而不是这些
 streams of data often rather than this
 
 1650
 01:15:48,640 --> 01:15:50,739
+批处理的方法
 very batch approach there is a batch
 
 1651
 01:15:50,739 --> 01:15:52,780
+从某种意义上说，有一种批处理方法
 approach in the sense that we wait until
 
 1652
 01:15:52,780 --> 01:15:54,970
+我们要一直等待所有数据获取完时才能处理
 we get all the data and then we process
 
 1653
 01:15:54,970 --> 01:15:57,250
+因此，首先，你必须
 it so first of all that you then have to
 
 1654
 01:15:57,250 --> 01:15:59,670
+有一个有限输入的概念
 have a notion of finite inputs right
 
 1655
 01:15:59,670 --> 01:16:02,170
+现代系统通常确实可以处理流
 modern systems often do indeed you
 
 1656
 01:16:02,170 --> 01:16:05,980
+也能够
 streams and and are able to take
 
 1657
 01:16:05,980 --> 01:16:08,910
+充分利用MapReduce的效率
 advantage of some efficiencies do that
 
 1658
 01:16:08,910 --> 01:16:15,460
+好吧，这就是洗牌的重点
 MapReduce okay so this is the point at
 
 1659
 01:16:15,460 --> 01:16:17,380
+好吧，这就是洗牌的重点
 which this shuffle is where all the
 
 1660
 01:16:17,380 --> 01:16:19,450
+所有的网络路线是哪里发生的
 network traffic happens this can
 
 1661
 01:16:19,450 --> 01:16:21,040
+这实际上可能有海量数据
 actually be a vast amount of data so if
 
 1662
 01:16:21,040 --> 01:16:23,920
+如果你想要排序，如果你在
 you think about sort if you're sorting
 
 1663
 01:16:23,920 --> 01:16:26,710
+排序的输出和输入有相同的大小
 the the output of the sort has the same
 
 1664
 01:16:26,710 --> 01:16:29,440
+排序的输出和输入有相同的大小
 size as the input to the sort so that
 
 1665
 01:16:29,440 --> 01:16:30,850
+也就是
 means that if you're you know if your
 
 1666
 01:16:30,850 --> 01:16:32,890
+如果你的输入是10 TB的数据
 input is 10 terabytes of data and you're
 
 1667
 01:16:32,890 --> 01:16:34,750
+你在做排序，你在这里要
 running a sort you're moving 10
 
 1668
 01:16:34,750 --> 01:16:36,220
+跨网络移动10TB的数据
 terabytes of data across a network at
 
 1669
 01:16:36,220 --> 01:16:38,410
+你的输出也将是10TB
 this point and your output will also be
 
 1670
 01:16:38,410 --> 01:16:40,780
+这是量非常大的数据
 10 terabytes and so this is quite a lot
 
 1671
 01:16:40,780 --> 01:16:42,430
+他们确实来自任意的
 of data and then indeed it is from any
 
 1672
 01:16:42,430 --> 01:16:44,140
+MapReduce任务，尽管不是全部的
 MapReduce jobs although not all there's
 
 1673
 01:16:44,140 --> 01:16:46,450
-some that significantly reduce the
+确实有些，在这些阶段，很大程度上减少数据量
+some that significantly Reduce the
 
 1674
 01:16:46,450 --> 01:16:49,690
+确实有些，在这些阶段，很大程度上减少数据量
 amount of data at these stages somebody
 
 1675
 01:16:49,690 --> 01:16:51,070
+有人提到，哦，如果你想把
 mentioned Oh what if you want to feed
 
 1676
 01:16:51,070 --> 01:16:52,900
-the output of reduce into another
+Reduce 的输出传给另一个
+the output of Reduce into another
 
 1677
 01:16:52,900 --> 01:16:55,150
+MapReduce任务，的确如此，那是
 MapReduce job and indeed that was often
 
 1678
 01:16:55,150 --> 01:16:56,979
+人们想做的事
 what people wanted to do and
 
 1679
 01:16:56,979 --> 01:16:58,389
-in case the output of the reduce might
+如果Reduce的输出可能
+in case the output of the Reduce might
 
 1680
 01:16:58,389 --> 01:17:00,400
-be enormous like four sort or web and
+像排序或网站一样巨大
+be enormous like for sort or web and
 
 1681
 01:17:00,400 --> 01:17:03,400
+10TB输入生成的输出
 mixing the output of the produces on ten
 
 1682
 01:17:03,400 --> 01:17:05,260
+Reduces的输出
 terabytes of input the output of the
 
 1683
 01:17:05,260 --> 01:17:07,719
-reduces again gonna be ten terabytes so
+也会是10TB
+Reduces again gonna be ten terabytes so
 
 1684
 01:17:07,719 --> 01:17:09,249
-the output of the reduce is also stored
+Reduce的输出也会保存
+the output of the Reduce is also stored
 
 1685
 01:17:09,249 --> 01:17:12,639
+在GFS里，系统将...
 on GFS and the system would you know
 
 1686
 01:17:12,639 --> 01:17:13,869
-reduce would just produce these key
+Reduce只会生成这些key
+Reduce would just produce these key
 
 1687
 01:17:13,869 --> 01:17:18,369
+value对，但MapReduce框架
 value pairs but the MapReduce framework
 
 1688
 01:17:18,369 --> 01:17:20,320
+会把它们收集起来并写入
 would gather them up and write them into
 
 1689
 01:17:20,320 --> 01:17:23,679
+GFS上的巨型文件里
 giant files on GFS and so there was
 
 1690
 01:17:23,679 --> 01:17:27,489
+另一轮网络通讯
 another round of network communication
 
 1691
 01:17:27,489 --> 01:17:30,219
+需要把每个Reduce的输出
 required to get the output of each
 
 1692
 01:17:30,219 --> 01:17:33,039
-reduce to the GFS server that needed to
+弄到需要存储Reduce的GFS服务器上
+Reduce to the GFS server that needed to
 
 1693
 01:17:33,039 --> 01:17:35,229
-store that reduce and because you might
+因为你可能
+store that Reduce and because you might
 
 1694
 01:17:35,229 --> 01:17:37,959
+认为他们也许用了相同的技巧
 think that they could have played the
 
 1695
 01:17:37,959 --> 01:17:39,639
+（就是）把输出
 same trick with the output of storing
 
 1696
 01:17:39,639 --> 01:17:42,489
+存在GFS服务器上
 the output on the GFS server that
 
 1697
 01:17:42,489 --> 01:17:46,449
+同时运行了 MapReduce worker
 happened to run the MapReduce worker
 
 1698
 01:17:46,449 --> 01:17:48,969
-that ran the reduce and maybe they did
+运行了 Reduce，也许他们确实那样做了
+that ran the Reduce and maybe they did
 
 1699
 01:17:48,969 --> 01:17:51,760
+但是由于GFS以及
 do that but because GFS as well as
 
 1700
 01:17:51,760 --> 01:17:53,979
+拆分数据以提高性能
 splitting data for performance also
 
 1701
 01:17:53,979 --> 01:17:55,929
+也为容错保留两三份副本
 keeps two or three copies for fault
 
 1702
 01:17:55,929 --> 01:17:58,030
+这意味着无论你
 tolerance that means no matter what you
 
 1703
 01:17:58,030 --> 01:17:59,079
+需要什么去写一份数据备份
 need to write one copy of the data
 
 1704
 01:17:59,079 --> 01:18:01,349
+跨网络连接到其他服务器
 across a network to a different server
 
 1705
 01:18:01,349 --> 01:18:03,070
+有很多网络通信
 so there's a lot of network
 
 1706
 01:18:03,070 --> 01:18:05,699
+这儿就有一大堆
 communication here and a bunch here also
 
 1707
 01:18:05,699 --> 01:18:08,199
+而我是这个网络通信
 and I was this network communication
 
 1708
 01:18:08,199 --> 01:18:09,999
+在2004年，那确实限制了MapReduce的吞吐量
 that really limited the throughput in
 
 1709
 01:18:09,999 --> 01:18:10,659
+在2004年，那确实限制了MapReduce的吞吐量
 MapReduce
 
 1710
 01:18:10,659 --> 01:18:17,679
+2020年，因为网络
 in 2004 in 2020 because this network
 
 1711
 01:18:17,679 --> 01:18:19,869
+布局是一个很大的限制性因素
 arrangement was such a limiting factor
 
 1712
 01:18:19,869 --> 01:18:21,789
+很多人们想做的事情
 for so many things people wanted to do
 
 1713
 01:18:21,789 --> 01:18:23,920
+在数据中心，现代数据中心
 in datacenters modern data center
 
-1714
+17142
 01:18:23,920 --> 01:18:26,079
+网络从根本上讲要比过去快很多
 networks are a lot faster at the root
 
 1715
 01:18:26,079 --> 01:18:28,959
+所以大家知道
 than this was and so you know one
 
 1716
 01:18:28,959 --> 01:18:30,639
+你现在可能会看到的典型的数据中心网络
 typical data center network you might
 
 1717
 01:18:30,639 --> 01:18:32,889
+实际上有很多根
 see today actually has many root instead
 
 1718
 01:18:32,889 --> 01:18:34,329
+而不是，所有数据要经过的单个根交换机
 of a single root switch that everything
 
 1719
 01:18:34,329 --> 01:18:37,630
+你可能有..
 has to go through you might have you
 
 1720
 01:18:37,630 --> 01:18:40,269
+许多根交换机,每个机架
 know many root switches and each rack
 
 1721
 01:18:40,269 --> 01:18:42,459
+交换机与每个这种备份根交换机相连
 switch has a connection to each of these
 
 1722
 01:18:42,459 --> 01:18:44,530
+交换机与每个这种备份根交换机相连
 sort of replicated root switches and the
 
 1723
 01:18:44,530 --> 01:18:46,479
+流量在根交换机之间分配
 traffic is split up among the root
 
 1724
 01:18:46,479 --> 01:18:48,599
+现代数据中心网络
 switches so modern data center networks
 
 1725
 01:18:48,599 --> 01:18:52,269
+具有更大的网络吞吐量
 have far more network throughput and
 
 1726
 01:18:52,269 --> 01:18:54,880
+因为，我认为，实际上，现代
 because of that actually modern I think
 
 1727
 01:18:54,880 --> 01:18:57,099
+Google在几年前就开始停止使用MapReduce
 Google sort of stopped using MapReduce a
 
 1728
 01:18:57,099 --> 01:19:00,309
+但在他们停止使用之前
 few years ago but before they stopped
 
 1729
 01:19:00,309 --> 01:19:02,590
+现代MapReduce
 using it the modern MapReduce actually
 
 1730
 01:19:02,590 --> 01:19:04,959
-no longer tried to run the maps on the
+已不再试图在同一机器上运行Map
+no longer tried to run the Maps on the
 
 1731
 01:19:04,959 --> 01:19:06,939
+当数据在存储时
 same machine as the data stored on they
 
 1732
 01:19:06,939 --> 01:19:08,139
+很高兴能从任何地方对数据进行投票
 were happy to vote the data from
 
 1733
 01:19:08,139 --> 01:19:11,369
+因为他们认为
 anywhere because they just assumed that
 
 1734
 01:19:11,369 --> 01:19:16,439
+那样速度非常快，好了，我们
 was extremely fast okay we're out of
 
 1735
 01:19:16,439 --> 01:19:18,439
+没有更多的时间说MapReduce了
 time for MapReduce
 
 1736
 01:19:18,439 --> 01:19:21,689
+我们下周有一个lab
 we have a lab due at the end of next
 
 1737
 01:19:21,689 --> 01:19:22,349
+我们下周有一个lab
 week
 
 1738
 01:19:22,349 --> 01:19:24,840
+你可以自己在里面编写一些
 in which you'll write your own somewhat
 
 1739
 01:19:24,840 --> 01:19:27,899
+简化的MapReduce，请尽情耍
 simplified MapReduce so have fun with
 
 1740
 01:19:27,899 --> 01:19:28,349
+简化的MapReduce，请尽情耍
 that
 
 1741
-01:19:28,349 --> 00:00:00,000
+01:19:28,349 --> 01:19:32,000
+周四见
 and see you on Thursday
 
