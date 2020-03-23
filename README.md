@@ -4,3 +4,7 @@
 ## 组织
 
 QQ:1035287657
+
+## 视频资源
+
+- https://www.bilibili.com/video/BV1R7411t71W?p=1

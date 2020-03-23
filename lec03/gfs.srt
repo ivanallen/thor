@@ -2234,316 +2234,388 @@ not that system so it's really for big
 or big is you know terabytes gigabytes
 
 448
-00:20:12,600 --> 00:20:21,350
-只是为了大文件的顺序访问 而不是随机访问
+00:20:12,600 --> 000:20:22,640
+它只处理大文件的顺序访问 而不是随机访问
 some big sequential not random access
 
 449
 00:20:22,640 --> 00:20:24,690
+从某种程度上讲 它有点像批处理的风格
 it's also that has a certain batch
 
 450
 00:20:24,690 --> 00:20:26,340
+它没有花费过多的精力让延迟变的更低
 flavor there's not a huge amount of
 
 451
 00:20:26,340 --> 00:20:27,840
+它没有花费过多的精力让延迟变的更低
 effort to make access be very low
 
 452
 00:20:27,840 --> 00:20:30,000
+而是把重点放在具大的呑吐量上
 latency the focus is really on
 
 453
 00:20:30,000 --> 00:20:32,880
+而是把重点放在大呑吐量上
 throughput of big you know multi
 
 454
 00:20:32,880 --> 00:20:36,780
+比如数兆字节的操作
 megabyte operations this paper was
 
 455
 00:20:36,780 --> 00:20:39,560
+这篇论文 2003 年发表在 SOSP 上
 published at SOSP in 2003 the top
 
 456
 00:20:39,560 --> 00:20:46,860
+一个顶级系统学术会议
 system's academic conference yeah usually
 
 457
 00:20:46,860 --> 00:20:49,080
+通常在这样的会议上 论文标准是需要有很多创新研究
 the standard for papers such conferences
 
 458
 00:20:49,080 --> 00:20:51,260
+通常在这样的会议上 论文标准是需要有很多创新研究
 they have you know a lot of very novel
 
 459
 00:20:51,260 --> 00:20:54,060
+这些创新研究在课堂上一定不会有的
 research this paper was not necessarily
 
 460
 00:20:54,060 --> 00:20:55,920
+这篇论文中的点子 在那个时候并不特别新颖
 in that class the specific ideas in this
 
 461
 00:20:55,920 --> 00:20:57,750
+这篇论文中的点子 在那个时候并不特别新颖
 paper none of them are particularly new
 
 462
 00:20:57,750 --> 00:21:00,990
+像分布式、分片(sharding)、容错这些
 at the time and things like distribution
 
 463
 00:21:00,990 --> 00:21:02,510
+像分布式、分片(sharding)、容错这些
 and sharding and fault tolerance were
 
 464
 00:21:02,510 --> 00:21:05,340
-you know well understood had to had to
+你能很好的理解并实现它们
+you know well understood how to
 
 465
 00:21:05,340 --> 00:21:07,620
+但是这篇论文描述的系统 是建立在成百上千台机器上的
 deliver those but this paper described a
 
 466
 00:21:07,620 --> 00:21:09,480
+但是这篇论文描述的系统 是建立在成百上千台机器上的
 system that was really operating in in
 
 467
 00:21:09,480 --> 00:21:11,970
+但是这篇论文描述的系统 是建立在成百上千台机器上的
 use at a far far larger scale hundreds
 
 468
 00:21:11,970 --> 00:21:13,680
+但是这篇论文描述的系统 是建立在成百上千台机器上的
 of thousands of machines much bigger
 
 469
 00:21:13,680 --> 00:21:16,400
+数量远远超过了以往学术界建立的系统所使用的机器
 than any you know academics ever built
 
 470
 00:21:16,400 --> 00:21:18,960
+事实上 它被用于工业界 并折射现实世界的经验
 the fact that it was used in industry
 
 471
 00:21:18,960 --> 00:21:21,450
+事实上 它被用于工业界 并折射现实世界的经验
 and reflected real world experience of
 
 472
 00:21:21,450 --> 00:21:23,370
+比如 对于已经部署的系统  什么不该做 什么该做 
 like what actually didn't didn't work
 
 473
 00:21:23,370 --> 00:21:25,490
+比如 对于已经部署的系统  什么不该做 什么该做
 for deployed systems that had to work
 
 474
 00:21:25,490 --> 00:21:28,950
+什么样的开销是最有效率的 这些都是非常有价值的
 and had to be cost effective also like
 
 475
 00:21:28,950 --> 00:21:34,080
+什么样的开销是最有效率的 这些都是非常有价值的
 extremely valuable the paper sort of
 
 476
 00:21:34,080 --> 00:21:39,090
+这篇论文提出了一个相当异端的观点
 proposed a fairly heretical view that it
 
 477
 00:21:39,090 --> 00:21:40,800
+认为存储系统具有弱一致性是可以接受的
 was okay for the storage system to have
 
 478
 00:21:40,800 --> 00:21:41,270
-pretty
+认为存储系统具有弱一致性是可以接受的
+pretty weak consistency
 
 479
 00:21:41,270 --> 00:21:45,440
-consistency we the academic mindset at
+在那时候 学术界的观念认为存储系统就应该具有良好的行为
+we the academic mindset at
 
 480
 00:21:45,440 --> 00:21:46,550
+在那时候 学术界的观念认为存储系统就应该具有良好的行为
 that time was the you know the storage
 
 481
 00:21:46,550 --> 00:21:47,780
+在那时候 学术界的观念认为存储系统就应该具有良好的行为
 system really should have good behavior
 
 482
 00:21:47,780 --> 00:21:48,830
+像这里的这个糟糕的复制系统 它返回了错误的数据
 like what's the point of building
 
 483
 00:21:48,830 --> 00:21:50,780
+像这里的这个糟糕的复制系统 它返回了错误的数据
 systems that sort of return the wrong
 
 484
 00:21:50,780 --> 00:21:53,750
+像这里的这个糟糕的复制系统 它返回了错误的数据
 data like my terrible replication system
 
 485
 00:21:53,750 --> 00:21:55,400
+它为什么要这样做 而不是构建一个能返回正确数据的系统
 like why do that why not build systems
 
 486
 00:21:55,400 --> 00:21:57,020
+它为什么要这样做 而不是构建一个能返回正确数据的系统
 return the right data correct data
 
 487
 00:21:57,020 --> 00:21:59,240
+它为什么要这样做 而不是构建一个能返回正确数据的系统
 instead of incorrect data now with this
 
 488
 00:21:59,240 --> 00:22:02,570
+在这篇论文里 它确实没有保证返回的正确的数据
 paper actually does not guarantee return
 
 489
 00:22:02,570 --> 00:22:05,960
+它的目的是获取更好的性能
 correct data and you know the hope is
 
 490
 00:22:05,960 --> 00:22:07,130
+它的目的是获取更好的性能
 that they take advantage of that in
 
 491
 00:22:07,130 --> 00:22:09,440
+它的目的是获取更好的性能
 order to get better performance I'm a
 
 492
 00:22:09,440 --> 00:22:11,900
+最后一件事 这篇论文里 使用的是单个 master
 final thing that was sort of interesting
 
 493
 00:22:11,900 --> 00:22:13,580
+最后一件事 这篇论文里 使用的是单个 master
 about this paper is its use of a single
 
 494
 00:22:13,580 --> 00:22:16,370
+在学术论文里 你可能会有自动容错的副本 用以恢复 master
 master in a sort of academic paper you
 
 495
 00:22:16,370 --> 00:22:18,020
+在学术论文里 你可能会有自动容错的副本 用以恢复 master
 probably have some fault-tolerant
 
 496
 00:22:18,020 --> 00:22:20,900
+在学术论文里 你可能会有自动容错的副本 用以恢复 master
 replicated automatic failure recovering
 
 497
 00:22:20,900 --> 00:22:24,110
+或许有许多的 master 进行分工
 master perhaps many masters with the
 
 498
 00:22:24,110 --> 00:22:25,550
+但是在这篇论文里
 work split open um but this paper said
 
 499
 00:22:25,550 --> 00:22:26,960
+它得以侥幸的只使用一个 master 并且能工作的很好
 look you know you they can get away with
 
 500
 00:22:26,960 --> 00:22:39,260
+它得以侥幸的只使用一个 master 并且能工作的很好
 a single master and it worked fine well
 
 501
 00:22:39,260 --> 00:22:40,610
+(提问) 很讽刺的是 谁关心 web 页面上投票的数量是否正确呢
 cynically you know who's going to notice
 
 502
 00:22:40,610 --> 00:22:43,010
+(提问) 很讽刺的是 谁关心 web 页面上投票的数量是否正确呢
 on the web that some vote count or
 
 503
 00:22:43,010 --> 00:22:44,920
+又或是别的什么错误呢
 something is wrong or if you do a search
 
 504
 00:22:44,920 --> 00:22:47,510
+如果你在搜索引擎上执行搜索
 on a search engine now you're gonna know
 
 505
 00:22:47,510 --> 00:22:50,480
+可能会发生 20000 条结果里有一条搜索结果丢失这样的事情
 that oh you know like one of 20,000
 
 506
 00:22:50,480 --> 00:22:51,890
+可能会发生 20000 条结果里有一条搜索结果丢失这样的事情
 items is missing from the search results
 
 507
 00:22:51,890 --> 00:22:54,860
+这些结果的排序可能也不正确
 or they're in the wrong order probably
 
 508
 00:22:54,860 --> 00:22:58,130
+所以在这类系统中 它对错误数据容错能力不需要像银行系统那样高
 not so there was just much more
 
 509
 00:22:58,130 --> 00:22:59,510
+所以在这类系统中 它对错误数据容错能力不需要像银行系统那样高
 tolerance in these kind of systems than
 
 510
 00:22:59,510 --> 00:23:02,210
+所以在这类系统中 它对错误数据容错能力不需要像银行系统那样高
 there would like in a bank for incorrect
 
 511
 00:23:02,210 --> 00:23:04,070
+这并不是说所有数据所有的 web 网站都可以是错误的
 data it doesn't mean that all data and
 
 512
 00:23:04,070 --> 00:23:05,630
+这并不是说所有数据所有的 web 网站都可以是错误的
 websites can be wrong like if you're
 
 513
 00:23:05,630 --> 00:23:07,880
+比如你收了别人的钱 给人家打广告
 charging people for ad impressions you
 
 514
 00:23:07,880 --> 00:23:09,890
+你最好还是得保证数字的正确性 这不一定就是这样哈
 better get the numbers right but this is
 
 515
 00:23:09,890 --> 00:23:15,830
+另外 GFS 中有一些提供数据的方法 可以在应用程序中进行补偿
 not really about that in addition some
 
 516
 00:23:15,830 --> 00:23:18,370
+另外 GFS 中有一些提供数据的方法 可以在应用程序中进行补偿
 of the ways in which GFS could serve up
 
 517
 00:23:18,370 --> 00:23:21,770
-odd data could be compensated for in the
+另外 GFS 中有一些提供数据的方法 可以在应用程序中进行补偿
+all data could be compensated for in the
 
 518
 00:23:21,770 --> 00:23:23,540
+比如论文中介绍的 应用程序应当把数据及其校验和一起使用
 applications like where the paper says
 
 519
 00:23:23,540 --> 00:23:25,490
+比如论文中介绍的 应用程序应当把数据及其校验和一起使用
 you know applications should accompany
 
 520
 00:23:25,490 --> 00:23:28,040
+比如论文中介绍的 应用程序应当把数据及其校验和一起使用
 their data with checksums and clearly
 
 521
 00:23:28,040 --> 00:23:30,260
+并且要清晰的标记记录的边界
 mark record boundaries that's so the
 
 522
 00:23:30,260 --> 00:23:32,380
+所以应用程序就能从 GFS 中恢复数据
 applications can recover from GFS
 
 523
-00:23:32,380 --> 00:23:35,480
-serving them maybe not quite the right
-
-524
-00:23:35,480 --> 00:23:37,690
-data
+00:23:32,380 --> 00:23:37,690
+提供服务可能并不需要强烈保证数据的正确性	
+serving them maybe not quite the right data
 
 525
 00:23:40,970 --> 00:23:44,730
+
 all right so the general structure and
 
 526
