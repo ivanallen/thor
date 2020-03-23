@@ -1,10 +1,12 @@
 1
 00:00:00,800 --> 00:00:05,210
+【翻译：Cyru1s / Halcyon】
 让我们开始课程
 all right let's get started
 
 2
 00:00:05,210 --> 00:00:11,820
+【翻译：Cyru1s / Halcyon】
 本课程是 6.824 分布式系统
 this is 6.824 distributed systems so
 
