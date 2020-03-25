@@ -1,15 +1,21 @@
 1
 00:00:00,600 --> 00:00:05,640
+（翻译：Allen, Adam）
+（https://github.com/ivanallen/thor）
 好啦，咱们开始上课
 I'd like to get started today we're
 
 2
 00:00:05,640 --> 00:00:09,389
+（翻译：Allen, Adam）
+（https://github.com/ivanallen/thor）
 今天咱们谈谈 GFS
 gonna talk about GFS the Google file
 
 3
 00:00:09,389 --> 00:00:10,980
+（翻译：Allen, Adam）
+（https://github.com/ivanallen/thor）
 也就是就是今天我们要读的论文《The Google File System》
 system paper we read for today
 
@@ -2609,129 +2615,158 @@ mark record boundaries that's so the
 applications can recover from GFS
 
 523
-00:23:32,380 --> 00:23:37,690
+00:23:32,380 --> 00:23:40,970
 提供服务可能并不需要强烈保证数据的正确性	
 serving them maybe not quite the right data
 
 525
 00:23:40,970 --> 00:23:44,730
-
+好，所以一般的结构是……就在这篇论文的图 1 里
 all right so the general structure and
 
 526
 00:23:44,730 --> 00:23:48,840
+好，所以一般的结构是……就在这篇论文的图 1 里
 this is just figure one in the paper so
 
 527
 00:23:48,840 --> 00:23:53,850
+我们有很多客户端 上百个吧 还有一个 master
 we have a bunch of clients hundreds
 
 528
 00:23:53,850 --> 00:23:57,920
+我们有很多客户端 上百个吧 还有一个 master
 hundreds of clients we have one master
 
 529
 00:23:59,450 --> 00:24:02,040
+尽管存在 master 的多个副本
 although there might be replicas of the
 
 530
 00:24:02,040 --> 00:24:07,140
+在这里 master 保存有从文件名到数据存储位置的映射
 master the master keeps the mapping from
 
 531
 00:24:07,140 --> 00:24:09,510
+在这里 master 保存有从文件名到数据存储位置的映射
 file names to where to find the data
 
 532
 00:24:09,510 --> 00:24:10,980
+实际上是有 2 张表
 basically although there's really two
 
 533
 00:24:10,980 --> 00:24:14,100
+然后 还有许多的 chunk server（块服务器）
 tables so and then there's a bunch of
 
 534
 00:24:14,100 --> 00:24:18,390
+然后 还有许多的 chunk server（块服务器）
 chunk servers maybe hundreds of chunk
 
 535
 00:24:18,390 --> 00:24:21,090
+可能会有上百个 每一个可能都会有一两块磁盘
 servers each with perhaps one or two
 
 536
 00:24:21,090 --> 00:24:23,640
-discs the separation here's the master
+这里的 master 用来管理命名和追踪 chunk 的位置
+disks the separation here's the master
 
 537
 00:24:23,640 --> 00:24:25,320
+这里的 master 用来管理命名和追踪 chunk 的位置
 is all about naming and knowing where
 
 538
 00:24:25,320 --> 00:24:27,480
+chunk server 会存储实际的数据
 the chunks are and the chunk servers
 
 539
 00:24:27,480 --> 00:24:29,400
+chunk server 会存储实际的数据
 store the actual data this is like a
 
 540
 00:24:29,400 --> 00:24:31,020
+这看起来是设计中最好的地方了
 nice aspect of the design that these two
 
 541
 00:24:31,020 --> 00:24:32,760
+这两个地方完全彼此隔离起来
 concerns are almost completely separated
 
 542
 00:24:32,760 --> 00:24:35,880
+并能使用独立的特性进行独立设计
 from each other and can be designed just
 
 543
 00:24:35,880 --> 00:24:41,700
+并能使用独立的特性进行独立设计
 separately with separate properties the
 
 544
 00:24:41,700 --> 00:24:43,170
+master 知道所有的文件 并且能追踪这些 chunk
 master knows about all the files for
 
 545
 00:24:43,170 --> 00:24:44,970
+master 知道所有的文件 并且能追踪这些 chunk、chunk 标识符
 every file the master keeps track of a
 
 546
 00:24:44,970 --> 00:24:48,260
+master 知道所有的文件 并且能追踪这些 chunk、chunk 标识符
 list of chunks chunk identifiers that
 
 547
 00:24:48,260 --> 00:24:50,880
+chunk 中包含文件的连续片断 每个 chunk 大小是 64MB
 contain the successive pieces that file
 
 548
 00:24:50,880 --> 00:24:53,400
+chunk 中包含文件的连续片断 每个 chunk 大小是 64MB
 each chunk is 64 megabytes so if I have
 
 549
 00:24:53,400 --> 00:24:57,090
+如果我有 1GB 的文件
 a you know gigabyte file the master is
 
 550
 00:24:57,090 --> 00:24:58,590
+master 就会知道关于这个文件的第 1 个 chunk 保存在这里
 gonna know that maybe the first chunk is
 
 551
 00:24:58,590 --> 00:25:00,059
+第 2 个 chunk 保存在这里
 stored here and the second chunk is
 
 552
 00:25:00,059 --> 00:25:01,559
+第 3 个 chunk 保存在这里
 stored here the third chunk is stored
 
 553
 00:25:01,559 --> 00:25:03,780
+如果我想读取这个文件中的任意一部分
 here and if I want to read whatever part
 
 554
 00:25:03,780 --> 00:25:05,490
+我需要询问 master
 of the file I need to ask the master oh
 
 555
