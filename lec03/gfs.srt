@@ -2746,7 +2746,7 @@ a you know gigabyte file the master is
 
 550
 00:24:57,090 --> 00:24:58,590
-master 就会知道关于这个文件的第 1 个 chunk 保存在这里
+master 就会知道这个文件的第 1 个 chunk 保存在这里
 gonna know that maybe the first chunk is
 
 551
@@ -2766,235 +2766,287 @@ here and if I want to read whatever part
 
 554
 00:25:03,780 --> 00:25:05,490
-我需要询问 master
+就需要询问 master 这个 chunk 在哪个 server 上
 of the file I need to ask the master oh
 
 555
 00:25:05,490 --> 00:25:07,260
-which server hole is that chunk and I go
+就需要询问 master 这个 chunk 在哪个 server 上
+which server holds that chunk and I go
 
 556
 00:25:07,260 --> 00:25:09,000
+然后就去找那个 server 读取 chunk 粗略的说就是这样
 talk to that server and read the chunk
 
 557
 00:25:09,000 --> 00:25:17,130
+然后就去找那个 server 读取 chunk 粗略的说就是这样
 roughly speaking all right so more
 
 558
 00:25:17,130 --> 00:25:21,150
-precisely we need to turns out if we're
+说的细一点 我们需要证明我们所讨论的
+precisely we need to turns out for
 
 559
 00:25:21,150 --> 00:25:23,190
+关于系统如何保持一致性 以及如何处理错误的问题
 going to talk about how the system about
 
 560
 00:25:23,190 --> 00:25:24,690
+关于系统如何保持一致性 以及如何处理错误的问题
 the consistency of the system and how it
 
 561
 00:25:24,690 --> 00:25:27,360
+关于系统如何保持一致性 以及如何处理错误的问题
 deals with fault we need to know what
 
 562
 00:25:27,360 --> 00:25:29,100
+我们需要了解 master 实际存储的是什么这些细节
 the master is actually storing in a
 
 563
-00:25:29,100 --> 00:25:31,770
-little bit more detail so the master
-
-564
-00:25:31,770 --> 00:25:34,190
-data
+00:25:29,100 --> 00:25:36,190
+我们需要了解 master 实际存储的是什么这些细节
+little bit more detail so the master data
 
 565
 00:25:36,190 --> 00:25:38,900
+master data 我们所关心的是它实际存储的 2 个主要 table
 it's got two main tables that we care
 
 566
 00:25:38,900 --> 00:25:41,360
+其中一个是 filename 到 chunk ID(或chunk handle) 数组的映射
 about it's got one table that map's file
 
 567
 00:25:41,360 --> 00:25:52,460
+其中一个是 filename 到 chunk ID(或chunk handle) 数组的映射
 name to an array of chunk IDs or chunk
 
 568
 00:25:52,460 --> 00:26:00,830
+这张表是为了告诉你在哪里可以找到数据 或者说这些 chunk 是什么
 handles this just tells you where to
 
 569
 00:26:00,830 --> 00:26:03,050
+这张表是为了告诉你在哪里可以找到数据 或者说这些 chunk 是什么
 find the data or what the what the
 
 570
 00:26:03,050 --> 00:26:05,030
+这张表是为了告诉你在哪里可以找到数据 或者说这些 chunk 是什么
 identifiers are the chunks are so it's
 
 571
 00:26:05,030 --> 00:26:06,620
+拿着这样一个 chunk id 你还没办法做其它事
 not much yet you can do with a chunk
 
 572
 00:26:06,620 --> 00:26:08,840
+但是 master 碰巧它还有第 2 张表
 identifier but the master also happens
 
 573
 00:26:08,840 --> 00:26:11,440
+但是 master 碰巧它还有第 2 张表
 to have a a second table that map's
 
 574
 00:26:11,440 --> 00:26:17,570
+它记录了每个 chunk handle 到一些数据之间的映射
 chunk handles each chunk handle to a
 
 575
 00:26:17,570 --> 00:26:21,110
+它记录了每个 chunk handle 到一些数据之间的映射
 bunch of data about that chunk so one is
 
 576
 00:26:21,110 --> 00:26:23,330
+其中一项是 chunk server 的列表
 the list of chunk servers that hold
 
 577
 00:26:23,330 --> 00:26:25,900
+这些 chunk server 保存数据的副本
 replicas of that data each chunk is
 
 578
 00:26:25,900 --> 00:26:28,040
+每个 chunk 被存储在多个 chunk server 上
 stored on more than one chunk server so
 
 579
 00:26:28,040 --> 00:26:39,650
+所以这里应该写上 chunk server 列表
 it's a list of chunk servers every chunk
 
 580
 00:26:39,650 --> 00:26:42,400
+每一个 chunk 都有一个当前版本号
 has a current version number so this
 
 581
 00:26:42,400 --> 00:26:46,610
+所以 master 还得记住每个 chunk 的版本号
 master has a remembers the version
 
 582
 00:26:46,610 --> 00:26:50,150
+对于 chunk 的所有写操作
 number for each chunk all writes for a
 
 583
 00:26:50,150 --> 00:26:51,950
+都必须在 chunk primary (主 chunk) 上顺序化
 chunk have to be sequence of the chunks
 
 584
 00:26:51,950 --> 00:26:54,910
+这个 primary 是所有副本之一
 primary it's one of the replicas so
 
 585
 00:26:54,910 --> 00:26:58,880
-master remembers the which chunk server's
+所以 master 记住了哪个 chunk server 是 primary
+master remembers the which chunk server is
 
 586
 00:26:58,880 --> 00:27:00,980
+primary 只能在规定的某个租约时间里才能担任 primary
 the primary and there's also that
 
 587
 00:27:00,980 --> 00:27:02,570
+primary 只能在规定的某个租约时间里才能担任 primary
 primary is only allowed to be primary
 
 588
 00:27:02,570 --> 00:27:05,450
+primary 只能在规定的某个租约时间里才能担任 primary
 for a certain lease time so the master
 
 589
 00:27:05,450 --> 00:27:13,370
+所以 master 还应该记住这个租约的过期时间
 remembers the expiration time of the
 
 590
 00:27:13,370 --> 00:27:17,240
+这些东西全部存储在 RAM(内存) 中
 lease this stuff so far it's all in RAM
 
 591
 00:27:17,240 --> 00:27:19,670
+如果 master 宕机 这些东西就全部丢失了
 and the master so just be gone if the
 
 592
 00:27:19,670 --> 00:27:24,530
+为了能重启 master 并且不丢失文件系统相关的信息
 master crashed so in order that you'd be
 
 593
 00:27:24,530 --> 00:27:26,570
+为了能重启 master 并且不丢失文件系统相关的信息
 able to reboot the master and not forget
 
 594
 00:27:26,570 --> 00:27:29,150
+为了能重启 master 并且不丢失文件系统相关的信息
 everything about the file system the
 
 595
 00:27:29,150 --> 00:27:30,710
+master 会把这些数据存储到磁盘上 和在内存里一样
 master actually stores all of this data
 
 596
 00:27:30,710 --> 00:27:35,180
+master 会把这些数据存储到磁盘上 和在内存里一样
 on disk as well as in memory so reads
 
 597
 00:27:35,180 --> 00:27:38,270
+读数据的时候 只从内存里读
 just come from memory but writes to at
 
 598
 00:27:38,270 --> 00:27:40,490
+读数据的时候 只从内存里读
 least the parts of this data that had to
 
 599
 00:27:40,490 --> 00:27:42,140
+但是写数据 至少这部分数据 必须也要写入磁盘
 be reflected on this writes have to go
 
 600
 00:27:42,140 --> 00:27:45,500
+所以这种管理方式 要求所有的 master 在磁盘上都有一个 log
 to the disk so and the way it actually
 
 601
 00:27:45,500 --> 00:27:47,510
+所以这种管理方式 要求所有的 master 在磁盘上都有一个 log
 managed that is that there's all
 
 602
 00:27:47,510 --> 00:27:51,290
+所以这种管理方式 要求所有的 master 在磁盘上都有一个 log
 the master has a log on disk and every
 
 603
 00:27:51,290 --> 00:27:53,750
+任何时候有数据变更 就会在磁盘上的日志追加一个条目 并定期创建 checkpoint
 time it changes the data it appends an
 
 604
 00:27:53,750 --> 00:27:59,380
+任何时候有数据变更 就会在磁盘上的日志追加一个条目 并定期创建 checkpoint
 entry to the log on disk and checkpoint
 
 605
 00:28:04,480 --> 00:28:07,220
+有些东西它必须要保存到磁盘上 有些不用 我猜测是这样
 so some of this stuff actually needs to
 
 606
 00:28:07,220 --> 00:28:10,600
+有些东西它必须要保存到磁盘上 有些不用 我猜测是这样
 be on disk and some doesn't it turns out
 
 607
 00:28:10,600 --> 00:28:12,980
+有些东西它必须要保存到磁盘上 有些不用 我猜测是这样
 I'm guessing a little bit here but
 
 608
 00:28:12,980 --> 00:28:16,190
+当然了 chunk handle 数组那肯定要保存到磁盘上
 certainly the array of chunk handles has
 
 609
 00:28:16,190 --> 00:28:18,050
-to be on disk and so I'm gonna write env
+所以这里我里写一个 NV(non-valatile, 非易失)
+to be on disk and so I'm gonna write nv
 
 610
 00:28:18,050 --> 00:28:20,510
+所以这里我里写一个 NV(non-valatile, 非易失)
 here for non-volatile meaning it it's
 
 611
 00:28:20,510 --> 00:28:22,850
+表示它会被反射到磁盘上
 got to be reflected on disk the list of
 
 612
