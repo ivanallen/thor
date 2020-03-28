@@ -3415,322 +3415,401 @@ the write
 
 685
 00:31:46,879 --> 00:31:49,129
+所有的步骤我会写在这里 然后和你们一起讨论
 where all this is heading is that I then
 
 686
 00:31:49,129 --> 00:31:50,960
+所有的步骤我会写在这里 然后和你们一起讨论
 want to discuss you know for each
 
 687
 00:31:50,960 --> 00:31:53,840
+对于每一个失败 我可以思考在失败之后为什么系统要这样做
 failure I can think of why does the
 
 688
 00:31:53,840 --> 00:31:56,389
+对于每一个失败 我可以思考在失败之后为什么系统要这样做
 system or does the system act directly
 
 689
 00:31:56,389 --> 00:31:58,639
+但是在做这件事前 我们需要理解这些数据和数据中的操作
 after that failure um but in order to do
 
 690
 00:31:58,639 --> 00:32:00,740
+但是在做这件事前 我们需要理解这些数据和数据中的操作
 that we need to understand the data and
 
 691
 00:32:00,740 --> 00:32:03,470
+但是在做这件事前 我们需要理解这些数据和数据中的操作
 operations in the data okay so if
 
 692
 00:32:03,470 --> 00:32:11,210
+okay 这里是 read 第一步是客户端
 there's a read the first step is that
 
 693
 00:32:11,210 --> 00:32:12,980
+read 意思是应用程序知道有一个文件名
 the client and what a read means that
 
 694
 00:32:12,980 --> 00:32:14,749
+read 意思是应用程序知道有一个文件名
 the application has a file name in mind
 
 695
 00:32:14,749 --> 00:32:17,450
+read 意思是应用程序知道有一个文件名
 and an offset in the file that it wants
 
 696
 00:32:17,450 --> 00:32:19,279
-to read some data front so it sends the
+以及一个应用程序想从某个位置读取的偏移量
+to read some data from so it sends the
 
 697
 00:32:19,279 --> 00:32:21,799
+所以应用程序会把文件名和偏移发送给 master
 file name and the offset to the master
 
 698
 00:32:21,799 --> 00:32:23,869
+master 从文件表里查询文件名
 and the master looks up the file name in
 
 699
 00:32:23,869 --> 00:32:25,759
+你知道每个 chunk 大小是 64MB
 its file table and then you know each
 
 700
 00:32:25,759 --> 00:32:28,309
+你知道每个 chunk 大小是 64MB
 chunk is 64 megabytes who can use the
 
 701
 00:32:28,309 --> 00:32:30,889
+它可以利用偏移量除以 64MB 来查找是哪个 chunk
 offset divided by 64 megabytes to find
 
 702
 00:32:30,889 --> 00:32:33,649
+然后再从 chunk 表里找到 chunk server 列表
 which chunk and then it looks up that
 
 703
 00:32:33,649 --> 00:32:39,409
+然后再从 chunk 表里找到 chunk server 列表
 chunk in its chunk table finds the list
 
 704
 00:32:39,409 --> 00:32:41,869
+然后再从 chunk 表里找到 chunk server 列表
 of chunk servers that have replicas of
 
 705
 00:32:41,869 --> 00:32:44,509
+再把包含这些数据的副本的 chunk server 列表返回给客户端
 that data and returns that list to the
 
 706
 00:32:44,509 --> 00:32:52,249
+所以第一步是把文件名和偏移量发给 master
 client so the first step is so you know
 
 707
 00:32:52,249 --> 00:32:56,809
-the file name and the offset the master
+所以第一步是把文件名和偏移量发给 master
+the file name and the offset to master
 
 708
 00:32:56,809 --> 00:33:05,720
+然后 master 发送 chunk handle(记作 H) 和 server 列表（给客户端)
 and the master sends the chunk handle
 
 709
 00:33:05,720 --> 00:33:11,450
+然后 master 发送 chunk handle(记作 H) 和 server 列表（给客户端)
 let's say H and the list of servers so
 
 710
 00:33:11,450 --> 00:33:13,070
+现在我有一些选择 我可以查询这个 server 列表中的任意一个
 now we have some choice we can ask any
 
 711
 00:33:13,070 --> 00:33:15,590
+现在我有一些选择 我可以查询这个 server 列表中的任意一个
 one of these servers pick one that's and
 
 712
 00:33:15,590 --> 00:33:17,990
+论文里说客户端会尝试猜测
 the paper says that clients try to guess
 
 713
 00:33:17,990 --> 00:33:19,429
+哪个 server 在一个网络（也可能是一个机架上）是距离它最近的
 which server is closest to them in the
 
 714
 00:33:19,429 --> 00:33:23,360
+哪个 server 在一个网络（也可能是一个机架上）是距离它最近的
 network maybe in the same rack and send
 
 715
 00:33:23,360 --> 00:33:27,279
+然后发送读请求到那个副本上
 the read request to that to that replica
 
 716
 00:33:28,480 --> 00:33:32,649
+客户端实际上会缓存这些结果
 the client actually caches
 
 717
 00:33:35,550 --> 00:33:37,930
+如果它尝试再次读取这个 chunk 的话
 caches this result so that if it reads
 
 718
 00:33:37,930 --> 00:33:39,820
+如果它尝试再次读取这个 chunk 的话
 that chunk again and indeed the client
 
 719
 00:33:39,820 --> 00:33:41,560
+客户端可能从返回的 chunk 中读取 1MB 或是 64KB 的片段
 might read a given chunk in you know one
 
 720
 00:33:41,560 --> 00:33:45,550
+客户端可能从返回的 chunk 中读取 1MB 或是 64KB 的片段
 megabyte pieces or 64 kilobyte pieces or
 
 721
 00:33:45,550 --> 00:33:47,620
-something so I may end up reading the
+客户端可能最终会读取同一个 chunk 中不同的位置连续的区域多次
+something so client may end up reading the
 
 722
 00:33:47,620 --> 00:33:49,410
+客户端可能最终会读取同一个 chunk 中不同的位置连续的区域多次
 same chunk different points successive
 
 723
 00:33:49,410 --> 00:33:51,730
+客户端可能最终会读取同一个 chunk 中不同的位置连续的区域多次
 regions of a chunk many times and so
 
 724
 00:33:51,730 --> 00:33:56,050
+所以需要缓存给定的 chunk 所对应的是哪个 server
 caches which server to talk to you for
 
 725
 00:33:56,050 --> 00:33:57,310
+对于相同的信息 它就不用一遍又一遍的去访问 master
 giving chunks so it doesn't have to keep
 
 726
 00:33:57,310 --> 00:33:59,020
+对于相同的信息 它就不用一遍又一遍的去访问 master
 beating on the master asking the master
 
 727
 00:33:59,020 --> 00:34:02,550
+对于相同的信息 它就不用一遍又一遍的去访问 master
 for the same information over and over
 
 728
 00:34:03,150 --> 00:34:07,330
+客户端和 chunk server 之一进行通信
 now the client talks to one of the chunk
 
 729
 00:34:07,330 --> 00:34:12,880
-servers tells us a chunk handling offset
+然后拿到 chunk handle 以及一个偏移
+servers tells us a chunk handle and offset
 
 730
 00:34:12,880 --> 00:34:16,540
+chunk server 存储这些 chunk
 and the chunk servers store these chunks
 
 731
 00:34:16,540 --> 00:34:19,060
+每个 chunk 在硬盘上都是一个独立的 Linux 文件
 each chunk in a separate Linux file on
 
 732
 00:34:19,060 --> 00:34:21,340
+位于普通的 Linux 文件系统里
 their hard drive in a ordinary Linux
 
 733
 00:34:21,340 --> 00:34:24,699
+假定这些 chunk 文件就是通过 handle 来命名
 file system and presumably the chunk
 
 734
 00:34:24,699 --> 00:34:26,800
+假定这些 chunk 文件就是通过 handle 来命名
 files are just named by the handle so
 
 735
 00:34:26,800 --> 00:34:28,659
+所以 chunk server 需要做的就是使用正确的名字找到这个文件
 all the chunk server has to do is go
 
 736
 00:34:28,659 --> 00:34:31,210
+所以 chunk server 需要做的就是使用正确的名字找到这个文件
 find the file with the right name you
 
 737
 00:34:31,210 --> 00:34:33,449
+找到整个 chunk 后 读取客户端期望的字节范围数据
 know I'll give it that
 
 738
 00:34:33,449 --> 00:34:35,560
+找到整个 chunk 后 读取客户端期望的字节范围数据
 entire chunk and then just read the
 
 739
 00:34:35,560 --> 00:34:38,130
+找到整个 chunk 后 读取客户端期望的字节范围数据
 desired range of bytes out of that file
 
 740
 00:34:38,130 --> 00:34:46,570
+最后返回数据给客户端
 and return the data to the client I hate
 
 741
 00:34:46,570 --> 00:34:51,909
+不要问我怎么执行读操作 我讨厌这样的问题
 question about how reads operate can I
 
 742
 00:34:51,909 --> 00:34:54,370
+(提问) 我是否能再重复讲一遍 step 1
 repeat number one the step one is the
 
 743
 00:34:54,370 --> 00:34:57,880
+step 1 表示应用程序想读取
 application wants to read it a
 
 744
 00:34:57,880 --> 00:35:00,040
+某个特定的文件的某个特定的偏移上的数据
 particular file at a particular offset
 
 745
 00:35:00,040 --> 00:35:02,890
+某个特定的文件的某个特定的偏移上的数据
 within the file a particular range of
 
 746
 00:35:02,890 --> 00:35:04,420
+在某个特定文件中的特定范围里 比如 1000 2000
 bytes in the files and one thousand two
 
 747
 00:35:04,420 --> 00:35:05,830
+所以它只要发送一个文件名和要读取的字节开始的位置给 master
 two thousand and so it just sends a name
 
 748
 00:35:05,830 --> 00:35:09,010
+所以它只要发送一个文件名和要读取的字节开始的位置给 master
 of the file and the beginning of the
 
 749
 00:35:09,010 --> 00:35:12,160
+所以它只要发送一个文件名和要读取的字节开始的位置给 master
 byte range to the master and then the
 
 750
 00:35:12,160 --> 00:35:14,050
+然后 master 从文件表里查询这个文件名
 master looks a file name and it's file
 
 751
 00:35:14,050 --> 00:35:18,610
+找到包含这个偏移位置的 chunk
 table to find the chunk that contains
 
 752
 00:35:18,610 --> 00:35:23,820
+找到包含这个偏移位置的 chunk
 that byte range for that file so good
 
 753
 00:35:30,980 --> 00:35:34,119
-[Music]
+(提问)
 
 754
 00:35:34,150 --> 00:35:36,500
+我不知道详细的细节
 so I don't know the exact details my
 
 755
 00:35:36,500 --> 00:35:38,200
+我印象中是如果应用程序想读取超过 64MB 的数据
 impression is that the if the
 
 756
 00:35:38,200 --> 00:35:40,309
+我印象中是如果应用程序想读取超过 64MB 的数据
 application wants to read more than 64
 
 757
 00:35:40,309 --> 00:35:42,319
+或者仅仅只是想读取 2 个字节数据但是却跨越了 chunk 的边界
 megabytes or even just two bytes but
 
 758
 00:35:42,319 --> 00:35:44,779
+或者仅仅只是想读取 2 个字节数据但是却跨越了 chunk 的边界
 spanning a chunk boundary that the
 
 759
 00:35:44,779 --> 00:35:47,869
+应用程序所链接的依赖库
 library so the applications linked with
 
 760
 00:35:47,869 --> 00:35:52,099
+就是那个底层发送数据到不同 server 的依赖库
 a library that sends our pcs to the
 
 761
 00:35:52,099 --> 00:35:54,230
+就是那个底层发送数据到不同 server 的依赖库
 various servers and that library would
 
 762
 00:35:54,230 --> 00:35:56,690
+它将会注意到这个读请求跨越了一个 chunk 边界
 notice that the reads spanned a chunk
 
 763
 00:35:56,690 --> 00:35:58,490
+于是它会把这条读请求分割成 2 个读取的读请求发送到 master
 boundary and break it into two separate
 
 764
 00:35:58,490 --> 00:36:01,039
+于是它会把这条读请求分割成 2 个读取的读请求发送到 master
 reads and maybe talk to the master I
 
 765
