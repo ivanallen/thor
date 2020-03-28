@@ -3051,222 +3051,277 @@ got to be reflected on disk the list of
 
 612
 00:28:22,850 --> 00:28:25,610
+chunk server 列表不会保存到磁盘上
 chunk servers it turns out doesn't
 
 613
 00:28:25,610 --> 00:28:28,370
+因为 master 重启后会和所有 chunk server 通信
 because the master if it reboots talks
 
 614
 00:28:28,370 --> 00:28:29,720
+并询问它们保存了哪些 chunk
 to all the chunk servers and ask them
 
 615
 00:28:29,720 --> 00:28:32,710
+并询问它们保存了哪些 chunk
 what chunks they have so this is I
 
 616
 00:28:32,710 --> 00:28:36,290
+所以我觉得它不用写入磁盘
 imagine not written to disk the version
 
 617
 00:28:36,290 --> 00:28:38,450
+版本号要不要写入磁盘 这得要求了解系统如何工作
 number any guesses written to disk not
 
 618
 00:28:38,450 --> 00:28:42,950
+版本号要不要写入磁盘 这得要求了解系统如何工作
 written to disk requires knowing how the
 
 619
 00:28:42,950 --> 00:28:51,830
+不过我偏向于它会写入磁盘（nv）
 system works I'm gonna vote written to
 
 620
 00:28:51,830 --> 00:28:55,790
+不过我偏向于它会写入磁盘（nv）
 disk non-volatile we can argue about
 
 621
 00:28:55,790 --> 00:28:57,500
+稍后我们讨论系统如何工作的时候再来争论这个问题
 that later when we talk about how system
 
 622
 00:28:57,500 --> 00:29:04,790
+primary 标识不用写入到磁盘 所以应该是 volatile
 works identity the primary it turns out
 
 623
 00:29:04,790 --> 00:29:06,560
+primary 标识不用写入到磁盘 所以应该是 volatile
 not almost certainly not written to disk
 
 624
 00:29:06,560 --> 00:29:10,640
+因为 master 在重启后就会忘记谁是 primary
 so volatile and the reason is the master
 
 625
 00:29:10,640 --> 00:29:13,010
+因为 master 在重启后就会忘记谁是 primary
 is um reboots and forgets therefore
 
 626
 00:29:13,010 --> 00:29:15,680
+因为 master 在重启后就会忘记谁是 primary
 since it's volatile forgets who the
 
 627
 00:29:15,680 --> 00:29:17,330
+对于一个 chunk 来说 只要简单的等待 60 秒 等待租约过期
 primary is for a chunk it can simply
 
 628
 00:29:17,330 --> 00:29:19,910
+对于一个 chunk 来说 只要简单的等待 60 秒 等待租约过期
 wait for the 60-second lease expiration time
 
 629
 00:29:19,910 --> 00:29:21,920
+然后它便知道对于这个 chunk 来说确实没有 primary 在工作
 and then it knows that absolutely no
 
 630
 00:29:21,920 --> 00:29:23,540
+然后它便知道对于这个 chunk 来说确实没有 primary 在工作
 primary will be functioning for this
 
 631
 00:29:23,540 --> 00:29:24,920
+这时候它可以安全的指定一个不同的 primary
 chunk and then it can designate a
 
 632
 00:29:24,920 --> 00:29:27,020
+这时候它可以安全的指定一个不同的 primary
 different primary safely and similarly
 
 633
 00:29:27,020 --> 00:29:29,660
+类似的 租约过期时间也是 volatile
 the lease expiration stuff is volatile
 
 634
 00:29:29,660 --> 00:29:32,840
+任何时候文件达到 64MB 边界时需要创建一个新 chunk
 so that means that whenever a file is
 
 635
 00:29:32,840 --> 00:29:35,030
-extended with a new chunk goes to the
+又或是新的 primary 被指派导致版本号发生改变时
+extended with a new chunk growth to the
 
 636
 00:29:35,030 --> 00:29:40,100
+又或是新的 primary 被指派导致版本号发生改变时
 next 64 megabyte boundary or the version
 
 637
 00:29:40,100 --> 00:29:42,710
+master 都必须首先追加一点记录到日志中
 number changes because the new primary
 
 638
 00:29:42,710 --> 00:29:45,740
+master 都必须首先追加一点记录到日志中
 is designated that means that the master
 
 639
 00:29:45,740 --> 00:29:48,440
+master 都必须首先追加一点记录到日志中
 has to first append a little record to
 
 640
 00:29:48,440 --> 00:29:50,900
+内容大概是 我刚添加了个 chunk 到这个文件里
 his log basically saying oh I just added
 
 641
 00:29:50,900 --> 00:29:53,510
+内容大概是 我刚添加了个 chunk 到这个文件里
 a such-and-such a chunk to this file or
 
 642
 00:29:53,510 --> 00:29:56,420
+或者是 我刚修改一下版本号
 I just changed the version number so
 
 643
 00:29:56,420 --> 00:29:57,530
+所以每次我修改这些东西都需要写入磁盘
 every time I change is one of those that
 
 644
 00:29:57,530 --> 00:29:59,360
-needs to writes right it's disk so this
+所以每次我修改这些东西都需要写入磁盘
+needs to writes disk so this
 
 645
 00:29:59,360 --> 00:30:00,830
+这篇论文并没的讨论这么多细节
 is paper doesn't talk about this
 
 646
 00:30:00,830 --> 00:30:02,870
+但是你得知道 master 修改这些东西总会存在一些速率限制
 much but you know there's limits the
 
 647
 00:30:02,870 --> 00:30:05,090
+但是你得知道 master 修改这些东西总会存在一些速率限制
 rate at which the master can change
 
 648
 00:30:05,090 --> 00:30:07,039
+因为你每秒能写磁盘的次数就那么多
 things because you can only write your
 
 649
 00:30:07,039 --> 00:30:09,340
+因为你每秒能写磁盘的次数就那么多
 disk however many times per second and
 
 650
 00:30:09,340 --> 00:30:12,950
+使用日志而不是数据库的原因是
 the reason for using a log rather than a
 
 651
 00:30:12,950 --> 00:30:16,279
+你应该了解过 b-tree 或是 hash 表
 database you know some sort of b-tree or
 
 652
 00:30:16,279 --> 00:30:20,179
+你应该了解过 b-tree 或是 hash 表
 hash table on disk is that you can
 
 653
 00:30:20,179 --> 00:30:23,980
+使用日志是因为追加日志非常高效
 append a log very efficiently because
 
 654
 00:30:24,010 --> 00:30:26,600
+你有一堆最近的日志记录需要被添加
 you only need you can take a bunch of
 
 655
 00:30:26,600 --> 00:30:28,309
+你有一堆最近的日志记录需要被添加
 recent log records they need to be added
 
 656
 00:30:28,309 --> 00:30:29,539
+在一次滚动之后 一次把他们写入磁盘上某个位置
 and sort of write them all on a single
 
 657
 00:30:29,539 --> 00:30:32,149
+在一次滚动之后 一次把他们写入磁盘上某个位置
 write after a single rotation to
 
 658
 00:30:32,149 --> 00:30:33,649
-whatever the point in the disk is that
+在一次滚动之后 一次把他们写入磁盘上某个位置
+whatever the point in the disks that
 
 659
 00:30:33,649 --> 00:30:36,080
+这个位置饮食了日志文件的结尾(EOF)
 contains the end of the log file whereas
 
 660
 00:30:36,080 --> 00:30:38,899
+然而 如果使用 b-tree 来表达这些数据的话
 if it were a sort of b-tree reflecting
 
 661
 00:30:38,899 --> 00:30:42,080
+然而 如果使用 b-tree 来表达这些数据的话
 the real structure of this data then you
 
 662
 00:30:42,080 --> 00:30:43,370
+那就还得去磁盘上寻找一个随机位置写入一点数据
 would have to seek to a random place in
 
 663
 00:30:43,370 --> 00:30:45,169
-the disk and do a little right so the
+那就还得去磁盘上寻找一个随机位置写入一点数据
+the disk and do a little write so the
 
 664
 00:30:45,169 --> 00:30:46,519
+所以日志会让这种写操作稍稍快一些
 log makes a little bit faster to write
 
 665
 00:30:46,519 --> 00:30:51,620
+为了把这些操作反射到磁盘上
 there to reflect operations on to the
 
 666
 00:30:51,620 --> 00:30:56,570
+然而如果 master 宕机并且必须重建它的状态
 disk however if the master crashes and
 
 667
@@ -3275,71 +3330,88 @@ has to reconstruct its state you
 
 668
 00:30:58,789 --> 00:31:00,409
+你可能并不想从日志文件从头开始读取重建
 wouldn't want to have to reread its log
 
 669
 00:31:00,409 --> 00:31:02,570
+你可能并不想从日志文件从头开始读取重建
 file back starting from the beginning of
 
 670
 00:31:02,570 --> 00:31:04,159
+因为 server 第一次安装启动的时间开始距今可能有数年
 time from when the server was first
 
 671
 00:31:04,159 --> 00:31:06,559
+因为 server 第一次安装启动的时间开始距今可能有数年
 installed you know a few years ago so in
 
 672
 00:31:06,559 --> 00:31:08,870
+所以 master 有时候会额外的创建一份它完整状态的快照到磁盘
 addition the master sometimes
 
 673
 00:31:08,870 --> 00:31:10,940
+所以 master 有时候会额外的创建一份它完整状态的快照到磁盘
 checkpoints its complete state to disk
 
 674
 00:31:10,940 --> 00:31:15,110
+这可能会花费几十秒 比如一分钟的时间
 which takes some amount of time seconds
 
 675
 00:31:15,110 --> 00:31:17,779
+这可能会花费几十秒 比如一分钟的时间
 maybe a minute or something and then
 
 676
 00:31:17,779 --> 00:31:20,210
+当它重启的时候 它只要回到最近的 checkpoint 的位置
 when it restarts what it does is goes
 
 677
 00:31:20,210 --> 00:31:21,860
+当它重启的时候 它只要回到最近的 checkpoint 的位置
 back to the most recent checkpoint and
 
 678
 00:31:21,860 --> 00:31:24,620
+然后重演从 checkpoint 之后的日志就行了
 plays just the portion of a log that
 
 679
 00:31:24,620 --> 00:31:26,480
+然后重演从 checkpoint 之后的日志就行了
 sort of starting at the point in time
 
 680
 00:31:26,480 --> 00:31:30,019
+然后重演从 checkpoint 之后的日志就行了
 when that check one is created any
 
 681
 00:31:30,019 --> 00:31:39,340
+关于 master 数据大家还有啥疑问没 okay
 questions about the master data okay
 
 682
 00:31:40,360 --> 00:31:44,029
+所以基于以上 我打算列出这些在读和写中的步骤
 so with that in mind I'm going to lay
 
 683
 00:31:44,029 --> 00:31:46,340
-out the steps in a read and the steps in
+所以基于以上 我打算列出这些在读和写中的步骤
+out the steps in the read and the steps in
 
 684
 00:31:46,340 --> 00:31:46,879
-the right
+所以基于以上 我打算列出这些在读和写中的步骤
+the write
 
 685
 00:31:46,879 --> 00:31:49,129
