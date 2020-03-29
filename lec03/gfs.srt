@@ -3804,368 +3804,457 @@ notice that the reads spanned a chunk
 
 763
 00:35:56,690 --> 00:35:58,490
-于是它会把这条读请求分割成 2 个读取的读请求发送到 master
+于是它会把这条读请求分割成 2 个读请求发送到 master
 boundary and break it into two separate
 
 764
 00:35:58,490 --> 00:36:01,039
-于是它会把这条读请求分割成 2 个读取的读请求发送到 master
+于是它会把这条读请求分割成 2 个读请求发送到 master
 reads and maybe talk to the master I
 
 765
 00:36:01,039 --> 00:36:02,480
+意思是可能你只和 master 通信 1 次但你会得到 2 条结果
 mean it may be that you could talk to
 
 766
 00:36:02,480 --> 00:36:04,069
+意思是可能你只和 master 通信 1 次但你会得到 2 条结果
 the master once and get two results or
 
 767
 00:36:04,069 --> 00:36:06,710
+但是从逻辑上讲 请求 master 2 次
 something but logically at least it two
 
 768
 00:36:06,710 --> 00:36:08,269
+接下来就会请求 2 个不同的 chunk server
 requests to the master and then requests
 
 769
 00:36:08,269 --> 00:36:19,609
+接下来就会请求 2 个不同的 chunk server
 to two different chunk servers yes well
 
 770
 00:36:19,609 --> 00:36:21,650
+至少在一开始对于给定的文件 客户端不知道需要哪个 chunk
 at least initially the client doesn't
 
 771
 00:36:21,650 --> 00:36:26,829
+至少在一开始对于给定的文件 客户端不知道需要哪个 chunk
 know for a given file
 
 772
 00:36:26,829 --> 00:36:35,990
+至少在一开始对于给定的文件 客户端不知道需要哪个 chunk
 what chunks need what chunks well it can
 
 773
 00:36:35,990 --> 00:36:37,720
+是的，客户端能够计算出来它需要第 17 个 chunk
 calculate it needs the seventeenth chunk
 
 774
 00:36:37,720 --> 00:36:40,130
+但是它需要知道是哪个 chunk server 持有这个文件的第 17 个 chunk
 but but then it needs to know what chunk
 
 775
 00:36:40,130 --> 00:36:42,109
+但是它需要知道是哪个 chunk server 持有这个文件的第 17 个 chunk
 server holds the seventeenth chunk of
 
 776
 00:36:42,109 --> 00:36:44,839
+客户端需要和 master 通信才能知道这个信息
 that file and for that it certainly
 
 777
 00:36:44,839 --> 00:36:47,599
+客户端需要和 master 通信才能知道这个信息
 needs for that it needs to talk to the
 
 778
 00:36:47,599 --> 00:36:58,490
+(提问)
 master okay so all right did I'm not
 
 779
 00:36:58,490 --> 00:36:59,839
+我不保证到底是哪种方式来判断它是文件件第 17 个 chunk
 going to make a strong claim about which
 
 780
 00:36:59,839 --> 00:37:01,130
+我不保证到底是哪种方式来判断它是文件件第 17 个 chunk
 of them decides that it was the
 
 781
 00:37:01,130 --> 00:37:03,170
+我不保证到底是哪种方式来判断它是文件件第 17 个 chunk
 seventeenth chunk in the file but it's
 
 782
 00:37:03,170 --> 00:37:06,380
+但是 master 它能找到第 17 个 chunk 的 handler 标识符
 the master that finds the identifier of
 
 783
 00:37:06,380 --> 00:37:07,849
+但是 master 它能找到第 17 个 chunk 的 handler 标识符
 the handle of the seventeenth chunk in
 
 784
 00:37:07,849 --> 00:37:09,950
+它只要查一下它的表就能知道哪个哪个 chunk server 持有这个 chunk
 the file looks that up in its table and
 
 785
 00:37:09,950 --> 00:37:12,589
+它只要查一下它的表就能知道哪个哪个 chunk server 持有这个 chunk
 figures out which chunk servers hold
 
 786
 00:37:12,589 --> 00:37:17,349
+它只要查一下它的表就能知道哪个哪个 chunk server 持有这个 chunk
 that chunk yes
 
 787
 00:37:25,609 --> 00:37:35,480
+(提问) 你的意思是如果客户端请求的字节范围跨越了 chunk 边界
 how does that or you mean if the if the
 
 788
 00:37:35,480 --> 00:37:38,010
+你的意思是如果客户端请求的字节范围跨越了 chunk 边界
 client asks for a range of bytes that
 
 789
 00:37:38,010 --> 00:37:46,400
+你的意思是如果客户端请求的字节范围跨越了 chunk 边界
 spans a chunk boundary yeah so the the
 
 790
 00:37:46,400 --> 00:37:49,049
+嗯，客户端本身链接了 GFS 的 lib 库
 well you know the client will ask that
 
 791
 00:37:49,049 --> 00:37:50,490
+嗯，客户端本身链接了 GFS 的 lib 库
 well the clients linked with this
 
 792
 00:37:50,490 --> 00:37:52,950
+嗯，客户端本身链接了 GFS 的 lib 库
 library is a GFS library that noticed
 
 793
 00:37:52,950 --> 00:37:56,190
+lib 库能注意到并知道如何把读请求分割
 how to take read requests apart and put
 
 794
 00:37:56,190 --> 00:38:00,270
+然后把它们的返回结果合并起来
 them back together and so that library
 
 795
 00:38:00,270 --> 00:38:01,290
+所以 lib 会和 master 进行通信
 would talk to the master and the master
 
 796
 00:38:01,290 --> 00:38:02,910
+master 将会告诉他
 would tell it well well you know chunk
 
 797
 00:38:02,910 --> 00:38:05,130
+好的好的 chunk 7 号在这个 server 上
 seven is on this server and chunk eight
 
 798
 00:38:05,130 --> 00:38:07,589
+chunk 8 在那个 server 上
 is on that server and then why the
 
 799
 00:38:07,589 --> 00:38:09,270
+lib 就能对 chunk server 说
 library would just be able to say oh you
 
 800
 00:38:09,270 --> 00:38:10,859
-know I need the last couple bites of
+oh 我要 chunk 7 号的最后 2 个字节
+know I need the last couple bytes of
 
 801
 00:38:10,859 --> 00:38:12,240
-chunk seven and the first couple bites
+chunk 8 号的头 2 个字节
+chunk seven and the first couple bytes
 
 802
 00:38:12,240 --> 00:38:15,420
+接下来把请求到的数据一起放到 buffer 里返回给应用层
 of chunk eight and then would fetch
 
 803
 00:38:15,420 --> 00:38:17,819
+接下来把请求到的数据一起放到 buffer 里返回给应用层
 those put them together in a buffer and
 
 804
 00:38:17,819 --> 00:38:21,980
+接下来把请求到的数据一起放到 buffer 里返回给应用层
 return them to the calling application
 
 805
 00:38:26,030 --> 00:38:28,530
+master 会告诉它关于 chunk 的信息
 well the master tells it about chunks
 
 806
 00:38:28,530 --> 00:38:30,900
+lib 能够在给定的 chunk 中找到应用程序想要的数据
 and the library kind of figures out
 
 807
 00:38:30,900 --> 00:38:32,700
+lib 能够在给定的 chunk 中找到应用程序想要的数据
 where it should look in a given chunk to
 
 808
 00:38:32,700 --> 00:38:34,950
-find the date of the application wanted
+lib 能够在给定的 chunk 中找到应用程序想要的数据
+find the data of the application wanted
 
 809
 00:38:34,950 --> 00:38:36,240
+应用程序只要想好文件名 以及整个文件中的偏移位置
 the application only thinks in terms of
 
 810
 00:38:36,240 --> 00:38:38,609
+应用程序只要想好文件名 以及整个文件中的偏移位置
 file names and sort of just offsets in
 
 811
 00:38:38,609 --> 00:38:41,280
+应用程序只要想好文件名 以及整个文件中的偏移位置
 the entire file in the library and the
 
 812
 00:38:41,280 --> 00:38:45,200
+master 就能把这些信息转换成 chunk
 master conspire to turn that into chunks
 
 813
 00:38:45,500 --> 00:38:48,500
+(提问)
 yeah
 
 814
 00:38:50,349 --> 00:38:55,400
+sorry 我得离你近一点 你再讲一遍
 sorry let me get closer here you say
 
 815
 00:38:55,400 --> 00:39:03,289
+所以问题是 从哪个 chunk server 读取数据很重要吗
 again so the question is does it matter
 
 816
 00:39:03,289 --> 00:39:06,109
+所以问题是 从哪个 chunk server 读取数据很重要吗
 which chunk server you read from so you
 
 817
 00:39:06,109 --> 00:39:08,929
+哈哈 是或不是都行 从概念上讲他们都是副本
 know yes and no notionally they're all
 
 818
 00:39:08,929 --> 00:39:13,039
+哈哈 是或不是都行 从概念上讲他们都是副本
 supposed to be replicas in fact as you
 
 819
 00:39:13,039 --> 00:39:14,869
+事实上你可能已经注意到了 之前我们讨论过他们并不都是
 may have noticed or as we'll talk about
 
 820
 00:39:14,869 --> 00:39:17,209
+你知道 他们并不完全相同
 they're not you know they're not
 
 821
 00:39:17,209 --> 00:39:20,689
+你知道 他们并不完全相同
 necessarily identical and applications
 
 822
 00:39:20,689 --> 00:39:21,979
+应用程序应该是能够容忍这种情况
 are supposed to be able to tolerate this
 
 823
 00:39:21,979 --> 00:39:23,779
+但是事实上是依赖于你读取的 chunk server 副本
 but the fact is that you make a slightly
 
 824
 00:39:23,779 --> 00:39:24,829
+你得到的数据会有稍稍不同
 different data depending on which
 
 825
 00:39:24,829 --> 00:39:28,999
+所以论文上说客户端会尝试
 replicas you read yeah so the paper says
 
 826
 00:39:28,999 --> 00:39:32,420
+从相同的机架上或是从同一个交换机后的 server 读取数据
 that clients try to read from the chunk
 
 827
 00:39:32,420 --> 00:39:34,699
+从相同的机架上或是从同一个交换机后的 server 读取数据
 server that's in the same rack or on the
 
 828
 00:39:34,699 --> 00:39:44,749
+从相同的机架上或是从同一个交换机后的 server 读取数据
 same switch or something all right so
 
 829
 00:39:44,749 --> 00:39:47,229
+好的 读取数据就是这些
 that's reads
 
 830
 00:39:48,859 --> 00:39:51,420
+写的话会更加复杂一点 但是挺有趣
 the writes are more complex and
 
 831
 00:39:51,420 --> 00:40:02,880
+应用程序对于写的接口是类似的
 interesting now the application
 
 832
 00:40:02,880 --> 00:40:04,410
+应用程序对于写的接口是类似的
 interface for writes is pretty similar
 
 833
 00:40:04,410 --> 00:40:06,030
+有一些函数调用 一些可调用的库可以请求 gfs
 there's just some call some library you
 
 834
 00:40:06,030 --> 00:40:08,910
+有一些函数调用 一些可调用的库可以请求 gfs
 call to make you make to the gfs client
 
 835
 00:40:08,910 --> 00:40:10,230
+客户端 lib 库请求会说
 library saying look here's a file name
 
 836
 00:40:10,230 --> 00:40:12,540
+看 这儿有个文件名以及一段我想写的字节数据
 and a range of bytes I'd like to write
 
 837
 00:40:12,540 --> 00:40:14,339
+这个 buffer 里的数据 我请求你能写入
 and the buffer of data that I'd like you
 
 838
 00:40:14,339 --> 00:40:17,609
+这个 buffer 里的数据 我请求你能写入
 to write to that that range actually let
 
 839
 00:40:17,609 --> 00:40:19,530
+稍稍往后退一步 我只是想讨论记录追加 所以我打算
 me let me backpedal I only want to talk
 
 840
 00:40:19,530 --> 00:40:23,099
+稍稍往后退一步 我只是想讨论记录追加 所以我打算
 about record appends and so I'm going to
 
 841
 00:40:23,099 --> 00:40:26,339
+称赞一下这种客户端接口
 praise this the client interface as the
 
 842
 00:40:26,339 --> 00:40:28,200
+客户端发起 lib 库调用会说
 client makes a library call that says
 
 843
 00:40:28,200 --> 00:40:29,940
+这有个文件名 我想把这个 buffer 里的字节数据追加到文件里
 here's a file name and I'd like to
 
 844
 00:40:29,940 --> 00:40:32,069
+这有个文件名 我想把这个 buffer 里的字节数据追加到文件里
 append this buffer of bytes to the file
 
 845
 00:40:32,069 --> 00:40:35,099
+我说的这个就是论文里讨论的记录追加
 I said this is the record appends that
 
 846
 00:40:35,099 --> 00:40:42,900
+我说的这个就是论文里讨论的记录追加
 the paper talks about so again the
 
 847
 00:40:42,900 --> 00:40:47,579
+客户端会发送 “我想追加数据“ 这样的请求到 master
 client asks the master look I want to
 
 848
 00:40:47,579 --> 00:40:49,680
+客户端会发送 “我想追加数据“ 这样的请求到 master
 append sends a master requesting what I
 
 849
 00:40:49,680 --> 00:40:51,240
+请求内容是 我要给这个名字的文件追加数据
 would like to append this named file
 
 850
 00:40:51,240 --> 00:40:55,140
+请告诉我这个文件最后一个 chunk 在哪里
 please tell me where to look for the
 
 851
 00:40:55,140 --> 00:40:56,790
+请告诉我这个文件最后一个 chunk 在哪里
 last chunk in the file because the
 
 852
 00:40:56,790 --> 00:40:58,619
+如果有很多客户端向相同的文件里追加
 client may not know how long the file is
 
 853
 00:40:58,619 --> 00:41:00,329
+客户端可能就不知道文件有多长
 if lots of clients are appending the
 
 854
@@ -4190,12 +4279,12 @@ no client will necessarily know how long
 
 858
 00:41:08,369 --> 00:41:10,380
-因此也不知道偏移量，或是应该附加到哪个块中
+因此也不知道偏移量，或是应该附加到哪个 chunk 中
 the file is and therefore which offset
 
 859
 00:41:10,380 --> 00:41:12,270
-因此也不知道偏移量，或是应该附加到哪个块中
+因此也不知道偏移量，或是应该附加到哪个 chunk 中
 or which chunk it should be appending to
 
 860
@@ -4205,21 +4294,22 @@ so you can ask the master please tell me
 
 861
 00:41:14,280 --> 00:41:16,680
-包含当前该文件最后一块的服务器的信息
+包含当前该文件最后一个 chunk 的服务器的信息
 about the the server's that hold the
 
 862
 00:41:16,680 --> 00:41:18,710
-包含当前该文件最后一块的服务器的信息
+包含当前该文件最后一个 chunk 的服务器的信息
 very last chunk
 
 863
 00:41:18,710 --> 00:41:22,550
-包含当前该文件最后一块的服务器的信息
+包含当前该文件最后一个 chunk 的服务器的信息
 current chunk in this file 
 
 864
 00:41:22,550 --> 00:41:26,040
+很不幸的是 现在是写操作
 so unfortunately now the writing 
 
 865
@@ -4234,17 +4324,17 @@ for writing though there needs
 
 867
 00:41:30,060 --> 00:41:32,760
-此时文件上的primary
+此时文件上的 primary 可能已经由master指定 也可能没有
 to be a primary so at this point on the
 
 868
 00:41:32,760 --> 00:41:35,579
-可能已经由master指定
+此时文件上的 primary 可能已经由master指定 也可能没有
 file may or may not have a primary
 
 869
 00:41:35,579 --> 00:41:37,710
-也可能没有
+此时文件上的 primary 可能已经由master指定 也可能没有
 already designated by the master
 
 870
