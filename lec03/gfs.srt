@@ -321,7 +321,7 @@ order to get a huge amount of work done
 
 64
 00:02:44,620 --> 00:02:48,000
-因此，性能问题就成为了最初的诉求
+因此 性能问题就成为了最初的诉求
 so the sort of starting point is often
 
 65
@@ -551,7 +551,7 @@ performance so if you want consistency
 
 110
 00:04:59,550 --> 00:05:09,190
-因此，如果要保持一致性，就需要付出代价
+因此 如果要保持一致性 你的性能就会变低
 you pay for with low performance I which
 
 111
@@ -766,7 +766,7 @@ into the server and see some current
 
 153
 00:06:57,370 --> 00:06:59,020
-首先会从中挑选一个出来（TODO）
+首先会从中挑选一个出来
 requests it picks one or the other to go
 
 154
@@ -776,8 +776,8 @@ first and excute that request to
 
 155
 00:07:00,729 --> 00:07:04,090
-处理请求结束后然后回复
-completion then excute the nets so for
+处理请求结束后 然后继续处理下一个
+completion then excute the next so for
 
 156
 00:07:04,090 --> 00:07:06,099
@@ -921,7 +921,7 @@ second thinking about so for example if
 
 184
 00:08:13,629 --> 00:08:19,539
-比如我们有大量的客户端
+比如我们有几个客户端
 we have a bunch of clients and client
 
 185
@@ -1511,7 +1511,7 @@ have to yeild the same value and this can
 
 302
 00:13:39,589 --> 00:13:41,930
-这种问题仍然以另一种方式暴露出来
+但这种问题仍然以另一种方式被暴露出来
 arise in other ways you know suppose we
 
 303
@@ -1571,27 +1571,27 @@ clients will switch to server 2 not but just
 
 314
 00:14:07,130 --> 00:14:09,079
-不只是这种数据产生的离奇变化
+这并不是这种数据产生的离奇变化 它不和任何写操作对应
 this mysterious change in the data that
 
 315
 00:14:09,079 --> 00:14:11,570
-它不和任何写对应
+这并不是这种数据产生的离奇变化 它不和任何写操作对应
 doesn't correspond to any write which is
 
 316
 00:14:11,570 --> 00:14:13,190
-这种事情完全不应该在服务中发生
+这种事情不会在这种简单的服务模型中发生
 also totally not something that could
 
 317
 00:14:13,190 --> 00:14:15,680
-这种事情完全不应该在这种简单的服务模型中发生
+这种事情不会在这种简单的服务模型中发生
 have happened in this service simple
 
 318
 00:14:15,680 --> 00:14:23,329
-这种事情完全不应该在这种简单的服务模型中发生
+这种事情不会在这种简单的服务模型中发生
 server model all right so of course this
 
 319
@@ -1666,12 +1666,12 @@ okay that's what you're talking about
 
 333
 00:15:07,779 --> 00:15:13,209
-一些关于实现 GFS 的思考 以及修复这些问题
+一些关于实现 GFS 的思考 GFS 怎么修复这些问题
 GFS a lot of thought about doing GFS was
 
 334
 00:15:13,209 --> 00:15:17,079
-一些关于实现 GFS 的思考 以及修复这些问题
+一些关于实现 GFS 的思考  GFS 怎么修复这些问题
 doing is fixing this they had better but
 
 335
@@ -1686,7 +1686,7 @@ came from in 2003 quite a while ago
 
 337
 00:15:24,179 --> 00:15:27,730
-那时候 web 发展到相当规模了
+那时候 web 发展到相当规模了 人们也在建立大型网站
 actually at that time the the web you
 
 338
@@ -1926,7 +1926,7 @@ right but if you have a universal server
 
 385
 00:17:21,099 --> 00:17:25,300
-你要是有一个通用的 Global 且可利用的存储系统
+你要是有一个通用的 Global 且可重用的存储系统
 kind of global reusable storage system
 
 386
@@ -2261,12 +2261,12 @@ effort to make access be very low
 
 452
 00:20:27,840 --> 00:20:30,000
-而是把重点放在具大的呑吐量上
+而是把重点放在巨大的呑吐量上
 latency the focus is really on
 
 453
 00:20:30,000 --> 00:20:32,880
-而是把重点放在大呑吐量上
+而是把重点放在巨大的呑吐量上
 throughput of big you know multi
 
 454
@@ -2716,7 +2716,7 @@ separately with separate properties the
 
 544
 00:24:41,700 --> 00:24:43,170
-master 知道所有的文件 并且能追踪这些 chunk
+master 知道所有的文件 并且能追踪这些 chunk、chunk 标识符
 master knows about all the files for
 
 545
@@ -3286,7 +3286,7 @@ whatever the point in the disks that
 
 659
 00:30:33,649 --> 00:30:36,080
-这个位置饮食了日志文件的结尾(EOF)
+这个位置包含了日志文件的结尾(EOF)
 contains the end of the log file whereas
 
 660
@@ -3326,6 +3326,7 @@ disk however if the master crashes and
 
 667
 00:30:56,570 --> 00:30:58,789
+然而如果 master 宕机并且必须重建它的状态
 has to reconstruct its state you
 
 668
@@ -3555,12 +3556,12 @@ the paper says that clients try to guess
 
 713
 00:33:17,990 --> 00:33:19,429
-哪个 server 在一个网络（也可能是一个机架上）是距离它最近的
+网络上（也可能是一个机架上）哪个 server 距离它最近
 which server is closest to them in the
 
 714
 00:33:19,429 --> 00:33:23,360
-哪个 server 在一个网络（也可能是一个机架上）是距离它最近的
+网络上（也可能是一个机架上）哪个 server 距离它最近
 network maybe in the same rack and send
 
 715
@@ -3635,7 +3636,7 @@ now the client talks to one of the chunk
 
 729
 00:34:07,330 --> 00:34:12,880
-然后拿到 chunk handle 以及一个偏移
+发送一个 chunk handle 以及一个偏移
 servers tells us a chunk handle and offset
 
 730
@@ -3720,22 +3721,22 @@ within the file a particular range of
 
 746
 00:35:02,890 --> 00:35:04,420
-在某个特定文件中的特定范围里 比如 1000 2000
-bytes in the files and one thousand two
+某个特定范围里 比如 1000 到 2000 字节范围的数据
+bytes in the files and one thousand to
 
 747
 00:35:04,420 --> 00:35:05,830
-所以它只要发送一个文件名和要读取的字节开始的位置给 master
+某个特定范围里 比如 1000 到 2000 字节范围的数据
 two thousand and so it just sends a name
 
 748
 00:35:05,830 --> 00:35:09,010
-所以它只要发送一个文件名和要读取的字节开始的位置给 master
+所以它只要发送一个文件名和要读取的字节范围给 master
 of the file and the beginning of the
 
 749
 00:35:09,010 --> 00:35:12,160
-所以它只要发送一个文件名和要读取的字节开始的位置给 master
+所以它只要发送一个文件名和要读取的字节范围给 master
 byte range to the master and then the
 
 750
@@ -3745,12 +3746,12 @@ master looks a file name and it's file
 
 751
 00:35:14,050 --> 00:35:18,610
-找到包含这个偏移位置的 chunk
+找到包含这个字节范围的 chunk
 table to find the chunk that contains
 
 752
 00:35:18,610 --> 00:35:23,820
-找到包含这个偏移位置的 chunk
+找到包含这个字节范围的 chunk
 that byte range for that file so good
 
 753
@@ -4049,7 +4050,7 @@ the entire file in the library and the
 
 812
 00:38:41,280 --> 00:38:45,200
-master 就能把这些信息转换成 chunk
+master 就能根据这些信息返回 chunk 信息
 master conspire to turn that into chunks
 
 813
@@ -4349,37 +4350,37 @@ no primary already and all the master
 
 872
 00:41:40,980 --> 00:41:49,560
-而且master所知道的，好吧，没有primary
+并且 master 知道不存在 primary
 knows well there's no primary so 
 
 873
 00:41:49,560 --> 00:41:53,119
-所以一种情况是没有primary
+第一种情况是没有primary
 so one case is no primary
 
 874
 00:41:57,599 --> 00:42:00,099
-在这种情况下，master服务器需要
+在这种情况下，master 服务器需要
 in that case the master needs to find
 
 875
 00:42:00,099 --> 00:42:03,430
-找出具有最新块副本的chunk服务器集合
+找出具有最新 chunk 副本的 chunk 服务器集合
 out the set of chunk servers that have
 
 876
 00:42:03,430 --> 00:42:06,339
-找出具有最新块副本的chunk服务器集合
+找出具有最新 chunk 副本的 chunk 服务器集合
 the most up-to-date copy of the chunk
 
 877
 00:42:06,339 --> 00:42:08,470
-因为，如果你是否已经运行了该系统很长时间
+因为，如果你的系统已经运行了很长时间
 because know if you've been running the
 
 878
 00:42:08,470 --> 00:42:10,660
-因为，如果你是否已经运行了该系统很长时间
+因为，如果你的系统已经运行了很长时间
 system for a long time due to failures
 
 879
@@ -4389,50 +4390,52 @@ or whatever there may be chunk servers
 
 880
 00:42:11,800 --> 00:42:14,290
-可能有的chunk服务器有旧的
+导致有的 chunk 服务器存在旧的副本
 out there that have old copies of the
 
 881
 00:42:14,290 --> 00:42:15,579
-昨天或上周的副本
+比如昨天或上周的我保持的最新的副本
 chunk from you know yesterday or last
 
 882
 00:42:15,579 --> 00:42:17,950
+比如昨天或上周的我保持的最新的副本
 week that I've been kept up to kept up
 
 883
 00:42:17,950 --> 00:42:19,690
-因为可能该服务器已挂了两天
+因为该服务器可能已挂了两天 而没有更新
 to date because maybe that server was
 
 884
 00:42:19,690 --> 00:42:21,819
+因为该服务器可能已挂了两天 而没有更新
 dead for a couple days and wasn't
 
 885
 00:42:21,819 --> 00:42:23,800
-并且没有收到更新
+因为该服务器可能已挂了两天 而没有更新
 receiving updates so there's you need to
 
 886
 00:42:23,800 --> 00:42:24,730
-因此，你需要能够分辨出
+因此，你需要能够分辨出 新旧副本之间的区别
 be able to tell the difference between
 
 887
 00:42:24,730 --> 00:42:27,190
-最新的数据块副本与非最新的副本之间的区别
+因此，你需要能够分辨出 新旧副本之间的区别
 up-to-date copies of the chunk and non up-to-date 
 
 888
 00:42:27,190 --> 00:42:33,569
-所以第一步是要找到
+所以第一步是要找到 找到最新的
 so the first step is to find
 
 889
 00:42:33,569 --> 00:42:37,510
-找到最新的
+所以第一步是要找到 找到最新的
 you know find up-to-date this is all
 
 890
@@ -4477,310 +4480,312 @@ so when we finally find up-to-date
 
 898
 00:42:52,950 --> 00:42:59,770
-更新的意思是
-replicas and what update means is a
+up-to-date 的意思是
+replicas and what up-to-date means is a
 
 899
 00:42:59,770 --> 00:43:02,260
-一个副本，它的块版本等于
+一个副本中的 chunk 版本等于 master 服务器知道的最新版本号
 replica whose version of the chunk is
 
 900
 00:43:02,260 --> 00:43:04,720
-master服务器知道的最新版本号
+一个副本中的 chunk 版本等于 master 服务器知道的最新版本号
 equal to the version number that the
 
 901
 00:43:04,720 --> 00:43:06,730
-master服务器知道的最新版本号
+一个副本中的 chunk 版本等于 master 服务器知道的最新版本号
 master knows is the most up-to-date version number 
 
 902
 00:43:06,730 --> 00:43:08,140
-master服务器
+因为这些版本号是 master 服务器分发的
 it's the master that
 
 903
 00:43:08,140 --> 00:43:10,630
-发出这些版本号
+因为这些版本号是 master 服务器分发的
 hands out these version numbers
 
 904
 00:43:10,630 --> 00:43:14,740
-master记得，哦
+所以 master 记得它们，oh
 the master remembers that oh for this
 
 905
 00:43:14,740 --> 00:43:18,460
-对于这个特定的块
+对于这个特定的 chunk
 particular chunk you know the chunk
 
 906
 00:43:18,460 --> 00:43:19,569
-仅当主干服务器的版本号为17时
+仅当 chunk 服务器的版本号为 17 时它才是最新的
 server is only up to date if it has
 
 907
 00:43:19,569 --> 00:43:21,220
-它才是最新的
+仅当 chunk 服务器的版本号为 17 时它才是最新的
 version number 17 and this is why it has
 
 908
 00:43:21,220 --> 00:43:23,550
-这就是为什么它必须是非易失性的存储在磁盘上的原因
+这就是为什么它必须是非易失性的 需要存储在磁盘上的原因
 to be non-volatile stored on disk
 
 909
 00:43:23,550 --> 00:43:26,560
-因为如果它在一次崩溃中丢失
+如果版本号在崩溃中丢失
 because if if it was lost in a crash and
 
 910
 00:43:26,560 --> 00:43:31,000
-并且有块服务器保存过时的块副本
+并且 chunk 服务器持有过时 chunk 副本
 there were chunk servers holding stale
 
 911
 00:43:31,000 --> 00:43:33,670
-master服务器
+并且 chunk 服务器持有过时 chunk 副本
 copies of chunks the master wouldn't be
 
 912
 00:43:33,670 --> 00:43:35,140
-将无法区分
+master 就无法区分
 able to distinguish between chunk
 
 913
 00:43:35,140 --> 00:43:36,819
-持有上周旧数据块副本的服务器
+这个 chunk sever 上的 chunk 副本是上周的还是最新的
 servers holding stale copies of a chunk
 
 914
 00:43:36,819 --> 00:43:39,310
-和一个崩溃时
+这个 chunk sever 上的 chunk 副本是上周的还是最新的
 from last week and a chunk server that
 
 915
 00:43:39,310 --> 00:43:42,250
-保存了最新块副本的服务器
+这个 chunk sever 上的 chunk 副本是上周的还是最新的
 holds the copy of the chunk that was
 
 916
 00:43:42,250 --> 00:43:44,440
-这就是为什么
+这个 chunk sever 上的 chunk 副本是上周的还是最新的
 up-to-date as of the crash that's why
 
 917
 00:43:44,440 --> 00:43:46,660
-master服务器把版本号记在磁盘上的的原因
+这就是为什么 master 服务器需要把版本号记在磁盘上的的原因
 the master remembers the version number on disk 
 
 918
 00:43:46,660 --> 00:43:49,470
+(提问)
 yeah
 
 919
 00:43:54,450 --> 00:43:56,859
-如果你正在与所有块服务器通信
+如果你正在与所有 chunk 服务器通信
 if you knew you were talking to all the
 
 920
 00:43:56,859 --> 00:43:59,970
-观察是
+okay 结论是如果 master 重启
 chunk servers okay so the observation is
 
 921
 00:43:59,970 --> 00:44:02,260
-如果master重启
+okay 结论是如果 master 重启
 the master has to talk to the chunk
 
 922
 00:44:02,260 --> 00:44:04,660
-master服务器无论如何都要与块服务器进行通信
+master 服务器无论如何都要与 chunk 服务器进行通信
 servers anyway if it reboots in order to
 
 923
 00:44:04,660 --> 00:44:06,280
-为了找到哪个块服务器持有哪个块
+来确定哪个 chunk 服务器持有哪个 chunk
 find which chunk server holds which chunk 
 
 924
 00:44:06,280 --> 00:44:08,890
-因为master不记得那些信息了
+因为 master 不记得那些信息了
 because the master doesn't
 
 925
 00:44:08,890 --> 00:44:12,150
-你可能会想
+你可能会想 你只要找到 version 最大的那个就行
 remember that so you might think that
 
 926
 00:44:12,150 --> 00:44:14,380
-你可以取最大的值
+你可能会想 你只要找到 version 最大的那个就行
 you could just take the maximum you
 
 927
 00:44:14,380 --> 00:44:15,579
-你可以和块服务器对话
+你只需和 chunk 服务器通信 找出他们拥有哪些 chunk 和版本
 could just talk to the chunk servers
 
 928
 00:44:15,579 --> 00:44:17,079
-找出他们拥有哪些块和版本
+你只需和 chunk 服务器通信 找出他们拥有哪些 chunk 和版本
 find out what trunks and versions they
 
 929
 00:44:17,079 --> 00:44:19,000
-并在响应的块服务器中获取最大值
+从所有响应中找到 version 最大值
 hold and take the maximum for a given
 
 930
 00:44:19,000 --> 00:44:20,619
-并在响应的块服务器中获取最大值
+从所有响应中找到 version 最大值
 chunk overall the responding chunk
 
 931
 00:44:20,619 --> 00:44:22,750
-如果所有持有块的块服务器都响应
+如果所有持有 chunk 的 chunk 服务器都响应
 servers and that would work if all the
 
 932
 00:44:22,750 --> 00:44:24,579
-那会是有效的
+这种做法没有问题
 chunk servers holding a chunk responded
 
 933
 00:44:24,579 --> 00:44:26,920
-但风险是，主机重启时
+但风险是 master 重启时
 but the risk is that at the time the
 
 934
 00:44:26,920 --> 00:44:28,480
-也许一些块服务器
+也许一些 chunk 服务器离线或断开连接
 master reboots maybe some of the chunk
 
 935
 00:44:28,480 --> 00:44:30,400
-离线或断开连接
+也许一些 chunk 服务器离线或断开连接
 servers are offline or disconnected or
 
 936
 00:44:30,400 --> 00:44:32,770
-或无论什么原因，他们自己重新启动并且不响应
+或是别的什么原因重新 导致它不响应 master
 whatever themselves rebooting and don't respond
 
 937
 00:44:32,770 --> 00:44:35,349
-因此，主服务器拿到的
+导致 master 拿到的都是持有前几周旧副本的 chunk server 的响应
 and so all the master gets back
 
 938
 00:44:35,349 --> 00:44:38,200
-都是来自具有上周旧的块副本的服务器的响应
+导致 master 拿到的都是持有前几周旧副本的 chunk server 的响应
 is responses from chunk servers that
 
 939
 00:44:38,200 --> 00:44:40,119
-都是来自具有上周旧的块副本的服务器的响应
+导致 master 拿到的都是持有前几周旧副本的 chunk server 的响应
 have last week's copies of the block and
 
 940
 00:44:40,119 --> 00:44:42,460
-而具有当前副本的块服务器
+而具有最新副本的 chunk 服务器还没完成重启 甚至是离线
 the chunk servers that have the current
 
 941
 00:44:42,460 --> 00:44:44,320
-尚未完成开机
+而具有最新副本的 chunk 服务器还没完成重启 甚至是离线
 copy haven't finished rebooting or
 
 942
 00:44:44,320 --> 00:44:54,940
-或是离线状态或是别的情况
+而具有最新副本的 chunk 服务器还没完成重启 甚至是离线
 offline or something so ok oh yes if 
 
 943
 00:44:54,940 --> 00:44:56,619
-如果服务器保存的最新副本
+如果服务器上所有的最新版本都失效或丢失的话 答案是 yes
 if the server's holding the most recent
 
 944
 00:44:56,619 --> 00:44:59,859
-永久失效，如果你已经
+如果服务器上所有的最新版本都失效或丢失的话 答案是 yes
 copy are permanently dead if you've lost
 
 945
 00:44:59,859 --> 00:45:02,980
-丢失了所有副本，所有最新版本，那么是的
+如果服务器上所有的最新版本都失效或丢失的话 答案是 yes
 all copies all of the most recent
 
 946
 00:45:02,980 --> 00:45:06,540
-丢失了所有副本，所有最新版本，那么是的
+如果服务器上所有的最新版本都失效或丢失的话 答案是 yes
 version of a chunk then yes
 
 947
 00:45:09,030 --> 00:45:11,130
+不对
 No
 
 948
 00:45:11,130 --> 00:45:15,339
-好吧，问题说的是，master知道
+okay，问题是，master 知道
 okay so the question is the master knows
 
 949
 00:45:15,339 --> 00:45:17,560
-对于这个块寻找版本17
+对于这个 chunk 寻找版本17
 that for this chunk is looking for
 
 950
 00:45:17,560 --> 00:45:18,550
-对于这个块寻找版本17
+对于这个 chunk 寻找版本17
 version 17
 
 951
 00:45:18,550 --> 00:45:21,579
-假设它找不到块服务器
+假设它找不到这样的 chunk 服务器
 supposing it finds no chunk server you
 
 952
 00:45:21,579 --> 00:45:22,690
-master定期与块服务器进行对话
+你知道 master 会定期与 chunk 服务器进行对话以询问它们
 know and it talks to the chunk servers
 
 953
 00:45:22,690 --> 00:45:24,430
-以询问他们
+你知道 master 会定期与 chunk 服务器进行对话以询问它们
 periodically to sort of ask them what
 
 954
 00:45:24,430 --> 00:45:25,780
-拥有哪些块，拥有什么版本
+拥有哪些块 拥有什么版本
 chunks do you have what versions you have 
 
 955
 00:45:25,780 --> 00:45:27,520
-假设它没有块找到
+假设它没有找到包含版本 17 chunk 服务器
 supposing it finds no server with
 
 956
 00:45:27,520 --> 00:45:30,369
-版本为17的块的服务器
+假设它没有找到包含版本 17 chunk 服务器
 chunk 17 with version 17 for this this
 
 957
 00:45:30,369 --> 00:45:32,800
-master要么先不回复并等待
+master 要么先不回复并等待
 chunk then the master will either say
 
 958
 00:45:32,800 --> 00:45:35,710
-master要么先不回复并等待
+master 要么先不回复并等待
 well either not respond yet and wait or
 
 959
 00:45:35,710 --> 00:45:39,790
-要么告诉client，我无法回答，请稍后再试
+要么告诉 client，我无法回答，请稍后再试
 it will tell the client look I can't
 
 960
@@ -4805,142 +4810,142 @@ server's crashed and we're slowly rebooting
 
 964
 00:45:47,079 --> 00:45:49,510
-master可能先启动完成
+master 可能先启动完成
 the master might come up first
 
 965
 00:45:49,510 --> 00:45:51,430
-一些块服务器可能已启动
+一些 chunk 服务器可能已启动
 and you know some fraction of the chunk
 
 966
 00:45:51,430 --> 00:45:53,079
-其他的会从现在起五分钟后重启
+其他的在五分钟后才完成启动
 servers might be up and other ones would
 
 967
 00:45:53,079 --> 00:45:57,609
-其他的会从现在起五分钟后重启
+其他的在五分钟后才完成启动
 reboot five minutes from now but 
 
 968
 00:45:57,609 --> 00:45:59,890
-所以我们必须准备等待
+所以必须等待 并且会永远等待
 so we have to be prepared to wait and 
 
 969
 00:45:59,890 --> 00:46:02,290
-它将永远等待，因为
+所以必须等待 并且会永远等待
 it will wait forever because you don't want to
 
 970
 00:46:02,290 --> 00:46:05,440
-你不想使用该块的陈旧版本
+因为你不想使用 chunk 的旧版本
 use a stale version of that of a chunk
 
 971
 00:46:05,440 --> 00:46:09,190
-master服务器需要
+所以 master 需要整合具有最新版本的 chunk 服务器列表
 okay so the master needs to assemble the
 
 972
 00:46:09,190 --> 00:46:10,540
-整合具有最新版本的块服务器列表
+所以 master 需要整合具有最新版本的 chunk 服务器列表
 list of chunk servers that have the most
 
 973
 00:46:10,540 --> 00:46:12,910
-master服务器知道
+master 知道磁盘上存储的最新版本
 recent version the master knows the most
 
 974
 00:46:12,910 --> 00:46:14,619
-磁盘上存储的最新版本
+master 知道磁盘上存储的最新版本
 recent versions stored on disk each
 
 975
 00:46:14,619 --> 00:46:16,540
-正如你所指出的
+正如你所指出的 每个 chunk 服务器以及每个 chunk
 chunk server along with each chunk as
 
 976
 00:46:16,540 --> 00:46:18,280
-每个块服务器以及每个块
+正如你所指出的 每个 chunk 服务器以及每个 chunk
 you pointed out also remembers the
 
 977
 00:46:18,280 --> 00:46:19,810
-也记得它存储的块的版本号
+也记得它存储的 chunk 的版本号
 version number of the chunk that it's stores 
 
 978
 00:46:19,810 --> 00:46:22,540
-这样，当块服务器
+当 chunk 服务器向 master 报告说
 so that when chunk servers
 
 979
 00:46:22,540 --> 00:46:23,859
-向master服务器报告说，看，我有这个块
+看，我有这个 chunk
 reported into the master saying look I
 
 980
 00:46:23,859 --> 00:46:25,690
-master服务器可以
+master 服务器便可以
 have this chunk the master can ignore
 
 981
 00:46:25,690 --> 00:46:27,760
-忽略那些版本与master知道的最新版本不匹配的
+忽略那些版本与 master 知道的最新版本不匹配的 chunk server
 the ones whose version does not match
 
 982
 00:46:27,760 --> 00:46:30,339
-忽略那些版本与master知道的最新版本不匹配的
-the version the master knows is the most recent 
+忽略那些版本与 master 知道的最新版本不匹配的 chunk server
+the version the master knows is the most recent
 
 983
 00:46:30,339 --> 00:46:34,869
-记得我们client想要追加
+okay 回到之前的话题 我们 client 想要执行追加
 okay so remember we were the
 
 984
 00:46:34,869 --> 00:46:36,670
-master服务器没有primary
+okay 回到之前的话题 我们 client 想要执行追加
 client want to append the master doesn't
 
 985
 00:46:36,670 --> 00:46:39,579
-master意识到
+但是 master 还没有 primary 它意识到
 have a primary it figures out maybe you
 
 986
 00:46:39,579 --> 00:46:42,310
-你可能需要等待具有该块最新版本的服务器集合
+你可能需要等待具有该 chunk 最新版本的服务器集合
 have to wait for the set of chunk
 
 987
 00:46:42,310 --> 00:46:43,960
-你可能需要等待具有该块最新版本的服务器集合
+你可能需要等待具有该 chunk 最新版本的服务器集合
 servers that have the most recent
 
 988
 00:46:43,960 --> 00:46:49,020
-它选择一个作为primary服务器
+master 会挑一个 chunk server 出来作为 primary
 version of that chunk it picks a primary
 
 989
 00:46:50,040 --> 00:46:52,930
-所以我要在最新版本的副本中
+所以我要在最新版本的副本中 选择其中一个作为 primary
 so I'm gonna pick one of them to be the
 
 990
 00:46:52,930 --> 00:46:56,859
-选择其中一个作为primary服务器
+所以我要在最新版本的副本中 选择其中一个作为 primary
 primary and the others to be secondary servers
 
 992
 00:46:56,859 --> 00:46:58,210
-将其他作为secondary服务器
+将其他作为 secondary（次级服务）
 among the replicas set at the most
 
 993
