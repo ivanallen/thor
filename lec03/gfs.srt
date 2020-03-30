@@ -4935,12 +4935,12 @@ version of that chunk it picks a primary
 
 989
 00:46:50,040 --> 00:46:52,930
-所以我要在最新版本的副本中 选择其中一个作为 primary
+所以我要选择其中一个作为 primary
 so I'm gonna pick one of them to be the
 
 990
 00:46:52,930 --> 00:46:56,859
-所以我要在最新版本的副本中 选择其中一个作为 primary
+所以我要选择其中一个作为 primary
 primary and the others to be secondary servers
 
 992
@@ -4950,37 +4950,37 @@ among the replicas set at the most
 
 993
 00:46:58,210 --> 00:47:02,140
-然后master
+然后 master 将版本号递增 并将其写入磁盘
 recent version the master then
 
 994
 00:47:02,140 --> 00:47:11,170
-将版本号递增，并将其写入磁盘
+然后 master 将版本号递增 并将其写入磁盘
 increments the version number and writes that to
 
 996
 00:47:11,170 --> 00:47:13,600
-所以崩溃时，它不会忘记（版本号）
+这样在崩溃时也不会丢失（版本号）
 disk so it doesn't forget it the crashes
 
 997
 00:47:13,600 --> 00:47:15,970
-然后它发送给primary和secondary
+接下来请求 primary 和 secondary
 and then it sends the primary and
 
 998
 00:47:15,970 --> 00:47:18,700
-每个都有一个消息说
+通知它们都是什么身份
 secondaries and that's each of them a
 
 999
 00:47:18,700 --> 00:47:20,710
-对于这个块
+每个 chunk server 都能收到一条消息：找到这个 chunk
 message saying look for this chunk
 
 1000
 00:47:20,710 --> 00:47:22,840
-这是primary这是secondary
+这是 primary，这是 secondary
 here's the primary here's the
 
 1001
@@ -4990,181 +4990,182 @@ secondaries you know recipient maybe one
 
 1002
 00:47:26,650 --> 00:47:28,450
-消息里说，对于这个块，这是新版本号
+这个新版本号
 of them and here's the new version
 
 1003
 00:47:28,450 --> 00:47:32,170
-然后它会告诉primary，secondary此信息以及版本号
+然后它会把这个信息以及版本号告诉 primary 和 secondary
 number so then it tells primary
 
 1004
 00:47:32,170 --> 00:47:37,060
-此信息以及版本号
+然后它会把这个信息以及版本号告诉 primary 和 secondary
 secondaries this information plus the
 
 1005
 00:47:37,060 --> 00:47:39,970
-primary节点和secondary节点
+primary 节点和 secondary 节点都将版本号写入磁盘
 version number the primaries and secondaries
 
 1007
 00:47:39,970 --> 00:47:41,920
-都将版本号写入磁盘
+primary 节点和 secondary 节点都将版本号写入磁盘
 all write the version number to disk 
 
 1008
 00:47:41,920 --> 00:47:43,780
-他们不会忘记，因为
+所以它们不会丢失这个信息
 so they don't forget because you know 
 
 1009
 00:47:43,780 --> 00:47:45,040
-如果有电源故障或其他任何原因
+如果因为电源故障或其他原因
 if there's a power failure or whatever 
 
 1010
 00:47:45,040 --> 00:47:47,140
-他们必须用他们持有的版本号
+等它们重启后必须拿着这个版本号向 master 报告
 they have to report in to the master with the
 
 1011
 00:47:47,140 --> 00:47:51,210
-向master服务器报告
+等它们重启后必须拿着这个版本号向 master 报告
 actual version number they hold yes
 
 1012
 00:48:04,230 --> 00:48:06,190
-这是一个很好的问题
+问题很棒
 that's a great question
 
 1013
 00:48:06,190 --> 00:48:08,500
-我不知道，文章中有个暗示
+我不知道答案 不过论文中有提示
 so I don't know there's hints in the
 
 1014
 00:48:08,500 --> 00:48:11,170
-我对此略有错误
+关于你问的这点 其实之前我犯了点小错误
 paper that I'm slightly wrong about this
 
 1015
 00:48:11,170 --> 00:48:14,740
-我认为你的问题
+我觉得你的问题已经做了解释
 so the paper says I think your question
 
 1016
 00:48:14,740 --> 00:48:16,030
-向我解释了有关论文的一些事情
+我觉得你的问题已经做了解释
 was explaining something to me about the
 
 1017
 00:48:16,030 --> 00:48:18,310
-该论文说
+论文里说 如果 master 重启并与 chunk server 进行通信
 paper the paper says if the master
 
 1018
 00:48:18,310 --> 00:48:22,480
-如果master服务器重启并与块服务器进行对话
+论文里说 如果 master 重启并与 chunk server 进行通信
 reboots and talks to chunk servers and
 
 1019
 00:48:22,480 --> 00:48:24,220
-并且其中一个块服务器重启时报告的版本号
+并且其中一个 chunk server 重启时报告的版本号
 one of the chunk servers reboot reports
 
 1020
 00:48:24,220 --> 00:48:26,530
-高于master服务器记住的版本号
+高于 master 记住的版本号
 a version number that's higher than the
 
 1021
 00:48:26,530 --> 00:48:28,540
-高于master服务器记住的版本号
+高于 master 记住的版本号
 version number the master remembers the
 
 1022
 00:48:28,540 --> 00:48:31,600
-master服务器假设
+master 会假设它在分配新 primary 时发生了某些错误
 master assumes that there was a failure
 
 1023
 00:48:31,600 --> 00:48:34,600
-当它分配新的primary，
+master 会假设它在分配新 primary 时发生了某些错误
 while it was assigning a new primary and
 
 1024
 00:48:34,600 --> 00:48:36,760
-并采用新的从块服务器获得的更高版本号时
+于是它会使用这个更高的版本号（来自这个 chunk server）作为当前版本号
 adopts the new the higher version number
 
 1025
 00:48:36,760 --> 00:48:38,860
-发生了故障
+于是它会使用这个更高的版本号（来自这个 chunk server）作为当前版本号
 that it heard from a chunk server 
 
 1026
 00:48:38,860 --> 00:48:42,250
-所以一定是这样
+为什么会有这么诡异的错误？
 so it must be the case that in order to handle
 
 1027
 00:48:42,250 --> 00:48:48,010
-为了处理此时的master服务器崩溃
+我觉得是 master 在通知 primary 之后才做的持久化
 a master crash at this point that 
 
 1028
 00:48:48,010 --> 00:48:55,869
-master服务器在告诉了primary节点后版本号之后
+我觉得是 master 在通知 primary 之后才做的持久化
 the master writes its own version number to
 
 1029
 00:48:55,869 --> 00:49:02,530
-将自己的版本号写入磁盘
+但碰巧 在把版本号写入磁盘之前 master 崩了
 disk after telling the primaries there's
 
 1030
 00:49:02,530 --> 00:49:03,550
-但是这里有一个问题
+所以这里是有点问题的
 a bit of a problem here though because
 
 1031
 00:49:03,550 --> 00:49:11,880
-什么 是不是有ACK
+(提问) 是否有 ACK ?
 if the was that is there an ACK
 
 1032
 00:49:12,410 --> 00:49:17,250
-好吧，所以master服务器可能
+master 服务器可能会告知 primary 和 backup
 all right so maybe the master tells the
 
 1033
 00:49:17,250 --> 00:49:18,810
-告诉primary节点和secondary节点
-primaries and backups and that their
+master 服务器可能会告知 primary 和 backup
+primaries and backups that they're...
 
 1034
 00:49:18,810 --> 00:49:20,400
-告诉primary节点和secondary节点
-primaries and secondaries if they're a
+是告知 primary 和 secondary
+primaries and secondaries if there a
 
 1035
 00:49:20,400 --> 00:49:21,720
+如果有 primary secondary 就通知它新版本号
 primary secondary tells him the new
 
 1036
 00:49:21,720 --> 00:49:24,450
-等待ACK
+然后等待 ACK 再写入磁盘 或是其它不满足条件的操作
 version number waits for the AK and then
 
 1037
 00:49:24,450 --> 00:49:27,870
-然后写入磁盘，或对此不满意的操作
-writes to disk or something unsatisfying about this 
+然后等待 ACK 再写入磁盘 或是其它不满足条件的操作
+writes to disk or something unsatisfying about this
 
 1038
 00:49:27,870 --> 00:49:37,770
-我不认为这行得通
+我认为这行不通
 I don't believe that works
 
 1039
@@ -5174,62 +5175,62 @@ because of the possibility that the
 
 1040
 00:49:40,380 --> 00:49:41,940
-master服务器重启时
+master 服务器重启时 具有最新版本号的 chunk server 可能是离线的
 chunk servers with the most recent
 
 1041
 00:49:41,940 --> 00:49:44,190
-具有最新版本号的块服务器
+master 服务器重启时 具有最新版本号的 chunk server 可能是离线的
 version numbers being offline at the
 
 1042
 00:49:44,190 --> 00:49:46,650
-可能是离线的，我们不希望
+master 服务器重启时 具有最新版本号的 chunk server 可能是离线的
 time the master reboots we wouldn't want
 
 1043
 00:49:46,650 --> 00:49:48,360
-master服务器不知道当前版本号
+我们不希望 master 不知道当前版本号
 the master the master doesn't know the
 
 1044
 00:49:48,360 --> 00:49:50,610
-master服务器不知道当前版本号
+我们不希望 master 不知道当前版本号
 current version number it'll just accept
 
 1045
 00:49:50,610 --> 00:49:51,960
-它只会接受最高的版本号
+因为它收到的所谓的最高的版本号 可能是个旧版本号
 whatever highest version number here
 
 1046
 00:49:51,960 --> 00:49:54,300
-这可能是旧版本号
+因为它收到的所谓的最高的版本号 可能是个旧版本号
 which could be an old version number 
 
 1047
 00:49:54,300 --> 00:49:57,000
-好吧，这是我无知的一个领域
+这个领域我知道的不多
 alright so this is a an area of my
 
 1048
 00:49:57,000 --> 00:49:58,260
-我不太明白
+我不太清楚 master 是否是先更新其自己的版本号
 ignorance I don't really understand
 
 1049
 00:49:58,260 --> 00:50:00,570
-master服务器是否首先更新其自己的版本号
+我不太清楚 master 是否是先更新其自己的版本号
 whether the master update system version
 
 1050
 00:50:00,570 --> 00:50:01,800
-然后告诉primary和secondary服务器
+再告诉 primary 和 secondary 又或是其他方式
 number on this first and then tells the
 
 1051
 00:50:01,800 --> 00:50:03,600
-或是其他方式
+再告诉 primary 和 secondary 又或是其他方式
 primary secondary or the other way around 
 
 1052
@@ -5239,207 +5240,207 @@ and I'm not sure it works either
 
 1053
 00:50:06,360 --> 00:50:11,340
-但无论如何，某种方式
+但无论如何 总有某种方式
 way okay but in any case one way or another 
 
 1054
 00:50:11,340 --> 00:50:12,810
-主机更新其版本号
-the master update is version
+master 更新其版本号 并告诉 primary secondary
+the master update its version
 
 1055
 00:50:12,810 --> 00:50:14,340
-告诉primary, secondary说，看
+master 更新其版本号 并告诉 primary secondary
 number tells the primary secondary look
 
 1056
 00:50:14,340 --> 00:50:16,140
-你的primary和secondary
+看看你的 primaries 和 secondaries，这儿还有个最新版本号
 your primaries and secondaries here's a
 
 1057
 00:50:16,140 --> 00:50:17,700
-这里是一个新版本号
+看看你的 primaries 和 secondaries，这儿还有个最新版本号
 new version number and so now we have a
 
 1058
 00:50:17,700 --> 00:50:19,410
-现在我们有了一个可以接受写入的primary
+现在我们有了一个可以接受写入的 primary
 primary which is able to accept writes
 
 1059
 00:50:19,410 --> 00:50:21,480
-这就是primary的工作
+primary 的工作是接收客户端的请求
 alright that's what the primaries job
 
 1060
 00:50:21,480 --> 00:50:23,730
-是从客户端获取写入
+primary 的工作是接收客户端的请求
 is to take writes from clients and
 
 1061
 00:50:23,730 --> 00:50:26,760
-并组织将这些写入执行于各个块服务器
+将这些写入进行组织成一定顺序 然后应用于各个 chunk servers
 organize applying those writes to the
 
 1062
 00:50:26,760 --> 00:50:35,130
-并组织将这些写入执行于各个块服务器
+将这些写入进行组织成一定顺序 然后应用于各个 chunk servers
 various chunk servers and you know the
 
 1063
 00:50:35,130 --> 00:50:36,450
-版本号的目的是
+版本号的目的是使 master 能找到哪些 server 具有最新的 chunk
 reason for the version number stuff is
 
 1064
 00:50:36,450 --> 00:50:44,270
-使master能找到
+版本号的目的是使 master 能找到哪些 server 具有最新的 chunk
 so that the master will recognize the
 
 1065
 00:50:44,420 --> 00:50:49,940
-哪些服务器具有最新的块
+版本号的目的是使 master 能找到哪些 server 具有最新的 chunk
 which servers have this new you know the
 
 1066
 00:50:50,240 --> 00:50:52,800
-master服务器授予某些块服务器成为primary的能力
+master 授予某些 chunk server 成为 primary 的能力
 master hands out the ability to be
 
 1067
 00:50:52,800 --> 00:50:55,320
-master服务器授予某些块服务器成为primary的能力
+master 授予某些 chunk server 成为 primary 的能力
 primary for some chunk server we want to
 
 1068
 00:50:55,320 --> 00:50:58,950
-我们希望能够识别出
+我们希望能够辨认出 如果主机崩溃
 be able to recognize if the master
 
 1069
 00:50:58,950 --> 00:51:01,260
-如果主机崩溃
+我们希望能够辨认出 如果主机崩溃
 crashes you know that it was that was
 
 1070
 00:51:01,260 --> 00:51:03,840
-只有那个primary
+只有那个 primary 和 secondaries
 the primary that only that primary and
 
 1071
 00:51:03,840 --> 00:51:05,070
-和secondary
+只有那个 primary 和 secondaries
 it secondaries which were actually
 
 1072
 00:51:05,070 --> 00:51:06,720
-负责更新该块
+才能处理 才能负责更新这个 chunk
 processed which were in charge of
 
 1073
 00:51:06,720 --> 00:51:08,250
-负责更新该块
+才能处理 才能负责更新这个 chunk
 updating that chunk that only those
 
 1074
 00:51:08,250 --> 00:51:10,530
-将来只有那些primary和secondary
+将来只有那些 primaries 和 secondaries
 primaries and secondaries are allowed to
 
 1075
 00:51:10,530 --> 00:51:12,630
-可以在未来成为块服务器
+可以在未来成为 chunk server
 be chunk servers in the future and the
 
 1076
 00:51:12,630 --> 00:51:14,070
-master实现这个目的的方式是
+master 实现这个目的的方式就是使用版本号
 way the master does this is with this
 
 1077
 00:51:14,070 --> 00:51:17,270
-使用版本号的逻辑
+master 实现这个目的的方式就是使用版本号
 version number logic
 
 1078
 00:51:17,480 --> 00:51:21,500
-master告诉primary和secondary，
+master 告诉 primaries 和 secondaries
 okay so the master tells the primaries
 
 1079
 00:51:21,500 --> 00:51:23,119
-他们被允许修改此块
+它们被允许修改这个 chunk
 and secondaries that there it they're
 
 1080
 00:51:23,119 --> 00:51:24,740
-他们被允许修改此块
+它们被允许修改这个 chunk
 allowed to modify this block 
 
 1081
 00:51:24,740 --> 00:51:27,530
-它还给primary一个租约
+它还给 primary 一个租约 告诉primary
 it also gives the primary a lease which
 
 1082
 00:51:27,530 --> 00:51:29,390
-告诉primary，看
+它还给 primary 一个租约 告诉primary
 basically tells the primary look you're
 
 1083
 00:51:29,390 --> 00:51:31,099
-在接下来的60秒内你将是primary
+在接下来的 60 秒内你将是 primary，60 秒后你就不再是
 allowed to be primary for the next sixty
 
 1084
 00:51:31,099 --> 00:51:33,200
-六十秒后，你必须停止
-seconds after sixty Seconds you have to
+在接下来的 60 秒内你将是 primary，60 秒后你就不再是
+seconds after sixty seconds you have to
 
 1085
 00:51:33,200 --> 00:51:37,280
-这是机制的一部分
+这个机制确保我们不会同时两个 primary，稍后我们再讨论
 stop and this is part of the machinery
 
 1086
 00:51:37,280 --> 00:51:39,290
-确保我们不会有两个primary
+这个机制确保我们不会同时两个 primary，稍后我们再讨论
 for making sure that we don't end up
 
 1087
 00:51:39,290 --> 00:51:41,869
-确保我们不会有两个primary，我待会再谈
+这个机制确保我们不会同时两个 primary，稍后我们再讨论
 with two primaries I'll talk about a bit later 
 
 1088
 00:51:41,869 --> 00:51:46,339
-好吧，现在假设我们是primary
+okay 现在假设我们是 primary
 okay so now we were primary now
 
 1089
 00:51:46,339 --> 00:51:50,089
-现在master告诉client
+master 告诉 client 谁是 primary 谁是secondary
 the master tells the client who the
 
 1090
 00:51:50,089 --> 00:51:54,440
-谁是primary，谁是secondary
+master 告诉 client 谁是 primary 谁是secondary
 primary and the secondaries are and at
 
 1091
 00:51:54,440 --> 00:51:59,050
-此时，我们正在执行
+此时，我们正在执行论文中的图二
 this point we're we're executing in
 
 1092
 00:51:59,050 --> 00:52:02,240
-论文中的图二
+此时，我们正在执行论文中的图二
 figure two in the paper the client now
 
 1093
 00:52:02,240 --> 00:52:04,040
-client现在知道谁是primary, 谁是secondary
+client 现在知道谁是 primary 谁是 secondaries
 knows who the primary secondaries are 
 
 1094
