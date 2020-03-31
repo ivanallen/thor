@@ -5445,286 +5445,282 @@ knows who the primary secondaries are
 
 1094
 00:52:04,040 --> 00:52:05,660
-以某种秩序，这篇论文
+client 的请求以某种秩序组织在一起 这篇论文
 in some order or another and the paper
 
 1095
 00:52:05,660 --> 00:52:08,180
-解释了一种聪明的方法来管理
+提出了一种聪明的方法来管理这种秩序
 explains a sort of clever way to manage this 
 
 1096
 00:52:08,180 --> 00:52:10,849
-以某种秩序
+提出了一种聪明的方法来管理这种秩序
 in some order or another the client
 
 1097
 00:52:10,849 --> 00:52:13,250
-client端将要追加的数据副本
+client 端将要追加的数据副本发送给 primary
 sends a copy of the data it wants to be
 
 1098
 00:52:13,250 --> 00:52:15,230
-发送给primary
+client 端将要追加的数据副本发送给 primary
 appended to the primary and all the
 
 1099
 00:52:15,230 --> 00:52:18,440
-和所有secondary，并且primary和
+和所有 secondaries 然后 primary 和
 secondaries and the primary and the
 
 1100
 00:52:18,440 --> 00:52:20,390
-secondary将该数据写入一个临时位置
+secondaries 将该数据写入一个临时位置
 secondaries write that data to a
 
 1101
 00:52:20,390 --> 00:52:22,099
-它尚未附加到文件中
+此时这些数据并不会追加到文件中
 temporary location it's not appended to
 
 1102
 00:52:22,099 --> 00:52:24,380
-在它们都说yes
+等 primary 和 secondaries 都收到数据并回复 yes 后
 the file yet after they've all said yes
 
 1103
 00:52:24,380 --> 00:52:29,180
-我们有数据之后
+等 primary 和 secondaries 都收到数据并回复 yes 后
 we have the data the client sends a
 
 1104
 00:52:29,180 --> 00:52:31,130
-client发送一条消息到primary说，看
+client 发送一条消息到 primary 说
 message to the primary saying look you
 
 1105
 00:52:31,130 --> 00:52:33,470
-你和所有secondary节点都有
+你和所有 secondaries 节点都收到了我要追加的数据
 know you and all the secondaries have
 
 1106
-00:52:33,470 --> 00:52:35,569
-我要追加到此文件的数据
-the data I'd like to append it for this
-
-1107
-00:52:35,569 --> 00:52:36,579
-file
+00:52:33,470 --> 00:52:36,579
+你和所有 secondaries 节点都收到了我要追加的数据
+the data I'd like to append it for this file
 
 1108
 00:52:36,579 --> 00:52:38,960
-primary可能正在同时
+primary 可能此时正从很多不同的 client 接收这些请求
 the primary maybe is receiving these
 
 1109
 00:52:38,960 --> 00:52:40,520
-从许多不同的client端接收这些请求
+primary 可能此时正从很多不同的 client 接收这些请求
 requests from lots of different clients
 
 1110
 00:52:40,520 --> 00:52:43,010
-它选择某种顺序
+这时 primary 会选择某种顺序依次执行所有 client 的请求 把数据追加到文件里
 concurrently it picks some order execute
 
 1111
 00:52:43,010 --> 00:52:45,260
-一次执行一个client请求
+这时 primary 会选择某种顺序依次执行所有 client 的请求 把数据追加到文件里
 the client request one at a time and for
 
 1112
 00:52:45,260 --> 00:52:48,260
-一次执行一个client请求
+这时 primary 会选择某种顺序依次执行所有 client 的请求 把数据追加到文件里
 each client appends request 
 
 1113
 00:52:48,260 --> 00:52:50,450
-primary查看文件末尾的偏移量
+primary 查看文件末尾的偏移量 也就是 chunk 的末尾
 the primary looks at the offset that's the end of
 
 1114
 00:52:50,450 --> 00:52:53,030
-当前块的当前末尾
+primary 查看文件末尾的偏移量 也就是 chunk 的末尾
 the file the current end of the current chunk 
 
 1115
 00:52:53,030 --> 00:52:54,740
-确保块中有足够的剩余空间
+确保 chunk 中有足够的剩余空间
 makes sure there's enough
 
 1116
 00:52:54,740 --> 00:52:56,480
-确保块中有足够的剩余空间
+确保 chunk 中有足够的剩余空间
 remaining space in the chunk and 
 
 1117
 00:52:56,480 --> 00:52:59,960
-然后将client记录
+然后将 client 记录写入当前块的末尾
 then tells then writes the clients record to
 
 1118
 00:52:59,960 --> 00:53:02,240
-写入当前块的末尾
+然后将 client 记录写入当前块的末尾
 the end of the current chunk and tells
 
 1119
 00:53:02,240 --> 00:53:04,369
-并告诉所有secondary服务器
+并告诉所有 secondary 也将其写到末尾的相同偏移量处
 all the secondaries to also write the
 
 1120
 00:53:04,369 --> 00:53:08,359
-也将client来的数据写到
+并告诉所有 secondary 也将其写到末尾的相同偏移量处
 clients data to the end to the same
 
 1121
 00:53:08,359 --> 00:53:12,010
-末尾的相同偏移量处
+并告诉所有 secondary 也其写到末尾的相同偏移量处
 offset the same offset in their chunks
 
 1122
 00:53:12,010 --> 00:53:20,500
-primary选一个偏移量
+primary 选一个偏移量
 all right so the primary picks an offset
 
 1123
 00:53:20,500 --> 00:53:26,480
-包括primary的所有备份
+所有副本 包括primary 被告知在指定偏移位置追加新记录
 all the replicas including the primary
 
 1124
 00:53:26,480 --> 00:53:29,180
-被指示在偏移处写入新的附加记录
+所有副本 包括primary 被告知在指定偏移位置追加新记录
 are told to write
 
 1125
 00:53:29,180 --> 00:53:36,090
-被指示在偏移处写入新的附加记录
+所有副本 包括primary 被告知在指定偏移位置追加新记录
 the new appended record at at offset 
 
 1126
 00:53:36,090 --> 00:53:38,700
-这些secondary，它们可能会做，也可能不会
-the secondary's they may do it they may not
+这些 secondaries 它们可能会执行成功 也可能会失败
+the secondaries they may do it they may not
 
 1127
 00:53:38,700 --> 00:53:41,250
-可能空间不足
+比如说空间不足 或是崩溃
 do it maybe run out of space maybe
 
 1128
 00:53:41,250 --> 00:53:42,810
-可能它们崩溃了
+比如说空间不足 或是崩溃
 they crashed maybe the network message
 
 1129
 00:53:42,810 --> 00:53:45,480
-可能从primary来的网络消息丢失了
+也可能是 primary 发送的消息在网络中丢失
 was lost from the primary 
 
 1130
 00:53:45,480 --> 00:53:47,970
-因此，如果secondary节点真的以该偏移量
+如果 secondary 节点确实在这个偏移处
 so if a secondary actually wrote the data to its
 
 1131
 00:53:47,970 --> 00:53:50,760
-将数据写入其磁盘，它将回复“yes”给primary
+把数据写入了磁盘 它会回复 “yes” 给 primary
 disk at that offset it will reply yes to
 
 1132
 00:53:50,760 --> 00:53:52,859
-如果primary从所有secondary
+如果 primary 收到了所有 secondaries 回复的 yes
 the primary if the primary collects a
 
 1133
 00:53:52,859 --> 00:53:57,740
-都收集到yes的回复
+如果 primary 收到了所有 secondaries 回复的 yes
 yes answer from all of the secondaries
 
 1134
 00:53:58,520 --> 00:54:02,190
-如果他们都真的写出
+如果它们确实把数据写入了磁盘且向 primary 回复了 yes
 so if they all of all of them managed to
 
 1135
 00:54:02,190 --> 00:54:03,630
-并回复primary说
+如果它们确实把数据写入了磁盘且向 primary 回复了 yes
 actually write and reply to the primary
 
 1136
 00:54:03,630 --> 00:54:08,250
-yes我做到了
+如果它们确实把数据写入了磁盘且向 primary 回复了 yes
 saying yes I did it then the primary is
 
 1137
 00:54:08,250 --> 00:54:10,800
-那么primary服务器将向client端回复“success”
+那么 primary 将向 client 端回复 success
 going to reply reply success to the client 
 
 1138
 00:54:10,800 --> 00:54:18,930
-如果primary没有收到
+如果 primary 没有收到某一个 secondary 的回复
 if the primary doesn't get an
 
 1139
 00:54:18,930 --> 00:54:21,510
-某一个secondary的回复
+如果 primary 没有收到某一个 secondary 的回复
 answer from one of the secondaries 
 
 1140
 00:54:21,510 --> 00:54:23,580
-或某个secondary回复，sorry发生了一些不好的事情
+或是某个 secondary 回复了错误：
 or the secondary reply sorry something bad
 
 1141
 00:54:23,580 --> 00:54:25,590
-我磁盘空间不足，我的磁盘挂了
+sorry 发生了一些不好的事情 我磁盘空间不足 我的磁盘挂了
 happened I ran out of disk space my disk died
 
 1142
 00:54:25,590 --> 00:54:28,980
-然后primary
+那么 primary 就会回复 no 给 client
 I don't know what, then the primary
 
 1143
 00:54:28,980 --> 00:54:37,950
-会回复“no”给client
+那么 primary 就会回复 no 给 client
 replies no to the client and the paper
 
 1144
 00:54:37,950 --> 00:54:39,420
-论文说，如果client从primary得到像这种的错误
+论文说，如果 client 从 primary 得到这样的错误
 says oh if the client gets an error like
 
 1145
 00:54:39,420 --> 00:54:42,000
-论文说，如果client从primary得到像这种的错误
+论文说，如果 client 从 primary 得到这样的错误
 that back in the primary the client is
 
 1146
 00:54:42,000 --> 00:54:44,369
-client应该重新发起整个追加的过程
+client 应该重新发起整个追加的过程
 supposed to reissue the entire append sequence 
 
 1147
 00:54:44,369 --> 00:54:46,020
-重新开始，与master通信
+重新开始与 master 通信 以找出文件末尾
 starting again talking to the
 
 1148
 00:54:46,020 --> 00:54:48,530
-以找出文件末尾
+重新开始与 master 通信 以找出文件末尾
 master to find out the most grease the
 
 1149
 00:54:48,530 --> 00:54:50,369
-以找出文件末尾
+重新开始与 master 通信 以找出文件末尾
 chunk at the end of the file
 
 1150
 00:54:50,369 --> 00:54:52,500
-我想知道client端应该
+我想知道 client 端应该
 I want to know the client supposed to
 
 1151
@@ -5734,7 +5730,7 @@ reissue the whole record append
 
 1152
 00:54:54,300 --> 00:55:01,650
-你可能会想，但他们不
+(提问) 你可能会这样想，但它们不会
 operation ah you would think but they
 
 1153
