@@ -1,909 +1,1136 @@
 1
 00:00:02,649 --> 00:00:07,220
+好，今天，我想更多地讨论一些
 all right today I want to talk about bit
 
 2
 00:00:07,220 --> 00:00:08,510
+关于容错和复制的问题
 more about fault tolerance and
 
 3
 00:00:08,510 --> 00:00:10,549
+然后深入研究
 replication and then look into the
 
 4
 00:00:10,549 --> 00:00:13,269
+今天的关于 VMware 容错的论文的详细内容
 details of today's paper about vmware ft
 
 5
 00:00:13,269 --> 00:00:16,010
+话题回到容错上来
 the topics still fault tolerance to
 
 6
 00:00:16,010 --> 00:00:19,040
+容错以提供高可用性————
 provide high availability that is you
 
 7
 00:00:19,040 --> 00:00:20,600
+例如：当你想构建一个服务器时
 want to build a server that even if some
 
 8
 00:00:20,600 --> 00:00:22,820
+提供服务的硬件总是有崩溃的可能
 hardware you know computer crashes is
 
 9
 00:00:22,820 --> 00:00:24,080
+但是
 involved in the service we still like to
 
 10
 00:00:24,080 --> 00:00:27,860
+我们还是希望能稳定地提供服务
 provide the service and to the extent we
 
 11
 00:00:27,860 --> 00:00:29,120
+甚至，我们想（并且可以）在即使出现了网络问题的时候
 can we'd like to provide our service
 
 12
 00:00:29,120 --> 00:00:31,250
+依旧提供我们的服务————
 also if there's network problems and the
 
 13
 00:00:31,250 --> 00:00:33,019
+我们所使用到的工具就是“复制”
 tool we're using its replication least
 
 14
 00:00:33,019 --> 00:00:36,620
+至少在本课程的这一部分是这样
 for this part of the course so it's
 
 15
 00:00:36,620 --> 00:00:39,070
+一个很有价值的问题：
 worth asking what kind of failures
 
 16
 00:00:39,070 --> 00:00:42,039
+复制能处理什么样的“失败”呢？
 replication can be expected to deal with
 
 17
 00:00:42,039 --> 00:00:46,480
+因为这无论如何都不是一件小事
 because it's not everything by any means
 
 18
 00:00:52,510 --> 00:00:55,609
+使用最简单的方法来描述一下
 so maybe the easiest way to characterize
 
 19
 00:00:55,609 --> 00:00:57,170
+我们所能处理的那种“失败”————
 the kind of failures we're talking about
 
 20
 00:00:57,170 --> 00:01:01,010
+那就是单个计算机的“停止-失败”
 is fail stop failures of a single
 
 21
 00:01:01,010 --> 00:01:11,119
+我所谓的“停止-失败”是什么呢？
 computer and what I mean by fail stop
 
 22
 00:01:11,119 --> 00:01:14,840
+其实是一种通用的术语
 it's a sort of generic term and fault
 
 23
 00:01:14,840 --> 00:01:16,759
+容错就是说如果有一些东西出了故障
 tolerance is that if something goes
 
 24
 00:01:16,759 --> 00:01:18,350
+比如说一台计算机出了什么问题
 wrong would say the computer the
 
 25
 00:01:18,350 --> 00:01:23,840
+它就会简单地停止运行
 computer simply stops executing it just
 
 26
 00:01:23,840 --> 00:01:27,649
+如果任何东西出了什么故障的话
 stops if anything goes wrong and in
 
 27
 00:01:27,649 --> 00:01:29,240
+尤其需要注意的是：它不会计算出不正确的结果
 particular it doesn't compute incorrect
 
 28
 00:01:29,240 --> 00:01:31,640
+所以，如果有人断了你的电源
 results so if somebody kicks the power
 
 29
 00:01:31,640 --> 00:01:35,240
+把电源线从你的服务器上拔了出来
 cable out of your server that's probably
 
 30
 00:01:35,240 --> 00:01:36,950
+那就有可能产生一个“停止-失败”
 gonna generate a fail stop failure
 
 31
 00:01:36,950 --> 00:01:41,090
+类似地，如果他们拔了你的服务器的网络插头
 similarly if they unplug your servers
 
 32
 00:01:41,090 --> 00:01:42,680
+这也是一个“停止-失败”
 network connection even though the
 
 33
 00:01:42,680 --> 00:01:44,390
+尽管你知道服务器仍在运行
 server is still running so this is a
 
 34
 00:01:44,390 --> 00:01:46,100
+所以这就有点可笑
 little bit funny you know be totally cut
 
 35
 00:01:46,100 --> 00:01:47,420
+因为对于网络另一头的我来说
 off from the network so it looks at me
 
 36
 00:01:47,420 --> 00:01:50,479
+服务器断了网就和停止运行没啥两样
 outside like it just stopped so it's
 
 37
 00:01:50,479 --> 00:01:51,890
+所以这些错误是我们可以处理的错误
 really these failures we can deal with
 
 38
 00:01:51,890 --> 00:01:55,810
+复制能处理的问题也包括一些硬件问题
 with replication this also covers some
 
 39
 00:01:55,810 --> 00:01:59,479
+比如
 hardware problems like you know maybe if
 
 40
 00:01:59,479 --> 00:02:02,299
+你的服务器的风扇坏了
 the fan on your server breaks because it
 
 41
 00:02:02,299 --> 00:02:04,909
+可能因为太便宜了，哈哈
 you know it cost 50 cents maybe that'll
 
 42
 00:02:04,909 --> 00:02:06,740
+这就有可能使 CPU 过热
 cause the CPU to overheat and the CPU
 
 43
 00:02:06,740 --> 00:02:10,038
+然后 CPU 就停止运行了
 will shut itself down cleanly and just
 
 44
 00:02:10,038 --> 00:02:12,849
+干净利落
 stop executing
 
 45
 00:02:14,079 --> 00:02:18,469
+我们所讨论的这种复制系统
 what's not covered by the kind of
 
 46
 00:02:18,469 --> 00:02:20,500
+也有一些它不能处理的问题
 replication systems we're talking about
 
 47
 00:02:20,500 --> 00:02:24,109
+比如软件问题、软件漏洞
 is things like bugs and software or
 
 48
 00:02:24,109 --> 00:02:29,359
+或者一些更基本的、不是软件漏洞的硬件设计缺陷
 design defects in hardware so basically
 
 49
 00:02:29,359 --> 00:02:33,379
+如果我们接受一些服务
 not bugs because if we take some service
 
 50
 00:02:33,379 --> 00:02:35,659
+假如说，你有一台 MapReduce master 主机
 you know say you're a MapReduce master
 
 51
 00:02:35,659 --> 00:02:37,459
+我们复制运行它
 for example you know we replicated and
 
 52
 00:02:37,459 --> 00:02:39,530
+我们在两台计算机上复制运行它
 run it on two computers you know if
 
 53
 00:02:39,530 --> 00:02:41,180
+如果你的 MapReduce master 有一个漏洞
 there's a bug in your MapReduce master
 
 54
 00:02:41,180 --> 00:02:43,540
+或者我的 MapReduce master 有一个漏洞
 or my MapReduce master let's say
 
 55
 00:02:43,540 --> 00:02:45,379
+那么复制对我们没有任何帮助
 replications not going to help us we're
 
 56
 00:02:45,379 --> 00:02:46,760
+我们还是会得到计算错误的结果
 going to compute the same incorrect
 
 57
 00:02:46,760 --> 00:02:50,169
+在两台 MapReduce master 主机上都是这样
 result on both of our copies of our
 
 58
 00:02:50,169 --> 00:02:53,959
+并且从表面上看一切都好好的
 MapReduce master and everything looked
 
 59
 00:02:53,959 --> 00:02:55,669
+它们会默默允许让你碰上一个错误答案
 fine they'll agree you just happen to be
 
 60
 00:02:55,669 --> 00:02:58,370
+所以
 the wrong answer so we can't depending
 
 61
 00:02:58,370 --> 00:03:01,129
+我们不能依赖于复制软件中的漏洞
 against bugs in the replicated software
 
 62
 00:03:01,129 --> 00:03:02,780
+并且
 and we can't defend against bugs in the
 
 63
 00:03:02,780 --> 00:03:05,269
+我们管理复制的方案中的漏洞也是不可防御的
 whatever scheme we're using to manage
 
 64
 00:03:05,269 --> 00:03:08,180
+和我刚才提到的类似
 the replication and similarly as I
 
 65
 00:03:08,180 --> 00:03:12,739
+我们不能期望处理硬件中的漏洞
 mentioned before we can't expect to deal
 
 66
 00:03:12,739 --> 00:03:14,180
+这个硬件呢
 with bugs in the hardware the hardware
 
 67
 00:03:14,180 --> 00:03:15,950
+它会计算出不正确的结果
 it computes incorrectly that's just
 
 68
 00:03:15,950 --> 00:03:18,530
+事情也就这样了
 that's the end for us at least with this
 
 69
 00:03:18,530 --> 00:03:21,829
+至少对于这种技术来说，也就如此了
 kind of technique although you know that
 
 70
 00:03:21,829 --> 00:03:23,930
+尽管肯定有一些硬件和软件漏洞
 said there are definitely hardware and
 
 71
 00:03:23,930 --> 00:03:26,540
+是复制能解决的
 software bugs that that replication
 
 72
 00:03:26,540 --> 00:03:28,699
+如果你足够幸运的话
 might if you're lucky might be able to
 
 73
 00:03:28,699 --> 00:03:30,470
+如果
 cope it so if there's some unrelated
 
 74
 00:03:30,470 --> 00:03:32,239
+有一些不相关的软件运行在你的服务器上
 software running in your server and it
 
 75
 00:03:32,239 --> 00:03:34,430
+它使你的服务器崩溃了
 causes the server to crash maybe because
 
 76
 00:03:34,430 --> 00:03:36,620
+或者可能使你的 kernel 出现 panic 并重启
 your kernel to panic and reboot or
 
 77
 00:03:36,620 --> 00:03:38,449
+或者什么也不做
 something it has nothing to do with you
 
 78
 00:03:38,449 --> 00:03:40,639
+对你正复制的服务什么也不做
 know with your with the service you're
 
 79
 00:03:40,639 --> 00:03:42,709
+那么
 replicating then that kind of failure
 
 80
 00:03:42,709 --> 00:03:45,650
+这种错误对于我们的服务来说
 for us for your service will may well be
 
 81
 00:03:45,650 --> 00:03:47,290
+就是一种“停止-失败”
 fail stop
 
 82
 00:03:47,290 --> 00:03:50,810
+你懂的，kernel 将会 panic 
 you know the kernel will panic and the
 
 83
 00:03:50,810 --> 00:03:56,479
+并且备份复制会取而代之
 backup replicas will take over similarly
 
 84
 00:03:56,479 --> 00:03:59,060
+有一些种类的硬件错误
 some kinds of hardware errors can be
 
 85
 00:03:59,060 --> 00:04:03,260
+可以被转化为“停止-失败”错误
 turned into fail stop errors for example
 
 86
 00:04:03,260 --> 00:04:05,599
+例如：如果你通过网络发送了一个包
 if you send a packet over the network
 
 87
 00:04:05,599 --> 00:04:08,209
+但是网络损坏了这个包，它翻转了一个比特位
 and the network corrupts it just flips a
 
 88
 00:04:08,209 --> 00:04:10,069
+像这种情况
 bit in your packet that will almost
 
 89
 00:04:10,069 --> 00:04:11,930
+几乎肯定可以通过校验和而检测出来
 certainly be caught by the checksum on
 
 90
 00:04:11,930 --> 00:04:13,939
+一个磁盘块也是一样的
 the packet same thing for a disk block
 
 91
 00:04:13,939 --> 00:04:15,949
+如果你往磁盘上写了一些数据
 if you write some data to disk and read
 
 92
 00:04:15,949 --> 00:04:18,199
+然后一个月后又把它读出来
 it back a month later you know maybe the
 
 93
 00:04:18,199 --> 00:04:20,779
+也许磁表面不是很完美
 magnetic surface isn't perfect and you
 
 94
 00:04:20,779 --> 00:04:22,010
+在这个块上，最重要的那几个比特位是错的
 know one of the best couple of bits were
 
 95
 00:04:22,010 --> 00:04:23,539
+但是它能被正确地读出来
 wrong in the block as it's right back
 
 96
 00:04:23,539 --> 00:04:24,980
+这实际上是纠错功能
 it's actually error correcting
 
 97
 00:04:24,980 --> 00:04:26,990
+能在一定程度上
 that up to a certain point will fix
 
 98
 00:04:26,990 --> 00:04:28,460
+修复磁盘块中地错误
 errors in disk blocks that you'll be
 
 99
 00:04:28,460 --> 00:04:31,420
+这样的话
 turning you know random hardware errors
 
 100
 00:04:31,420 --> 00:04:35,600
+一些随机的硬件错误可以被纠正
 into as either correcting them if you're
 
 101
 00:04:35,600 --> 00:04:39,140
+如果你超级幸运的话
 super lucky or at least detecting them
 
 102
 00:04:39,140 --> 00:04:40,910
+或者至少可以检测到错误
 and turning random corruption into a
 
 103
 00:04:40,910 --> 00:04:43,730
+从而让软件知道
 detected fault which you know the
 
 104
 00:04:43,730 --> 00:04:45,470
+知道发生了错误
 software then knows that something that
 
 105
 00:04:45,470 --> 00:04:47,690
+从而可以把硬件错误转化为一个“停止-失败”错误
 wrong and can turn it into a fail stop
 
 106
 00:04:47,690 --> 00:04:49,910
+即时地停止运行或者采取一些其他的补救措施
 fault by stopping executing or take some
 
 107
 00:04:49,910 --> 00:04:55,190
+但是，一般来说
 other remedial action but in general we
 
 108
 00:04:55,190 --> 00:04:57,560
+我们只能期望去处理一些“停止-失败”错误
 really can only expect to handle fail
 
 109
 00:04:57,560 --> 00:05:02,180
+复制还有一些其他的限制
 stop faults there's other limits to
 
 110
 00:05:02,180 --> 00:05:06,470
+啊，其他限制
 replication to you know the the failures
 
 111
 00:05:06,470 --> 00:05:08,630
+不管失败发生在主要的那个复制中
 in the if we have a primary in the back
 
 112
 00:05:08,630 --> 00:05:10,610
+还是发生在备份的那个复制中或者其他怎样
 of our two replicas or whatever we're
 
 113
 00:05:10,610 --> 00:05:12,800
+我们总是假设
 really assuming that failures in the two
 
 114
 00:05:12,800 --> 00:05:16,160
+两个复制中的失败是相互独立的
 are independent right if there tend to
 
 115
 00:05:16,160 --> 00:05:18,310
+如果两个复制中总是有相关联的失败
 have correlated failures then
 
 116
 00:05:18,310 --> 00:05:20,390
+那么，复制将对我们没有帮助
 replication is not going to help us so
 
 117
 00:05:20,390 --> 00:05:22,340
+例如，如果我们有一整套设备
 for example if we're a big outfit and we
 
 118
 00:05:22,340 --> 00:05:24,380
+我们买了成千上万的计算机
 buy thousands of computers batches of
 
 119
 00:05:24,380 --> 00:05:26,390
+啊，成千上万台计算机
 thousands of computers identical
 
 120
 00:05:26,390 --> 00:05:28,310
+同一家厂商生产的成千上万的相同的计算机
 computers from the same manufacturer and
 
 121
 00:05:28,310 --> 00:05:31,070
+我们把我们的复制运行在上面
 we run you know our replicas is on all
 
 122
 00:05:31,070 --> 00:05:33,650
+我们一次在同一个地方买那么多电脑
 on those computers we bought at the same
 
 123
 00:05:33,650 --> 00:05:35,510
+这可有一点风险
 time from the same place that's a bit of
 
 124
 00:05:35,510 --> 00:05:35,990
+啊，有点风险
 a risk
 
 125
 00:05:35,990 --> 00:05:39,020
+因为很可能
 maybe because presumably if one of them
 
 126
 00:05:39,020 --> 00:05:40,730
+其中一个有了缺陷
 has a manufacturing defect in it there's
 
 127
 00:05:40,730 --> 00:05:43,130
+其他的也有相同的缺陷
 a good chance that the other ones do too
 
 128
 00:05:43,130 --> 00:05:44,390
+比如说
 you know one of them's prone to
 
 129
 00:05:44,390 --> 00:05:47,810
+由于制造商没有设计好散热系统
 overheating because the manufacturer you
 
 130
 00:05:47,810 --> 00:05:49,220
+导致其中的一个过热了
 know didn't provide enough airflow well
 
 131
 00:05:49,220 --> 00:05:51,500
+那么很有可能这一批货都有这个问题
 it probably all had that problem and so
 
 132
 00:05:51,500 --> 00:05:53,990
+所以如果其中一个过热、宕机了
 one of them overheats and dies it's a
 
 133
 00:05:53,990 --> 00:05:56,350
+那么其他的也很有可能同样宕机
 good chance that the other ones will too
 
 134
 00:05:56,350 --> 00:05:59,060
+这是相关失败的一种
 so that's one kind of correlated failure
 
 135
 00:05:59,060 --> 00:06:01,040
+你要小心的是另一种
 you just have to be careful of another
 
 136
 00:06:01,040 --> 00:06:02,570
+比如说
 one is that you know if there's an
 
 137
 00:06:02,570 --> 00:06:03,890
+地震了
 earthquake and the city where our
 
 138
 00:06:03,890 --> 00:06:05,510
+地震正好发生在存储着我们的数据的数据中心所在的城市
 datacenter is probably gonna take out
 
 139
 00:06:05,510 --> 00:06:07,310
+在这种情况下
 the whole data center you know we can
 
 140
 00:06:07,310 --> 00:06:08,630
+无论我们在那个数据中心里弄多少复制
 have all the replication we like inside
 
 141
 00:06:08,630 --> 00:06:10,010
+也无济于事
 that data center it's not going to help
 
 142
 00:06:10,010 --> 00:06:12,080
+因为这种失败
 us because the failure caused by an
 
 143
 00:06:12,080 --> 00:06:14,060
+这种由地震、全市停电引起的失败
 earthquake or a citywide power failure
 
 144
 00:06:14,060 --> 00:06:15,950
+或者建筑失火这种
 or something the building burning down
 
 145
 00:06:15,950 --> 00:06:17,720
+它是相关失败
 is like it's correlated failure between
 
 146
 00:06:17,720 --> 00:06:19,490
+同一建筑内的复制之间的相关失败
 our replicas if they're on that building
 
 147
 00:06:19,490 --> 00:06:21,290
+所以如果我们想处理地震带来的问题
 so if we care about dealing with
 
 148
 00:06:21,290 --> 00:06:24,020
+那么
 earthquakes then we need to put our
 
 149
 00:06:24,020 --> 00:06:26,150
+我们需要把我们的复制放在不同的城市
 replicas in maybe in just different
 
 150
 00:06:26,150 --> 00:06:28,010
+至少把它们在物理上足够分隔开
 cities at least physically separate
 
 151
 00:06:28,010 --> 00:06:29,720
+让它们分别供电
 enough that they have separate power
 
 152
 00:06:29,720 --> 00:06:31,760
+这样它们就不会被同一自然灾害所影响了
 unlikely to be affected by the same
 
 153
 00:06:31,760 --> 00:06:34,750
+对，不会
 natural disaster
 
 154
 00:06:35,140 --> 00:06:37,790
+好了，这就是全部种类的不稳定性了
 okay but that's all sort of hovering in
 
 155
 00:06:37,790 --> 00:06:39,170
+至少在我们这次讨论的背景下
 the background for this discussion where
 
 156
 00:06:39,170 --> 00:06:41,510
+我们所讨论的正是你可能会使用的技术
 we're talking about the technology you
 
 157
 00:06:41,510 --> 00:06:44,660
+还有一个关于复制的问题
 might use another question about
 
 158
 00:06:44,660 --> 00:06:46,640
+你可能会问你自己
 replication is whether it's worthwhile
 
 159
 00:06:46,640 --> 00:06:49,520
+天呐
 you may ask yourself gosh you know this
 
 160
 00:06:49,520 --> 00:06:51,760
+使用 2 倍甚至 3 倍计算机资源的复制方案，这真的值得吗
 literally uses these replication schemes
 
 161
 00:06:51,760 --> 00:06:55,190
+使用 2 倍甚至 3 倍计算机资源的复制方案，这真的值得吗
 use twice as much or three times as much
 
 162
 00:06:55,190 --> 00:06:57,740
+对了
 computer resources right we need to have
 
 163
 00:06:57,740 --> 00:06:59,480
+我们需要让 GFS 的每一个 block 都有三份拷贝的话
 you know GFS had three copies of every
 
 164
 00:06:59,480 --> 00:07:01,130
+我们就得买三倍容量的磁盘
 blocks we have to buy three times as much
 
 165
 00:07:01,130 --> 00:07:03,590
+啊，今天的那篇论文呢
 disk space the paper for today
 
 166
 00:07:03,590 --> 00:07:05,870
+只复制了一次
 you know replicates just once but that
 
 167
 00:07:05,870 --> 00:07:07,760
+但是那意味着我们有两倍的计算机、CPU 和 RAM 
 means we have twice as many computers
 
 168
 00:07:07,760 --> 00:07:10,520
+这些东西都是很昂贵的
 and CPUs and RAM it's all for expensive
 
 169
 00:07:10,520 --> 00:07:11,990
+这真的很值得吗
 like is that really worth it that
 
 170
 00:07:11,990 --> 00:07:16,070
+并且
 expense and you know that's not
 
 171
 00:07:16,070 --> 00:07:17,540
+这不是一个我们能从技术上回答正确的问题
 something we can answer technically
 
 172
 00:07:17,540 --> 00:07:19,040
+这是一个经济上的问题
 right it's an economic question it
 
 173
 00:07:19,040 --> 00:07:21,140
+这个问题取决于获取一个可用的服务的价值
 depends on the value of having an
 
 174
 00:07:21,140 --> 00:07:22,940
+这个问题取决于获取一个可用的服务的价值
 available service you know if you're
 
 175
 00:07:22,940 --> 00:07:26,090
+比如说你在运行一个银行服务
 running a bank and if the consequence is
 
 176
 00:07:26,090 --> 00:07:27,740
+计算机宕机的后果就是
 the computer failing is that your
 
 177
 00:07:27,740 --> 00:07:29,300
+你不能服务你的顾客了
 customer you can't serve your customers
 
 178
 00:07:29,300 --> 00:07:31,220
+你也就不能获得收入了
 and you can't generate revenue and your
 
 179
 00:07:31,220 --> 00:07:33,440
+你的顾客们也会恨你
 customers all hate you then it may well
 
 180
 00:07:33,440 --> 00:07:35,540
+权衡之下，多花一两万在一台备份计算机上很可能是值得的
 be worth it to blow you know an extra
 
 181
 00:07:35,540 --> 00:07:37,370
+权衡之下，多花一两万在一台备份计算机上很可能是值得的
 ten or twenty thousand bucks on a second
 
 182
 00:07:37,370 --> 00:07:40,220
+所以，你可以复制一份
 computer so you can have a replica on
 
 183
 00:07:40,220 --> 00:07:41,900
+另一方面，假如你是我，你在运行维护 6.824 的网站服务器
 the other hand if you're me and you're
 
 184
 00:07:41,900 --> 00:07:46,220
+另一方面，假如你是我，你在运行维护 6.824 的网站服务器
 running the 6.824 web server I don't
 
 185
 00:07:46,220 --> 00:07:48,680
+我觉得不值得给 6.824 网站做热备份
 consider it worthwhile to have a hot
 
 186
 00:07:48,680 --> 00:07:50,960
+我觉得不值得给 6.824 网站做热备份
 backup of the 84 web server because the
 
 187
 00:07:50,960 --> 00:07:55,340
+因为运行失败所造成的后果没什么大不了的
 consequences of failure are very low so
 
 188
 00:07:55,340 --> 00:07:58,460
+复制是否值得？
 the whether the replication is
 
 189
 00:07:58,460 --> 00:08:00,230
+该复制多少份？
 worthwhile on how many replicas you
 
 190
 00:08:00,230 --> 00:08:02,090
+这都取决于
 ought to have and how much you're
 
 191
 00:08:02,090 --> 00:08:04,220
+你愿意花费多少在这上面
 willing to spend on it is all about how
 
 192
 00:08:04,220 --> 00:08:08,330
+取决于当失败发生时会给你带来多大的损失和不便
 much cost and inconvenience failure
 
 193
 00:08:08,330 --> 00:08:11,840
+好了
 would call it cause you all right this
 
 194
 00:08:11,840 --> 00:08:14,810
+开头提到的这篇论文
 paper sort of in the beginning mentions
 
 195
 00:08:14,810 --> 00:08:16,270
+介绍了几种不同的复制方法
 as there's a couple of different
 
 196
 00:08:16,270 --> 00:08:19,820
+啊，其实介绍了两种
 approaches to replication really
 
 197
 00:08:19,820 --> 00:08:21,740
+一种叫做 状态转移
 mentions two one two calls state
 
 198
 00:08:21,740 --> 00:08:30,350
+另一种叫做 复制状态机
 transfer and the other calls replicated
 
 199
 00:08:30,350 --> 00:08:35,150
+在这个班上呢
 state machine most of the schemes we're
 
 200
 00:08:35,150 --> 00:08:36,230
+我们主要讨论复制状态机
 going to talk about in this class are
 
 201
 00:08:36,230 --> 00:08:39,280
+我们主要讨论复制状态机
 replicated state machines
 
 202
 00:08:39,789 --> 00:08:42,799
+但我们也会讨论状态转移的
 it'll talk about both anyway the idea
 
 203
 00:08:42,799 --> 00:08:44,179
+状态转移背后的思想是
 behind state transferor's that if we
 
 204
 00:08:44,179 --> 00:08:49,100
+如果我们有一个服务器的两份复制
 have two replicas of a server the way
 
 205
 00:08:49,100 --> 00:08:51,470
+你让它们保持同步的方式就是
 you cause them to be to stay in sync
 
 206
 00:08:51,470 --> 00:08:55,010
+让它们成为实际上的复制
 that is to be actual replicas so that
 
 207
 00:08:55,010 --> 00:08:57,529
+使备份拥有它需要的一切
 the backup can has everything it needs
 
 208
 00:08:57,529 --> 00:08:59,630
+以便当主机宕机时备份能够接管
 to take over if the primary fails in a
 
 209
 00:08:59,630 --> 00:09:02,390
+在一个状态转移模式中
 state transfer scheme the way that works
 
 210
 00:09:02,390 --> 00:09:04,490
+它工作的方式就是，主机发送一份整个自身状态的拷贝
 is that the primary sends a copy of its
 
 211
 00:09:04,490 --> 00:09:06,320
+比如
 entire state that is for example the
 
 212
 00:09:06,320 --> 00:09:09,140
+它内存的内容，把它发送给备份
 contents of its RAM to the backup and
 
 213
 00:09:09,140 --> 00:09:11,209
+备份只是存储最新的状态
 the backup just sort of stores the
 
 214
 00:09:11,209 --> 00:09:13,279
+这样，备份就有全部的主机状态
 latest state and so it's all there
 
 215
 00:09:13,279 --> 00:09:15,470
+主机如果宕机了的话
 the primary fails in the backup can
 
 216
 00:09:15,470 --> 00:09:18,680
+备份就可以开始运行在最新状态
 start executing with this last state it
 
 217
 00:09:18,680 --> 00:09:20,899
+如果主机宕机了的话
 got if the primary fails so this is all
 
 218
 00:09:20,899 --> 00:09:23,750
+所以这完全就是发送主机的状态
 about sending the state of the of the
 
 219
 00:09:23,750 --> 00:09:26,450
+今天
 primary and for today's if today's paper
 
 220
 00:09:26,450 --> 00:09:28,250
+如果今天的论文以一个状态转移系统来运行的话
 worked as a state transfer system which
 
 221
 00:09:28,250 --> 00:09:29,899
+其实并不是
 it doesn't then the state we'd be
 
 222
 00:09:29,899 --> 00:09:31,339
+我们所讨论的状态就是 RAM 里的内容
 talking about would be the contents of
 
 223
 00:09:31,339 --> 00:09:33,320
+主机的内存里的内容
 the RAM the contents of the memory of
 
 224
 00:09:33,320 --> 00:09:35,959
+所以
 the primary so maybe every once while
 
 225
 00:09:35,959 --> 00:09:38,390
+可能每次主机复制了一大份拷贝
 the primary would just you know make a
 
 226
 00:09:38,390 --> 00:09:39,890
+一大份自身内存的拷贝并且发送的时候
 big copy of its memory and send it
 
 227
 00:09:39,890 --> 00:09:41,600
+需要通过网络发送给备份
 across the network to the backup you can
 
 228
