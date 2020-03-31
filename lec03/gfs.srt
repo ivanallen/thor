@@ -5735,92 +5735,92 @@ operation ah you would think but they
 
 1153
 00:55:01,650 --> 00:55:05,180
-所以问题是
+所以问题让人很吃惊
 don't so the question is jeez you know
 
 1154
 00:55:05,180 --> 00:55:08,220
-primary服务器告诉所有副本
+你知道 primary 服务器告诉所有副本执行追加操作
 the the primary tells all the replicas
 
 1155
 00:55:08,220 --> 00:55:09,869
-执行追加操作，也许其中一些服务器成功了
+也许其中一些服务器成功了 有些失败了
 to do the append yeah maybe some of them
 
 1156
 00:55:09,869 --> 00:55:10,830
-有些没有成功
+也许其中一些服务器成功了 有些失败了
 do some of them don't
 
 1157
 00:55:10,830 --> 00:55:12,869
-如果其中一些没有成功
+如果其中一些失败 那么我们会向 client 端报错误
 right if some of them don't then we
 
 1158
 00:55:12,869 --> 00:55:14,460
-那么我们会向client端报错误
-apply an error to the client
+如果其中一些失败 那么我们会向 client 端报错误
+reply an error to the client
 
 1159
 00:55:14,460 --> 00:55:16,109
-因此client认为，追加没有发生
+因此 client 认为 追加没有发生
 so the client thinks oh the append didn't happen
 
 1160
 00:55:16,109 --> 00:55:18,630
-但是追加成功的其他副本
+但是其他副本的追加操作确实成功了
 but those other replicas where the append
 
 1161
 00:55:18,630 --> 00:55:23,550
-确实追加成功了
+但是其他副本的追加操作确实成功了
 succeeded they did append so now we have
 
 1162
 00:55:23,550 --> 00:55:25,400
-所以现在我们有不数据的备份
-replicas donor the same data one of them
+所有的副本都在追加相同的数据
+replicas done on the same data one of them
 
 1163
 00:55:25,400 --> 00:55:27,480
-返回错误的那个没有执行追加
+但是其中之一返回了错误 它没有执行追加
 the one that returned in error didn't do
 
 1164
 00:55:27,480 --> 00:55:28,890
-返回的“yes”的那些服务器
+但是其中之一返回了错误 它没有执行追加
 the append and the ones they returned
 
 1165
 00:55:28,890 --> 00:55:31,830
-确实做了追加
+而返回的 yes 的那些服务器确实做了追加
 yes did do the append so that is just
 
 1166
 00:55:31,830 --> 00:55:35,119
-这就是GFS运作的方式
+这就是 GFS 运作的方式
 the way GFS works
 
 1167
 00:55:44,590 --> 00:55:47,590
-如果一个读者随后读取了此文件
+如果客户端随后读取了此文件
 yeah so if a reader then reads this file
 
 1168
 00:55:47,590 --> 00:55:50,330
-取决于哪个备份
+读取的结果取决于请求的是哪个副本
 they depending on what replica they be
 
 1169
 00:55:50,330 --> 00:55:53,360
-他们可能会看到附加的记录
+它们可能会看到追加的记录 也可能看不到
 they may either see the appended record
 
 1170
 00:55:53,360 --> 00:55:56,810
-或者可能看不到，如果记录追加失败
+它们可能会看到追加的记录 也可能看不到
 or they may not if the record append
 
 1171
@@ -5830,362 +5830,362 @@ but if the record append succeeded if
 
 1172
 00:55:59,120 --> 00:56:00,920
-如果client收到“success”成功消息
+client 收到 success 成功消息
 the client got a success message back
 
 1173
 00:56:00,920 --> 00:56:03,920
-那么这意味着所有副本
-then that means all of the replicas
+意味着所有副本 都以相同的偏移量追加了该记录
+then that mean s all of the replicas
 
 1174
 00:56:03,920 --> 00:56:05,420
-都以相同的偏移量追加了该记录
+意味着所有副本 都以相同的偏移量追加了该记录
 appended that record at the same offset
 
 1175
 00:56:05,420 --> 00:56:10,160
-如果client得到“no”的回复
+如果 client 得到 no 的回复
 if the client gets a no back then zero
 
 1176
 00:56:10,160 --> 00:56:14,090
-那么零个或多个副本
+说明有 0 个或多个副本可能已经追加了该偏移量的记录
 or more of the replicas may have
 
 1177
 00:56:14,090 --> 00:56:15,740
-可能已经追加了该偏移量的记录
+说明有 0 个或多个副本可能已经追加了该偏移量的记录
 appended the record of that all set and
 
 1178
 00:56:15,740 --> 00:56:20,240
-而其他副本则没有，所以client得到了“No”
-the other ones not so the client got a No 
+而其他副本则没有 所以 client 得到了 no
+the other ones not so the client got a no 
 
 1179
 00:56:20,240 --> 00:56:22,280
-那么这意味着
+如果发生这种情况 会导致有些副本有记录 有些没有
 then that means that some replicas
 
 1180
 00:56:22,280 --> 00:56:25,130
-也许有些备份有记录，有些则没有
+如果发生这种情况 会导致有些副本有记录 有些没有
 maybe some replicas have the record and some don't 
 
 1181
 00:56:25,130 --> 00:56:27,860
-所以你读取的东西
+所以你读取你可能读到 也可能读不到这个记录
 so what you which were
 
 1182
 00:56:27,860 --> 00:56:29,750
-你可能会看到记录
+所以你可能读到 也可能读不到这个记录
 roughly read from you know you may or
 
 1183
 00:56:29,750 --> 00:56:32,980
-也可能不会看到
+所以你可能读到 也可能读不到这个记录
 may not see the record yeah
 
 1184
 00:56:39,410 --> 00:56:45,319
-所有secondary文件都看到相同的版本号
+所有副本都是一样的
 oh that all the replicas are the same
 
 1185
 00:56:45,319 --> 00:56:47,240
-所有secondary文件都看到相同的版本号
+所有 secondaries 都有相同的版本号
 all the secondaries are the same version
 
 1186
 00:56:47,240 --> 00:56:49,430
-版本号仅在
+版本号仅在 master 分配新的 primary 时更改
 number so the version number only
 
 1187
 00:56:49,430 --> 00:56:51,500
-master服务器分配新的primary服务器时更改
+版本号仅在 master 分配新的 primary 时更改
 changes when the master assigns a new
 
 1188
 00:56:51,500 --> 00:56:53,900
-这可能仅在primary出故障时
+你说的可能仅在 primary 出故障时才会发生
 primary which would ordinarily happen
 
 1189
 00:56:53,900 --> 00:56:55,309
-才会发生
+你说的可能仅在 primary 出故障时才会发生
 and probably only happen if the primary failed 
 
 1190
 00:56:55,309 --> 00:56:58,270
-所以我们在谈论的是
+所以我们讨论的都是具有新版本号的副本
 so what we're talking about is is
 
 1191
 00:56:58,270 --> 00:57:00,200
-具有新版本号的副本
+所以我们讨论的都是具有新版本号的副本
 replicas that have the fresh version number 
 
 1192
 00:57:00,200 --> 00:57:02,660
-你无法分辨出
+你无法分辨出这些副本的区别
 alright and you can't tell from
 
 1193
 00:57:02,660 --> 00:57:03,740
-这些副本
+你无法分辨出这些副本的区别
 looking at them that they're missing
 
 1194
 00:57:03,740 --> 00:57:08,059
-是不同的
+你无法分辨出这些副本的区别
 that the replicas are different but
 
 1195
 00:57:08,059 --> 00:57:09,319
-但可能他们就是不同的
+但可能他们就是有区别
 maybe they're different and 
 
 1196
 00:57:09,319 --> 00:57:11,390
-这样做的理由是
+这样做的理由是 可能不是所有副本都有那个追加记录
 the justification for this is that yeah you
 
 1197
 00:57:11,390 --> 00:57:13,160
-可能不是所有备份
+这样做的理由是 可能不是所有副本都有那个追加记录
 know maybe the replicas don't all have
 
 1198
 00:57:13,160 --> 00:57:16,099
-都具有那个追加记录
+这样做的理由是 可能不是所有副本都有那个追加记录
 that the appended record but that's the
 
 1199
 00:57:16,099 --> 00:57:18,200
-但是在这种情况下，primary回答是“No”
+但是在这种情况下 primary 回答是 no
 case in which the primary answer no to
 
 1200
 00:57:18,200 --> 00:57:20,180
-并且client端知道
+并且 client 知道写入失败了
 the clients and the client knows that
 
 1201
 00:57:20,180 --> 00:57:22,940
-写入失败了
+并且 client 知道写入失败了
 the write failed and the reasoning
 
 1202
 00:57:22,940 --> 00:57:24,410
-这样做背后的原因是，client端
+这样做背后的原因是 client 将重新请求追加记录
 behind this is that then the client
 
 1203
 00:57:24,410 --> 00:57:27,859
-将重新发布该追加
+这样做背后的原因是 client 将重新请求追加记录
 library will reissue the append 
 
 1204
 00:57:27,859 --> 00:57:29,480
-这样追加的记录就会出现
+你知道 记录最终追加会成功
 so the appended record will show up you know
 
 1205
 00:57:29,480 --> 00:57:33,260
-最终附加会成功
+你知道 记录最终追加会成功
 eventually the append succeed you
 
 1206
 00:57:33,260 --> 00:57:36,920
-因为client端，会继续
+因为 client 会继续发出（写请求）直到成功
 would think because the client I'll keep
 
 1207
 00:57:36,920 --> 00:57:38,480
-发出（写请求）直到成功，然后
+因为 client 会继续发出（写请求）直到成功
 reissuing it until succeeds and then
 
 1208
 00:57:38,480 --> 00:57:39,770
-当它成功时，这意味着
+当它成功时 追加记录的偏移量会在更远的位置
 when it succeeds that means there's
 
 1209
 00:57:39,770 --> 00:57:41,510
-会有更大的偏移量
+当它成功时 追加记录的偏移量会在更远的位置
 gonna be some offset you know farther on
 
 1210
 00:57:41,510 --> 00:57:43,460
-该记录实际上
+并且所有副本中的这个偏移位置都会有这个记录
 the file where that record actually
 
 1211
 00:57:43,460 --> 00:57:45,859
-出现在所有副本中的这个偏移量处
+并且所有副本中的这个偏移位置都会有这个记录
 occurs in all the replicas as well as
 
 1212
 00:57:45,859 --> 00:57:48,049
-而那之前的偏移量处
+而那之前的偏移量位置 只有部分副本中才会出现追加的记录
 offsets preceding that word only occurs
 
 1213
-00:57:48,049 --> 00:57:52,690
-追加的记录仅在少数备份中出现
+00:57:48,049 --> 00:58:04,680 
+而那之前的偏移量位置 只有部分副本中才会出现追加的记录
 in a few of the replicas yes
 
 1214
 00:58:04,680 --> 00:58:11,779
-哦，这是一个好问题
+oh，这是一个好问题
 oh this is a great question
 
 1215
 00:58:11,779 --> 00:58:15,690
-对于基础网络而言
+对于底层网络而言 数据传输路径可能非常重要
 the exact path that the right data takes
 
 1216
 00:58:15,690 --> 00:58:17,910
-数据所采用的确切路径
+对于底层网络而言 数据传输路径可能非常重要
 might be quite important with respect to
 
 1217
 00:58:17,910 --> 00:58:19,410
-可能非常重要
+对于底层网络而言 数据传输路径可能非常重要
 the underlying network and the paper
 
 1218
 00:58:19,410 --> 00:58:22,950
-而且论文里说，即使
+论文在第一次提及时声称 client 把数据发送到每个副本
 somewhere says even though when the
 
 1219
 00:58:22,950 --> 00:58:24,539
-当论文第一次谈论它时
+论文在第一次提及时声称 client 把数据发送到每个副本
 paper first talks about it he claims
 
 1220
 00:58:24,539 --> 00:58:26,490
-他声称client将数据发送到每个副本
+论文在第一次提及时声称 client 把数据发送到每个副本
 that the client sends the data to each
 
 1221
 00:58:26,490 --> 00:58:29,309
-实际上
+后来论文又改变说法 说 client 只把数据发送到离它最近的副本
 replica in fact later on it changes the
 
 1222
 00:58:29,309 --> 00:58:31,289
-稍后它改变了说法
+后来论文又改变说法 说 client 只把数据发送到离它最近的副本
 tune and says the client sends it to
 
 1223
 00:58:31,289 --> 00:58:33,539
-说client端将数据仅发送到最近的副本
+后来论文又改变说法 说 client 只把数据发送到离它最近的副本
 only the closest of the replicas and
 
 1224
 00:58:33,539 --> 00:58:36,359
-然后该副本
+然后该副本将数据转发到另一个副本
 then the replicas then that replica
 
 1225
 00:58:36,359 --> 00:58:37,829
-将数据转发到另一个副本 
+然后该副本将数据转发到另一个副本 
 forwards the data to another replica
 
 1226
 00:58:37,829 --> 00:58:39,630
-沿着某种链条
+沿着某种链路直到所有的副本都拿到数据
 along I sort of chained until all the
 
 1227
 00:58:39,630 --> 00:58:41,940
-直到所有的副本都拿到数据
+沿着某种链路直到所有的副本都拿到数据
 replicas had the data and that path of
 
 1228
 00:58:41,940 --> 00:58:43,770
-并且该链的路径用于最小化
+这条链路在整个数据中心上做过了最小化跨越交换机的处理
 that chain is taken to sort of minimize
 
 1229
 00:58:43,770 --> 00:58:46,859
-跨越数据中心的
+这条链路在整个数据中心上做过了最小化跨越交换机的处理
 crossing bottleneck inter switch links
 
 1230
 00:58:46,859 --> 00:59:00,390
-瓶颈内部交换机链接
+这条链路在整个数据中心上做过了最小化跨越交换机的处理
 in a data center yes the version number
 
 1231
 00:59:00,390 --> 00:59:03,539
-版本号只在master服务器
+版本号只在 master 服务器认为没有 primary 时才会增加
 only gets incremented if the master
 
 1232
 00:59:03,539 --> 00:59:06,119
-认为没有primary时增加
+版本号只在 master 服务器认为没有 primary 时才会增加
 thinks there's no primary so it's a so
 
 1233
 00:59:06,119 --> 00:59:09,359
-在通常的流程中
+在通常的流程中 那个 chunk 已经有一个 primary
 in the ordinary sequence there already
 
 1234
 00:59:09,359 --> 00:59:13,710
-那个chunk已经有一个primary
+在通常的流程中 那个 chunk 已经有一个 primary
 be a primary for that chunk the the
 
 1235
 00:59:13,710 --> 00:59:16,680
-master会记得
+master 会记得该 chunk 已经有一个 primary 和 secondary
 the the master sort of will remember oh
 
 1236
 00:59:16,680 --> 00:59:18,180
-该块已经有一个primary和secondary
+master 会记得该 chunk 已经有一个 primary 和 secondary
 gosh there's already a primary and
 
 1237
 00:59:18,180 --> 00:59:19,470
-该块已经有一个primary和secondary
+master 会记得该 chunk 已经有一个 primary 和 secondary
 secondary for that chunk and it'll just
 
 1238
 00:59:19,470 --> 00:59:20,640
-就不会进行这个master挑选（primary的过程）
+master 就不会再重新选择 primary 也就不会增加版本号
 it won't go through this master
 
 1239
 00:59:20,640 --> 00:59:22,079
-不会增加版本号
+master 就不会再重新选择 primary 也就不会增加版本号
 selection it won't increment the version
 
 1240
 00:59:22,079 --> 00:59:24,450
-它只会告诉client端，看
+它只会告诉 client 端：看 这个是 primary
 number it'll just tell the client look
 
 1241
 00:59:24,450 --> 00:59:26,400
-这里是primary
+它只会告诉 client 端：看 这个是 primary
 up here's the primary with with no
 
 1242
 00:59:26,400 --> 00:59:29,270
-没有发生版本号更改
+这里没有发生版本号更改
 version number change
 
 1243
 00:59:42,340 --> 00:59:47,090
-我的理解是，如果这是
+我的理解是 如果是这样的话
 my understanding is that if this is this
 
 1244
@@ -6200,12 +6200,12 @@ interesting question so in this scenario
 
 1246
 00:59:51,050 --> 00:59:52,940
-在这种情况下，primary向client端
+在这种情况下，primary 向 client 端 回复失败消息
 in which the primaries answered
 
 1247
 00:59:52,940 --> 00:59:54,590
-回复失败消息
+在这种情况下，primary 向 client 端 回复失败消息
 failure to the client you might think
 
 1248
@@ -6220,22 +6220,22 @@ and that it should be fixed before you proceed
 
 1250
 00:59:57,860 --> 00:59:59,870
-事实上，据我所知
+事实上 据我所知 论文里没有立即让 client 重试追加
 in fact as far as I can tell the
 
 1251
 00:59:59,870 --> 01:00:03,320
-论文里没有立即
+事实上 据我所知 论文里没有立即让 client 重试追加
 paper there's no immediate anything the
 
 1252
 01:00:03,320 --> 01:00:08,300
-client尝试重试追加内容
+事实上 据我所知 论文里没有立即让 client 重试追加
 client retries the append you know
 
 1253
 01:00:08,300 --> 01:00:10,010
-因为也许问题是网络消息丢失了
+也许是因为网络消息丢失了
 because maybe the problem was a network
 
 1254
@@ -6255,97 +6255,97 @@ message got lost we should be
 
 1257
 01:00:13,850 --> 01:00:15,080
-这是重传网络消息的一种复杂方式
+重传网络消息的话这就有点复杂了
 transmitted and this is sort of a
 
 1258
 01:00:15,080 --> 01:00:17,600
-这是重传网络消息的一种复杂方式
+重传网络消息的话这就有点复杂了
 complicated way of retransmitting the
 
 1259
 01:00:17,600 --> 01:00:19,040
-也许那是最常见的失败类型
+这种错误太常见了
 network message maybe that's the most
 
 1260
 01:00:19,040 --> 01:00:21,020
-也许那是最常见的失败类型
+这种错误太常见了
 common kind of failure in that case just
 
 1261
 01:00:21,020 --> 01:00:22,790
-我们什么都不用改变
+所以我们什么都不用改变
 we don't change anything it's still the
 
 1262
 01:00:22,790 --> 01:00:26,750
-相同的primary，相同的secondary
+如果还是相同的 primary，相同的 secondary
 same primary same secondaries the client
 
 1263
 01:00:26,750 --> 01:00:28,130
-client端重试
+client 的重试也许能正常工作
 retries maybe this time it'll work
 
 1264
 01:00:28,130 --> 01:00:29,270
-也许这次可以
+client 的重试也许能正常工作
 because the network doesn't
 
 1265
 01:00:29,270 --> 01:00:31,490
-因为（这次）网络没有丢弃消息
+因为网络没有丢弃消息
 discard a message it's an interesting
 
 1266
 01:00:31,490 --> 01:00:32,900
-这是一个有趣的问题，这里出问题的是
+但是有意思的是 如果问题是某个 secondary 出现严重故障
 question though that if what went wrong
 
 1267
 01:00:32,900 --> 01:00:35,510
-secondary中的一个
+但是有意思的是 如果问题是某个 secondary 出现严重故障
 here is that one of that there was a
 
 1268
 01:00:35,510 --> 01:00:37,910
-出了严重的错误或故障
+但是有意思的是 如果问题是某个 secondary 出现严重故障
 serious error or Fault in one of the secondaries 
 
 1269
 01:00:37,910 --> 01:00:41,150
-我们想要的是
+我们希望 master 服务器重新配置那组副本
 what we would like is for
 
 1270
 01:00:41,150 --> 01:00:43,880
-master服务器重新配置那组副本
+我们希望 master 服务器重新配置那组副本
 the master to reconfigure that set of
 
 1271
 01:00:43,880 --> 01:00:46,820
-丢掉不工作的secondary服务器
+丢掉不工作的 secondary
 replicas to drop that secondary that's
 
 1272
 01:00:46,820 --> 01:00:49,460
-丢掉不工作的secondary服务器
-not working and it would then 
+丢掉不工作的 secondary
+not working and it would then
 
 1273
 01:00:49,460 --> 01:00:50,900
-因为它在执行此代码路径时选择了新的primary
+因为它在执行此代码路径时选择了新的 primary
 because it's choosing a new primary in executing
 
 1274
 01:00:50,900 --> 01:00:52,610
-然后master
+然后 master 会增加版本号
 this code path the master would then
 
 1275
 01:00:52,610 --> 01:00:54,890
-会增加版本号
+然后 master 会增加版本号
 increment the version and then we have a
 
 1276
