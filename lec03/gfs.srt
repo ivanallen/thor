@@ -1001,6 +1001,8 @@ what I'm assuming here is that client
 
 200
 00:09:09,060 --> 00:09:10,770
+（翻译：Allen, Adam）
+（https://github.com/ivanallen/thor）
 我假设它们是在同时发起的请求
 one and client two launch these requests at
 
@@ -1996,6 +1998,8 @@ get a in order to get bigness and
 
 399
 00:17:58,540 --> 00:18:00,300
+（翻译：Allen, Adam）
+（https://github.com/ivanallen/thor）
 他们需要把数据进行分割
 fastness they need to split the data
 
@@ -2996,6 +3000,8 @@ to the disk so and the way it actually
 
 601
 00:27:45,500 --> 00:27:47,510
+（翻译：Allen, Adam）
+（https://github.com/ivanallen/thor）
 所以这种管理方式 要求所有的 master 在磁盘上都有一个 log
 managed that is that there's all
 
@@ -3995,6 +4001,8 @@ know I need the last couple bytes of
 
 801
 00:38:10,859 --> 00:38:12,240
+（翻译：Allen, Adam）
+（https://github.com/ivanallen/thor）
 chunk 8 号的头 2 个字节
 chunk seven and the first couple bytes
 
@@ -4995,6 +5003,8 @@ of them and here's the new version
 
 1003
 00:47:28,450 --> 00:47:32,170
+（翻译：Allen, Adam）
+（https://github.com/ivanallen/thor）
 然后它会把这个信息以及版本号告诉 primary 和 secondary
 number so then it tells primary
 
@@ -5990,6 +6000,8 @@ library will reissue the append
 
 1204
 00:57:27,859 --> 00:57:29,480
+（翻译：Allen, Adam）
+（https://github.com/ivanallen/thor）
 你知道 记录最终追加会成功
 so the appended record will show up you know
 
@@ -6991,7 +7003,9 @@ then we have two conflicting replicas
 1404
 01:06:35,890 --> 01:06:38,890
 (提问)
-yes
+翻译: allen/adam (窃取成果追究法律责任)
+翻译项目地址
+https://github.com/ivanallen/thor
 
 1405
 01:06:41,910 --> 01:06:50,710
@@ -7481,7 +7495,9 @@ different all different sets of replicas
 1502
 01:11:37,540 --> 01:11:40,440
 (提问)
-yes
+翻译: allen/adam (窃取成果追究法律责任)
+翻译项目地址
+https://github.com/ivanallen/thor
 
 1503
 01:11:44,400 --> 01:11:46,660
@@ -7516,7 +7532,9 @@ changed if other people are appending in the file
 1509
 01:11:56,710 --> 01:12:02,820
 (提问)
-yes
+翻译: allen/adam (窃取成果追究法律责任)
+翻译项目地址
+https://github.com/ivanallen/thor
 
 1510
 01:12:17,760 --> 01:12:20,290
@@ -7990,6 +8008,8 @@ you really need to design the system
 
 1604
 01:17:05,000 --> 01:17:06,920
+（翻译：Allen, Adam）
+（https://github.com/ivanallen/thor）
 所以，如果 primary 告诉 secondary 做某事
 so that if the primary tells a
 
