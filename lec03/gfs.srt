@@ -8280,12 +8280,12 @@ resynchronizing with the secondaries to
 
 1658
 01:19:15,300 --> 01:19:17,010
-以确保他们的操作历史的尾部是一样的
+以确保他们的操作历史的最后几个步骤是一样的
 make sure that the sort of the tail of
 
 1659
 01:19:17,010 --> 01:19:20,750
-以确保他们的操作历史的尾部是一样的
+以确保他们的操作历史的最后几个步骤是一样的
 their operation histories are the same
 
 1660
@@ -8315,12 +8315,12 @@ the master of which secondary to talk to
 
 1665
 01:19:33,000 --> 01:19:35,940
-系统要么需要发送所有 client 读请求给 primary
+所以 要么所有 client 都发送读请求给 primary
 the system either needs to send all
 
 1666
 01:19:35,940 --> 01:19:38,010
-系统要么需要发送所有 client 读请求给 primary
+所以 要么所有 client 都发送读请求给 primary
 client reads through the primary 
 
 1667
@@ -8631,10 +8631,5 @@ okay excellent I'll see you on Thursday
 1728
 01:22:13,630 --> 01:22:15,970
 我们将听到这个更多课程主题的信息
-and we'll hear more about all these
-
-1729
-01:22:15,970 --> 00:00:00,000
-我们将听到这个更多课程主题的信息
-themes over the semester
+and we'll hear more about all these themes over the semester
 
