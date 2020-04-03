@@ -1,0 +1,24 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "ZiheLiu",
+      "name": "zihe.liu",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/13313784?v=4",
+      "profile": "https://ziheliu.github.io/",
+      "contributions": [
+        "content"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "thor",
+  "projectOwner": "ivanallen",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
