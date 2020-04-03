@@ -3277,17 +3277,17 @@ recent log records they need to be added
 
 656
 00:30:28,309 --> 00:30:29,539
-在一次滚动之后 一次把他们写入磁盘上某个位置
+在一次磁盘旋转后 一次把他们写入磁盘上某个位置
 and sort of write them all on a single
 
 657
 00:30:29,539 --> 00:30:32,149
-在一次滚动之后 一次把他们写入磁盘上某个位置
+在一次磁盘旋转后 一次把他们写入磁盘上某个位置
 write after a single rotation to
 
 658
 00:30:32,149 --> 00:30:33,649
-在一次滚动之后 一次把他们写入磁盘上某个位置
+在一次磁盘旋转后 一次把他们写入磁盘上某个位置
 whatever the point in the disks that
 
 659
