@@ -1,6 +1,6 @@
 # thor
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 雷神项目，翻译 mit 6.824 2020
 
@@ -27,6 +27,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   <tr>
     <td align="center"><a href="https://ziheliu.github.io/"><img src="https://avatars2.githubusercontent.com/u/13313784?v=4" width="100px;" alt=""/><br /><sub><b>zihe.liu</b></sub></a><br /><a href="#content-ZiheLiu" title="Content">🖋</a></td>
     <td align="center"><a href="https://github.com/wildandyang"><img src="https://avatars0.githubusercontent.com/u/16045380?v=4" width="100px;" alt=""/><br /><sub><b>Fan Yang</b></sub></a><br /><a href="#content-wildandyang" title="Content">🖋</a></td>
+    <td align="center"><a href="https://github.com/hoooga"><img src="https://avatars3.githubusercontent.com/u/8995262?v=4" width="100px;" alt=""/><br /><sub><b>hoooga</b></sub></a><br /><a href="#content-hoooga" title="Content">🖋</a></td>
   </tr>
 </table>
 
