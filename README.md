@@ -1,7 +1,10 @@
 # thor
-![gpl](https://img.shields.io/badge/license-GPL-blue)
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors-)
+[![GitHub issues](https://img.shields.io/github/issues/ivanallen/thor)](https://github.com/ivanallen/thor/issues)
+[![GitHub forks](https://img.shields.io/github/forks/ivanallen/thor)](https://github.com/ivanallen/thor/network)
+[![GitHub stars](https://img.shields.io/github/stars/ivanallen/thor)](https://github.com/ivanallen/thor/stargazers)
+[![GitHub license](https://img.shields.io/github/license/ivanallen/thor)](https://github.com/ivanallen/thor/blob/master/LICENSE)
+[![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 雷神项目，翻译 mit 6.824 2020
 
