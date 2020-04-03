@@ -1,0 +1,143 @@
+You know they had replication 
+but it wasn't replicating every single bit of memory
+between the primaries and the backups
+It was replicating much more application level table of chunks
+I had this abstraction of chunks and chunk identifiers
+And that's what it was replicating
+It wasn't replicating sort of everything else
+wasn't going to the expense of
+replicating every single other thing in that machines
+We're doing okay as long as
+they had the same sort of application visible set of chunks 
+So most replication schemes out there go the GFS route
+In fact almost everything except pretty much this paper
+and a few handful of similar systems 
+almost everything uses application at some level application level of replication
+Because it can be much more efficient
+Because we don't have to go to the trouble of making sure
+that interrupts occur at exactly the same point
+in the execution of the primary and backup 
+GFS does not sweat that at all
+But this paper has to do
+Because it replicates at such a low level
+So most people build efficient systems with applications specific replication
+The consequence of that though is that
+the replication has to be built into the application
+If you're getting a feed of application level operations
+for example you really need to have the application participate in that
+because some generic replication thing like today's paper
+doesn't really can't understand the semantics of what needs to be replicated
+So most teams are application specific
+like GFS and every other paper we're going to read on this topic
+Today's paper is unique in that it replicates at the level of the machine
+and therefore does not care what software you run on it
+It replicates the low-level memory and machine registers
+You can run any software you like on it
+as long as it runs on that kind of microprocessor that's being represented
+This replication scheme applies to the software can be anything
+And the downside is that it's not that efficient necessarily
+The upside is that you can take any existing piece of software
+Maybe you don't even have source code for it or understand how it works
+And do within some limits you can just run it under VMware's replication scheme
+And it'll just work which is magic fault-tolerance wand for arbitrary software
+All right now let me talk about how this is VMware FT
+First of all VMware is a virtual machine company
+A lot of their business is selling virtual machine technology
+And what virtual machines refer to is the idea of 
+you buy a single computer
+And instead of booting an operating system like Linux on the hardware
+you boot we'll call a virtual machine monitor or hypervisor on the hardware
+And the hypervisor's job is actually to 
+simulate multiple virtual computers on this piece of hardware 
+So the virtual machine monitor may boot up you know one instance of Linux
+may be multiple instances of Linux may be a Windows
+The virtual machine monitor on this one computer
+can run a bunch of different operating systems
+Each of these is itself some operating system kernel and then applications
+So this is the technology they're starting with
+And the reason for this is that it just turns out
+there's many many reasons why it's very convenient to interpose this level of indirection
+between the hardware and the operating systems
+And means that we can buy one computer
+and run lots of different operating systems on it
+If we run lots and lots of little services
+instead of having to have lots and lots of computers one per service
+you can just buy one computer and run each service in the operating system
+that it needs using this virtual machines
+So this was their starting point
+They already had this stuff and a lot of sophisticated things built around it 
+at the start of designing VMware FT
+So this is just virtual machines
+What the paper's doing is that it's gonna set up one machine
+or they did requires two physical machines
+Because there's no point in running the primary and backup software 
+in different virtual machines on the same physical machine
+Because we're trying to guard against hardware failures
+So you have two machines running their virtual machine monitors
+And the primary is going to run on one, the backup is on the other
+So on one of these machines we have a guest
+It might be running a lot of virtual machines
+We only care about one of them
+It's gonna be running some guest operating system and some sort of server application
+Maybe a database server, MapReduce master, or something
+So I'll call this the primary
+And there'll be a second machine that runs the same virtual machine monitor
+and an identical virtual machine holding the backup
+So we have the same whatever the operating system is exactly the same
+And the virtual machine is giving these guest operating systems the primary and backup a each range of memory
+and this memory images will be identical
+or the goal is to make them identical in the primary in the backup
+We have two physical machines
+Each one of them running a virtual machine guest
+with its own copy of the service we care about
+We're assuming that there's a network connecting these two machines
+And in addition on this Local Area Network there's some set of clients
+Really, they don't have to be clients
+They're just maybe other computers that our replicated service needs to talk with
+Some of them are clients sending requests
+It turns out in this paper the replicated service actually doesn't use a local disk
+and instead assumes that there's some sort of disk server that it talks to him
+Although it's a little bit hard to realize this from the paper
+The scheme actually does not really treat the server particularly
+Especially it's just another external source of packets
+and place that the replicated state machine may send packets to 
+Not very much different from clients
+So the basic scheme is that the we assume that
+these two replicas, the two virtual machines, primary and backup, are exact replicas
+Some client, you know database client who knows who has 
+Some client of our replicated server sends a request to the primary
+And that really takes the form of a network packet
+that's what we're talking about
+That generates an interrupt and this interrupt actually goes to 
+the virtual machine monitor at least in the first instance
+The virtual machine monitor sees here's the input for this replicated service
+And so the virtual machine monitor does two things
+One is it simulates a network packet arrival interrupt 
+into the primary guest operating system 
+to deliver it to the primary copy of the application 
+And in addition the virtual machine monitor knows that 
+this is an input to a replicated virtual machine
+And so it sends back out on the network a copy of that packet 
+to the backup virtual machine monitor
+It also gets it and backup virtual machine monitor knows 
+it is a packet for this particular replicated state machine
+And it also fakes a network packet arrival interrupt 
+at the backup and delivers the packet
+So now both the primary and the backup have a copy
+This packet they looks at, the same input, with a lot of details
+are gonna process it in the same way and stay synchronized
+Course the service is probably going to reply to the client
+On the primary the service will generate a reply packet
+and send it on the NIC that the virtual machine monitor is emulating
+And then the virtual machine monitor will see that output packet on the primary
+They'll actually send the reply back out on the network to the client
+Because the backup is running exactly the same sequence of instructions
+It also generates a reply packet back to the client
+and sends that reply packet on its emulated NIC
+It's the virtual machine monitor, that's emulating that network interface card
+And the virtual machine monitor says I know this was the backup
+only the primary is allowed to generate output
+And the virtual machine monitor drops the reply packet
+So both of them see inputs and only the primary generates outputs
+As far as terminology goes, the paper calls this stream of input events
+and other things, other events we'll talk about from the stream the logging Channel
