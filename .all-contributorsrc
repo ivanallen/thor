@@ -40,6 +40,15 @@
       "contributions": [
         "content"
       ]
+    },
+    {
+      "login": "ivanallen",
+      "name": "Allen",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/12481610?v=4",
+      "profile": "https://allen.blog.csdn.net",
+      "contributions": [
+        "content"
+      ]
     }
   ],
   "contributorsPerLine": 7,
