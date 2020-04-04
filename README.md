@@ -19,7 +19,8 @@ QQ:1035287657
 ## 如何开始
 可以阅读doc目录下面的[翻译流程介绍](https://github.com/ivanallen/thor/blob/master/doc/翻译流程介绍.md) 文档，会介绍人物领取方式，翻译需要做的工作，以及一些常见问题总结。
 
-也可以参照 “鱼蛋是我我是橘猫” 同学制作的b站视频来了解翻译流程，[MIT6.824翻译工作流分享](https://www.bilibili.com/video/BV1pQ4y1M7dv) 该同学也提供了了doc目录下的 [分布式系统翻译工作流分享](https://github.com/ivanallen/thor/blob/master/doc/分布式系统翻译工作流分享.pdf) 文档，也可以做参考。
+也可以参照 “鱼蛋是我我是橘猫” 同学制作的b站视频来了解翻译流程，[MIT6.824翻译工作流分享](https://www.bilibili.com/video/BV1pQ4y1M7dv)。
+该同学也提供了了doc目录下的 [分布式系统翻译工作流分享](https://github.com/ivanallen/thor/blob/master/doc/分布式系统翻译工作流分享.pdf) 文档，也可以做参考。
 
 
 QQ群里大家维护的腾讯文档：
