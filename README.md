@@ -19,8 +19,8 @@ QQ:1035287657
 ## 如何开始
 可以阅读doc目录下面的[翻译流程介绍](https://github.com/ivanallen/thor/blob/master/doc/翻译流程介绍.md) 文档，这个是Bigbang1984同学在QQ群里和大家讨论后达成的比较一致的任务协作方式.
 
-比较一致的翻译任务协作方式:  
-觉得看文字不太方便的话，可以参照 “鱼蛋是我我是橘猫” 同学制作的b站视频来了解翻译流程，[视频地址](https://www.bilibili.com/video/BV1pQ4y1M7dv). 该同学也提供了了doc目录下的 [分布式系统翻译工作流分享](https://github.com/ivanallen/thor/blob/master/doc/分布式系统翻译工作流分享.pdf) 文件，也可以做参考。
+
+也可以参照 “鱼蛋是我我是橘猫” 同学制作的b站视频来了解翻译流程，[视频地址](https://www.bilibili.com/video/BV1pQ4y1M7dv) 该同学也提供了了doc目录下的 [分布式系统翻译工作流分享](https://github.com/ivanallen/thor/blob/master/doc/分布式系统翻译工作流分享.pdf) 文档，也可以做参考。
 
 
 QQ群里大家维护的腾讯文档：
@@ -39,6 +39,7 @@ QQ群里大家维护的腾讯文档：
 [Free Google Translate API](https://pypi.org/project/googletrans/)
 
 [自动切分时间轴](https://jingyan.baidu.com/article/e73e26c07ce0a824acb6a755.html)
+
 
 ## 版权声明
 
