@@ -17,8 +17,7 @@ QQ:1035287657
 - https://www.bilibili.com/video/BV1R7411t71W?p=1
 
 ## 如何开始
-可以阅读doc目录下面的[翻译流程介绍](https://github.com/ivanallen/thor/blob/master/doc/翻译流程介绍.md) 文档，这个是Bigbang1984同学在QQ群里和大家讨论后达成的比较一致的任务协作方式.
-
+可以阅读doc目录下面的[翻译流程介绍](https://github.com/ivanallen/thor/blob/master/doc/翻译流程介绍.md) 文档，会介绍人物领取方式，翻译需要做的工作，以及一些常见问题总结。
 
 也可以参照 “鱼蛋是我我是橘猫” 同学制作的b站视频来了解翻译流程，[MIT6.824翻译工作流分享](https://www.bilibili.com/video/BV1pQ4y1M7dv) 该同学也提供了了doc目录下的 [分布式系统翻译工作流分享](https://github.com/ivanallen/thor/blob/master/doc/分布式系统翻译工作流分享.pdf) 文档，也可以做参考。
 
