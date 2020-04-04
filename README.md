@@ -19,6 +19,7 @@ QQ:1035287657
 ## 如何开始
 可以阅读doc目录下面的《翻译流程介绍》文档，这个是Bigbang1984同学在QQ群里和大家讨论后达成的
 比较一致的翻译任务协作方式: https://github.com/ivanallen/thor/blob/master/doc/翻译流程介绍.md 
+
 在issue列表里提issue认领翻译任务，然后通过提交PR来提交最后的翻译成果。
 
 觉得看文字不太方便的话，可以参照 “鱼蛋是我我是橘猫” 同学制作的b站视频来了解翻译流程，地址：https://www.bilibili.com/video/BV1pQ4y1M7dv. 该同学也提供了了doc目录下的 《分布式系统翻译工作流分享》 文件，也可以做参考。
