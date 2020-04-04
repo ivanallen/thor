@@ -24,6 +24,7 @@ QQ:1035287657
 
 
 QQ群里大家维护的腾讯文档：
+
 [翻译指南](https://docs.qq.com/doc/DZURQaXBrdXhXb0dx?tdsourcetag=s_macqq_grpfile)
 
 [建议翻译流程](https://docs.qq.com/doc/BXXro31NHmDg4Kega60fkDTU4l51be2cdG2H4OMrVN3NzUlm0huLua1goly331XKV42Dko7Y0)
