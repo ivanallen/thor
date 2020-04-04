@@ -16,6 +16,13 @@ QQ:1035287657
 
 - https://www.bilibili.com/video/BV1R7411t71W?p=1
 
+## 如何开始
+可以阅读doc目录下面的 More_details文档: https://github.com/ivanallen/thor/blob/master/doc/More_details.md 
+在issue列表里提issue认领翻译任务，然后通过提交PR来提交最后的翻译成果。
+
+觉得看文字不太方便的话，可以参照 “鱼蛋是我我是橘猫” 同学制作的b站视频来了解翻译流程，地址：https://www.bilibili.com/video/BV1pQ4y1M7dv. 该同学也提供了了doc目录下的 《分布式系统翻译工作流分享》 文件，也可以做参考
+
+
 ## 版权声明
 
 本字幕版权属参与翻译的所有成员，严禁用作商业用途，一经发现，追究法律责任。
