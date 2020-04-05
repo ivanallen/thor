@@ -2091,7 +2091,7 @@ replication but it wasn't replicating
 
 467
 00:20:05,700 --> 00:20:08,220
-every single bit of memory
+every single you know bit of memory
 
 468
 00:20:08,220 --> 00:20:10,170
@@ -2107,7 +2107,7 @@ level table of chunks
 
 471
 00:20:14,910 --> 00:20:16,950
-I had this abstraction of
+I had this abstraction of you know
 
 472
 00:20:16,950 --> 00:20:18,630
@@ -2171,11 +2171,11 @@ it can be much more efficient because we
 
 487
 00:20:56,940 --> 00:20:58,560
-don't have to go to the
+don't have to go to the we don't have to
 
 488
 00:20:58,560 --> 00:21:00,960
-trouble of making
+go to the trouble of for example making
 
 489
 00:21:00,960 --> 00:21:02,790
@@ -2215,7 +2215,7 @@ though is that the replication has to be
 
 498
 00:21:20,880 --> 00:21:21,900
-built into the
+built into the right into the
 
 499
 00:21:21,900 --> 00:21:23,580
@@ -2251,7 +2251,7 @@ semantics of what needs to be replicated
 
 507
 00:21:41,240 --> 00:21:44,520
-so most teams are application
+so anyways so most teams are application
 
 508
 00:21:44,520 --> 00:21:47,340
@@ -2307,7 +2307,7 @@ software can be anything
 
 521
 00:22:10,399 --> 00:22:14,080
-and the downside is that it's
+and you know the downside is that it's
 
 522
 00:22:14,080 --> 00:22:16,399
@@ -2331,7 +2331,7 @@ how it works and you know do within some
 
 527
 00:22:26,029 --> 00:22:27,440
-limits you can just run it
+limits you can just run it under this
 
 528
 00:22:27,440 --> 00:22:29,299
@@ -2923,7 +2923,7 @@ the virtual machine monitor will
 
 675
 00:29:07,550 --> 00:29:09,050
-see that output packet on the
+we'll see that output packet on the
 
 676
 00:29:09,050 --> 00:29:11,270
