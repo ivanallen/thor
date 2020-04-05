@@ -2251,7 +2251,7 @@ semantics of what needs to be replicated
 
 507
 00:21:41,240 --> 00:21:44,520
-so anyways so most teams are application
+so anyway so most teams are application
 
 508
 00:21:44,520 --> 00:21:47,340
@@ -2571,7 +2571,7 @@ virtual machine monitors and the primary
 
 587
 00:25:15,590 --> 00:25:16,970
-it's going to run on one the backup is on
+is going to run on one, the backup is on
 
 588
 00:25:16,970 --> 00:25:18,950
@@ -2659,7 +2659,7 @@ each one of them running a virtual
 
 609
 00:26:13,070 --> 00:26:15,680
-machine guest with a its own copy of the
+machine guest with its own copy of the
 
 610
 00:26:15,680 --> 00:26:17,630
@@ -2695,7 +2695,7 @@ our replicated service needs to talk
 
 618
 00:26:35,750 --> 00:26:37,470
-with some of them our clients
+with some of them are clients
 
 619
 00:26:37,470 --> 00:26:39,270
@@ -2727,7 +2727,7 @@ realize this from the paper the scheme
 
 626
 00:26:59,760 --> 00:27:01,710
-actually does not really treat the de
+actually does not really treat the
 
 627
 00:27:01,710 --> 00:27:04,140
@@ -2803,7 +2803,7 @@ first instance the virtual machine
 
 645
 00:27:47,789 --> 00:27:50,010
-monitor sees a here's the input for
+monitor sees here's the input for
 
 646
 00:27:50,010 --> 00:27:54,059
@@ -2883,7 +2883,7 @@ primary and the backup have a copy this
 
 665
 00:28:40,799 --> 00:28:42,780
-packet they looks at, the same input, you
+packet they looks at, the same input you
 
 666
 00:28:42,780 --> 00:28:44,059
