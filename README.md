@@ -16,6 +16,33 @@ QQ:1035287657
 
 - https://www.bilibili.com/video/BV1R7411t71W?p=1
 
+## 如何开始
+可以阅读doc目录下面的[翻译流程介绍](https://github.com/ivanallen/thor/blob/master/doc/manual.md) 文档，会介绍人物领取方式，翻译需要做的工作，以及一些常见问题总结。
+
+也可以参照 “鱼蛋是我我是橘猫” 同学制作的b站视频来了解翻译流程，[MIT6.824翻译工作流分享](https://www.bilibili.com/video/BV1pQ4y1M7dv)。
+
+该同学也提供了了doc目录下的 [分布式系统翻译工作流分享](https://github.com/ivanallen/thor/blob/master/doc/Translate_Workflow.pdf) 文档，也可以做参考。
+
+
+QQ群里大家维护的腾讯文档：
+
+[翻译指南](https://docs.qq.com/doc/DZURQaXBrdXhXb0dx?tdsourcetag=s_macqq_grpfile)
+
+[建议翻译流程](https://docs.qq.com/doc/BXXro31NHmDg4Kega60fkDTU4l51be2cdG2H4OMrVN3NzUlm0huLua1goly331XKV42Dko7Y0)
+
+
+
+## 一些有用的工具
+
+[VS Subtitles Editor](https://marketplace.visualstudio.com/items?itemName=pepri.subtitles-editor)
+
+[抽取视频字幕的网站](https://downsub.com/)
+
+[Free Google Translate API](https://pypi.org/project/googletrans/)
+
+[自动切分时间轴](https://jingyan.baidu.com/article/e73e26c07ce0a824acb6a755.html)
+
+
 ## 版权声明
 
 本字幕版权属参与翻译的所有成员，严禁用作商业用途，一经发现，追究法律责任。
