@@ -2131,7 +2131,7 @@ replicating every single other thing
 
 477
 00:20:26,430 --> 00:20:28,440
-that machines we're doing okay as long
+in that machines we're doing okay as long
 
 478
 00:20:28,440 --> 00:20:31,410
@@ -2139,7 +2139,7 @@ as they had the same sort of application
 
 479
 00:20:31,410 --> 00:20:37,410
-visible set of of chunks so most
+visible set of chunks so most
 
 480
 00:20:37,410 --> 00:20:40,530
@@ -2335,7 +2335,7 @@ limits you can just run it under this
 
 528
 00:22:27,440 --> 00:22:29,299
-under VMware this replication scheme and
+under VMware's replication scheme and
 
 529
 00:22:29,299 --> 00:22:33,940
@@ -2395,7 +2395,7 @@ hypervisor on the hardware and the
 
 543
 00:23:18,169 --> 00:23:19,669
-hypervisor is job is actually to
+hypervisor's job is actually to
 
 544
 00:23:19,669 --> 00:23:24,429
@@ -2503,7 +2503,7 @@ and run each service in the operating
 
 570
 00:24:23,660 --> 00:24:25,850
-system that it needs I'm using this
+system that it needs I'm using these
 
 571
 00:24:25,850 --> 00:24:28,250
@@ -2527,7 +2527,7 @@ designing vmware ft so this is just
 
 576
 00:24:38,690 --> 00:24:43,070
-virtual machines um what the papers
+virtual machines um what the paper's
 
 577
 00:24:43,070 --> 00:24:46,910
@@ -2571,7 +2571,7 @@ virtual machine monitors and the primary
 
 587
 00:25:15,590 --> 00:25:16,970
-it's going to run on one the backups and
+it's going to run on one the backup is on
 
 588
 00:25:16,970 --> 00:25:18,950
@@ -2599,7 +2599,7 @@ and some sort of server application
 
 594
 00:25:32,330 --> 00:25:35,300
-maybe a database server MapReduce master
+maybe a database server, MapReduce master,
 
 595
 00:25:35,300 --> 00:25:37,790
@@ -2683,7 +2683,7 @@ network there's some set of clients
 
 615
 00:26:29,480 --> 00:26:30,950
-really they don't have to be clients
+really, they don't have to be clients
 
 616
 00:26:30,950 --> 00:26:33,160
@@ -2743,7 +2743,7 @@ place that the replicated state machine
 
 630
 00:27:09,929 --> 00:27:12,000
-may send packets do not very much
+may send packets to not very much
 
 631
 00:27:12,000 --> 00:27:17,370
@@ -2755,15 +2755,15 @@ scheme is that the we assume that these
 
 633
 00:27:20,370 --> 00:27:24,120
-two replicas the two virtual machines
+two replicas, the two virtual machines,
 
 634
 00:27:24,120 --> 00:27:27,870
-primary and backup are our exact
+primary and backup, are exact
 
 635
 00:27:27,870 --> 00:27:30,150
-replicas some client you know database
+replicas some client, you know database
 
 636
 00:27:30,150 --> 00:27:31,559
@@ -2791,7 +2791,7 @@ interrupt
 
 642
 00:27:41,220 --> 00:27:43,140
-and this interrupts actually goes to the
+and this interrupt actually goes to the
 
 643
 00:27:43,140 --> 00:27:45,270
@@ -2803,7 +2803,7 @@ first instance the virtual machine
 
 645
 00:27:47,789 --> 00:27:50,010
-monitor sees a hot here's the input for
+monitor sees a here's the input for
 
 646
 00:27:50,010 --> 00:27:54,059
@@ -2879,11 +2879,11 @@ delivers the packet so now both the
 
 664
 00:28:39,090 --> 00:28:40,799
-primary and the back have a copy this
+primary and the backup have a copy this
 
 665
 00:28:40,799 --> 00:28:42,780
-packet they looks at the same input you
+packet they looks at, the same input, you
 
 666
 00:28:42,780 --> 00:28:44,059
@@ -2919,7 +2919,7 @@ machine monitor is emulating and then
 
 674
 00:29:06,230 --> 00:29:07,550
-the virtual machine monitor or will
+the virtual machine monitor will
 
 675
 00:29:07,550 --> 00:29:09,050
@@ -2995,7 +2995,7 @@ paper calls this stream of input events
 
 693
 00:29:59,690 --> 00:30:01,400
-and other things other events we'll talk
+and other things, other events we'll talk
 
 694
 00:30:01,400 --> 00:30:04,310
