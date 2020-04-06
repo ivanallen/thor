@@ -1,0 +1,201 @@
+logging Channel. it all goes over the  
+same network presumably but these events  
+the primary send to the backup are called  
+log events on the log Channel  
+where the fault tolerance comes in is  
+that those, the primary crashes, what the  
+backup is going to see is that it stops  
+getting stuff ,on the ,stops getting log  
+entries ，a log entry ，stops getting log  
+entries on the logging channel and we 
+know it it turns out that the backup can  
+expect to get many per second because  
+one of the things that generates log  
+entries is periodic timer interrupts in  
+the in the primary each one of which  
+turns out every interrupt generates a  
+log entries into the backup these timer  
+interrupts are going to happen like 100  
+times a second so the backups can  
+certainly expect to see  
+a lot of chitchat on the logging Channel  
+if the primaries up .if the primary  
+crashes then the virtual machine  
+monitored over here will say gosh you  
+know I haven't received anything on the  
+logging channel for like a second or  
+however long the primary must be dead or  
+or something and in that case when the  
+backup stop seeing log entries from the  
+primary the paper the way the paper  
+phrases it is that the backup goes alive  
+and what that means is that it stops  
+waiting for these input events on the  
+logging Channel from the primary and  
+instead this virtual machine monitor  
+just lets this backup execute freely  
+without waiting for without being driven  
+by input events from the primary ,the vmm  
+does something to the network to cause  
+future client requests to go to the  
+backup instead of the primary and the  
+VMM here stops discarding the backup  
+personnel it's the primary not the  
+backup stops discarding output from this  
+virtual machine so now this or machine  
+directly gets the inputs and there's a  
+lot of produce output and now our backup  
+is taken over and similarly you know  
+that this is less interesting but has to  
+work correctly  
+if the backup fails a similar primary  
+has to use a similar process to abandon  
+the backup stop sending it events and  
+just sort of act much more like a single  
+non replicated server so either one of  
+them can go live if the other one  
+appears to be dead ，stops， you know stops  
+generating network traffic.  
+magic, now it depends ,you know depends on  
+what the networking technology is I  
+think with the paper one possibility is  
+that this is sitting on Ethernet every  
+physical computer on the Internet or  
+really every NIC has a 48 bit unique ID  
+I'm making this up now, the ,it could be  
+that in fact instead of each physical  
+computer having a unique ID each virtual  
+machine does and when the backup takes  
+over it essentially claims the primary's  
+Ethernet ID as its own and it starts  
+saying you know I'm the owner of that ID  
+and then other people on the ethernet  
+will start sending us packets that's my  
+interpretation ,the designers believed  
+they had identified all such sources and  
+for each one of them the primary does  
+whatever it is you know executes the  
+random number generator instruction or  
+takes an interrupt at some time the  
+backup does not and the back of virtual  
+machine monitor sort of detects any such  
+instruction and and intercepts that and  
+doesn't do it and he said the backup  
+waits for an event on the logging  
+Channel saying this instruction number  
+you know the random number was whatever  
+it was on the primary  
+At which?  
+yes yes  
+yeah the paper hints that they got Intel  
+to add features to the microprocessor to  
+support exactly this but they don't say  
+what it was ,okay  
+okay so on that topic ,the ,so far that  
+you know the story is sort of assumed  
+that as long as the backup to sees the 
+package from the clients it'll execute  
+in identically to the primary and that's  
+actually glossing over some huge and  
+important details so one problem is that  
+as a couple of people have mentioned  
+there are some things that are  
+non-deterministic now it's not the case  
+that every single thing that happens in  
+the computer is a deterministic function  
+of the contents of the memory of the  
+computer it is for a sort of straight  
+line code execution often but certainly  
+not always so worried about is things  
+that may happen that are not a strict  
+function of the current state that is  
+that might be different if we're not  
+careful on the primary and backup so  
+these are sort of non-deterministic  
+events that may happen so the designers  
+had to sit down and like figure out what  
+they all work and here are the ones  
+here's the kind of stuff they talked  
+about so one is inputs from external  
+sources like clients which arrive just  
+whenever they arrive right they're not  
+predictable there are no sense in which  
+the time at which a client request  
+arrives or its content is a  
+deterministic function of the services  
+state because it's not ,so these actually ,
+this system is really dedicated to a  
+world in which services only talk over  
+the network and so the only really  
+basically the only form of input or  
+output in this system is supported by  
+this system seems to be network packets  
+coming and going. so we didn't put  
+arrives at what that really means it's a  
+packet  
+arrives and what a packet really  
+consists of for us is the data in the  
+packet plus the interrupt  
+that's signaled that the packet had  
+arrived so that's quite important, so  
+when a packet arrives  
+I'm ordinarily the NIC DMAs the packet  
+contents into memory and then raises an  
+interrupt which the operating system  
+feels and the interrupt happens at some  
+point in the instruction stream and so  
+both of those have to look identical on  
+the primary and backup or else we're  
+gonna have they're also executions gonna  
+diverge and so you know the real issue  
+is when the interrupt occurs exactly at  
+which instruction the interrupts happen  
+to occur and better be the same on the  
+primary in the backup otherwise their  
+execution is different and their states  
+are gonna diverge and so we care about  
+the content of the packet and the timing  
+of the interrupt and then as a couple of  
+people have mentioned there's a few  
+instructions that that behave  
+differently on different computers or  
+differently depending on something like  
+there's maybe a random number generator  
+instruction there's I get time-of-day  
+instructions that will yield different  
+answers have called at different times  
+and unique ID instructions another huge  
+source of non determinism which the  
+paper basically rules out is multi-core  
+parallelism this is a uni-process only  
+system there's no multi-core in this  
+world the reason for this is that if it 
+allowed multi-core then then the service  
+would be running on multiple cores and
+the instructions of the service the rest  
+of you know the different cores are  
+interleaved in some way which is not  
+predictable and so really if we run the  
+same code on the on the backup in the  
+server if it's parallel code running on  
+a multi-core the tube interleave the 
+instructions in the two cores in  
+different ways the hardware will and 
+that can just cause  
+different results because you know  
+supposing the code and the two cores you  
+know they both asked for a lock on some  
+data well on the master you know  
+core one may get the lock before core two  
+on the slave just because of a tiny  
+timing difference core two may got the  
+lock first and the you know execution  
+results are totally different likely to  
+be totally different if different  
+threads get the lock   
+so multi-core is the grim source among  
+non-determinisms just totally  
+outlawed in this papers world and indeed  
+like as far as I can tell the techniques  
+are not really applicable. the service 
+can't use multi-core parallel
