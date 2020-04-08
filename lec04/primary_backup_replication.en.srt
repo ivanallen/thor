@@ -3011,7 +3011,7 @@ same network presumably but these events
 
 697
 00:30:10,550 --> 00:30:12,050
-the primary since the back of our called
+the primary send to the backup are called
 
 698
 00:30:12,050 --> 00:30:16,450
@@ -3123,7 +3123,7 @@ primary the paper the way the paper
 
 725
 00:31:31,280 --> 00:31:33,320
-freezes it is that the backup goes live
+phrases it is that the backup goes live
 
 726
 00:31:33,320 --> 00:31:35,780
@@ -3351,7 +3351,7 @@ it was on the primary
 
 782
 00:34:35,080 --> 00:34:37,420
-Edwige
+At which?  
 
 783
 00:34:37,420 --> 00:34:42,130
@@ -3567,7 +3567,7 @@ when a packet arrives
 
 836
 00:37:11,050 --> 00:37:16,250
-I'm ordinarily the NIC DMA is the packet
+I'm ordinarily the NIC DMAs the packet
 
 837
 00:37:16,250 --> 00:37:20,720
@@ -3723,7 +3723,7 @@ server if it's parallel code running on
 
 875
 00:38:54,890 --> 00:38:56,900
-a multi-core the tubo interleave the
+a multi-core the tube interleave the
 
 876
 00:38:56,900 --> 00:38:58,520

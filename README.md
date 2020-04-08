@@ -19,6 +19,7 @@ QQ:1035287657
 
 该同学也提供了了doc目录下的 [分布式系统翻译工作流分享](https://github.com/ivanallen/thor/blob/master/doc/Translate_Workflow.pdf) 文档，也可以做参考。
 
+这个PR可供参考：[Lec04-3翻译任务](https://github.com/ivanallen/thor/pull/24)
 
 QQ群里大家维护的腾讯文档：
 
