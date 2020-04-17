@@ -7282,7 +7282,7 @@ automatically splits up any big file you
 
 1458
 01:07:06,119 --> 01:07:08,490
-将其存储在跨服务器和跨64MB的块上
+将其存储在跨服务器和最大64MB的块上
 store on it across lots of servers and
 
 1459
