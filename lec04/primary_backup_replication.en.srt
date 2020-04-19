@@ -4853,865 +4853,558 @@ an operating system that watches
 arriving packets in memory as they're
 
 1105
-00:49:58,779 --> 00:50:01,869
+00:49:58,779 --> 00:50:01,200
 当它们被复制到内存中时，观察到内存中到达的数据包
-copied into memory so we can't let that 
+copied into memory
 
 1106
-00:50:01,869 --> 00:50:04,779
-happen because if the primary happens to
+00:50:01,300 --> 00:50:02,470
+所以我们不能让这种情况发生
+so we can't let that happen
 
 1107
-00:50:04,779 --> 00:50:08,859
-be playing that trick it's gonna see you
+00:50:02,500 --> 00:50:06,030
+如果在主节点用的是这种方式
+because if the primary happens to be playing that trick
 
 1108
-00:50:08,859 --> 00:50:10,779
-know if we allowed the network interface
+00:50:07,130 --> 00:50:08,450
+它就会观察到
+it's gonna see
 
 1109
-00:50:10,779 --> 00:50:13,029
-card to directly DMA incoming packets
+00:50:08,630 --> 00:50:14,850
+如果我们允许网卡直接将接收到的包DMA到主节点内存
+you know if we allowed the network interface card to directly DMA incoming packets into the memory of the primary
 
 1110
-00:50:13,029 --> 00:50:15,549
-into the memory of the primary the
+00:50:15,460 --> 00:50:22,900
+我们没办法精确控制网卡将数据复制到内存的时间点
+the primary we don't have any control over the exact timing of
 
 1111
-00:50:15,549 --> 00:50:17,559
-primary we don't have any control over
+00:50:23,130 --> 00:50:32,150
+所以我们也不知道 什么时候主节点观察到网络包中的数据
+and so we're not going to know sort of at what times the primary did or didn't observe data from the packet arriving
 
 1112
-00:50:17,559 --> 00:50:20,200
-the exact timing of when the network
+00:50:32,580 --> 00:50:41,720
+这就意味着网卡复制包进虚拟机监视器的虚拟内存
+and so what that means is that in fact the NIC copies incoming packets into private memory of the virtual machine monitor
 
 1113
-00:50:20,200 --> 00:50:22,210
-interface card copies data into memory
+00:50:41,950 --> 00:50:46,760
+然后打断虚拟机监视器告诉它有抵达的包
+and then the network interface card interrupts the virtual machine monitor and says oh a packet has arrived
 
 1114
-00:50:22,210 --> 00:50:24,339
-and so we're not going to know sort of
+00:50:47,040 --> 00:50:51,130
+这时虚拟机监视器就会中断主节点
+at that point the virtual machine monitor will suspend the primary
 
 1115
-00:50:24,339 --> 00:50:28,839
-at what times the primary did or didn't
+00:50:51,270 --> 00:50:53,850
+记住当前位置的指令号
+and remember what instruction number had suspended at
 
 1116
-00:50:28,839 --> 00:50:32,020
-observe data from the packet arriving
+00:50:54,100 --> 00:51:01,210
+在主节点中断的时候 复制整个包到主节点的内存
+copy the entire packet into the primaries memory while the primary suspended and not looking at this copy
 
 1117
-00:50:32,020 --> 00:50:34,720
-and so what that means is that in fact
+00:51:01,920 --> 00:51:05,740
+然后模拟主节点的网卡中断
+and then emulate a network interface card interrupt into the primary
 
 1118
-00:50:34,720 --> 00:50:39,490
-the NIC copies incoming packets into
+00:51:06,600 --> 00:51:12,510
+然后发送包和中断位置的指令号到副节点
+and then send the packet and the instruction number to the backup
 
 1119
-00:50:39,490 --> 00:50:41,109
-private memory of the virtual machine
+00:51:12,660 --> 00:51:16,150
+副节点也会中断
+the backup will also suspend the backup rope
 
 1120
-00:50:41,109 --> 00:50:43,210
-monitor and then the network interface
+00:51:16,250 --> 00:51:19,480
+副节点也会在同样的指令号位置中断
+you know virtual machine monitor will spend the backup at that instruction number
 
 1121
-00:50:43,210 --> 00:50:45,279
-card interrupts the virtual machine
+00:51:19,540 --> 00:51:24,720
+复制整个包到副节点的内存 同样副节点中断没有注意包的抵达过程
+copy the entire packet and again to the back-up is guaranteed not to be watching the data arrive
 
 1122
-00:50:45,279 --> 00:50:46,569
-monitor and says oh a packet has arrived
+00:51:24,770 --> 00:51:28,200
+然后模拟副节点在同样指令号位置中断
+and then fakin interrupts at the same instruction numbers of the primary
 
 1123
-00:50:46,569 --> 00:50:48,430
-at that point the virtual machine
+00:51:28,390 --> 00:51:35,530
+这就是论文中描述的回弹缓冲机制
+and this is the something the bounce buffer mechanism explained in the paper
 
 1124
-00:50:48,430 --> 00:50:51,190
-monitor will suspend the primary and
+00:51:56,010 --> 00:52:04,920
+会产生记录通道流量的指令都是不寻常的指令 很少见
+okay yeah the the only instructions and that result in logging channel traffic or are weird instructions which are rare
 
 1125
-00:50:51,190 --> 00:50:52,930
-remember what instruction number had
+00:52:05,270 --> 00:52:11,810
+一般是在主节点和副节点执行结果会不同的指令
+no its instructions that might yield a different result if executed on the primary and backup
 
 1126
-00:50:52,930 --> 00:50:56,500
-suspended at copy the entire packet into
+00:52:11,980 --> 00:52:15,300
+例如获取当前时间 获取当前处理器数量
+like instruction to get the current time of day or current processor number 
 
 1127
-00:50:56,500 --> 00:50:57,940
-the primaries memory while the primary
+00:52:15,340 --> 00:52:17,780
+或者获取已执行的指令数量
+or ask how many instructions have been executed or
 
 1128
-00:50:57,940 --> 00:51:00,819
-suspended and not looking at this copy
+00:52:18,250 --> 00:52:20,640
+这些相对来说都是很少见的
+and those actually turn out to be relatively rare
 
 1129
-00:51:00,819 --> 00:51:03,640
-and then emulate a network interface
+00:52:20,890 --> 00:52:23,620
+或者说像生成随机数
+there's also one them to get random tasks when some machines 
 
 1130
-00:51:03,640 --> 00:51:05,790
-card interrupt into the primary
+00:52:23,670 --> 00:52:27,490
+让硬件生成用于加密的随机数之类的
+to ask or a hardware generated random number for cryptography or something
 
 1131
-00:51:05,790 --> 00:51:10,400
-and then send the packet and the
+00:52:27,760 --> 00:52:29,590
+这些都不是日常的指令
+and but those are not everyday instructions 
 
 1132
-00:51:10,400 --> 00:51:13,050
-instruction number to the backup the
+00:52:29,930 --> 00:52:34,450
+大多数指令例如相加的指令会在主副节点有相同的结果
+most instructions like add instructions they're gonna get the same result on primary and backup
 
 1133
-00:51:13,050 --> 00:51:16,410
-backup will also suspend the backup rope
+00:52:50,900 --> 00:52:56,350
+没错 每个网络包都被直接打包转发没有修改
+exactly right each network packet just it's packaged up and forwarded as it is as a network packet
 
 1134
-00:51:16,410 --> 00:51:17,580
-you know virtual machine monitor will
+00:52:56,630 --> 00:53:00,900
+由两边的TCP/IP栈进行解析
+and is interpreted by the tcp/ip stack on both you know
 
 1135
-00:51:17,580 --> 00:51:18,990
-spend the backup at that instruction
+00:53:01,980 --> 00:53:09,390
+所以我认为99.99%的记录通道流量都是来自于接收到的包
+so I'm expecting 99.99% of the logging channel traffic to be incoming packets
 
 1136
-00:51:18,990 --> 00:51:21,030
-number copy the entire packet and again
+00:53:09,670 --> 00:53:15,070
+只有少部分是因为会产生不确定结果的指令造成
+and only a tiny fraction to be results from special non-deterministic instructions
 
 1137
-00:51:21,030 --> 00:51:23,220
-to the back-up is guaranteed not to be
+00:53:16,560 --> 00:53:22,920
+所以我们可以猜到在有客户端连接的服务器上 流量大概是什么样子的
+and so we can kind of guess what the traffic load is likely to be for for a server that serves clients
 
 1138
-00:51:23,220 --> 00:51:25,650
-watching the data arrive and then fakin
+00:53:22,990 --> 00:53:25,320
+基本就是各个客户端发的包
+basically it's a copy of every client packet
 
 1139
-00:51:25,650 --> 00:51:27,330
-interrupts at the same instruction
+00:53:26,590 --> 00:53:30,920
+所以我们就能估算出记录通道需要有怎样的性能
+and then we'll sort of know what the logging channel how fast the logging channel has to be
 
 1140
-00:51:27,330 --> 00:51:30,710
-numbers of the primary and this is the
+00:53:40,690 --> 00:53:43,270
+输出是如何工作的也值得讲一下
+it's worth talking a little bit about how output works
 
 1141
-00:51:30,710 --> 00:51:34,010
-something the bounce buffer mechanism
+00:53:44,010 --> 00:53:49,190
+在这个系统中 输出就是指发送数据包
+and in this system really the only what output basically means only is sending packets
 
 1142
-00:51:34,010 --> 00:51:57,030
-explained in the paper okay yeah the the
+00:53:49,770 --> 00:53:55,820
+客户端发送请求的网络包 服务端响应网络包
+that client send requests in as network packets the response goes back out as network packets
 
 1143
-00:51:57,030 --> 00:51:59,790
-only instructions and that result in
+00:53:55,870 --> 00:53:57,700
+没有其他形式的输出了
+and there's really no other form of output
 
 1144
-00:51:59,790 --> 00:52:03,240
-logging channel traffic or are weird
+00:53:59,290 --> 00:54:04,840
+主节点和副节点计算他们要发送的数据包
+as I mentioned the you know both primary and backup compute the output packet they want to send
 
 1145
-00:52:03,240 --> 00:52:06,450
-instructions which are rare no its
+00:54:04,960 --> 00:54:08,870
+在主节点上真正进行发送
+and that sort of asks that simulated mix to send the packet it's really sent on the primary
 
 1146
-00:52:06,450 --> 00:52:09,300
-instructions that might yield a
+00:54:09,000 --> 00:54:11,710
+副节点的包则被简单地丢弃掉
+and simply discard it the output packet discarded on the backup
 
 1147
-00:52:09,300 --> 00:52:10,680
-different result if executed on the
+00:54:15,520 --> 00:54:18,310
+真实的情况会稍微复杂一点
+okay but it turns out is a little more complicated than that
 
 1148
-00:52:10,680 --> 00:52:12,540
-primary and backup like instruction to
+00:54:19,540 --> 00:54:25,840
+假设我们在跑的是一个简单的数据库服务器
+so supposing we're what we're running is a some sort of simple database server
 
 1149
-00:52:12,540 --> 00:52:14,130
-get the current time of day or current
+00:54:26,030 --> 00:54:30,730
+服务器支持客户端进行计数器自增（Increment)操作
+and the operation the client operation that our database server supports is increment
 
 1150
-00:52:14,130 --> 00:52:15,930
-processor number or ask how many
+00:54:30,850 --> 00:54:37,910
+客户端发送自增的请求 服务端对计数器进行加操作 返回操作后的值
+and ideas the client sends an increment requests the database server increments the value and sends back the new value
 
 1151
-00:52:15,930 --> 00:52:18,510
-instructions have been executed or and
+00:54:39,570 --> 00:54:42,490
+假设在主节点一切都正常
+so maybe on the primary well let's say everything's fine so far
 
 1152
-00:52:18,510 --> 00:52:19,770
-those actually turn out to be relatively
+00:54:42,580 --> 00:54:49,140
+主副节点现在都存有计数器值10在内存中
+and the primary backup both have value 10 in memory and that's the current value at the counter
 
 1153
-00:52:19,770 --> 00:52:22,080
-rare there's also one them to get random
+00:54:51,000 --> 00:54:55,190
+本地网络的客户端发送自增请求到主节点
+and some client on the local area network sends a you know an increment request
 
 1154
-00:52:22,080 --> 00:52:24,270
-tasks when some machines to ask or a
+00:54:56,290 --> 00:55:04,510
+这个网络包被发到主节点
+to the primary that packet is you know delivered to the primary it's you know
 
 1155
-00:52:24,270 --> 00:52:25,890
-hardware generated random number for
+00:55:04,630 --> 00:55:08,230
+然后被主节点的程序执行
+it's executed the primary server software and the primary
 
 1156
-00:52:25,890 --> 00:52:28,500
-cryptography or something and but those
+00:55:08,260 --> 00:55:11,610
+比如说现在是10 我要将他变为11
+says oh you know current values 10 I'm gonna change to 11
 
 1157
-00:52:28,500 --> 00:52:30,180
-are not everyday instructions most
+00:55:11,900 --> 00:55:17,590
+然后产生回复告诉客户端结果11
+and send a you know response packet back to the client saying saying 11
 
 1158
-00:52:30,180 --> 00:52:31,500
-instructions like add instructions
+00:55:19,180 --> 00:55:27,110
+这个请求也会被发送到副本上 将10改为11
+mentioned gonna supposed to be sent to the backup will also be processed here it's going to change this 10 to 11 also
 
 1159
-00:52:31,500 --> 00:52:33,660
-they're gonna get the same result on
+00:55:27,330 --> 00:55:31,100
+然后同样产生一个回复 并被丢弃掉 理论上是这样
+generate a reply and we'll throw it away that's what's supposed to happen the output
 
 1160
-00:52:33,660 --> 00:52:36,380
-primary and that go
+00:55:31,570 --> 00:55:39,180
+然而你也要想一下如果在不恰当的时间服务出现失败会怎么样
+however you also need to ask yourself what happens if there's a failure at an awkward time
 
 1161
-00:52:44,700 --> 00:52:47,730
-yeah so the way those get replicated on
+00:55:39,440 --> 00:55:42,730
+上这门课的期间你要一直这样问自己
+if you should always in this class should always ask yourself
 
 1162
-00:52:47,730 --> 00:52:51,060
-the back up is just by forwarding that's
+00:55:43,570 --> 00:55:47,580
+何时出现失败是最坏的情况 这种情况下会发生什么
+what's the most awkward time to have a failure and what would happen you to failure occurred then so
 
 1163
-00:52:51,060 --> 00:52:52,470
-exactly right each network packet just
+00:55:53,640 --> 00:55:59,420
+假设主节点确实生成了返回给客户端的回复
+suppose the primary does indeed generate the reply here back to the client
 
 1164
-00:52:52,470 --> 00:52:55,079
-it's packaged up and forwarded as it is
+00:55:59,870 --> 00:56:05,810
+但是主节点在发送完回复之后就宕机了
+but the client the primary crashes just after sending the report its reply to the client
 
 1165
-00:52:55,079 --> 00:52:57,839
-as a network packet and is interpreted
+00:56:05,970 --> 00:56:12,630
+更糟的是 网络向来不保证数据包能传递到接收方
+and furthermore and much worse it turns out that you know this is just a network it doesn't guarantee to deliver packets
 
 1166
-00:52:57,839 --> 00:53:02,270
-by the tcp/ip stack on both you know so
+00:56:12,960 --> 00:56:20,520
+再假设记录通道也在主节点宕机的时候失效了
+let's suppose this log entry on the logging channel got dropped also when the when the primary died
 
 1167
-00:53:02,270 --> 00:53:07,140
-I'm expecting 99.99% of the logging
+00:56:20,820 --> 00:56:25,370
+那么现在的状态就是 客户端收到回复11
+so now the state of play is the client received a reply saying 11
 
 1168
-00:53:07,140 --> 00:53:09,359
-channel traffic to be incoming packets
+00:56:26,470 --> 00:56:30,970
+但是副节点没有收到转发来的客户端请求 所以计数器仍然是10
+but the backup did not get the client request so its state is still 10
 
 1169
-00:53:09,359 --> 00:53:12,210
-and only a tiny fraction to be results
+00:56:32,570 --> 00:56:38,090
+现在因为察觉到主节点宕机 副节点接管服务
+no now the backup takes over because it's seized the primary is dead and
 
 1170
-00:53:12,210 --> 00:53:14,040
-from special non-deterministic
+00:56:38,500 --> 00:56:42,360
+那这个或者其他客户端发送自增请求到原来的副节点
+this client or maybe some other client sends an increment request a new backup
 
 1171
-00:53:14,040 --> 00:53:17,700
-instructions and so we can kind of guess
+00:56:42,460 --> 00:56:47,570
+当收到请求的时候这个接管工作的副节点开始处理
+and now it's really processing these requests and so the new backup when it gets the next increment requests
 
 1172
-00:53:17,700 --> 00:53:20,010
-what the traffic load is likely to be
+00:56:48,000 --> 00:56:50,170
+将计数器从10自增为11
+you know it's now going to change its state to 11
 
 1173
-00:53:20,010 --> 00:53:22,650
-for for a server that serves clients
+00:56:51,850 --> 00:56:56,240
+然后值11就会第二次作为回复出现
+and generate a second 11 response
 
 1174
-00:53:22,650 --> 00:53:24,570
-basically it's a copy of every client
+00:56:57,210 --> 00:56:59,010
+回复给原来的客户端或者不同的客户端
+maybe the same client maybe to a different client
 
 1175
-00:53:24,570 --> 00:53:27,839
-packet and then we'll sort of know what
+00:56:59,550 --> 00:57:06,110
+客户端如果比较会发现这是同样的回复 这本不应该发生
+which if the clients compare notes or if it's the same client it's just obviously cannot have happened I didn't
 
 1176
-00:53:27,839 --> 00:53:29,880
-the logging channel how fast the logging
+00:57:06,570 --> 00:57:11,380
+因为我们需要支撑的程序在没改动的情况下
+so you know because we have to support unmodified software that does not damn
 
 1177
-00:53:29,880 --> 00:53:40,980
-channel has to be all right so um so
+00:57:11,390 --> 00:57:14,380
+并不能处理这些副节点上不寻常的问题
+that there's any funny business of replication going on
 
 1178
-00:53:40,980 --> 00:53:42,150
-it's worth talking a little bit about
+00:57:14,620 --> 00:57:17,540
+意思是我们不能对它进行修改
+that means we do not have the opportunity to
 
 1179
-00:53:42,150 --> 00:53:44,849
-how output works and in this system
+00:57:17,550 --> 00:57:19,060
+比如说我们可以
+you know you can imagine the client could go
 
 1180
-00:53:44,849 --> 00:53:46,410
-really the only what output basically
+00:57:19,080 --> 00:57:21,300
+把客户端改成能处理
+you know we could change the client to realize 
 
 1181
-00:53:46,410 --> 00:53:49,829
-means only is sending packets that
+00:57:21,380 --> 00:57:24,650
+副节点容错性带来的问题
+something funny it happened with the fault tolerance and do I don't know what
 
 1182
-00:53:49,829 --> 00:53:51,300
-client send requests in as network
-
-1183
-00:53:51,300 --> 00:53:54,930
-packets the response goes back out as
-
-1184
-00:53:54,930 --> 00:53:56,760
-network packets and there's really no
-
-1185
-00:53:56,760 --> 00:54:00,150
-other form of output as I mentioned the
-
-1186
-00:54:00,150 --> 00:54:02,579
-you know both primary and backup compute
-
-1187
-00:54:02,579 --> 00:54:04,770
-the output packet they want to send and
-
-1188
-00:54:04,770 --> 00:54:06,569
-that sort of asks that simulated mix to
-
-1189
-00:54:06,569 --> 00:54:08,310
-send the packet it's really sent on the
-
-1190
-00:54:08,310 --> 00:54:10,410
-primary and simply discard it the output
-
-1191
-00:54:10,410 --> 00:54:15,930
-packet discarded on the backup okay but
-
-1192
-00:54:15,930 --> 00:54:17,040
-it turns out is a little more
-
-1193
-00:54:17,040 --> 00:54:21,150
-complicated than that so supposing we're
-
-1194
-00:54:21,150 --> 00:54:24,630
-what we're running is a some sort of
-
-1195
-00:54:24,630 --> 00:54:27,450
-simple database server and the operation
-
-1196
-00:54:27,450 --> 00:54:28,650
-the client operation that our database
-
-1197
-00:54:28,650 --> 00:54:31,380
-server supports is increment and ideas
-
-1198
-00:54:31,380 --> 00:54:33,000
-the client sends an increment requests
-
-1199
-00:54:33,000 --> 00:54:36,390
-the database server increments the value
-
-1200
-00:54:36,390 --> 00:54:39,960
-and sends back the new value so maybe on
-
-1201
-00:54:39,960 --> 00:54:41,579
-the primary well let's say everything's
-
-1202
-00:54:41,579 --> 00:54:43,410
-fine so far and the primary backup both
-
-1203
-00:54:43,410 --> 00:54:47,160
-have value 10 in memory and that's the
-
-1204
-00:54:47,160 --> 00:54:51,390
-current value at the counter and some
-
-1205
-00:54:51,390 --> 00:54:53,490
-client on the local area network sends a
-
-1206
-00:54:53,490 --> 00:54:58,609
-you know an increment request to
-
-1207
-00:54:58,810 --> 00:55:03,020
-the primary that packet is you know
-
-1208
-00:55:03,020 --> 00:55:04,790
-delivered to the primary it's you know
-
-1209
-00:55:04,790 --> 00:55:07,310
-it's executed the primary server
-
-1210
-00:55:07,310 --> 00:55:08,660
-software and the primary says oh you
-
-1211
-00:55:08,660 --> 00:55:10,310
-know current values 10 I'm gonna change
-
-1212
-00:55:10,310 --> 00:55:13,070
-to 11 and send a you know response
-
-1213
-00:55:13,070 --> 00:55:16,610
-packet back to the client saying saying
-
-1214
-00:55:16,610 --> 00:55:20,570
-11 as their reply the same request as I
-
-1215
-00:55:20,570 --> 00:55:22,160
-mentioned gonna supposed to be sent to
-
-1216
-00:55:22,160 --> 00:55:25,040
-the backup will also be processed here
-
-1217
-00:55:25,040 --> 00:55:26,710
-it's going to change this 10 to 11 also
-
-1218
-00:55:26,710 --> 00:55:28,730
-generate a reply and we'll throw it away
-
-1219
-00:55:28,730 --> 00:55:30,470
-that's what's supposed to happen the
-
-1220
-00:55:30,470 --> 00:55:33,620
-output however you also need to ask
-
-1221
-00:55:33,620 --> 00:55:37,040
-yourself what happens if there's a
-
-1222
-00:55:37,040 --> 00:55:39,890
-failure at an awkward time if you should
-
-1223
-00:55:39,890 --> 00:55:42,020
-always in this class should always ask
-
-1224
-00:55:42,020 --> 00:55:44,540
-yourself what's the most awkward time to
-
-1225
-00:55:44,540 --> 00:55:46,190
-have a failure and what would happen you
-
-1226
-00:55:46,190 --> 00:55:54,560
-to failure occurred then so suppose the
-
-1227
-00:55:54,560 --> 00:55:58,130
-primary does indeed generate the reply
-
-1228
-00:55:58,130 --> 00:56:01,190
-here back to the client but the client
-
-1229
-00:56:01,190 --> 00:56:03,200
-the primary crashes just after sending
-
-1230
-00:56:03,200 --> 00:56:05,330
-the report its reply to the client and
-
-1231
-00:56:05,330 --> 00:56:08,360
-furthermore and much worse it turns out
-
-1232
-00:56:08,360 --> 00:56:10,180
-that you know this is just a network it
-
-1233
-00:56:10,180 --> 00:56:12,440
-doesn't guarantee to deliver packets
-
-1234
-00:56:12,440 --> 00:56:16,250
-let's suppose this log entry on the
-
-1235
-00:56:16,250 --> 00:56:18,860
-logging channel got dropped also when
-
-1236
-00:56:18,860 --> 00:56:21,170
-the when the primary died so now the
-
-1237
-00:56:21,170 --> 00:56:23,960
-state of play is the client received a
-
-1238
-00:56:23,960 --> 00:56:28,010
-reply saying 11 but the backup did not
-
-1239
-00:56:28,010 --> 00:56:29,990
-get the client request so its state is
-
-1240
-00:56:29,990 --> 00:56:34,940
-still 10 no now the backup takes over
-
-1241
-00:56:34,940 --> 00:56:37,610
-because it's seized the primary is dead
-
-1242
-00:56:37,610 --> 00:56:39,650
-and this client or maybe some other
-
-1243
-00:56:39,650 --> 00:56:41,780
-client sends an increment request a new
-
-1244
-00:56:41,780 --> 00:56:43,790
-backup and now it's really processing
-
-1245
-00:56:43,790 --> 00:56:45,830
-these requests and so the new backup
-
-1246
-00:56:45,830 --> 00:56:47,420
-when it gets the next increment requests
-
-1247
-00:56:47,420 --> 00:56:49,220
-you know it's now going to change its
-
-1248
-00:56:49,220 --> 00:56:55,640
-state to 11 and generate a second 11
-
-1249
-00:56:55,640 --> 00:56:58,310
-response maybe the same client maybe to
-
-1250
-00:56:58,310 --> 00:57:00,470
-a different client which if the clients
-
-1251
-00:57:00,470 --> 00:57:01,760
-compare notes or if it's the same client
-
-1252
-00:57:01,760 --> 00:57:04,610
-it's just obviously cannot have happened
-
-1253
-00:57:04,610 --> 00:57:07,790
-I didn't so you know because we have to
-
-1254
-00:57:07,790 --> 00:57:10,670
-support unmodified software that does
-
-1255
-00:57:10,670 --> 00:57:11,390
-not
-
-1256
-00:57:11,390 --> 00:57:13,220
-damn that there's any funny business of
-
-1257
-00:57:13,220 --> 00:57:15,289
-replication going on that means we do
-
-1258
-00:57:15,289 --> 00:57:17,480
-not have the opportunity to you know you
-
-1259
-00:57:17,480 --> 00:57:19,099
-can imagine the client could go you know
-
-1260
-00:57:19,099 --> 00:57:20,869
-we could change the client to realize
-
-1261
-00:57:20,869 --> 00:57:22,640
-something funny it happened with the
-
-1262
-00:57:22,640 --> 00:57:24,559
-fault tolerance and do I don't know what
-
-1263
-00:57:24,559 --> 00:57:25,789
+00:57:24,810 --> 00:57:26,210
+但是实际上我们没有这种选择
 but we don't have that option here
 
-1264
-00:57:25,789 --> 00:57:27,559
-because this whole system really only
+1183
+00:57:26,550 --> 00:57:30,490
+因为这个系统只有在我们不需要客户端进行改动的情况下才有意义
+because this whole system really only makes sense if we're running unmodified software
 
-1265
-00:57:27,559 --> 00:57:29,930
-makes sense if we're running unmodified
+1184
+00:57:32,370 --> 00:57:34,930
+所以这是个灾难
+so so this was a big this is a disaster
 
-1266
-00:57:29,930 --> 00:57:33,799
-software so so this was a big this is a
+1185
+00:57:35,920 --> 00:57:37,240
+我们不能让它发生
+we can't have let this happen does
 
-1267
-00:57:33,799 --> 00:57:38,769
-disaster we can't have let this happen
+1186
+00:57:39,730 --> 00:57:44,320
+有人记得论文上是怎么样防止它发生的吗？
+anybody remember from the paper how they prevent this from happening
 
-1268
-00:57:38,769 --> 00:57:43,130
-does anybody remember from the paper how
+1187
+00:57:45,780 --> 00:57:49,150
+输出规则 对的
+the output rule yeah so you want to do you know
 
-1269
-00:57:43,130 --> 00:57:45,950
-they prevent this from happening the
+1188
+00:57:55,140 --> 00:57:58,920
+没错解决的方案就是控制输出规则
+yeah so the output rules is the their solution to this problem
 
-1270
-00:57:45,950 --> 00:57:48,859
-output rule yeah so you want to do you
+1189
+00:58:03,090 --> 00:58:07,240
+方案就是阻止输出
+and the idea is that the client he's not allowed to generate you know and
 
-1271
-00:57:48,859 --> 00:57:57,260
-know yeah so the output rules is the
+1190
+00:58:07,740 --> 00:58:10,850
+在主节点上不允许生成任何输出
+generate any output the primary's not allowed to generate any output
 
-1272
-00:57:57,260 --> 00:58:03,260
-their solution to this problem and the
+1191
+00:58:10,870 --> 00:58:13,480
+比如我们现在说的这个计数器输出
+and what we're talking about now is this output here
 
-1273
-00:58:03,260 --> 00:58:05,690
-idea is that the client he's not allowed
+1192
+00:58:13,800 --> 00:58:22,330
+直到副节点确认收到了所有的记录
+until the backup acknowledges that it has received all log records up to this point
 
-1274
-00:58:05,690 --> 00:58:08,539
-to generate you know and generate any
+1193
+00:58:22,740 --> 00:58:28,260
+所以整个流程正确的顺序是 回到主节点宕机之前
+so the real sequence at the primary then let's now undone crash the primary
 
-1275
-00:58:08,539 --> 00:58:10,160
-output the primary's not allowed to
+1194
+00:58:30,980 --> 00:58:32,600
+回到计数器还是10的时候
+go back to them starting at 10 the
 
-1276
-00:58:10,160 --> 00:58:11,390
-generate any output and what we're
+1195
+00:58:32,610 --> 00:58:35,960
+正确的顺序是 在这个输出规则下
+real sequence now when the output rule is that
 
-1277
-00:58:11,390 --> 00:58:13,240
-talking about now is this output here
+1196
+00:58:39,000 --> 00:58:40,160
+当输入到来时
+the input arrives at the time the input arrives
 
-1278
-00:58:13,240 --> 00:58:17,000
-until the backup acknowledges that it
+1197
+00:58:40,410 --> 00:58:48,540
+虚拟机监视器发送输入的副本到副节点
+that's when the virtual machine monitor sends a copy of the input to the backup
 
-1279
-00:58:17,000 --> 00:58:21,890
-has received all log records up to this
+1198
+00:58:49,320 --> 00:58:53,780
+这个输入的日志信息
+so the the sort of time at which this log message with the input
 
-1280
-00:58:21,890 --> 00:58:24,410
-point so the real sequence at the
+1199
+00:58:54,170 --> 00:58:57,590
+在主节点产生输出前发到副节点
+is sent is before strictly before the primary generates the output sort of obvious
 
-1281
-00:58:24,410 --> 00:58:27,349
-primary then let's now undone crash the
+1200
+00:59:01,400 --> 00:59:06,530
+发送之后这个日志就在去往副节点的网络中
+then after firing this log entry off across a network and now it's heading towards the backup
 
-1282
-00:58:27,349 --> 00:58:32,509
-primary go back to them starting at 10
+1201
+00:59:08,360 --> 00:59:09,470
+这个日志有可能丢失
+but I'd have been lost might not
 
-1283
-00:58:32,509 --> 00:58:34,579
-the real sequence now when the output
+1202
+00:59:11,460 --> 00:59:17,450
+虚拟机监视器同样传递请求到主节点 生成输出
+the virtual machine monitor delivers a request to the primary server software it generates the output
 
-1284
-00:58:34,579 --> 00:58:40,670
-rule is that the input arrives at the
+1203
+00:59:17,620 --> 00:59:24,620
+所以现在主节点生成结果 计数器值变为11
+so now the replicated you know the primary has actually generated change the state 211
 
-1285
-00:58:40,670 --> 00:58:42,680
-time the input arrives that's when the
+1204
+00:59:24,630 --> 00:59:27,250
+然后产生一个11的回复
+and generated an output packet that says eleven
 
-1286
-00:58:42,680 --> 00:58:46,400
-virtual machine monitor sends a copy of
+1205
+00:59:27,370 --> 00:59:30,770
+但是虚拟机监视器说等一下 现在还不允许生成输出
+but the virtual machine monitor says oh wait a minute we're not allowed to generate that output
 
-1287
-00:58:46,400 --> 00:58:50,000
-the input to the backup so the the sort
+1206
+00:59:30,850 --> 00:59:33,470
+直到之前的日志记录都被副节点确认
+until all previous log records have been acknowledged by the backup
 
-1288
-00:58:50,000 --> 00:58:53,150
-of time at which this log message with
+1207
+00:59:33,900 --> 00:59:37,600
+这是最近的一条日志消息
+so you know this is the most recent previous log message
 
-1289
-00:58:53,150 --> 00:58:55,670
-the input is sent is before strictly
+1208
+00:59:37,880 --> 00:59:40,300
+所以输出都被虚拟机监视器截停
+so this output is held by the virtual machine monitor
 
-1290
-00:58:55,670 --> 00:58:58,240
-before the primary generates the output
+1209
+00:59:40,490 --> 00:59:45,320
+直到这条包含客户端输入的日志
+until the this log entry containing the input packet from the client
 
-1291
-00:58:58,240 --> 00:59:03,440
-sort of obvious then after firing this
+1210
+00:59:45,570 --> 00:59:49,570
+被虚拟机监视器投递和缓冲
+is delivered to the virtual machine monitor and buffered by the virtual machine monitor 
 
-1292
-00:59:03,440 --> 00:59:05,150
-log entry off across a network and now
+1211
+00:59:49,610 --> 00:59:51,350
+但是不一定马上会执行
+but do not necessarily execute it
 
-1293
-00:59:05,150 --> 00:59:08,509
-it's heading towards the backup but I'd
+1212
+00:59:51,900 --> 00:59:55,760
+可能需要等待副节点执行到指令流中对应的位置
+it may be just waiting for the backup to get to that point in the instruction stream
 
-1294
-00:59:08,509 --> 00:59:13,099
-have been lost might not the virtual
+1213
+00:59:56,000 --> 01:00:01,370
+到这里虚拟机监视器就会发送一个ACK包说自己收到输入
+and then the virtual machine monitor here will send an ACK packet back saying yes I did get that input
 
-1295
-00:59:13,099 --> 00:59:14,480
-machine monitor delivers a request to
-
-1296
-00:59:14,480 --> 00:59:16,609
-the primary server software it generates
-
-1297
-00:59:16,609 --> 00:59:19,869
-the output so now the
-
-1298
-00:59:20,690 --> 00:59:22,550
-replicated you know the primary has
-
-1299
-00:59:22,550 --> 00:59:24,710
-actually generated change the state 211
-
-1300
-00:59:24,710 --> 00:59:26,839
-and generated an output packet that says
-
-1301
-00:59:26,839 --> 00:59:28,609
-eleven but the virtual machine monitor
-
-1302
-00:59:28,609 --> 00:59:29,690
-says oh wait a minute we're not allowed
-
-1303
-00:59:29,690 --> 00:59:31,160
-to generate that output until all
-
-1304
-00:59:31,160 --> 00:59:32,480
-previous log records have been
-
-1305
-00:59:32,480 --> 00:59:34,700
-acknowledged by the backup so you know
-
-1306
-00:59:34,700 --> 00:59:37,130
-this is the most recent previous log
-
-1307
-00:59:37,130 --> 00:59:39,140
-message so this output is held by the
-
-1308
-00:59:39,140 --> 00:59:42,829
-virtual machine monitor until the this
-
-1309
-00:59:42,829 --> 00:59:44,569
-log entry containing the input packet
-
-1310
-00:59:44,569 --> 00:59:47,060
-from the client is delivered to the
-
-1311
-00:59:47,060 --> 00:59:48,560
-virtual machine monitor and buffered by
-
-1312
-00:59:48,560 --> 00:59:50,089
-the virtual machine monitor but do not
-
-1313
-00:59:50,089 --> 00:59:52,430
-necessarily execute it it may be just
-
-1314
-00:59:52,430 --> 00:59:54,410
-waiting for the backup to get to that
-
-1315
-00:59:54,410 --> 00:59:56,869
-point in the instruction stream and then
-
-1316
-00:59:56,869 --> 00:59:59,000
-the virtual machine monitor here will
-
-1317
-00:59:59,000 --> 01:00:00,530
-send an ACK packet back saying yes I
-
-1318
-01:00:00,530 --> 01:00:02,240
-did get that input and when the
+1214
+01:00:01,790 --> 01:00:03,350
+当确认消息抵达时
+and when the acknowledgment comes back
 
 1319
-01:00:02,240 --> 01:00:05,690
-acknowledgment comes back only then will
+01:00:03,360 --> 01:00:05,690
+only then will
 
 1320
 01:00:05,690 --> 01:00:07,099

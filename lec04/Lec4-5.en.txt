@@ -1,0 +1,109 @@
+so we can't let that happen
+because if the primary happens to be playing that trick
+it's gonna see
+you know if we allowed the network interface card to directly DMA incoming packets into the memory of the primary
+the primary we don't have any control over the exact timing of
+and so we're not going to know sort of at what times the primary did or didn't observe data from the packet arriving
+and so what that means is that in fact the NIC copies incoming packets into private memory of the virtual machine monitor
+and then the network interface card interrupts the virtual machine monitor and says oh a packet has arrived
+at that point the virtual machine monitor will suspend the primary
+and remember what instruction number had suspended at
+copy the entire packet into the primaries memory while the primary suspended and not looking at this copy
+and then emulate a network interface card interrupt into the primary
+and then send the packet and the instruction number to the backup
+the backup will also suspend the backup rope
+you know virtual machine monitor will spend the backup at that instruction number
+copy the entire packet and again to the back-up is guaranteed not to be watching the data arrive
+and then fakin interrupts at the same instruction numbers of the primary
+and this is the something the bounce buffer mechanism explained in the paper
+okay yeah the the only instructions and that result in logging channel traffic or are weird instructions which are rare
+no its instructions that might yield a different result if executed on the primary and backup
+like instruction to get the current time of day or current processor number
+or ask how many instructions have been executed or
+and those actually turn out to be relatively rare
+there's also one them to get random tasks when some machines
+to ask or a hardware generated random number for cryptography or something
+and but those are not everyday instructions
+most instructions like add instructions they're gonna get the same result on primary and backup
+exactly right each network packet just it's packaged up and forwarded as it is as a network packet
+and is interpreted by the tcp/ip stack on both you know
+so I'm expecting 99.99% of the logging channel traffic to be incoming packets
+and only a tiny fraction to be results from special non-deterministic instructions
+and so we can kind of guess what the traffic load is likely to be for for a server that serves clients
+basically it's a copy of every client packet
+and then we'll sort of know what the logging channel how fast the logging channel has to be
+it's worth talking a little bit about how output works
+and in this system really the only what output basically means only is sending packets
+that client send requests in as network packets the response goes back out as network packets
+and there's really no other form of output
+as I mentioned the you know both primary and backup compute the output packet they want to send
+and that sort of asks that simulated mix to send the packet it's really sent on the primary
+and simply discard it the output packet discarded on the backup
+okay but it turns out is a little more complicated than that
+so supposing we're what we're running is a some sort of simple database server
+and the operation the client operation that our database server supports is increment
+and ideas the client sends an increment requests the database server increments the value and sends back the new value
+so maybe on the primary well let's say everything's fine so far
+and the primary backup both have value 10 in memory and that's the current value at the counter
+and some client on the local area network sends a you know an increment request
+to the primary that packet is you know delivered to the primary it's you know
+it's executed the primary server software and the primary
+says oh you know current values 10 I'm gonna change to 11
+and send a you know response packet back to the client saying saying 11
+mentioned gonna supposed to be sent to the backup will also be processed here it's going to change this 10 to 11 also
+generate a reply and we'll throw it away that's what's supposed to happen the output
+however you also need to ask yourself what happens if there's a failure at an awkward time
+if you should always in this class should always ask yourself
+what's the most awkward time to have a failure and what would happen you to failure occurred then so
+suppose the primary does indeed generate the reply here back to the client
+but the client the primary crashes just after sending the report its reply to the client
+and furthermore and much worse it turns out that you know this is just a network it doesn't guarantee to deliver packets
+let's suppose this log entry on the logging channel got dropped also when the when the primary died
+so now the state of play is the client received a reply saying 11
+but the backup did not get the client request so its state is still 10
+no now the backup takes over because it's seized the primary is dead and
+this client or maybe some other client sends an increment request a new backup
+and now it's really processing these requests and so the new backup when it gets the next increment requests
+you know it's now going to change its state to 11
+and generate a second 11 response
+maybe the same client maybe to a different client
+which if the clients compare notes or if it's the same client it's just obviously cannot have happened I didn't
+so you know because we have to support unmodified software that does not damn
+that there's any funny business of replication going on
+that means we do not have the opportunity to
+you know you can imagine the client could go
+you know we could change the client to realize
+something funny it happened with the fault tolerance and do I don't know what
+but we don't have that option here
+because this whole system really only makes sense if we're running unmodified software
+so so this was a big this is a disaster
+we can't have let this happen does
+anybody remember from the paper how they prevent this from happening
+the output rule yeah so you want to do you know
+yeah so the output rules is the their solution to this problem
+and the idea is that the client he's not allowed to generate you know and
+generate any output the primary's not allowed to generate any output
+and what we're talking about now is this output here
+until the backup acknowledges that it has received all log records up to this point
+so the real sequence at the primary then let's now undone crash the primary
+go back to them starting at 10 the
+real sequence now when the output rule is that
+the input arrives at the time the input arrives
+that's when the virtual machine monitor sends a copy of the input to the backup
+so the the sort of time at which this log message with the input
+is sent is before strictly before the primary generates the output sort of obvious
+then after firing this log entry off across a network and now it's heading towards the backup
+but I'd have been lost might not
+the virtual machine monitor delivers a request to the primary server software it generates the output
+so now the replicated you know the primary has actually generated change the state 211
+and generated an output packet that says eleven
+but the virtual machine monitor says oh wait a minute we're not allowed to generate that output
+until all previous log records have been acknowledged by the backup
+so you know this is the most recent previous log message
+so this output is held by the virtual machine monitor
+until the this log entry containing the input packet from the client
+is delivered to the virtual machine monitor and buffered by the virtual machine monitor
+but do not necessarily execute it
+it may be just waiting for the backup to get to that point in the instruction stream
+and then the virtual machine monitor here will send an ACK packet back saying yes I did get that input
+and when the acknowledgment comes back
