@@ -1171,914 +1171,1142 @@ want to replicate have some internal
 
 237
 00:10:00,589 --> 00:10:05,330
+确定性的操作
 operation that's deterministic except
 
 238
 00:10:05,330 --> 00:10:08,839
-when external input comes in right you
+除非外部输入到来  
+when external input comes in right 
 
 239
 00:10:08,839 --> 00:10:10,880
-know ordinarily if there's no external
+通常情况下，如果计算机没有外部影响 
+ordinarily if there's no external
 
 240
 00:10:10,880 --> 00:10:12,770
-influences on a computer it just
+通常情况下，如果计算机没有外部影响  
+influences on a computer 
 
 241
 00:10:12,770 --> 00:10:14,330
-executes one instruction after another
+它只是一个接一个地执行指令 
+it just executes one instruction after another
 
 242
 00:10:14,330 --> 00:10:16,010
+每条指令做的是
 and what each instruction does is a
 
 243
 00:10:16,010 --> 00:10:18,770
+一个计算机内存和寄存器中内容的确定性函数 
 deterministic function of what's in the
 
 244
 00:10:18,770 --> 00:10:20,390
+一个计算机内存和寄存器中内容的确定性函数 
 memory and the registers of the computer
 
 245
 00:10:20,390 --> 00:10:22,400
-and it's only when external events
+而且只有当外部事件干预时，才可能发生意外情况
+and it's only when external events intervene 
 
 246
 00:10:22,400 --> 00:10:25,190
-intervene that something unexpected may
+而且只有当外部事件干预时，才可能发生意外情况  
+that something unexpected may happen 
 
 247
 00:10:25,190 --> 00:10:27,440
-happen like a packet arrives of a some
+像是某个随机时间到达的数据包
+like a packet arrives of a some random time 
 
 248
 00:10:27,440 --> 00:10:31,550
-random time and that causes the server
+导致服务器开始做些不一样的事
+and that causes the server
 
 249
 00:10:31,550 --> 00:10:33,800
-to start doing something differently I'm
+导致服务器开始做些不一样的事 
+to start doing something differently
 
 250
 00:10:33,800 --> 00:10:36,410
+复制的状态机方案不会在副本之间发送状态
 so replicated state machine schemes
 
 251
 00:10:36,410 --> 00:10:39,260
-don't send the state between the
+复制的状态机方案不会在副本之间发送状态  
+don't send the state between the replicas 
 
 252
 00:10:39,260 --> 00:10:41,029
-replicas instead they just send those
+相反，他们只是发送这些外部事件
+instead they just send those
 
 253
 00:10:41,029 --> 00:10:45,500
+相反，他们只是发送这些外部事件
 external events they just send maybe
 
 254
 00:10:45,500 --> 00:10:47,839
-from a primary to a backup again just
+只是从primary发送到backup 
+from a primary to a backup again 
 
 255
 00:10:47,839 --> 00:10:50,420
-send things like arriving input from the
+只是发送backup需要了解的信息，例如从外界获取的输入
+just send things like arriving input from the
 
 256
 00:10:50,420 --> 00:10:52,550
+只是发送backup需要了解的信息，例如从外界获取的输入
 outside world that the backup needs to
 
 257
 00:10:52,550 --> 00:10:52,910
-know
+只是发送backup需要了解的信息，例如从外界获取的输入 
+know about
 
 258
 00:10:52,910 --> 00:10:55,370
-and the observation is that you know if
+观察结果是
+and the observation is that 
 
 259
 00:10:55,370 --> 00:10:57,050
-you have to two computers and they start
+如果有两台计算机
+if there are two computers and they start
 
 260
 00:10:57,050 --> 00:11:00,110
+并且它们从相同的状态开始
 from the same state and they see the
 
 261
 00:11:00,110 --> 00:11:03,740
-same inputs that that in the same order
+并且它们以相同的顺序或相同的时间看到相同的输入
+same inputs in the same order
 
 262
 00:11:03,740 --> 00:11:05,810
+并且它们以相同的顺序或相同的时间看到相同的输入
 or at the same time the two computers
 
 263
 00:11:05,810 --> 00:11:08,150
+则两台计算机将继续互为彼此的复制
 will continue to be replicas of each
 
 264
 00:11:08,150 --> 00:11:10,490
-other and sort of execute identically as
+并以相同的方式执行  
+other and sort of execute identically 
 
 265
 00:11:10,490 --> 00:11:12,020
-long as they both see the same inputs at
+只要他们俩同时看到相同的输入  
+as long as they both see the same inputs at the same time 
 
 266
 00:11:12,020 --> 00:11:17,360
-the same time so this transfers probably
+这可能转移了内存
+so this transfers probably memory 
 
 267
 00:11:17,360 --> 00:11:21,380
-memory and this transfer some primary
+这传递给primary和backup 
+and this transfer some primary backup 
 
 268
 00:11:21,380 --> 00:11:25,670
-backup just operations from clients or
+来自client的操作或外部输入或外部事件
+just operations from clients or
 
 269
 00:11:25,670 --> 00:11:27,890
-external external inputs or external
+来自client的操作或外部输入或外部事件 
+external external inputs or external events 
 
 270
 00:11:27,890 --> 00:11:33,230
-events and you know the reason why
+人们倾向于使用复制状态机的原因  
+and the reason why
 
 271
 00:11:33,230 --> 00:11:35,810
-people tend to favor a replicated state
+人们倾向于使用复制状态机的原因  
+people tend to favor a replicated state machine 
 
 272
 00:11:35,810 --> 00:11:39,350
-machine is that usually operations are
+在于通常操作要比状态小
+is that usually operations are
 
 273
 00:11:39,350 --> 00:11:41,630
-smaller than the state but this you know
+在于通常操作要比状态小
+smaller than the state but this 
 
 274
 00:11:41,630 --> 00:11:43,130
+服务器的状态，如果是数据库服务器
 the state of a server if it's a database
 
 275
 00:11:43,130 --> 00:11:44,630
+可能是整个数据库
 server might be the entire database
 
 276
 00:11:44,630 --> 00:11:47,060
-might be you know gigabytes whereas the
+可能是千兆字节
+might be gigabytes whereas the
 
 277
 00:11:47,060 --> 00:11:48,680
+而操作只是一些客户端发送的
 operations are just some clients sending
 
 278
 00:11:48,680 --> 00:11:51,110
-and you know please read or write key 27
+比如，请读写key27
+please read or write key 27
 
 279
 00:11:51,110 --> 00:11:53,690
+操作通常很小
 operations are usually small the states
 
 280
 00:11:53,690 --> 00:11:55,190
+状态通常很大
 usually large so replicate a state
 
 281
 00:11:55,190 --> 00:11:57,470
+因此复制状态机通常看起来很吸引人
 machine usually looks attractive and
 
 282
 00:11:57,470 --> 00:11:59,090
+轻微的缺点是这些方案往往要复杂得多
 slight downside is that the schemes tend
 
 283
 00:11:59,090 --> 00:12:01,490
+轻微的缺点是这些方案往往要复杂得多
 to be quite a bit more complicated and
 
 284
 00:12:01,490 --> 00:12:05,900
+并且依赖于计算机运行方式的更多假设
 rely on sort of more assumptions about
 
 285
 00:12:05,900 --> 00:12:08,930
-how the computers operate whereas this
+并且依赖于计算机运行方式的更多假设
+how the computers operate whereas 
 
 286
 00:12:08,930 --> 00:12:10,640
-is a really heavy-handed I'm just gonna
+然而这种方案则简单粗暴 
+this is a really heavy-handed 
 
 287
 00:12:10,640 --> 00:12:12,380
-send you my whole state sort of a
+我只是要寄给你 我的整个状态
+I'm just gonna send you my whole state sort of a
 
 288
 00:12:12,380 --> 00:12:14,440
+没什么要担心的 
 nothing to worry about
 
 289
 00:12:14,440 --> 00:12:22,180
+关于这些策略，有什么问题吗
 any questions about these strategies yes
 
 290
 00:12:27,649 --> 00:12:30,930
-well the did ok so the question is
+好吧，所以问题是 
+well ok so the question is
 
 291
 00:12:30,930 --> 00:12:32,760
-suppose something went wrong with our
+假设我们的方案出了点问题  
+suppose something went wrong with our scheme 
 
 292
 00:12:32,760 --> 00:12:34,410
-scheme and the backup was not actually
+backup实际上与primary不一样 
+and the backup was not actually
 
 293
 00:12:34,410 --> 00:12:40,579
-identical to the primary so you know
+backup实际上与primary不一样 
+identical to the primary so
 
 294
 00:12:40,579 --> 00:12:44,790
-you're suppose we were running GFS
+假设我们正在运行一个GFS master服务器  
+suppose we were running a GFS master 
 
 295
 00:12:44,790 --> 00:12:47,220
-master and it's the primary it just
+这是master
+and it's the primary it just
 
 296
 00:12:47,220 --> 00:12:49,949
-handed out at least two chunks server
+它刚刚将租约分发给了chunk服务器一  
+handed out a lease to chunks server one 
 
 297
 00:12:49,949 --> 00:12:55,019
-one but because the two you know because
+但是因为
+but because the two because
 
 298
 00:12:55,019 --> 00:12:56,910
+因为因为我们允许primary和backup节点的状态不同步 
 we've allowed the states of the primary
 
 299
 00:12:56,910 --> 00:12:59,910
-back to drift out of sync the backup did
+因为因为我们允许primary和backup节点的状态不同步
+back to drift out of sync 
 
 300
 00:12:59,910 --> 00:13:01,470
-not issue at least to anybody it wasn't
+备份没有向任何人发出租约
+the backup did not issue a lease to anybody 
 
 301
 00:13:01,470 --> 00:13:02,850
-even away or anybody had asked for these
+甚至没有意识到有人请求租约
+or even aware anybody had asked for lease
 
 302
 00:13:02,850 --> 00:13:04,380
-so now the primary thinks you know
+现在primary服务器认为chunk服务器持有某些块的租约
+so now the primary thinks 
 
 303
 00:13:04,380 --> 00:13:05,880
-chunks everyone has lease for some chunk
+现在primary服务器认为chunk服务器持有某些块的租约
+chunks server one has lease for some chunk
 
 304
 00:13:05,880 --> 00:13:08,600
-in the backup doesn't the primary fails
+而backup并没有，primary服务器失败 
+the backup doesn't the primary fails
 
 305
 00:13:08,600 --> 00:13:11,250
-backup takes over right now chunks over
+backup接手 现在chunk服务器一
+backup takes over right now chunks server
 
 306
 00:13:11,250 --> 00:13:13,620
+认为它持有某些块的租约
 one thinks it has a lease for some chunk
 
 307
 00:13:13,620 --> 00:13:17,850
+但是当前的primary服务器不知道
 but then the current master doesn't and
 
 308
 00:13:17,850 --> 00:13:19,440
+并且很乐意将租约分发给其他chunk服务器
 is happy to hand out the lease to some
 
 309
 00:13:19,440 --> 00:13:20,880
-other trunk server now we have to chunk
+现在我们有两个chunk服务器提供相同的租约
+other chunk server now we have two chunk
 
 310
 00:13:20,880 --> 00:13:23,250
+现在我们有两个chunk服务器提供相同的租约
 servers serving the same lease okay so
 
 311
 00:13:23,250 --> 00:13:25,230
-that's just a close to home example but
+那只是一个接近家庭的例子
+that's just a close to home example 
 
 312
 00:13:25,230 --> 00:13:28,019
-really you know almost any bad thing and
+但实际上几乎所有坏事 
+but really almost any bad thing and
 
 313
 00:13:28,019 --> 00:13:30,230
+我认为你可以构造任何坏的情况
 kind of I think you construct any bad
 
 314
 00:13:30,230 --> 00:13:32,880
+想象某些服务会因为状态不同，导致计算出错误答案
 scenario by just imagining some service
 
 315
 00:13:32,880 --> 00:13:35,579
-that confuse the wrong answer because
+想象某些服务会因为状态不同，导致计算出错误答案
+that conpute the wrong answer because
 
 316
 00:13:35,579 --> 00:13:38,480
-the state's leverage
+想象某些服务会因为状态不同，导致计算出错误答案 
+the state's diverge
 
 317
 00:13:42,740 --> 00:13:46,610
+你问了随机化的问题 
 so you're asking about randomization
 
 318
 00:13:50,600 --> 00:13:53,850
+是的，哦，你们都在谈论这个
 yeah oh y'all talk about this I'll talk
 
 319
 00:13:53,850 --> 00:13:55,950
+我待会儿再说
 about this a bit later on but it is good
 
 320
 00:13:55,950 --> 00:13:58,320
+当primary和backup正在执行的相同的指令时
 that the replicated state scheme
 
 321
 00:13:58,320 --> 00:14:02,880
+当primary和backup正在执行的相同的指令时
 definitely makes the most sense when the
 
 322
 00:14:02,880 --> 00:14:04,320
-instructions that the primary in the
+复制状态机方案绝对是最有意义的 
+instructions that the primary and
 
 323
 00:14:04,320 --> 00:14:06,570
-back of our executing do the same thing
+复制状态机方案绝对是最有意义的 
+backup are executing do the same thing
 
 324
 00:14:06,570 --> 00:14:08,370
+只要没有外部事件 
 as long as there's no external events
 
 325
 00:14:08,370 --> 00:14:10,740
-right and that's almost true right you
+这对于add指令之类的东西几乎是正确的 
+right and that's almost true right
 
 326
 00:14:10,740 --> 00:14:12,480
-know for an add instruction or something
+这对于add指令之类的东西几乎是正确的 
+for an add instruction or something
 
 327
 00:14:12,480 --> 00:14:14,880
-yeah you know if the starting if the
+是的
+yeah if the starting if the
 
 328
 00:14:14,880 --> 00:14:16,350
+如果它们的寄存器和存储器都相同
 registers and memory of the same and they
 
 329
 00:14:16,350 --> 00:14:17,790
+并且它们都执行一条add指令
 both execute an add instruction add instruction
 
 330
 00:14:17,790 --> 00:14:19,080
+那么add指令在相同的输出中具有相同的输入
 has the same inputs in
 
 331
 00:14:19,080 --> 00:14:20,730
+那么add指令在相同的输出中具有相同的输入
 the same outputs but they're in some
 
 332
 00:14:20,730 --> 00:14:22,200
+但是在某些指令中
 instructions as you point out that don't
 
 333
 00:14:22,200 --> 00:14:23,880
+正如你指出的那样 
 like maybe there's an instruction that
 
 334
 00:14:23,880 --> 00:14:26,400
+比如一条获取当前时间的指令可以
 gets the current time of day now
 
 335
 00:14:26,400 --> 00:14:27,690
+可能会在略有不同的时间执行
 probably be executed at slightly
 
 336
 00:14:27,690 --> 00:14:29,790
+可能会在略有不同的时间执行
 different times or an instruction that
 
 337
 00:14:29,790 --> 00:14:32,250
+或者获得当前处理器唯一ID
 gets the current processors unique ID
 
 338
 00:14:32,250 --> 00:14:34,830
+和序列号的指令将产生不同的答案  
 and a serial number it's going to yield
 
 339
 00:14:34,830 --> 00:14:38,400
-the different answers and the the the
+和序列号的指令将产生不同的答案  
+different answers 
 
 340
 00:14:38,400 --> 00:14:39,930
-uniform answered the questions that
+这些问题的统一的答案
+and the uniform answered the questions that
 
 341
 00:14:39,930 --> 00:14:42,360
-sound like this is that the primary does
+是primary执行指令
+sound like this is that the primary does it 
 
 342
 00:14:42,360 --> 00:14:44,730
-it and sends the answer to the backup
+并将答案发送给backup
+and sends the answer to the backup
 
 343
 00:14:44,730 --> 00:14:46,830
-and the backup does not execute that
+backup不执行该指令  
+and the backup does not execute that instruction 
 
 344
 00:14:46,830 --> 00:14:48,900
-instruction but instead at the point
+但是在执行该指令的地方
+but instead at the point
 
 345
 00:14:48,900 --> 00:14:50,120
+但是在执行该指令的地方 
 where it would execute that instruction
 
 346
 00:14:50,120 --> 00:14:52,740
+它会听从primary
 it listens for the primary to tell it
 
 347
 00:14:52,740 --> 00:14:54,090
+告诉它正确的答案是什么
 what the right answer would be and just
 
 348
 00:14:54,090 --> 00:14:56,670
-sort of fakes that answer to the
+只是伪造了答案给软件  
+sort of fakes that answer to the software 
 
 349
 00:14:56,670 --> 00:15:00,810
-software I'll talk about you know how
+我将讨论VMware方案如何做到这一点 
+I'll talk about how
 
 350
 00:15:00,810 --> 00:15:04,550
+我将讨论VMware方案如何做到这一点 
 the VMware scheme does that okay
 
 351
 00:15:04,550 --> 00:15:06,690
-interestingly enough though today's
+有趣的是  
+interestingly enough though 
 
 352
 00:15:06,690 --> 00:15:09,810
-paper is all about a replicated state
+今天的论文都是关于复制状态机的  
+today's paper is all about a replicated state machine 
 
 353
 00:15:09,810 --> 00:15:12,150
-machine you may have noticed that
+你可能已经注意到
+you may have noticed that
 
 354
 00:15:12,150 --> 00:15:13,680
-today's paper only deals with you know
+今天的论文仅涉及单处理器  
+today's paper only deals with uni-processors 
 
 355
 00:15:13,680 --> 00:15:15,330
-processors and it's not that clear how
+而且还不清楚如何将其扩展到多核机器
+and it's not that clear how
 
 356
 00:15:15,330 --> 00:15:18,680
+而且还不清楚如何将其扩展到多核机器
 it could be extended to a multi-core and
 
 357
 00:15:18,680 --> 00:15:21,810
+在多核机器中
 a multi-core machine where the
 
 358
 00:15:21,810 --> 00:15:23,550
+两个核的指令的交织是不确定的
 interleavings of the instructions from
 
 359
 00:15:23,550 --> 00:15:24,750
-the two cores organ are
+两个核的指令的交织是不确定的
+the two cores are
 
 360
 00:15:24,750 --> 00:15:26,610
-non-deterministic all right so we no
+两个核的指令的交织是不确定的
+non-deterministic 
 
 361
 00:15:26,610 --> 00:15:27,720
-longer have this situation on a
+因此，我们不再在多核计算机上出现这种情况
+so we no longer have this situation on a
 
 362
 00:15:27,720 --> 00:15:29,670
+因为如果让主数据库和备份计算机执行，
 multi-core machine where if we just let
 
 363
 00:15:29,670 --> 00:15:31,200
+其他条件都相同，
 the primary and backup execute they're
 
 364
 00:15:31,200 --> 00:15:32,970
-you know all else being equal they're
+那么它们将是相同的
+all else being equal they're
 
 365
 00:15:32,970 --> 00:15:34,670
+那么它们将是相同的
 going to be the same because they won't
 
 366
 00:15:34,670 --> 00:15:37,530
-execute on multiple cores VMware has
+因为它们不会在多核计算机上执行  
+execute on multiple cores 
 
 367
 00:15:37,530 --> 00:15:39,600
-since come out with a new possibly
+VMware之后推出了一个可能完全不同的新复制系统
+VMware has since come out with a new possibly
 
 368
 00:15:39,600 --> 00:15:42,240
+VMware之后推出了一个可能完全不同的新复制系统
 completely different replication system
 
 369
 00:15:42,240 --> 00:15:44,070
-that does work on multi-core and the new
+该系统可以在多核上运行  
+that does work on multi-core 
 
 370
 00:15:44,070 --> 00:15:46,890
-system appears to me to be using state
+在我看来，新系统使用状态转移而不是复制状态机 
+and the new system appears to me to be using state transfer 
 
 371
 00:15:46,890 --> 00:15:49,530
-transfer instead of replicated state
+在我看来，新系统使用状态转移而不是复制状态机  
+instead of replicated state machine 
 
 372
 00:15:49,530 --> 00:15:50,940
-machine because state transferred is
+因为面对多核和并行性，状态转移更加健壮 
+because state transferred is
 
 373
 00:15:50,940 --> 00:15:53,190
-more robust in the face
+因为面对多核和并行性，状态转移更加健壮 
+more robust in the face of
 
 374
 00:15:53,190 --> 00:15:56,340
-multi-core and parallelism if you use
+因为面对多核和并行性，状态转移更加健壮  
+multi-core and parallelism 
 
 375
 00:15:56,340 --> 00:15:58,380
-the machine and send the memory over you
+如果您使用机器并将内存发送过来 
+if you use the machine and send the memory over
 
 376
 00:15:58,380 --> 00:16:00,690
-know that the memory image is just that
+内存映像只是机器的状态而已
+that the memory image is just that
 
 377
 00:16:00,690 --> 00:16:02,250
+内存映像只是机器的状态而已 
 just is the state of the machine and
 
 378
 00:16:02,250 --> 00:16:04,470
+并行性并不影响
 sort of it doesn't matter that there was
 
 379
 00:16:04,470 --> 00:16:06,600
+并行性并不影响
 parallelism whereas the replicated state
 
 380
 00:16:06,600 --> 00:16:08,280
+而复制状态机方案确实存在并行性问题
 machine scheme really has a problem with
 
 381
 00:16:08,280 --> 00:16:12,780
-the parallelism you know on the other
+而复制状态机方案确实存在并行性问题  
+the parallelism 
 
 382
 00:16:12,780 --> 00:16:15,000
-hand I'm guessing that this new
+另一方面，我猜想这种新的多核方案会更昂贵 
+on the other hand I'm guessing that this new
 
 383
 00:16:15,000 --> 00:16:20,930
+另一方面，我猜想这种新的多核方案会更昂贵 
 multi-core scheme is more expensive okay
 
 384
 00:16:21,200 --> 00:16:24,660
+好的，如果我们要构建一个复制状态机方案
 all right so if we want to build a
 
 385
 00:16:24,660 --> 00:16:26,250
+好的，如果我们要构建一个复制状态机方案
 replicated state machine scheme we got a
 
 386
 00:16:26,250 --> 00:16:31,200
-number of questions to answer so we need
+我们有很多问题要回答  
+number of questions to answer 
 
 387
 00:16:31,200 --> 00:16:32,430
-to decide at what level we're gonna
+我们需要决定要在什么级别上复制状态
+so we need to decide at what level we're gonna
 
 388
 00:16:32,430 --> 00:16:36,360
-replicate state right so what state what
+我们需要决定要在什么级别上复制状态
+replicate state right so what state 
 
 389
 00:16:36,360 --> 00:16:44,430
-do we mean by state we have to worry
+我们所说的状态是什么
+what do we mean by state we have to worry
 
 390
 00:16:44,430 --> 00:16:47,670
-about how how closely synchronized the
+我们必须担心primary和backup之间紧密同步的程度
+about how closely synchronized the
 
 391
 00:16:47,670 --> 00:16:49,710
+我们必须担心primary和backup之间紧密同步的程度
 primary and backup have to be right
 
 392
 00:16:49,710 --> 00:16:51,810
+因为primary可能领先backup执行一些 
 because it's likely the primary will
 
 393
 00:16:51,810 --> 00:16:53,400
+因为primary可能领先backup执行一些  
 execute a little bit ahead of the backup
 
 394
 00:16:53,400 --> 00:16:55,110
-after all it it's the primary that sees
+毕竟，是primary看到输入  
+after all it it's the primary that sees the inputs 
 
 395
 00:16:55,110 --> 00:16:57,570
-the inputs so the backup almost
+因此备份几乎必须滞后于 
+so the backup almost
 
 396
 00:16:57,570 --> 00:17:00,360
+因此备份几乎必须滞后于 
 necessarily must lag over that gives
 
 397
 00:17:00,360 --> 00:17:01,950
+这意味着有可能primary出现故障
 that means there's an opportunity if the
 
 398
 00:17:01,950 --> 00:17:04,500
-primary fails for the prime for the
+这意味着有可能primary出现故障
+primary fails for the
 
 399
 00:17:04,500 --> 00:17:08,849
-backup not to be fully caught up having
+且backup没能完全追上primary  
+backup not to be fully caught up 
 
 400
 00:17:08,849 --> 00:17:11,760
-the backup actually executes really in
+使backup与primary完全同步执行实际上是昂贵的 
+having the backup actually executes really in
 
 401
 00:17:11,760 --> 00:17:12,959
-lockstep with the primaries for
+使backup与primary完全同步执行实际上是昂贵的  
+lockstep with the primaries is expensive 
 
 402
 00:17:12,959 --> 00:17:14,550
-expensive because it requires a lot of
+因为需要很多时间  
+because it requires a lot of chitchat 
 
 403
 00:17:14,550 --> 00:17:16,319
-chitchat so a lot of designs a lot of
+因此，很多设计
+so a lot of designs a lot of
 
 404
 00:17:16,319 --> 00:17:19,470
-what people sweat about is how close the
+人们担心的是同步有多紧密  
+what people sweat about is how close the synchronization is 
 
 405
 00:17:19,470 --> 00:17:27,810
-synchronization is if the primary fails
+如果primary发生故障
+if the primary fails
 
 406
 00:17:27,810 --> 00:17:29,760
+或者您实际上知道backup是否也失败
 or you know actually if the backup fails too
 
 407
 00:17:29,960 --> 00:17:31,590
-but it's more exciting if the primary
+但是如果primary发生故障则更令人兴奋  
+but it's more exciting if the primary fails 
 
 408
 00:17:31,590 --> 00:17:33,210
-fails there has to be some scheme for
+必须有一些切换方案
+there has to be some scheme for
 
 409
 00:17:33,210 --> 00:17:34,650
-switching over and the clients have to
+客户端必须知道  
+switching over and the clients have to know 
 
 410
 00:17:34,650 --> 00:17:37,830
-know oh gosh I instead of talking to the
+哦，天哪，我现在不应该与服务器一上的旧primary通信
+oh gosh I instead of talking to the
 
 411
 00:17:37,830 --> 00:17:39,780
+哦，天哪，我现在不应该与服务器一上的旧primary通信
 old primary on server one I should now
 
 412
 00:17:39,780 --> 00:17:44,520
+我现在应该与服务器二上的backup服务器通信
 be talking to the
 
 413
 00:17:44,520 --> 00:17:47,970
-the backup on server to all the clients
+我现在应该与服务器二上的backup服务器通信
+the backup on server two all the clients
 
 414
 00:17:47,970 --> 00:17:50,280
-have to somehow figure this out the
+所有客户端都必须以某种方式解决此问题  
+have to somehow figure this out 
 
 415
 00:17:50,280 --> 00:17:53,340
-switch over almost certainly it's almost
+切换几乎可以肯定
+the switch over almost certainly it's almost
 
 416
 00:17:53,340 --> 00:17:55,860
+几乎不可能设计一个
 impossible maybe impossible to design a
 
 417
 00:17:55,860 --> 00:17:58,560
+不会出现任何异常现象的切入系统 
 cut over system in which no anomalies
 
 418
 00:17:58,560 --> 00:18:00,960
-are every are ever visible you know in
+不会出现任何异常现象的切入系统
+are ever visible 
 
 419
 00:18:00,960 --> 00:18:03,000
-this sort of ideal world if the primary
+在这种理想的世界中
+in this sort of ideal world 
 
 420
 00:18:03,000 --> 00:18:05,070
-fails we'd like nobody to ever notice
+如果primary失败，没有人注意到 
+if the primary fails we'd like nobody to ever notice
 
 421
 00:18:05,070 --> 00:18:07,080
+没有client注意到
 none of the clients to notice turns out
 
 422
 00:18:07,080 --> 00:18:10,920
-that's basically unattainable so there's
+这基本上是无法实现的  
+that's basically unattainable 
 
 423
 00:18:10,920 --> 00:18:15,120
-going to be anomalies during the cut
+所以在切入过程中会出现异常  
+so there's going to be anomalies during the cut over 
 
 424
 00:18:15,120 --> 00:18:16,500
-over and we've gotta figure out a way to
+我们必须找出一种应对它们的方法
+and we've gotta figure out a way to
 
 425
 00:18:16,500 --> 00:18:19,560
+我们必须找出一种应对它们的方法
 cope with them and finally if the one of
 
 426
 00:18:19,560 --> 00:18:21,750
-the two if one of our replicas fails we
+如果我们的复制之一失败了 
+the two if one of our replicas fails 
 
 427
 00:18:21,750 --> 00:18:23,790
-really need to have a new replica right
+我们真的需要一个新的复制
+we really need to have a new replica right
 
 428
 00:18:23,790 --> 00:18:26,820
+如果我们有两个复制，其中一个失败 
 if we have a two replicas and one fails
 
 429
 00:18:26,820 --> 00:18:29,010
+我们只是靠借来的时间生活 
 we're just living on borrowed time right
 
 430
 00:18:29,010 --> 00:18:31,710
-because the second replica may fail at
+因为第二个复制可能在某个时候失败  
+because the second replica may fail at some point 
 
 431
 00:18:31,710 --> 00:18:33,990
-some point so we absolutely need to get
+因此，我们绝对需要使新复制尽快上线
+so we absolutely need to get
 
 432
 00:18:33,990 --> 00:18:36,240
-a new replica back online as fast as
+因此，我们绝对需要使新复制尽快上线 
+a new replica back online as fast as possible 
 
 433
 00:18:36,240 --> 00:18:41,250
-possible so and that can be very
+那可能很昂贵
+so and that can be very
 
 434
 00:18:41,250 --> 00:18:44,610
-expensive the state is big you know you
+状态很大 
+expensive the state is big 
 
 435
 00:18:44,610 --> 00:18:45,690
-know but the reason we like to replicate
+但是我们喜欢复制状态机的原因是
+but the reason we like to replicate
 
 436
 00:18:45,690 --> 00:18:47,190
+因为我们认为状态转移会很昂贵
 a state machine was because we thought
 
 437
 00:18:47,190 --> 00:18:49,320
+因为我们认为状态转移会很昂贵
 state transfer would be expensive but
 
 438
 00:18:49,320 --> 00:18:51,450
+但复制状态机中的两个复制仍需要具有完整状态
 the two replicas in a replicated state
 
 439
 00:18:51,450 --> 00:18:53,040
-machine still need to have full state
+但复制状态机中的两个复制仍需要具有完整状态 
+machine still need to have full state right 
 
 440
 00:18:53,040 --> 00:18:55,230
-right we just had a cheap way of keeping
+我们只是有一种便宜的方法来使它们保持同步
+we just had a cheap way of keeping
 
 441
 00:18:55,230 --> 00:18:57,210
+如果我们需要创建新复制的话
 them both in sync if we need to create a
 
 442
 00:18:57,210 --> 00:18:59,700
+实际上我们别无选择
 new replica we actually have no choice
 
 443
 00:18:59,700 --> 00:19:01,410
-but state transfer to create the new
+只能进行状态转移以创建新的复制 
+but state transfer to create the new replicas 
 
 444
 00:19:01,410 --> 00:19:03,090
-replicas the new replica needs to have a
+新复制需要具有状态的完整状态 
+the new replica needs to have a
 
 445
 00:19:03,090 --> 00:19:06,090
-complete copy of the state so it's going
+新复制需要具有状态的完整状态  
+complete copy of the state 
 
 446
 00:19:06,090 --> 00:19:08,100
-to be expensive to create new replicas
+因此创建新复制将非常昂贵 
+so it's going to be expensive to create new replicas
 
 447
 00:19:08,100 --> 00:19:15,300
+人们通常会花费很多
 and this is often people spending well
 
 448
 00:19:15,300 --> 00:19:16,530
+实际上人们花很多时间担心所有这些问题
 actually people spend a lot of time
 
 449
 00:19:16,530 --> 00:19:18,750
+实际上人们花很多时间担心所有这些问题
 worrying about all these questions and
 
 450
 00:19:18,750 --> 00:19:20,490
-you know we'll see them again as we look
+我们在查看其他复制状态机方案时会再次看到它们
+we'll see them again as we look
 
 451
 00:19:20,490 --> 00:19:22,980
-at other replicated state machine
+我们在查看其他复制状态机方案时会再次看到它们  
+at other replicated state machine schemes 
 
 452
 00:19:22,980 --> 00:19:29,460
-schemes so on the topic of what state to
+所以关于什么状态要复制的话题  
+so on the topic of what state to replicate 
 
 453
 00:19:29,460 --> 00:19:33,720
-replicate the today's paper has a very
+今天的论文对这个问题有一个非常有趣的答案 
+the today's paper has a very
 
 454
 00:19:33,720 --> 00:19:35,880
-interesting answer to this question it
+今天的论文对这个问题有一个非常有趣的答案  
+interesting answer to this question 
 
 455
 00:19:35,880 --> 00:19:38,160
-replicates the full state of the machine
+它复制了机器的完整状态
+it replicates the full state of the machine
 
 456
 00:19:38,160 --> 00:19:42,060
+即所有内存和所有机器寄存器
 that is all of memory and all the
 
 457
 00:19:42,060 --> 00:19:45,030
+即所有内存和所有机器寄存器
 Machine registers it's like a very very
 
 458
 00:19:45,030 --> 00:19:48,780
-detailed replication scheme just no
+是一个非常详细的复制方案  
+detailed replication scheme 
 
 459
 00:19:48,780 --> 00:19:51,120
-difference at the even of the lowest
+primary和backup，即使是最底层，也完全一样
+just no difference at the even of the lowest
 
 460
 00:19:51,120 --> 00:19:52,620
-levels between the primary in the backup
+primary和backup，即使是最底层，也完全一样
+levels between the primary and the backup
 
 461
 00:19:52,620 --> 00:19:55,560
+对于复制方案而言，这是非常罕见的 
 that's quite rare for replication
 
 462
 00:19:55,560 --> 00:19:56,670
+对于复制方案而言，这是非常罕见的 
 schemes
 
 463
 00:19:56,670 --> 00:19:58,680
+比如说GFS
 almost always you see something that's
 
 464
 00:19:58,680 --> 00:20:01,200
+GFS当然
 more like GFS where GFS absolutely did
 
 465
