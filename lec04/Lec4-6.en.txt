@@ -1,0 +1,136 @@
+and then the virtual machine monitor here will send an ACK packet back
+saying yes I did get that input and when the acknowledgment comes back
+only then will the virtual machine monitor here release the packet out onto the network
+and so the idea is that if the client could have seen the reply
+then necessarily the backup must have seen the request and at least buffered it
+and so we no longer get this weird situation
+in which a client can see a reply but then there's a failure and a cut over
+and the replica didn't know anything about that reply
+if the you know there's also a situation maybe this message was lost
+and if this log entry was lost and then the primary crashes
+well since it hadn't been delivered so the backup hadn't sent the act
+that means if the primary crashed
+you know this log entry was brought in the primary crashed
+it must have crashed before the virtual machine monitor or at least the output packet
+and prayer for this client couldn't have gotten the reply
+and so it's not in a position to spot any irregularities
+they're really happy with the output rule
+brennon see
+I don't know they don't paper doesn't mention how the virtual machine monitor is implemented
+I mean it's pretty low level stuff because
+you know it's sitting there allocating memory and figuring page tables
+and talking to device drivers and intercepting instructions
+and understanding what instructions the guest was executing
+so we're talking about low-level stuff what language is written in you know traditionally C or C++
+but I don't actually know
+okay this of the primary has to delay at this point
+waiting for the backup to say that it's up to date
+this is a real performance thorn in the side of just about every replication scheme
+this sort of synchronous wait where the we can't let the primary get too far ahead of the backup
+because if the primary failed while it was ahead
+that would be the backup lagging
+lagging behind clients right
+so just about every replication system has this problem that
+at some point the primary has to stall waiting for the backup
+and it's a real limit on performance
+even if the machines are like side-by-side and adjacent racks
+it's still you know we're talking about a half a millisecond or something
+to send messages back and forth with a primary stalled
+and if we wanna like withstand earthquakes or citywide power failures
+you know the primary in the backup have to be in different cities
+that's probably five milliseconds apart
+every time we produce output if we replicate in the two replicas in different city
+every packet that it produces this output
+has to first wait the five milliseconds or whatever to have the last log entry get to the backup
+and how the acknowledgment come back and then we can release a path packet
+and you know for sort of low intensity services that's not a problem
+but if we're building a you know database server that we would like to
+you know that if it weren't for this could process millions of requests per second
+then that's just unbelievably damaging for performance
+and this is a big reason why people you know you know
+if they possibly can use a replication scheme
+that's operating at a higher level and kind of understands the semantics of operations
+and so it doesn't have to stall on every packet
+you know it could stall on every high level operation or even notice that well
+you know read-only operations don't have to stall at all
+it's only right so that just all or something
+but you have to there has to be an application level replication scheme to to realize that
+you're absolutely right
+so the observation is that you don't have to stall the execution of the primary
+you only have to hold the output
+and so maybe that's not as bad as it could be
+but nevertheless it means that every you know in a service
+that could otherwise have responded in a couple of microseconds to the client
+you know if we have to first update the replicas in the next city
+we turn to you know 10 micro second interaction into it 10 millisecond interactions possibly
+if you have vast numbers of clients submitting concurrent requests
+then you may may be able to maintain high throughput even with high latency
+but you have to be lucky to or very clever designer to get that
+that's a great idea
+but if you log in the memory of the primary
+that log will disappear when the primary crashes
+or that's usual semantics of a server failing is that
+you lose everything inside the box like the contents of memory
+or you know if even if you didn't
+if the failure is that somebody unplugged the power cable accidentally from the primary
+even if the primary just has battery backed up RAM or I don't know what
+you can't get at it
+all right the backup can't get at it
+so in fact this system does log the output and the place it logs it is in the memory of the backup
+and in order to reliably log it there you have to observe the output rule and wait for the acknowledgment
+so it's entirely correct idea just can't use the primary's memory for it
+yes
+say it again
+that's a clever idea I'd
+and so the question is maybe input should go to the primary but output should come from the backup
+I completely haven't thought this through
+that might work that
+I don't know that's interesting
+yeah maybe I will
+okay
+one possibility this does expose though is that
+the situation you know maybe the a primary crashes after its output is released
+so the client does receive the reply
+then the primary crashes
+the backups input is still in this event buffer
+in the virtual machine monitor of the backup
+it hasn't been delivered to the actual replicated service
+when the backup goes live after the crash of the primary
+the backup first has to consume all of the sort of log records that are lying around
+that it hasn't consumed yet has to catch up to the primary
+otherwise it won't take over with the same state
+so before the backup can go live it actually has to consume all these entries
+the last entry is presumably is the request from the client
+so the backup will be live after after it
+after the interrupt that delivers the request from the client
+and that means that the backup well you know increment its counter to eleven
+and then generate an output packet and since it's live at this point
+it will generate the output packet and the client will get two eleven replies
+which is also if it if that really happened would be anomalous
+like possibly not something that could happen if there was only one server
+the good news is that almost certainly
+or the almost certainly the client is talking to this service using TCP
+and that this is the request and the response go back and forth on a TCP Channel
+the when the backup takes over
+the backup since the state is identical to the primaries it knows all about that TCP connection
+and whether all the sequence numbers are and whatnot
+and when it generates this packet
+it will generate it with the same TCP sequence number as an original packet
+and the TCP stack on the client will say oh wait a minute that's a duplicate packet
+we'll discard the duplicate packet at the TCP level
+and the user level software will just never see this duplicate
+and so this system really you know
+you can view this as a kind of accidental or clever trick
+but the fact is for any replication system where cutover can happen
+which is to say pretty much any replication system
+it's essentially impossible to design them
+in a way that they are guaranteed not to generate duplicate output
+basically you know you well you can err on either side
+I'm not even either not generate the output at all which
+would be bad which would be terrible
+or you can generate the output twice on a cutover
+that's basically no way to generate it guaranteed generated only once
+everybody errors on the side of possibly generating duplicate output
+and that means that at some level you know the client side of all replication schemes
+need some sort of duplicate detection scheme
+here we get to use TCP s that we didn't have TCP that would have to be something else 
