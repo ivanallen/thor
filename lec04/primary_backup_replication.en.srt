@@ -1,4 +1,4 @@
-1
+﻿1
 00:00:02,649 --> 00:00:07,220
 好，今天，我想更多地讨论一些
 all right today I want to talk about bit
@@ -5630,1719 +5630,1265 @@ and then the virtual machine monitor here will send an ACK packet back saying ye
 当确认消息抵达时
 and when the acknowledgment comes back
 
-1319
-01:00:03,360 --> 01:00:05,690
-only then will
+1215
+01:00:04,780 --> 01:00:09,350
+虚拟机监视器才会将包发送到网络中
+only then will the virtual machine monitor here release the packet out onto the network
 
-1320
-01:00:05,690 --> 01:00:07,099
-the virtual machine monitor here release
+1216
+01:00:11,010 --> 01:00:14,270
+所以这个方案就是 若客户端可以收到回复
+and so the idea is that if the client could have seen the reply
 
-1321
-01:00:07,099 --> 01:00:11,270
-the packet out onto the network and so
+1217
+01:00:14,480 --> 01:00:19,140
+那么副节点肯定也收到过请求 并且至少已经存到缓冲区
+then necessarily the backup must have seen the request and at least buffered it
 
-1322
-01:00:11,270 --> 01:00:12,980
-the idea is that if the client could
+1218
+01:00:21,750 --> 01:00:23,800
+因此我们不在会有以下的异常
+and so we no longer get this weird situation
 
-1323
-01:00:12,980 --> 01:00:16,190
-have seen the reply then necessarily the
+1219
+01:00:23,830 --> 01:00:28,390
+客户端已经收到了回复 然后因为有故障发生
+in which a client can see a reply but then there's a failure and a cut over
 
-1324
-01:00:16,190 --> 01:00:18,530
-backup must have seen the request and at
+1220
+01:00:28,450 --> 01:00:31,430
+副节点完全没有接到过相关内容
+and the replica didn't know anything about that reply
 
-1325
-01:00:18,530 --> 01:00:22,579
-least buffered it and so we no longer
+1221
+01:00:33,770 --> 01:00:38,500
+比如说有些情况消息可能会中途丢失
+if the you know there's also a situation maybe this message was lost
 
-1326
-01:00:22,579 --> 01:00:25,220
-get this weird situation in which a
+1222
+01:00:39,750 --> 01:00:44,040
+日志记录丢失后主节点宕机
+and if this log entry was lost and then the primary crashes
 
-1327
-01:00:25,220 --> 01:00:27,470
-client can see a reply but then there's
+1223
+01:00:44,470 --> 01:00:47,670
+因为消息没投递成功 所以副节点也没有确认
+well since it hadn't been delivered so the backup hadn't sent the ACK
 
-1328
-01:00:27,470 --> 01:00:29,780
-a failure and a cut over and the replica
+1224
+01:00:47,740 --> 01:00:49,310
+如果主节点宕机
+that means if the primary crashed
 
-1329
-01:00:29,780 --> 01:00:33,950
-didn't know anything about that reply if
+1225
+01:00:50,180 --> 01:00:52,860
+日志记录随主节点宕机丢失
+this log entry was brought in the primary crashed
 
-1330
-01:00:33,950 --> 01:00:36,140
-the you know there's also a situation
+1226
+01:00:52,890 --> 01:00:57,230
+它肯定在虚拟机监视器发送输出包之前丢失
+it must have crashed before the virtual machine monitor release the output packet
 
-1331
-01:00:36,140 --> 01:00:40,310
-maybe this message was lost and if this
+1227
+01:00:57,280 --> 01:01:00,750
+客户端不可能提前收到回复
+and for this client couldn't have gotten the reply
 
-1332
-01:00:40,310 --> 01:00:43,220
-log entry was lost and then the primary
+1228
+01:01:02,340 --> 01:01:05,690
+它们也不会识别出异常发生
+and so it's not in a position to spot any irregularities
 
-1333
-01:00:43,220 --> 01:00:45,650
-crashes well since it hadn't been
+1229
+01:01:09,470 --> 01:01:11,230
+所以我们需要有输出规则进行限制
+there we have the output rule
 
-1334
-01:00:45,650 --> 01:00:47,750
-delivered so the backup hadn't sent the
+1230
+01:01:27,540 --> 01:01:28,450
+brennon see
 
-1335
-01:00:47,750 --> 01:00:49,670
-act that means if the primary crashed
+1231
+01:01:29,620 --> 01:01:35,190
+我不了解 论文没有谈到虚拟机监视器的实现
+I don't know paper doesn't mention how the virtual machine monitor is implemented
 
-1336
-01:00:49,670 --> 01:00:52,220
-you know this log entry was brought in
+1232
+01:01:35,390 --> 01:01:36,920
+这是非常底层的知识
+I mean it's pretty low level stuff because
 
-1337
-01:00:52,220 --> 01:00:53,810
-the primary crashed it must have crashed
+1233
+01:01:37,840 --> 01:01:40,960
+像划分内存空间 计算页表
+it's sitting there allocating memory and figuring page tables
 
-1338
-01:00:53,810 --> 01:00:56,210
-before the virtual machine monitor or at
+1234
+01:01:41,070 --> 01:01:44,330
+与设备驱动交互 拦截指令
+and talking to device drivers and intercepting instructions
 
-1339
-01:00:56,210 --> 01:00:58,099
-least the output packet and prayer for
+1235
+01:01:44,380 --> 01:01:48,340
+搞明白Guest用户执行的命令等
+and understanding what instructions the guest was executing
 
-1340
-01:00:58,099 --> 01:01:00,349
-this client couldn't have gotten the
+1236
+01:01:48,540 --> 01:01:53,960
+所以这是一些底层的东西 一般用C或C++编写的
+so we're talking about low-level stuff what language is written in traditionally C or C++
 
-1341
-01:01:00,349 --> 01:01:03,500
-reply and so it's not in a position to
+1237
+01:01:54,010 --> 01:01:55,010
+但我并不了解
+but I don't actually know
 
-1342
-01:01:03,500 --> 01:01:09,650
-spot any irregularities they're really
+1238
+01:01:58,540 --> 01:02:02,730
+回到这里 主节点需要延迟回复
+okay this of the primary has to delay at this point
 
-1343
-01:01:09,650 --> 01:01:12,550
-happy with the output rule
+1239
+01:02:03,330 --> 01:02:08,060
+先等副节点确认已经收到最新消息
+waiting for the backup to say that it's up to date
 
-1344
-01:01:27,009 --> 01:01:31,599
-brennon see I don't know they don't
+1240
+01:02:08,540 --> 01:02:14,690
+这是几乎所有主备复制模式性能的一道坎
+this is a real performance thorn in the side of just about every replication scheme
 
-1345
-01:01:31,599 --> 01:01:34,160
-paper doesn't mention how the virtual
+1241
+01:02:15,080 --> 01:02:20,230
+这种同步等待让主节点不会领先于副节点太多
+this sort of synchronous wait where the we can't let the primary get too far ahead of the backup
 
-1346
-01:01:34,160 --> 01:01:35,719
-machine monitor is implemented I mean
+1242
+01:02:20,300 --> 01:02:22,930
+因为如果主节点在领先的情况下出现故障
+because if the primary failed while it was ahead
 
-1347
-01:01:35,719 --> 01:01:38,029
-it's pretty low level stuff because you
+1243
+01:02:23,130 --> 01:02:25,980
+副节点就会出现数据延迟
+that would be the backup lagging
 
-1348
-01:01:38,029 --> 01:01:39,529
-know it's sitting there allocating
+1244
+01:02:26,050 --> 01:02:28,340
+副节点的进度和客户端会不一致
+lagging behind clients right
 
-1349
-01:01:39,529 --> 01:01:41,569
-memory and figuring page tables and
+1245
+01:02:28,400 --> 01:02:31,250
+所以每种主备系统都有这样的问题
+so just about every replication system has this problem that
 
-1350
-01:01:41,569 --> 01:01:43,029
-talking to device drivers and
+1246
+01:02:31,310 --> 01:02:34,980
+某个时间主节点必须等待副节点
+at some point the primary has to stall waiting for the backup
 
-1351
-01:01:43,029 --> 01:01:44,719
-intercepting instructions and
+1247
+01:02:35,370 --> 01:02:37,280
+这是对性能实打实的限制
+and it's a real limit on performance
 
-1352
-01:01:44,719 --> 01:01:46,969
-understanding what instructions the
+1248
+01:02:37,350 --> 01:02:40,120
+即使机器是在相邻机架上
+even if the machines are like side-by-side and adjacent racks
 
-1353
-01:01:46,969 --> 01:01:49,069
-guest was executing so we're talking
+1249
+01:02:40,250 --> 01:02:43,790
+主节点发送消息和接收确认
+it's still you know we're talking about a half a millisecond or something
 
-1354
-01:01:49,069 --> 01:01:51,829
-about low-level stuff what language is
+1250
+01:02:43,870 --> 01:02:47,370
+仍然需要等上0.5毫秒
+to send messages back and forth with a primary stalled
 
-1355
-01:01:51,829 --> 01:01:53,479
-written in you know traditionally C or
+1251
+01:02:47,440 --> 01:02:51,930
+如果说像避免像地震 大范围断电等问题
+and if we wanna like withstand earthquakes or citywide power failures
 
-1356
-01:01:53,479 --> 01:01:59,150
-C++ but I don't actually know okay this
+1252
+01:02:52,060 --> 01:02:54,590
+主副节点必须位于不同的城市
+you know the primary in the backup have to be in different cities
 
-1357
-01:01:59,150 --> 01:02:02,449
-of the primary has to delay at this
-
-1358
-01:02:02,449 --> 01:02:07,400
-point waiting for the backup to say that
-
-1359
-01:02:07,400 --> 01:02:09,410
-it's up to date this is a real
-
-1360
-01:02:09,410 --> 01:02:12,440
-performance thorn in the side of just
-
-1361
-01:02:12,440 --> 01:02:15,440
-about every replication scheme this sort
-
-1362
-01:02:15,440 --> 01:02:18,289
-of synchronous wait where the we can't
-
-1363
-01:02:18,289 --> 01:02:19,999
-let the primary get too far ahead of the
-
-1364
-01:02:19,999 --> 01:02:22,039
-backup because if the primary failed
-
-1365
-01:02:22,039 --> 01:02:24,739
-while it was ahead that would be the
-
-1366
-01:02:24,739 --> 01:02:27,680
-backup lagging lagging behind clients
-
-1367
-01:02:27,680 --> 01:02:30,440
-right so just about every replication
-
-1368
-01:02:30,440 --> 01:02:31,819
-system has this problem that at some
-
-1369
-01:02:31,819 --> 01:02:34,459
-point the primary has to stall waiting
-
-1370
-01:02:34,459 --> 01:02:36,680
-for the backup and it's a real limit on
-
-1371
-01:02:36,680 --> 01:02:38,329
-performance even if the machines are
-
-1372
-01:02:38,329 --> 01:02:40,039
-like side-by-side and adjacent racks
-
-1373
-01:02:40,039 --> 01:02:41,959
-it's still you know we're talking about
-
-1374
-01:02:41,959 --> 01:02:44,059
-a half a millisecond or something to
-
-1375
-01:02:44,059 --> 01:02:45,979
-send messages back and forth with a
-
-1376
-01:02:45,979 --> 01:02:49,190
-primary stalled and if we wanna like
-
-1377
-01:02:49,190 --> 01:02:51,319
-withstand earthquakes or citywide power
-
-1378
-01:02:51,319 --> 01:02:53,059
-failures you know the primary in the
-
-1379
-01:02:53,059 --> 01:02:54,319
-backup have to be in different cities
-
-1380
-01:02:54,319 --> 01:02:56,589
+1253
+01:02:54,640 --> 01:02:56,930
+那延迟大概会增加到5毫秒
 that's probably five milliseconds apart
 
-1381
-01:02:56,589 --> 01:02:59,509
-every time we produce output if we
-
-1382
-01:02:59,509 --> 01:03:01,489
-replicate in the two replicas in
-
-1383
-01:03:01,489 --> 01:03:03,349
-different city every packet that it
-
-1384
-01:03:03,349 --> 01:03:05,509
-produces this output has to first wait
-
-1385
-01:03:05,509 --> 01:03:08,449
-the five milliseconds or whatever to
-
-1386
-01:03:08,449 --> 01:03:09,949
-have the last log entry get to the
-
-1387
-01:03:09,949 --> 01:03:11,449
-backup and how the acknowledgment come
-
-1388
-01:03:11,449 --> 01:03:12,619
-back and then we can release a path
-
-1389
-01:03:12,619 --> 01:03:15,289
-packet and you know for sort of low
-
-1390
-01:03:15,289 --> 01:03:18,440
-intensity services that's not a problem
-
-1391
-01:03:18,440 --> 01:03:19,940
-but if we're building a you know
-
-1392
-01:03:19,940 --> 01:03:21,769
-database server that we would like to
-
-1393
-01:03:21,769 --> 01:03:22,940
-you know that if it weren't for this
-
-1394
-01:03:22,940 --> 01:03:25,190
-could process millions of requests per
-
-1395
-01:03:25,190 --> 01:03:25,960
-second then
-
-1396
-01:03:25,960 --> 01:03:28,119
-that's just unbelievably damaging for
-
-1397
-01:03:28,119 --> 01:03:31,660
-performance and this is a big reason why
-
-1398
-01:03:31,660 --> 01:03:34,569
-people you know you know if they
-
-1399
-01:03:34,569 --> 01:03:38,079
-possibly can use a replication scheme
-
-1400
-01:03:38,079 --> 01:03:39,700
-that's operating at a higher level and
-
-1401
-01:03:39,700 --> 01:03:41,230
-kind of understands the semantics of
-
-1402
-01:03:41,230 --> 01:03:42,970
-operations and so it doesn't have to
-
-1403
-01:03:42,970 --> 01:03:45,220
-stall on every packet you know it could
-
-1404
-01:03:45,220 --> 01:03:47,740
-stall on every high level operation or
-
-1405
-01:03:47,740 --> 01:03:49,750
-even notice that well you know read-only
-
-1406
-01:03:49,750 --> 01:03:51,520
-operations don't have to stall at all
-
-1407
-01:03:51,520 --> 01:03:52,990
-it's only right so that just all or
-
-1408
-01:03:52,990 --> 01:03:54,760
-something but you have to there has to
-
-1409
-01:03:54,760 --> 01:03:55,839
-be an application level replication
-
-1410
-01:03:55,839 --> 01:04:04,569
-scheme to to realize that you're
-
-1411
-01:04:04,569 --> 01:04:06,280
-absolutely right so the observation is
-
-1412
-01:04:06,280 --> 01:04:07,359
-that you don't have to stall the
-
-1413
-01:04:07,359 --> 01:04:08,920
-execution of the primary you only have
-
-1414
-01:04:08,920 --> 01:04:11,589
-to hold the output and so maybe that's
-
-1415
-01:04:11,589 --> 01:04:13,990
-not as bad as it could be but
-
-1416
-01:04:13,990 --> 01:04:16,150
-nevertheless it means that every you
-
-1417
-01:04:16,150 --> 01:04:17,800
-know in a service that could otherwise
-
-1418
-01:04:17,800 --> 01:04:19,510
-have responded in a couple of
-
-1419
-01:04:19,510 --> 01:04:22,390
-microseconds to the client you know if
-
-1420
-01:04:22,390 --> 01:04:24,940
-we have to first update the replicas in
-
-1421
-01:04:24,940 --> 01:04:27,280
-the next city we turn to you know 10
-
-1422
-01:04:27,280 --> 01:04:29,020
-micro second interaction into it 10
-
-1423
-01:04:29,020 --> 01:04:36,160
-millisecond interactions possibly if you
-
-1424
-01:04:36,160 --> 01:04:39,119
-have vast numbers of clients submitting
-
-1425
-01:04:39,119 --> 01:04:41,829
-concurrent requests then you may may be
-
-1426
-01:04:41,829 --> 01:04:43,690
-able to maintain high throughput even
-
-1427
-01:04:43,690 --> 01:04:46,180
-with high latency but you have to be
-
-1428
-01:04:46,180 --> 01:04:49,030
-lucky to or very clever designer to get
-
-1429
-01:04:49,030 --> 01:04:51,210
-that
-
-1430
-01:05:01,270 --> 01:05:04,280
-that's a great idea but if you log in
-
-1431
-01:05:04,280 --> 01:05:06,680
-the memory of the primary that log will
-
-1432
-01:05:06,680 --> 01:05:08,630
-disappear when the primary crashes or
-
-1433
-01:05:08,630 --> 01:05:10,670
-that's usual semantics of a server
-
-1434
-01:05:10,670 --> 01:05:13,970
-failing is that you lose everything
-
-1435
-01:05:13,970 --> 01:05:16,280
-inside the box like the contents of
-
-1436
-01:05:16,280 --> 01:05:19,790
-memory or you know if even if you didn't
-
-1437
-01:05:19,790 --> 01:05:21,680
-if the failure is that somebody
-
-1438
-01:05:21,680 --> 01:05:23,240
-unplugged the power cable accidentally
-
-1439
-01:05:23,240 --> 01:05:25,570
-from the primary even if the primary
-
-1440
-01:05:25,570 --> 01:05:27,920
-just has battery backed up RAM or I
-
-1441
-01:05:27,920 --> 01:05:30,710
-don't know what you can't get at it
-
-1442
-01:05:30,710 --> 01:05:32,740
-all right the backup can't get at it so
-
-1443
-01:05:32,740 --> 01:05:36,050
-in fact this system does log the output
-
-1444
-01:05:36,050 --> 01:05:37,910
-and the place it logs it is in the
-
-1445
-01:05:37,910 --> 01:05:39,980
-memory of the backup and in order to
-
-1446
-01:05:39,980 --> 01:05:42,320
-reliably log it there you have to
-
-1447
-01:05:42,320 --> 01:05:43,640
-observe the output rule and wait for the
-
-1448
-01:05:43,640 --> 01:05:46,130
-acknowledgment so it's entirely correct
-
-1449
-01:05:46,130 --> 01:05:48,500
-idea just can't use the primary's memory
-
-1450
-01:05:48,500 --> 01:05:55,030
-for it yes
-
-1451
-01:05:58,300 --> 01:06:06,320
-say it again that's a clever idea I'd
-
-1452
-01:06:06,320 --> 01:06:08,450
-and so the question is maybe input
-
-1453
-01:06:08,450 --> 01:06:11,570
-should go to the primary but output
-
-1454
-01:06:11,570 --> 01:06:12,770
-should come from the backup
-
-1455
-01:06:12,770 --> 01:06:14,600
-I completely haven't thought this
-
-1456
-01:06:14,600 --> 01:06:17,210
-through that might work that
-
-1457
-01:06:17,210 --> 01:06:21,940
+1254
+01:02:56,970 --> 01:03:01,840
+如果我们主副节点在不同城市进行复制
+every time we produce output if we replicate in the two replicas in different city
+
+1255
+01:03:01,900 --> 01:03:04,340
+每一个发送的包
+every packet that it produces this output
+
+1256
+01:03:04,440 --> 01:03:10,250
+都需要等上5毫秒让日志记录到达副节点上
+has to first wait the five milliseconds or whatever to have the last log entry get to the backup
+
+1257
+01:03:10,320 --> 01:03:13,290
+然后响应确认 最后才能发送回复给客户端
+and have the acknowledgment come back and then we can release a path packet
+
+1258
+01:03:13,370 --> 01:03:17,370
+对于一些可靠性要求低的服务 可能并不成问题
+and you know for sort of low intensity services that's not a problem
+
+1259
+01:03:18,560 --> 01:03:21,830
+但是对于一些数据库服务
+but if we're building a you know database server that we would like to
+
+1260
+01:03:21,870 --> 01:03:25,570
+比如需要每秒处理百万请求
+you know that if it weren't for this could process millions of requests per second
+
+1261
+01:03:25,620 --> 01:03:28,560
+那将会对性能有极大的影响
+then that's just unbelievably damaging for performance
+
+1262
+01:03:29,980 --> 01:03:33,960
+这也时在条件允许的情况下
+and this is a big reason why people you know
+
+1263
+01:03:34,050 --> 01:03:38,010
+人们会使用一些不同的主副复制模式
+if they possibly can use a replication scheme
+
+1264
+01:03:38,080 --> 01:03:41,750
+比如说在更高层次操作 并且需要解析操作内容
+that's operating at a higher level and kind of understands the semantics of operations
+
+1265
+01:03:41,810 --> 01:03:44,330
+然后不需要每个包都等待确认
+and so it doesn't have to stall on every packet
+
+1266
+01:03:44,410 --> 01:03:48,880
+比如只在进行高层次操作时才等待
+you know it could stall on every high level operation or even notice that well
+
+1267
+01:03:48,950 --> 01:03:51,610
+只读操作完全不需要等待
+you know read-only operations don't have to stall at all
+
+1268
+01:03:51,680 --> 01:03:53,260
+只需要等待写操作同步或者其他一些操作
+it's only write or just stall at something
+
+1269
+01:03:53,440 --> 01:03:57,370
+但你需要在应用层上实现这些区分
+but you have to there has to be an application level replication scheme to to realize that
+
+1270
+01:04:04,250 --> 01:04:05,090
+你说的都是对的
+you're absolutely right
+
+1271
+01:04:05,480 --> 01:04:08,420
+虚拟机监视器不需要阻止主节点执行命令
+so the observation is that you don't have to stall the execution of the primary
+
+1272
+01:04:08,480 --> 01:04:10,120
+只需要阻止输出就好
+you only have to hold the output
+
+1273
+01:04:10,570 --> 01:04:13,780
+这可能可以做得更好
+and so maybe that's not as bad as it could be
+
+1274
+01:04:13,850 --> 01:04:16,860
+但至少这样在一个服务中
+but nevertheless it means that every you know in a service
+
+1275
+01:04:16,910 --> 01:04:21,490
+可以在几微秒内响应客户端
+that could otherwise have responded in a couple of microseconds to the client
+
+1276
+01:04:21,740 --> 01:04:25,750
+如果我们要先等待处于另一个城市的副节点响应
+you know if we have to first update the replicas in the next city
+
+1277
+01:04:25,870 --> 01:04:30,910
+那可能会让10微秒变成10毫秒
+we turn to you know 10 micro second interaction into it 10 millisecond interactions possibly
+
+1278
+01:04:35,900 --> 01:04:40,570
+如果你有大量客户端并发请求
+if you have vast numbers of clients submitting concurrent requests
+
+1279
+01:04:40,620 --> 01:04:44,870
+虽然可能在高延迟下完成大量处理
+then you may may be able to maintain high throughput even with high latency
+
+1280
+01:04:44,940 --> 01:04:49,260
+但是你需要非常巧妙的设计才能做到
+but you have to be lucky to or very clever designer to get that
+
+1281
+01:05:02,080 --> 01:05:03,180
+这是个很好的想法
+that's a great idea
+
+1282
+01:05:03,230 --> 01:05:06,010
+但是如果你将消息记录到主节点内存中
+but if you log in the memory of the primary
+
+1283
+01:05:06,070 --> 01:05:08,510
+在主节点宕机时日志就会丢失
+that log will disappear when the primary crashes
+
+1284
+01:05:08,560 --> 01:05:12,310
+通常认为服务器失效就意味着
+or that's usual semantics of a server failing is that
+
+1285
+01:05:12,830 --> 01:05:16,660
+服务器内存中的内容都会丢失
+you lose everything inside the box like the contents of memory
+
+1286
+01:05:16,830 --> 01:05:19,690
+或者即使你不会如此
+or you know if even if you didn't
+
+1287
+01:05:20,030 --> 01:05:24,110
+比如说失效是因为主节点电源被意外拔掉
+if the failure is that somebody unplugged the power cable accidentally from the primary
+
+1288
+01:05:24,180 --> 01:05:28,520
+但你有备用电源之类
+even if the primary just has battery backed up RAM or I don't know what
+
+1289
+01:05:29,730 --> 01:05:30,780
+你也做不到
+you can't get at it
+
+1290
+01:05:31,290 --> 01:05:32,550
+副节点也做不到如此
+all right the backup can't get at it
+
+1291
+01:05:33,130 --> 01:05:38,840
+实际上系统在副节点的内存中记录了输出
+so in fact this system does log the output and the place it logs it is in the memory of the backup
+
+1292
+01:05:39,460 --> 01:05:44,270
+为了保证可靠记录 你必须遵守输出规则 等待确认
+and in order to reliably log it there you have to observe the output rule and wait for the acknowledgment
+
+1293
+01:05:44,370 --> 01:05:48,800
+所以这是个正确的想法 但是不能使用主节点内存来做
+so it's entirely correct idea just can't use the primary's memory for it
+
+1294
+01:05:59,070 --> 01:05:59,670
+再说一遍?
+say it again
+
+1295
+01:06:05,170 --> 01:06:06,540
+这个想法很棒
+that's a clever idea I'd
+
+1296
+01:06:06,610 --> 01:06:12,480
+他问的是 能否输入由主节点接收 输出由副节点发送
+and so the question is maybe input should go to the primary but output should come from the backup
+
+1297
+01:06:12,970 --> 01:06:15,160
+我完全没有想过
+I completely haven't thought this through
+
+1298
+01:06:15,940 --> 01:06:16,930
+这或许可以
+that might work that
+
+1299
+01:06:18,390 --> 01:06:19,860
+我不确定 这很有意思
 I don't know that's interesting
 
-1458
-01:06:29,010 --> 01:06:31,910
+1300
+01:06:29,280 --> 01:06:30,390
 yeah maybe I will
 
-1459
-01:06:42,200 --> 01:06:48,180
-okay one possibility this does expose
-
-1460
-01:06:48,180 --> 01:06:56,099
-though is that the situation you know
-
-1461
-01:06:56,099 --> 01:06:58,410
-maybe the a primary crashes after its
-
-1462
-01:06:58,410 --> 01:07:00,329
-output is released so the client does
-
-1463
-01:07:00,329 --> 01:07:02,760
-receive the reply then the primary
-
-1464
-01:07:02,760 --> 01:07:07,589
-crashes the backups input is still in
-
-1465
-01:07:07,589 --> 01:07:09,750
-this event buffer in the virtual machine
-
-1466
-01:07:09,750 --> 01:07:13,589
-monitor of the backup it hasn't been
-
-1467
-01:07:13,589 --> 01:07:15,119
-delivered to the actual replicated
-
-1468
-01:07:15,119 --> 01:07:18,809
-service when the backup goes live after
-
-1469
-01:07:18,809 --> 01:07:22,049
-the crash of the primary the backup
-
-1470
-01:07:22,049 --> 01:07:25,650
-first has to consume all of the sort of
-
-1471
-01:07:25,650 --> 01:07:27,539
-log records that are lying around that
-
-1472
-01:07:27,539 --> 01:07:29,130
-it hasn't consumed yet has to catch up
-
-1473
-01:07:29,130 --> 01:07:30,960
-to the primary otherwise it won't take
-
-1474
-01:07:30,960 --> 01:07:33,240
-over with the same state so before the
-
-1475
-01:07:33,240 --> 01:07:34,650
-backup can go live it actually has to
-
-1476
-01:07:34,650 --> 01:07:37,529
-consume all these entries the last entry
-
-1477
-01:07:37,529 --> 01:07:41,010
-is presumably is the request from the
-
-1478
-01:07:41,010 --> 01:07:45,799
-client so the backup will be live after
-
-1479
-01:07:45,799 --> 01:07:49,260
-after it after the interrupt that
-
-1480
-01:07:49,260 --> 01:07:51,510
-delivers the request from the client and
-
-1481
-01:07:51,510 --> 01:07:54,839
-that means that the backup well you know
-
-1482
-01:07:54,839 --> 01:07:56,819
-increment its counter to eleven and then
-
-1483
-01:07:56,819 --> 01:07:58,529
-generate an output packet and since it's
-
-1484
-01:07:58,529 --> 01:08:01,859
-live at this point it will generate the
-
-1485
-01:08:01,859 --> 01:08:04,650
-output packet and the client will get to
-
-1486
-01:08:04,650 --> 01:08:10,740
-eleven replies which is also if it if
-
-1487
-01:08:10,740 --> 01:08:15,660
-that really happened would be anomalous
-
-1488
-01:08:15,660 --> 01:08:18,689
-like possibly not something that could
-
-1489
-01:08:18,689 --> 01:08:22,140
-happen if there was only one server the
-
-1490
-01:08:22,140 --> 01:08:25,710
-good news is that almost certainly or
-
-1491
-01:08:25,710 --> 01:08:27,479
-the almost certainly the client is
-
-1492
-01:08:27,479 --> 01:08:29,670
-talking to this service using TCP and
-
-1493
-01:08:29,670 --> 01:08:30,929
-that this is the request and the
-
-1494
-01:08:30,929 --> 01:08:32,279
-response go back and forth on a TCP
-
-1495
-01:08:32,279 --> 01:08:35,130
-Channel the when the backup takes over
-
-1496
-01:08:35,130 --> 01:08:37,560
-the backup since the state is identical
-
-1497
-01:08:37,560 --> 01:08:39,210
-to the primaries it knows all about that
-
-1498
-01:08:39,210 --> 01:08:40,890
-TCP connection and whether all the
-
-1499
-01:08:40,890 --> 01:08:43,259
-sequence numbers are and whatnot and
-
-1500
-01:08:43,259 --> 01:08:46,679
-when it generates this packet it will
-
-1501
-01:08:46,679 --> 01:08:49,589
-generate it with the same TCP sequence
-
-1502
-01:08:49,589 --> 01:08:52,198
-number as an original packet and the TCP
-
-1503
-01:08:52,198 --> 01:08:53,880
-stack on the client will say oh wait a
-
-1504
-01:08:53,880 --> 01:08:55,560
-minute that's a duplicate packet
-
-1505
-01:08:55,560 --> 01:08:57,210
-we'll discard the duplicate packet at
-
-1506
-01:08:57,210 --> 01:08:59,100
-the TCP level and the user level
-
-1507
-01:08:59,100 --> 01:09:00,450
-software will just never see this
-
-1508
-01:09:00,450 --> 01:09:04,470
-duplicate and so this system really you
-
-1509
-01:09:04,470 --> 01:09:09,000
-know you can view this as a kind of
-
-1510
-01:09:09,000 --> 01:09:11,580
-accidental or clever trick but the fact
-
-1511
-01:09:11,580 --> 01:09:14,100
-is for any replication system where
-
-1512
-01:09:14,100 --> 01:09:16,290
-cutover can happen which is to say
-
-1513
-01:09:16,290 --> 01:09:20,390
-pretty much any replication system it's
-
-1514
-01:09:20,390 --> 01:09:22,649
-essentially impossible to design them in
-
-1515
-01:09:22,649 --> 01:09:24,930
-a way that they are guaranteed not to
-
-1516
-01:09:24,930 --> 01:09:29,430
-generate duplicate output basically you
-
-1517
-01:09:29,430 --> 01:09:31,470
-know you well you can err on either side
-
-1518
-01:09:31,470 --> 01:09:33,300
-I'm not even either not generate the
-
-1519
-01:09:33,300 --> 01:09:36,300
-output at all which would be bad which
-
-1520
-01:09:36,300 --> 01:09:37,979
-would be terrible or you can generate
-
-1521
-01:09:37,979 --> 01:09:41,010
-the output twice on a cutover that's
-
-1522
-01:09:41,010 --> 01:09:42,930
-basically no way to generate it
-
-1523
-01:09:42,930 --> 01:09:44,880
-guaranteed generated only once everybody
-
-1524
-01:09:44,880 --> 01:09:46,770
-errors on the side of possibly
-
-1525
-01:09:46,770 --> 01:09:49,770
-generating duplicate output and that
-
-1526
-01:09:49,770 --> 01:09:51,810
-means that at some level you know the
-
-1527
-01:09:51,810 --> 01:09:53,520
-client side of all replication schemes
-
-1528
-01:09:53,520 --> 01:09:55,560
-need some sort of duplicate detection
-
-1529
-01:09:55,560 --> 01:09:57,990
-scheme here we get to use TCP s that we
-
-1530
-01:09:57,990 --> 01:09:59,250
-didn't have TCP that would have to be
-
-1531
-01:09:59,250 --> 01:10:01,140
-something else maybe application level
-
-1532
-01:10:01,140 --> 01:10:03,230
-sequence numbers or I don't know what
-
-1533
-01:10:03,230 --> 01:10:06,900
-and you'll see all of this and actually
-
-1534
-01:10:06,900 --> 01:10:09,120
-you'll see versions of essentially
-
-1535
-01:10:09,120 --> 01:10:10,590
-everything I've talked about like the
-
-1536
-01:10:10,590 --> 01:10:14,570
-output rule for example in labs 2 & 3
-
-1537
-01:10:14,570 --> 01:10:17,820
-you'll design your own replicated state
-
-1538
-01:10:17,820 --> 01:10:20,690
-machine yes
-
-1539
-01:10:45,110 --> 01:10:48,030
-yes to the first part so the scenario is
-
-1540
-01:10:48,030 --> 01:10:51,600
-the primary sends the reply and then
-
-1541
-01:10:51,600 --> 01:10:53,010
-either the primary send the close
-
-1542
-01:10:53,010 --> 01:10:55,350
-packet or the client closes the connect
-
-1543
-01:10:55,350 --> 01:10:57,060
-the TCP connection after it receives the
-
-1544
-01:10:57,060 --> 01:10:58,920
-primary's reply so now there's like no
-
-1545
-01:10:58,920 --> 01:11:00,960
-connection on the client side but there
-
-1546
-01:11:00,960 --> 01:11:02,760
-is a connection on the backup side and
-
-1547
-01:11:02,760 --> 01:11:06,210
-so now the backup so the backup consumes
-
-1548
-01:11:06,210 --> 01:11:07,740
-the very last log entry that as the
-
-1549
-01:11:07,740 --> 01:11:10,200
-input is now live so we're not
-
-1550
-01:11:10,200 --> 01:11:12,360
-responsible for replicating anything at
-
-1551
-01:11:12,360 --> 01:11:14,760
-this point right because the backup now
-
-1552
-01:11:14,760 --> 01:11:16,980
-live there's no other replica as the
-
-1553
-01:11:16,980 --> 01:11:20,400
-primary died so there's no like if if we
-
-1554
-01:11:20,400 --> 01:11:23,460
-don't if the backup fails to execute in
-
-1555
-01:11:23,460 --> 01:11:24,930
-log step with the primary that's fine
-
-1556
-01:11:24,930 --> 01:11:26,550
-actually because the primary is is dead
-
-1557
-01:11:26,550 --> 01:11:28,380
-and we do not want to execute in
-
-1558
-01:11:28,380 --> 01:11:30,510
-log step with it okay so the primer is
-
-1559
-01:11:30,510 --> 01:11:33,690
-now not it's live it generates an output
-
-1560
-01:11:33,690 --> 01:11:37,500
-on this TCP connection that isn't closed
-
-1561
-01:11:37,500 --> 01:11:39,900
-yet from the backup point of view this
-
-1562
-01:11:39,900 --> 01:11:41,790
-packet arrives with the client on a TCP
-
-1563
-01:11:41,790 --> 01:11:43,140
-connection that doesn't exist anymore
-
-1564
-01:11:43,140 --> 01:11:45,570
-from the clients point of view like no
-
-1565
-01:11:45,570 --> 01:11:46,710
-big whoopee on the client right he's
-
-1566
-01:11:46,710 --> 01:11:48,510
-just going to throw away the packet as
-
-1567
-01:11:48,510 --> 01:11:50,010
-if nothing happened the application
-
-1568
-01:11:50,010 --> 01:11:52,320
-won't no the client may send a reset
-
-1569
-01:11:52,320 --> 01:11:54,570
-something like a TCP error or whatever
-
-1570
-01:11:54,570 --> 01:11:57,480
-packet back to the backup and the backup
-
-1571
-01:11:57,480 --> 01:11:58,620
-does something or other with it but it
-
-1572
-01:11:58,620 --> 01:12:00,660
-doesn't matter because we're not
-
-1573
-01:12:00,660 --> 01:12:02,190
-diverging from anything because there's
-
-1574
-01:12:02,190 --> 01:12:04,230
-no primary to diverge from you can just
-
-1575
-01:12:04,230 --> 01:12:08,100
-handle a stray we said however it likes
-
-1576
-01:12:08,100 --> 01:12:10,470
-and what it'll in fact do is basically
-
-1577
-01:12:10,470 --> 01:12:14,730
-ignore but there's no now the backup has
-
-1578
-01:12:14,730 --> 01:12:17,310
-gone live there's just no we don't owe
-
-1579
-01:12:17,310 --> 01:12:19,640
-anybody anything as far as replication
-
-1580
-01:12:19,640 --> 01:12:22,640
+1301
+01:06:45,100 --> 01:06:49,370
+还有一个可能出现的情况
+one possibility this does expose though is that
+
+1302
+01:06:53,850 --> 01:06:59,230
+主节点在输出已经发送出去之后宕机
+the situation you know maybe the a primary crashes after its output is released
+
+1303
+01:06:59,490 --> 01:07:01,650
+客户端已经收到回复
+so the client does receive the reply
+
+1304
+01:07:01,990 --> 01:07:03,540
+然后主节点宕机
+then the primary crashes
+
+1305
+01:07:04,370 --> 01:07:08,920
+副节点的输入还在事件缓冲中
+the backups input is still in this event buffer
+
+1306
+01:07:09,130 --> 01:07:12,820
+在副节点的虚拟机监视器种
+in the virtual machine monitor of the backup
+
+1307
+01:07:12,880 --> 01:07:15,660
+还没有投递到真正的服务副本
+it hasn't been delivered to the actual replicated service
+
+1308
+01:07:16,820 --> 01:07:20,710
+副节点要顶替宕机的主节点
+when the backup goes live after the crash of the primary
+
+1309
+01:07:20,790 --> 01:07:27,460
+它首先要消费所有未处理的记录
+the backup first has to consume all of the sort of log records that are lying around
+
+1310
+01:07:27,520 --> 01:07:29,720
+以赶上主节点的进度
+that it hasn't consumed yet has to catch up to the primary
+
+1311
+01:07:29,770 --> 01:07:31,930
+否则主副节点进度就会不一致
+otherwise it won't take over with the same state
+
+1312
+01:07:32,060 --> 01:07:36,260
+副节点在接管服务之前要先消费完记录
+so before the backup can go live it actually has to consume all these entries
+
+1313
+01:07:36,530 --> 01:07:41,290
+最后一条记录是客户端的请求
+the last entry is presumably is the request from the client
+
+1314
+01:07:41,780 --> 01:07:46,950
+副节点会在它之后开始接管服务
+so the backup will be live after after it
+
+1315
+01:07:48,330 --> 01:07:50,970
+在传递客户端请求的中断之后
+after the interrupt that delivers the request from the client
+
+1316
+01:07:51,360 --> 01:07:56,330
+这意味着副节点计数器自增到11
+and that means that the backup well you know increment its counter to eleven
+
+1317
+01:07:56,410 --> 01:07:59,600
+然后生成一个输出包 因为这时候它接管服务
+and then generate an output packet and since it's live at this point
+
+1318
+01:08:00,960 --> 01:08:05,830
+所以生成输出 客户端会受到两个11回复
+it will generate the output packet and the client will get two eleven replies
+
+1319
+01:08:08,980 --> 01:08:16,110
+如果真的发生这种情况的话是不对的
+which is also if it if that really happened would be anomalous
+
+1320
+01:08:16,320 --> 01:08:20,640
+如果是单服务器的话这不应该发生
+like possibly not something that could happen if there was only one server
+
+1321
+01:08:21,660 --> 01:08:25,000
+好消息则是
+the good news is that almost certainly
+
+1322
+01:08:25,490 --> 01:08:29,490
+如果服务间是使用TCP通信
+or the almost certainly the client is talking to this service using TCP
+
+1323
+01:08:29,610 --> 01:08:32,850
+请求和响应都是通过TCP通道传输
+and that this is the request and the response go back and forth on a TCP Channel
+
+1324
+01:08:33,310 --> 01:08:35,180
+当副节点接管时
+the when the backup takes over
+
+1325
+01:08:35,650 --> 01:08:40,140
+副节点的状态和主节点一致 知道所有TCP连接
+the backup since the state is identical to the primaries it knows all about that TCP connection
+
+1326
+01:08:40,210 --> 01:08:42,510
+还有所有的序列号
+and whether all the sequence numbers are and whatnot
+
+1327
+01:08:43,080 --> 01:08:44,860
+当它产生这个包时
+and when it generates this packet
+
+1328
+01:08:46,220 --> 01:08:51,110
+它会产生和原来的包一样的序列号
+it will generate it with the same TCP sequence number as an original packet
+
+1329
+01:08:51,280 --> 01:08:54,980
+客户端的TCP栈会认为这是个重复的包
+and the TCP stack on the client will say oh wait a minute that's a duplicate packet
+
+1330
+01:08:55,240 --> 01:08:58,070
+在TCP层就会将它丢弃掉
+we'll discard the duplicate packet at the TCP level
+
+1331
+01:08:58,330 --> 01:09:00,990
+而在用户层软件中永远不会看到重复包
+and the user level software will just never see this duplicate
+
+1332
+01:09:01,950 --> 01:09:04,520
+所以这个系统中
+and so this system really you know
+
+1333
+01:09:08,050 --> 01:09:10,830
+你可以认为问题被意外解决了或者被巧妙处理了
+you can view this as a kind of accidental or clever trick
+
+1334
+01:09:11,060 --> 01:09:15,400
+但事实上对于所有能够进行切换的复制系统
+but the fact is for any replication system where cutover can happen
+
+1335
+01:09:15,630 --> 01:09:18,390
+也就是大部分的复制系统
+which is to say pretty much any replication system
+
+1336
+01:09:18,840 --> 01:09:22,410
+很难将他们设计成
+it's essentially impossible to design them
+
+1337
+01:09:22,470 --> 01:09:26,380
+保证切换时不会有重复输出
+in a way that they are guaranteed not to generate duplicate output
+
+1338
+01:09:28,910 --> 01:09:31,430
+你可以在两边都引发报错
+basically you know you well you can err on either side
+
+1339
+01:09:31,550 --> 01:09:34,210
+然后在两边都不生成输出
+I'm not even either not generate the output at all which
+
+1340
+01:09:34,310 --> 01:09:36,900
+但是这种做法很糟糕
+would be bad which would be terrible
+
+1341
+01:09:36,980 --> 01:09:39,640
+或者你可以允许切换时有两次输出
+or you can generate the output twice on a cutover
+
+1342
+01:09:40,410 --> 01:09:44,460
+总之没有办法可以保证只有一次输出
+that's basically no way to generate it guaranteed generated only once
+
+1343
+01:09:44,530 --> 01:09:48,530
+两边都引发报错或者允许可能的重复输出
+everybody errors on the side or possibly generating duplicate output
+
+1344
+01:09:49,240 --> 01:09:53,650
+某种程度上说 所有复制模式的客户端
+and that means that at some level the client side of all replication schemes
+
+1345
+01:09:53,730 --> 01:09:56,200
+都需要重复包的检测机制
+need some sort of duplicate detection scheme
+
+1346
+01:09:56,500 --> 01:09:59,610
+在这里我们使用TCP 不然的话也需要其他实现
+here we get to use TCP s that we didn't have TCP that would have to be something else
+
+1347
+01:09:59,620 --> 01:10:03,010
+maybe application level sequence numbers or I don't know what
+
+1348
+01:10:04,450 --> 01:10:05,600
+and you'll see all of this
+
+1349
+01:10:06,530 --> 01:10:08,450
+and actually you'll see versions of
+
+1350
+01:10:08,550 --> 01:10:14,470
+essentially everything I've talked about like the output rule for example in labs 2 & 3
+
+1351
+01:10:15,450 --> 01:10:18,060
+you'll design your own replicated state machine
+
+1352
+01:10:18,160 --> 01:10:18,690
+yes
+
+1353
+01:10:45,590 --> 01:10:46,790
+yes to the first part
+
+1354
+01:10:46,940 --> 01:10:48,180
+so the scenario is
+
+1355
+01:10:48,510 --> 01:10:51,140
+the primary sends the reply
+
+1356
+01:10:51,230 --> 01:10:53,350
+and then either the primary send the close packet
+
+1357
+01:10:53,420 --> 01:10:57,950
+or the client closes the connect the TCP connection after it receives the primary's reply
+
+1358
+01:10:58,040 --> 01:11:00,210
+so now there's like no connection on the client side
+
+1359
+01:11:00,610 --> 01:11:02,400
+but there is a connection on the backup side
+
+1360
+01:11:02,530 --> 01:11:03,630
+and so now the backup
+
+1361
+01:11:04,060 --> 01:11:09,450
+so the backup consumes the very last log entry that as the input is now live
+
+1362
+01:11:09,700 --> 01:11:13,620
+so we're not responsible for replicating anything at this point right
+
+1363
+01:11:13,660 --> 01:11:17,550
+because the backup now live there's no other replica as the primary died
+
+1364
+01:11:17,810 --> 01:11:24,330
+so there's no like if if we don't if the backup fails to execute in log step with the primary
+
+1365
+01:11:24,360 --> 01:11:24,980
+that's fine actually
+
+1366
+01:11:25,050 --> 01:11:29,050
+because the primary is is dead and we do not want to execute in log step with it
+
+1367
+01:11:29,080 --> 01:11:32,300
+okay so the primer is now not it's live
+
+1368
+01:11:32,890 --> 01:11:39,100
+it generates an output on this TCP connection that isn't closed yet from the backup point of view
+
+1369
+01:11:39,610 --> 01:11:41,960
+this packet arrives with the client on a TCP connection
+
+1370
+01:11:42,000 --> 01:11:44,170
+that doesn't exist anymore from the clients point of view
+
+1371
+01:11:44,490 --> 01:11:46,270
+like no big whoopee on the client right
+
+1372
+01:11:46,320 --> 01:11:50,690
+he's just going to throw away the packet as if nothing happened the application won't no
+
+1373
+01:11:51,340 --> 01:11:52,740
+the client may send a reset
+
+1374
+01:11:52,820 --> 01:11:55,130
+something like a TCP error or whatever packet
+
+1375
+01:11:55,720 --> 01:11:58,320
+back to the backup and the backup does something or other with it
+
+1376
+01:11:58,350 --> 01:11:59,350
+but it doesn't matter b
+
+1377
+01:11:59,460 --> 01:12:01,790
+ecause we're not diverging from anything
+
+1378
+01:12:01,840 --> 01:12:03,490
+because there's no primary to diverge from
+
+1379
+01:12:03,600 --> 01:12:08,010
+you can just handle a stray we said however it likes
+
+1380
+01:12:08,030 --> 01:12:10,960
+and what it'll in fact do is basically ignore
+
+1381
+01:12:13,070 --> 01:12:15,880
+but there's no now the backup has gone live there's just no
+
+1382
+01:12:16,860 --> 01:12:18,940
+we don't owe anybody anything as far as replication
+
+1383
+01:12:20,460 --> 01:12:21,010
 yeah
 
-1581
-01:12:36,270 --> 01:12:39,100
-well you can bet since the backups
-
-1582
-01:12:39,100 --> 01:12:40,870
-memory image is identical to the
-
-1583
-01:12:40,870 --> 01:12:42,520
-primaries image that they're sending
-
-1584
-01:12:42,520 --> 01:12:45,130
-packets with the very same source TCP
-
-1585
-01:12:45,130 --> 01:12:48,969
-number and they're very same everything
-
-1586
-01:12:48,969 --> 01:12:51,070
-they're sending bit for bit identical
-
-1587
-01:12:51,070 --> 01:13:00,700
-packets you know at this level the
-
-1588
-01:13:00,700 --> 01:13:03,640
-server's don't have IP addresses or for
-
-1589
-01:13:03,640 --> 01:13:06,969
-our purposes the virtual machines you
-
-1590
-01:13:06,969 --> 01:13:08,230
-know the primary in the back up virtual
-
-1591
-01:13:08,230 --> 01:13:12,930
-machines have IP addresses but the the
-
-1592
-01:13:12,930 --> 01:13:15,340
-physical computer and the vmm are
-
-1593
-01:13:15,340 --> 01:13:17,950
-transparent to the network it's not
-
-1594
-01:13:17,950 --> 01:13:19,480
-entirely true but it's basically the
-
-1595
-01:13:19,480 --> 01:13:21,969
-case that the virtual machine monitor in
-
-1596
-01:13:21,969 --> 01:13:23,850
-the physical machine don't really have
-
-1597
-01:13:23,850 --> 01:13:26,940
-identity of their own on the network
-
-1598
-01:13:26,940 --> 01:13:29,380
-because you can configure that then that
-
-1599
-01:13:29,380 --> 01:13:31,660
-way instead these they're not you know
-
-1600
-01:13:31,660 --> 01:13:33,040
-the virtual machine with a sewing
-
-1601
-01:13:33,040 --> 01:13:35,170
-operating system in its own TCP stack it
-
-1602
-01:13:35,170 --> 01:13:36,550
-doesn't IP address underneath there an
-
-1603
-01:13:36,550 --> 01:13:37,690
-address and all this other stuff which
-
-1604
-01:13:37,690 --> 01:13:39,250
-is identical between the primary in the
-
-1605
-01:13:39,250 --> 01:13:41,080
-backup and when it sends a packet it
-
-1606
-01:13:41,080 --> 01:13:42,969
-sends it with the virtual machines IP
-
-1607
-01:13:42,969 --> 01:13:44,530
-address and Ethernet address and those
-
-1608
-01:13:44,530 --> 01:13:49,030
-bits least in my mental model are just
-
-1609
-01:13:49,030 --> 01:13:51,760
-simply passed through on to the local
-
-1610
-01:13:51,760 --> 01:13:54,130
-area network it's exactly what we want
-
-1611
-01:13:54,130 --> 01:13:55,840
-and so I think he doesn't generate
-
-1612
-01:13:55,840 --> 01:13:57,489
-exactly the same packets that the
-
-1613
-01:13:57,489 --> 01:13:59,710
-primary would have generated there's
-
-1614
-01:13:59,710 --> 01:14:00,760
-maybe a little bit of trickery
-
-1615
-01:14:00,760 --> 01:14:03,340
-you know what the we if this is these
-
-1616
-01:14:03,340 --> 01:14:04,630
-are actually plugged into an Ethernet
-
-1617
-01:14:04,630 --> 01:14:06,730
-switch into the physical machines maybe
-
-1618
-01:14:06,730 --> 01:14:08,860
-it wasn't in two different ports of an
-
-1619
-01:14:08,860 --> 01:14:09,969
-Ethernet switch and we'd like the
-
-1620
-01:14:09,969 --> 01:14:12,480
-Ethernet switch to change its mind about
-
-1621
-01:14:12,480 --> 01:14:14,530
-which of these two machines that
-
-1622
-01:14:14,530 --> 01:14:18,790
-delivers packets with replicated
-
-1623
-01:14:18,790 --> 01:14:20,950
-services Ethernet address and so there's
-
-1624
-01:14:20,950 --> 01:14:23,710
-a little bit of funny business there for
-
-1625
-01:14:23,710 --> 01:14:24,910
-the most part they're just generating
-
-1626
-01:14:24,910 --> 01:14:26,260
-identical packets so let me just send
-
-1627
-01:14:26,260 --> 01:14:28,500
-them out
-
-1628
-01:14:29,550 --> 01:14:33,650
-okay so another little detail I've been
-
-1629
-01:14:33,650 --> 01:14:36,810
-glossing over is that I've been assuming
-
-1630
-01:14:36,810 --> 01:14:38,970
-that the primary just fails or the
-
-1631
-01:14:38,970 --> 01:14:41,790
-backup just fails that is fail stop
-
-1632
-01:14:41,790 --> 01:14:43,320
-right but that's not the only option
-
-1633
-01:14:43,320 --> 01:14:46,350
-another very common situation that has
-
-1634
-01:14:46,350 --> 01:14:49,770
-to be dealt with is if the two machines
-
-1635
-01:14:49,770 --> 01:14:51,390
-are still up and running and executing
-
-1636
-01:14:51,390 --> 01:14:53,190
-but there's something funny happen on
-
-1637
-01:14:53,190 --> 01:14:56,640
-the network that causes them not to be
-
-1638
-01:14:56,640 --> 01:14:58,110
-able to talk to each other but to still
-
-1639
-01:14:58,110 --> 01:15:01,740
-be able to talk to some clients so if
-
-1640
-01:15:01,740 --> 01:15:03,510
-that happened if the primary backup
-
-1641
-01:15:03,510 --> 01:15:05,100
-couldn't talk to each other but they
-
-1642
-01:15:05,100 --> 01:15:06,330
-could still talk to the clients they
-
-1643
-01:15:06,330 --> 01:15:07,920
-would both think oh the other replicas
-
-1644
-01:15:07,920 --> 01:15:10,140
-dead I better take over and go live and
-
-1645
-01:15:10,140 --> 01:15:12,450
-so now we have two machines going live
-
-1646
-01:15:12,450 --> 01:15:14,220
-with this service and now you know
-
-1647
-01:15:14,220 --> 01:15:16,470
-they're no longer sending each other log
-
-1648
-01:15:16,470 --> 01:15:17,430
-events or anything they're just
-
-1649
-01:15:17,430 --> 01:15:19,350
-diverging maybe they're accepting
-
-1650
-01:15:19,350 --> 01:15:21,330
-different client inputs and changes are
-
-1651
-01:15:21,330 --> 01:15:22,590
-stayed in different ways so now we have
-
-1652
-01:15:22,590 --> 01:15:24,930
-a split brain disaster if we let the
-
-1653
-01:15:24,930 --> 01:15:28,080
-primary in the backup go live because it
-
-1654
-01:15:28,080 --> 01:15:30,360
-was a network that has some kind of
-
-1655
-01:15:30,360 --> 01:15:34,230
-failure instead of these machines and
-
-1656
-01:15:34,230 --> 01:15:36,380
-the way that this paper solves it I mean
-
-1657
-01:15:36,380 --> 01:15:41,910
-is by appealing to an outside authority
-
-1658
-01:15:41,910 --> 01:15:44,250
-to make the decision about which of the
-
-1659
-01:15:44,250 --> 01:15:46,140
-primary of the backup is allowed to be
-
-1660
-01:15:46,140 --> 01:15:53,340
-live and so it they're you know it turns
-
-1661
-01:15:53,340 --> 01:15:54,600
-out that their storage is actually not
-
-1662
-01:15:54,600 --> 01:15:56,700
-on local disk this almost doesn't matter
-
-1663
-01:15:56,700 --> 01:15:58,980
-but their storage is on some external
-
-1664
-01:15:58,980 --> 01:16:01,920
-disk server and as well as being in this
-
-1665
-01:16:01,920 --> 01:16:03,570
-server as a like totally separate
-
-1666
-01:16:03,570 --> 01:16:05,160
-service there's nothing to do with disks
-
-1667
-01:16:05,160 --> 01:16:07,050
-there this server happens to abort this
-
-1668
-01:16:07,050 --> 01:16:15,090
-test and set test and set service over
-
-1669
-01:16:15,090 --> 01:16:17,280
-the network where you you can send a
-
-1670
-01:16:17,280 --> 01:16:19,860
-test and set request to it and there's
-
-1671
-01:16:19,860 --> 01:16:21,930
-some flag it's keeping in memory and
-
-1672
-01:16:21,930 --> 01:16:23,250
-it'll set the flag and return what the
-
-1673
-01:16:23,250 --> 01:16:25,590
-old value was so both primary and backup
-
-1674
-01:16:25,590 --> 01:16:28,890
-have to sort of acquire this test and
-
-1675
-01:16:28,890 --> 01:16:30,450
-set flag it's a little bit like a lock
-
-1676
-01:16:30,450 --> 01:16:32,640
-in order to go live they both may be
-
-1677
-01:16:32,640 --> 01:16:34,920
-send test and set requests at the same
-
-1678
-01:16:34,920 --> 01:16:37,320
-time to this test and set server the
-
-1679
-01:16:37,320 --> 01:16:39,360
-first one gets back a reply that says oh
-
-1680
-01:16:39,360 --> 01:16:41,550
-the flag used to be zero now it's one
-
-1681
-01:16:41,550 --> 01:16:42,310
-this
-
-1682
-01:16:42,310 --> 01:16:44,740
-second request to arrive the response
-
-1683
-01:16:44,740 --> 01:16:46,090
-from the test and set server is Oh
-
-1684
-01:16:46,090 --> 01:16:47,680
-actually the flag was already one when
-
-1685
-01:16:47,680 --> 01:16:50,200
-your request arrived so so basically
-
-1686
-01:16:50,200 --> 01:16:52,720
-you're not allowed to be primary and so
-
-1687
-01:16:52,720 --> 01:16:55,660
-this this test and set server and we can
-
-1688
-01:16:55,660 --> 01:16:58,810
-think of it as a single machine is the
-
-1689
-01:16:58,810 --> 01:17:00,700
-arbitrator that decides which of the two
-
-1690
-01:17:00,700 --> 01:17:02,740
-should go live if they both think the
-
-1691
-01:17:02,740 --> 01:17:04,870
-other ones dead due to a network
-
-1692
-01:17:04,870 --> 01:17:08,920
-partition any questions about this
-
-1693
-01:17:08,920 --> 01:17:17,830
-mechanism you're busted yeah if the test
-
-1694
-01:17:17,830 --> 01:17:19,750
-and set server should be dead at the
-
-1695
-01:17:19,750 --> 01:17:22,960
-critical moment when and so actually
-
-1696
-01:17:22,960 --> 01:17:24,640
-even if there's not a network partition
-
-1697
-01:17:24,640 --> 01:17:27,370
-under all circumstances in which one or
-
-1698
-01:17:27,370 --> 01:17:28,480
-the other of these wants to go live
-
-1699
-01:17:28,480 --> 01:17:30,280
-because it thinks the others dead even
-
-1700
-01:17:30,280 --> 01:17:32,500
-when the other one really is dead the
-
-1701
-01:17:32,500 --> 01:17:33,850
-one that wants to collide still has to
-
-1702
-01:17:33,850 --> 01:17:35,350
-acquire the test and set lock because
-
-1703
-01:17:35,350 --> 01:17:39,100
-one of like the deep rules of 6.824
-
-1704
-01:17:39,100 --> 01:17:43,630
-game is that you cannot tell whether or
-
-1705
-01:17:43,630 --> 01:17:45,850
-another computer is dead or not all you
-
-1706
-01:17:45,850 --> 01:17:47,110
-know is that you stopped receiving
-
-1707
-01:17:47,110 --> 01:17:49,360
-packets from it and you don't know
-
-1708
-01:17:49,360 --> 01:17:50,500
-whether it's because the other computer
-
-1709
-01:17:50,500 --> 01:17:53,920
-is dead or because something has gone
-
-1710
-01:17:53,920 --> 01:17:55,420
-wrong with the network between you and
-
-1711
-01:17:55,420 --> 01:17:57,340
-the other computer so all the backup
-
-1712
-01:17:57,340 --> 01:17:59,230
-ceases well I've stuck in packets maybe
-
-1713
-01:17:59,230 --> 01:18:00,720
-the primary is dead maybe it's live
-
-1714
-01:18:00,720 --> 01:18:03,670
-primary probably sees the same thing so
-
-1715
-01:18:03,670 --> 01:18:04,660
-if there's a network partition they
-
-1716
-01:18:04,660 --> 01:18:05,920
-certainly have to ask the Test-and-Set
-
-1717
-01:18:05,920 --> 01:18:07,210
-server but since they don't know if it's
-
-1718
-01:18:07,210 --> 01:18:08,950
-a network partition they have to ask the
-
-1719
-01:18:08,950 --> 01:18:11,830
-test and set server regardless of whether
-
-1720
-01:18:11,830 --> 01:18:13,870
-it's a partition or not so anytime
-
-1721
-01:18:13,870 --> 01:18:15,970
-either wants to collide the test and set
-
-1722
-01:18:15,970 --> 01:18:17,650
-server also has to be alive because they
-
-1723
-01:18:17,650 --> 01:18:19,780
-always have to acquire this test and set
-
-1724
-01:18:19,780 --> 01:18:22,900
-lock so the test and set server
-
-1725
-01:18:22,900 --> 01:18:24,220
-sounds like a single point of failure
-
-1726
-01:18:24,220 --> 01:18:26,320
-they were trying to build a replicated
-
-1727
-01:18:26,320 --> 01:18:29,260
-fault tolerant whatever thing but in the
-
-1728
-01:18:29,260 --> 01:18:30,820
-end you know we can't failover unless
-
-1729
-01:18:30,820 --> 01:18:35,740
-unless this is alive so that's a bit of
-
-1730
-01:18:35,740 --> 01:18:36,270
-a bummer
-
-1731
-01:18:36,270 --> 01:18:39,520
-I'm guessing though I'm making a strong
-
-1732
-01:18:39,520 --> 01:18:41,410
-guess that the test and set server is
-
-1733
-01:18:41,410 --> 01:18:44,590
-actually itself a replicated service and
-
-1734
-01:18:44,590 --> 01:18:46,840
-is fault tolerant right it's almost
-
-1735
-01:18:46,840 --> 01:18:49,030
-certainly I mean these people of VMware
-
-1736
-01:18:49,030 --> 01:18:50,770
-where they're like happy to sell you a
-
-1737
-01:18:50,770 --> 01:18:53,560
-million dollar highly available storage
-
-1738
-01:18:53,560 --> 01:18:54,840
-system that
-
-1739
-01:18:54,840 --> 01:18:56,760
-uses enormous amounts of replication
-
-1740
-01:18:56,760 --> 01:18:59,250
-internally um since the test and set
-
-1741
-01:18:59,250 --> 01:19:00,869
-thing is on there dis server I'm I'm
-
-1742
-01:19:00,869 --> 01:19:03,389
-guessing it's replicated too and the
-
-1743
-01:19:03,389 --> 01:19:05,219
-stuff you'll be doing in lab 2 in lab 3
-
-1744
-01:19:05,219 --> 01:19:07,770
-is more than powerful enough for you to
-
-1745
-01:19:07,770 --> 01:19:11,040
-build your own fault-tolerant test and
-
-1746
-01:19:11,040 --> 01:19:13,110
-set server so this problem can easily be
-
-1747
-01:19:13,110 --> 00:00:00,000
-eliminated
+1384
+01:12:36,860 --> 01:12:41,610
+well you can bet since the backups memory image is identical to the primaries image
+
+1385
+01:12:41,700 --> 01:12:45,320
+that they're sending packets with the very same source TCP number
+
+1386
+01:12:45,850 --> 01:12:48,890
+and they're very same everything
+
+1387
+01:12:49,250 --> 01:12:51,450
+they're sending bit for bit identical packets
+
+1388
+01:12:59,660 --> 01:13:02,140
+you know at this level the server's don't have IP addresses
+
+1389
+01:13:02,690 --> 01:13:04,090
+or for our purposes
+
+1390
+01:13:04,790 --> 01:13:09,360
+the virtual machines you know the primary in the back up virtual machines have IP addresses
+
+1391
+01:13:13,080 --> 01:13:16,900
+but the the physical computer and the vmm are transparent to the network
+
+1392
+01:13:17,790 --> 01:13:20,190
+it's not entirely true but it's basically the case that
+
+1393
+01:13:20,550 --> 01:13:22,600
+the virtual machine monitor in the physical machine
+
+1394
+01:13:22,680 --> 01:13:25,660
+don't really have identity of their own on the network
+
+1395
+01:13:27,850 --> 01:13:31,360
+because you can configure that then that way instead these they're not
+
+1396
+01:13:31,400 --> 01:13:34,710
+you know the virtual machine with a sewing operating system in its own TCP stack
+
+1397
+01:13:34,770 --> 01:13:37,480
+it doesn't IP address underneath there an address and all this other stuff
+
+1398
+01:13:37,540 --> 01:13:39,550
+which is identical between the primary in the backup
+
+1399
+01:13:39,870 --> 01:13:40,840
+and when it sends a packet
+
+1400
+01:13:40,910 --> 01:13:44,140
+it sends it with the virtual machines IP address and Ethernet address
+
+1401
+01:13:44,210 --> 01:13:52,160
+and those bits least in my mental model are just simply passed through on to the local area network
+
+1402
+01:13:53,140 --> 01:13:54,210
+it's exactly what we want
+
+1403
+01:13:54,840 --> 01:13:56,900
+and so I think he doesn't generate exactly the same packets
+
+1404
+01:13:56,960 --> 01:13:58,540
+that the primary would have generated
+
+1405
+01:13:59,470 --> 01:14:02,800
+there's maybe a little bit of trickery you know what the we
+
+1406
+01:14:02,830 --> 01:14:05,100
+if this is these are actually plugged into an Ethernet switch
+
+1407
+01:14:05,170 --> 01:14:09,280
+into the physical machines maybe it wasn't in two different ports of an Ethernet switch
+
+1408
+01:14:09,330 --> 01:14:12,780
+and we'd like the Ethernet switch to change its mind about
+
+1409
+01:14:13,220 --> 01:14:20,060
+which of these two machines that delivers packets with replicated services Ethernet address
+
+1410
+01:14:20,500 --> 01:14:22,300
+and so there's a little bit of funny business there
+
+1411
+01:14:23,350 --> 01:14:25,510
+for the most part they're just generating identical packets
+
+1412
+01:14:25,590 --> 01:14:26,510
+so let me just send them out
+
+1413
+01:14:29,690 --> 01:14:35,170
+okay so another little detail I've been glossing over is that
+
+1414
+01:14:36,190 --> 01:14:39,720
+I've been assuming that the primary just fails or the backup just fails
+
+1415
+01:14:40,770 --> 01:14:41,900
+that is fail stop right
+
+1416
+01:14:42,470 --> 01:14:43,680
+but that's not the only option
+
+1417
+01:14:43,760 --> 01:14:47,180
+another very common situation that has to be dealt with is
+
+1418
+01:14:47,220 --> 01:14:51,190
+if the two machines are still up and running and executing
+
+1419
+01:14:51,240 --> 01:14:53,580
+but there's something funny happen on the network
+
+1420
+01:14:55,480 --> 01:14:57,360
+that causes them not to be able to talk to each other
+
+1421
+01:14:57,410 --> 01:14:59,330
+but to still be able to talk to some clients
+
+1422
+01:15:01,080 --> 01:15:04,600
+so if that happened if the primary backup couldn't talk to each other
+
+1423
+01:15:04,680 --> 01:15:06,140
+but they could still talk to the clients
+
+1424
+01:15:06,190 --> 01:15:08,130
+they would both think oh the other replicas dead
+
+1425
+01:15:08,510 --> 01:15:09,920
+I better take over and go live
+
+1426
+01:15:10,000 --> 01:15:13,150
+and so now we have two machines going live with this service
+
+1427
+01:15:13,500 --> 01:15:17,070
+and now you know they're no longer sending each other log events or anything
+
+1428
+01:15:17,130 --> 01:15:18,200
+they're just diverging
+
+1429
+01:15:18,460 --> 01:15:22,000
+maybe they're accepting different client inputs and changes are stayed in different ways
+
+1430
+01:15:22,070 --> 01:15:24,040
+so now we have a split brain disaster
+
+1431
+01:15:24,150 --> 01:15:27,000
+if we let the primary in the backup go live
+
+1432
+01:15:27,280 --> 01:15:31,660
+because it was a network that has some kind of failure instead of these machines
+
+1433
+01:15:34,170 --> 01:15:36,440
+and the way that this paper solves it I mean
+
+1434
+01:15:37,520 --> 01:15:43,180
+is by appealing to an outside authority to make the decision about
+
+1435
+01:15:43,530 --> 01:15:46,640
+which of the primary of the backup is allowed to be live
+
+1436
+01:15:47,450 --> 01:15:48,150
+and so
+
+1437
+01:15:52,290 --> 01:15:55,200
+it they're you know it turns out that their storage is actually not on local disk
+
+1438
+01:15:55,730 --> 01:15:56,850
+this almost doesn't matter
+
+1439
+01:15:57,500 --> 01:15:59,810
+but their storage is on some external disk server
+
+1440
+01:16:00,480 --> 01:16:03,960
+and as well as being in this server as a like totally separate service
+
+1441
+01:16:04,050 --> 01:16:05,270
+there's nothing to do with disks
+
+1442
+01:16:05,420 --> 01:16:08,070
+there this server happens to abort this test and set
+
+1443
+01:16:14,020 --> 01:16:15,880
+test and set service over the network where you
+
+1444
+01:16:15,950 --> 01:16:19,210
+you can send a test and set request to it
+
+1445
+01:16:19,270 --> 01:16:21,230
+and there's some flag it's keeping in memory
+
+1446
+01:16:21,310 --> 01:16:23,890
+and it'll set the flag and return what the old value was
+
+1447
+01:16:23,950 --> 01:16:29,330
+so both primary and backup have to sort of acquire this test and set flag
+
+1448
+01:16:29,430 --> 01:16:30,690
+it's a little bit like a lock
+
+1449
+01:16:30,780 --> 01:16:35,400
+in order to go live they both may be send test and set requests at the same time
+
+1450
+01:16:35,470 --> 01:16:36,930
+to this test and set server
+
+1451
+01:16:37,040 --> 01:16:40,860
+the first one gets back a reply that says oh the flag used to be zero
+
+1452
+01:16:40,910 --> 01:16:43,870
+now it's one this second request to arrive
+
+1453
+01:16:43,950 --> 01:16:45,770
+the response from the test and set server is
+
+1454
+01:16:45,810 --> 01:16:48,600
+Oh actually the flag was already one when your request arrived
+
+1455
+01:16:48,720 --> 01:16:51,690
+so so basically you're not allowed to be primary
+
+1456
+01:16:52,210 --> 01:16:54,750
+and so this this test and set server
+
+1457
+01:16:55,220 --> 01:16:56,760
+and we can think of it as a single machine
+
+1458
+01:16:58,470 --> 01:17:01,790
+is the arbitrator that decides which of the two should go live
+
+1459
+01:17:01,830 --> 01:17:05,420
+if they both think the other ones dead due to a network partition
+
+1460
+01:17:07,920 --> 01:17:09,640
+any questions about this mechanism
+
+1461
+01:17:15,020 --> 01:17:16,070
+you're busted
+
+1462
+01:17:17,280 --> 01:17:21,310
+yeah if the test and set server should be dead at the critical moment when
+
+1463
+01:17:22,330 --> 01:17:24,590
+and so actually even if there's not a network partition
+
+1464
+01:17:24,790 --> 01:17:26,540
+under all circumstances in which
+
+1465
+01:17:26,660 --> 01:17:29,960
+one or the other of these wants to go live because it thinks the others dead
+
+1466
+01:17:30,010 --> 01:17:31,670
+even when the other one really is dead
+
+1467
+01:17:32,290 --> 01:17:35,020
+the one that wants to collide still has to acquire the test and set lock
+
+1468
+01:17:35,080 --> 01:17:40,190
+because one of like the deep rules of 6.824 game is that
+
+1469
+01:17:41,610 --> 01:17:44,980
+you cannot tell whether or another computer is dead or not
+
+1470
+01:17:45,580 --> 01:17:48,130
+all you know is that you stopped receiving packets from it
+
+1471
+01:17:48,650 --> 01:17:51,140
+and you don't know whether it's because the other computer is dead
+
+1472
+01:17:51,200 --> 01:17:56,080
+or because something has gone wrong with the network between you and the other computer
+
+1473
+01:17:56,470 --> 01:17:58,510
+so all the backup ceases well I've stuck in packets
+
+1474
+01:17:58,850 --> 01:18:00,650
+maybe the primary is dead maybe it's live
+
+1475
+01:18:01,250 --> 01:18:02,850
+primary probably sees the same thing
+
+1476
+01:18:03,500 --> 01:18:04,370
+so if there's a network partition
+
+1477
+01:18:04,460 --> 01:18:06,020
+they certainly have to ask the Test-and-Set server
+
+1478
+01:18:06,100 --> 01:18:08,120
+but since they don't know if it's a network partition
+
+1479
+01:18:08,210 --> 01:18:12,650
+they have to ask the test and set server regardless of whether it's a partition or not
+
+1480
+01:18:13,360 --> 01:18:15,350
+so anytime either wants to collide
+
+1481
+01:18:15,400 --> 01:18:17,400
+the test and set server also has to be alive
+
+1482
+01:18:17,460 --> 01:18:19,910
+because they always have to acquire this test and set lock
+
+1483
+01:18:21,280 --> 01:18:24,460
+so the test and set server sounds like a single point of failure
+
+1484
+01:18:25,000 --> 01:18:27,500
+they were trying to build a replicated fault tolerant whatever thing
+
+1485
+01:18:28,550 --> 01:18:32,490
+but in the end you know we can't failover unless unless this is alive so
+
+1486
+01:18:35,310 --> 01:18:36,420
+that's a bit of a bummer
+
+1487
+01:18:37,260 --> 01:18:38,380
+I'm guessing though
+
+1488
+01:18:38,790 --> 01:18:41,720
+I'm making a strong guess that the test and set server is actually
+
+1489
+01:18:42,100 --> 01:18:46,290
+itself a replicated service and is fault tolerant right
+
+1490
+01:18:46,470 --> 01:18:49,480
+it's almost certainly I mean these people of VMware
+
+1491
+01:18:49,540 --> 01:18:54,240
+where they're like happy to sell you a million dollar highly available storage system
+
+1492
+01:18:54,430 --> 01:18:57,180
+that uses enormous amounts of replication internally
+
+1493
+01:18:57,580 --> 01:19:00,730
+um since the test and set thing is on there dis server
+
+1494
+01:19:00,760 --> 01:19:02,410
+I'm I'm guessing it's replicated too
+
+1495
+01:19:02,930 --> 01:19:07,370
+and the stuff you'll be doing in lab 2 in lab 3 is more than powerful enough
+
+1496
+01:19:07,430 --> 01:19:11,480
+for you to build your own fault-tolerant test and set server
+
+1497
+01:19:11,840 --> 01:19:13,670
+so this problem can easily be eliminated
 
