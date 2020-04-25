@@ -79,7 +79,6 @@ all right the backup can't get at it
 so in fact this system does log the output and the place it logs it is in the memory of the backup
 and in order to reliably log it there you have to observe the output rule and wait for the acknowledgment
 so it's entirely correct idea just can't use the primary's memory for it
-yes
 say it again
 that's a clever idea I'd
 and so the question is maybe input should go to the primary but output should come from the backup
@@ -87,7 +86,6 @@ I completely haven't thought this through
 that might work that
 I don't know that's interesting
 yeah maybe I will
-okay
 one possibility this does expose though is that
 the situation you know maybe the a primary crashes after its output is released
 so the client does receive the reply
@@ -133,4 +131,4 @@ that's basically no way to generate it guaranteed generated only once
 everybody errors on the side of possibly generating duplicate output
 and that means that at some level you know the client side of all replication schemes
 need some sort of duplicate detection scheme
-here we get to use TCP s that we didn't have TCP that would have to be something else 
+here we get to use TCP s that we didn't have TCP that would have to be something else

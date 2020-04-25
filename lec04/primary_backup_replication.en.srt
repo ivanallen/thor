@@ -6284,6 +6284,7 @@ need some sort of duplicate detection scheme
 
 1346
 01:09:56,500 --> 01:09:59,610
+在这里我们使用TCP 不然的话也需要其他实现
 here we get to use TCP s that we didn't have TCP that would have to be something else
 
 1347
