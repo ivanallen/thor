@@ -405,7 +405,7 @@ fail stop
 
 82
 00:03:47,290 --> 00:03:50,810
-你懂的，kernel 将会 panic
+你懂的，kernel 将会 panic 
 you know the kernel will panic and the
 
 83
@@ -830,7 +830,7 @@ you know replicates just once but that
 
 167
 00:07:05,870 --> 00:07:07,760
-但是那意味着我们有两倍的计算机、CPU 和 RAM
+但是那意味着我们有两倍的计算机、CPU 和 RAM 
 means we have twice as many computers
 
 168
@@ -1176,22 +1176,22 @@ operation that's deterministic except
 
 238
 00:10:05,330 --> 00:10:08,839
-除非外部输入到来
-when external input comes in right
+除非外部输入到来  
+when external input comes in right 
 
 239
 00:10:08,839 --> 00:10:10,880
-通常情况下，如果计算机没有外部影响
+通常情况下，如果计算机没有外部影响 
 ordinarily if there's no external
 
 240
 00:10:10,880 --> 00:10:12,770
-通常情况下，如果计算机没有外部影响
-influences on a computer
+通常情况下，如果计算机没有外部影响  
+influences on a computer 
 
 241
 00:10:12,770 --> 00:10:14,330
-它只是一个接一个地执行指令
+它只是一个接一个地执行指令 
 it just executes one instruction after another
 
 242
@@ -1201,28 +1201,28 @@ and what each instruction does is a
 
 243
 00:10:16,010 --> 00:10:18,770
-一个计算机内存和寄存器中内容的确定性函数
+一个计算机内存和寄存器中内容的确定性函数 
 deterministic function of what's in the
 
 244
 00:10:18,770 --> 00:10:20,390
-一个计算机内存和寄存器中内容的确定性函数
+一个计算机内存和寄存器中内容的确定性函数 
 memory and the registers of the computer
 
 245
 00:10:20,390 --> 00:10:22,400
 而且只有当外部事件干预时，才可能发生意外情况
-and it's only when external events intervene
+and it's only when external events intervene 
 
 246
 00:10:22,400 --> 00:10:25,190
-而且只有当外部事件干预时，才可能发生意外情况
-that something unexpected may happen
+而且只有当外部事件干预时，才可能发生意外情况  
+that something unexpected may happen 
 
 247
 00:10:25,190 --> 00:10:27,440
 像是某个随机时间到达的数据包
-like a packet arrives of a some random time
+like a packet arrives of a some random time 
 
 248
 00:10:27,440 --> 00:10:31,550
@@ -1231,7 +1231,7 @@ and that causes the server
 
 249
 00:10:31,550 --> 00:10:33,800
-导致服务器开始做些不一样的事
+导致服务器开始做些不一样的事 
 to start doing something differently
 
 250
@@ -1241,8 +1241,8 @@ so replicated state machine schemes
 
 251
 00:10:36,410 --> 00:10:39,260
-复制的状态机方案不会在副本之间发送状态
-don't send the state between the replicas
+复制的状态机方案不会在副本之间发送状态  
+don't send the state between the replicas 
 
 252
 00:10:39,260 --> 00:10:41,029
@@ -1256,8 +1256,8 @@ external events they just send maybe
 
 254
 00:10:45,500 --> 00:10:47,839
-只是从primary发送到backup
-from a primary to a backup again
+只是从primary发送到backup 
+from a primary to a backup again 
 
 255
 00:10:47,839 --> 00:10:50,420
@@ -1271,13 +1271,13 @@ outside world that the backup needs to
 
 257
 00:10:52,550 --> 00:10:52,910
-只是发送backup需要了解的信息，例如从外界获取的输入
+只是发送backup需要了解的信息，例如从外界获取的输入 
 know about
 
 258
 00:10:52,910 --> 00:10:55,370
 观察结果是
-and the observation is that
+and the observation is that 
 
 259
 00:10:55,370 --> 00:10:57,050
@@ -1306,23 +1306,23 @@ will continue to be replicas of each
 
 264
 00:11:08,150 --> 00:11:10,490
-并以相同的方式执行
-other and sort of execute identically
+并以相同的方式执行  
+other and sort of execute identically 
 
 265
 00:11:10,490 --> 00:11:12,020
-只要他们俩同时看到相同的输入
-as long as they both see the same inputs at the same time
+只要他们俩同时看到相同的输入  
+as long as they both see the same inputs at the same time 
 
 266
 00:11:12,020 --> 00:11:17,360
 这可能转移了内存
-so this transfers probably memory
+so this transfers probably memory 
 
 267
 00:11:17,360 --> 00:11:21,380
-这传递给primary和backup
-and this transfer some primary backup
+这传递给primary和backup 
+and this transfer some primary backup 
 
 268
 00:11:21,380 --> 00:11:25,670
@@ -1331,18 +1331,18 @@ just operations from clients or
 
 269
 00:11:25,670 --> 00:11:27,890
-来自client的操作或外部输入或外部事件
-external external inputs or external events
+来自client的操作或外部输入或外部事件 
+external external inputs or external events 
 
 270
 00:11:27,890 --> 00:11:33,230
-人们倾向于使用复制状态机的原因
+人们倾向于使用复制状态机的原因  
 and the reason why
 
 271
 00:11:33,230 --> 00:11:35,810
-人们倾向于使用复制状态机的原因
-people tend to favor a replicated state machine
+人们倾向于使用复制状态机的原因  
+people tend to favor a replicated state machine 
 
 272
 00:11:35,810 --> 00:11:39,350
@@ -1352,7 +1352,7 @@ is that usually operations are
 273
 00:11:39,350 --> 00:11:41,630
 在于通常操作要比状态小
-smaller than the state but this
+smaller than the state but this 
 
 274
 00:11:41,630 --> 00:11:43,130
@@ -1412,12 +1412,12 @@ rely on sort of more assumptions about
 285
 00:12:05,900 --> 00:12:08,930
 并且依赖于计算机运行方式的更多假设
-how the computers operate whereas
+how the computers operate whereas 
 
 286
 00:12:08,930 --> 00:12:10,640
-然而这种方案则简单粗暴
-this is a really heavy-handed
+然而这种方案则简单粗暴 
+this is a really heavy-handed 
 
 287
 00:12:10,640 --> 00:12:12,380
@@ -1426,7 +1426,7 @@ I'm just gonna send you my whole state sort of a
 
 288
 00:12:12,380 --> 00:12:14,440
-没什么要担心的
+没什么要担心的 
 nothing to worry about
 
 289
@@ -1436,28 +1436,28 @@ any questions about these strategies yes
 
 290
 00:12:27,649 --> 00:12:30,930
-好吧，所以问题是
+好吧，所以问题是 
 well ok so the question is
 
 291
 00:12:30,930 --> 00:12:32,760
-假设我们的方案出了点问题
-suppose something went wrong with our scheme
+假设我们的方案出了点问题  
+suppose something went wrong with our scheme 
 
 292
 00:12:32,760 --> 00:12:34,410
-backup实际上与primary不一样
+backup实际上与primary不一样 
 and the backup was not actually
 
 293
 00:12:34,410 --> 00:12:40,579
-backup实际上与primary不一样
+backup实际上与primary不一样 
 identical to the primary so
 
 294
 00:12:40,579 --> 00:12:44,790
-假设我们正在运行一个GFS master服务器
-suppose we were running a GFS master
+假设我们正在运行一个GFS master服务器  
+suppose we were running a GFS master 
 
 295
 00:12:44,790 --> 00:12:47,220
@@ -1466,8 +1466,8 @@ and it's the primary it just
 
 296
 00:12:47,220 --> 00:12:49,949
-它刚刚将租约分发给了chunk服务器一
-handed out a lease to chunks server one
+它刚刚将租约分发给了chunk服务器一  
+handed out a lease to chunks server one 
 
 297
 00:12:49,949 --> 00:12:55,019
@@ -1476,18 +1476,18 @@ but because the two because
 
 298
 00:12:55,019 --> 00:12:56,910
-因为因为我们允许primary和backup节点的状态不同步
+因为因为我们允许primary和backup节点的状态不同步 
 we've allowed the states of the primary
 
 299
 00:12:56,910 --> 00:12:59,910
 因为因为我们允许primary和backup节点的状态不同步
-back to drift out of sync
+back to drift out of sync 
 
 300
 00:12:59,910 --> 00:13:01,470
 备份没有向任何人发出租约
-the backup did not issue a lease to anybody
+the backup did not issue a lease to anybody 
 
 301
 00:13:01,470 --> 00:13:02,850
@@ -1497,7 +1497,7 @@ or even aware anybody had asked for lease
 302
 00:13:02,850 --> 00:13:04,380
 现在primary服务器认为chunk服务器持有某些块的租约
-so now the primary thinks
+so now the primary thinks 
 
 303
 00:13:04,380 --> 00:13:05,880
@@ -1506,7 +1506,7 @@ chunks server one has lease for some chunk
 
 304
 00:13:05,880 --> 00:13:08,600
-而backup并没有，primary服务器失败
+而backup并没有，primary服务器失败 
 the backup doesn't the primary fails
 
 305
@@ -1542,11 +1542,11 @@ servers serving the same lease okay so
 311
 00:13:23,250 --> 00:13:25,230
 那只是一个接近家庭的例子
-that's just a close to home example
+that's just a close to home example 
 
 312
 00:13:25,230 --> 00:13:28,019
-但实际上几乎所有坏事
+但实际上几乎所有坏事 
 but really almost any bad thing and
 
 313
@@ -1566,12 +1566,12 @@ that conpute the wrong answer because
 
 316
 00:13:35,579 --> 00:13:38,480
-想象某些服务会因为状态不同，导致计算出错误答案
+想象某些服务会因为状态不同，导致计算出错误答案 
 the state's diverge
 
 317
 00:13:42,740 --> 00:13:46,610
-你问了随机化的问题
+你问了随机化的问题 
 so you're asking about randomization
 
 318
@@ -1596,27 +1596,27 @@ definitely makes the most sense when the
 
 322
 00:14:02,880 --> 00:14:04,320
-复制状态机方案绝对是最有意义的
+复制状态机方案绝对是最有意义的 
 instructions that the primary and
 
 323
 00:14:04,320 --> 00:14:06,570
-复制状态机方案绝对是最有意义的
+复制状态机方案绝对是最有意义的 
 backup are executing do the same thing
 
 324
 00:14:06,570 --> 00:14:08,370
-只要没有外部事件
+只要没有外部事件 
 as long as there's no external events
 
 325
 00:14:08,370 --> 00:14:10,740
-这对于add指令之类的东西几乎是正确的
+这对于add指令之类的东西几乎是正确的 
 right and that's almost true right
 
 326
 00:14:10,740 --> 00:14:12,480
-这对于add指令之类的东西几乎是正确的
+这对于add指令之类的东西几乎是正确的 
 for an add instruction or something
 
 327
@@ -1651,7 +1651,7 @@ instructions as you point out that don't
 
 333
 00:14:22,200 --> 00:14:23,880
-正如你指出的那样
+正如你指出的那样 
 like maybe there's an instruction that
 
 334
@@ -1676,13 +1676,13 @@ gets the current processors unique ID
 
 338
 00:14:32,250 --> 00:14:34,830
-和序列号的指令将产生不同的答案
+和序列号的指令将产生不同的答案  
 and a serial number it's going to yield
 
 339
 00:14:34,830 --> 00:14:38,400
-和序列号的指令将产生不同的答案
-different answers
+和序列号的指令将产生不同的答案  
+different answers 
 
 340
 00:14:38,400 --> 00:14:39,930
@@ -1692,7 +1692,7 @@ and the uniform answered the questions that
 341
 00:14:39,930 --> 00:14:42,360
 是primary执行指令
-sound like this is that the primary does it
+sound like this is that the primary does it 
 
 342
 00:14:42,360 --> 00:14:44,730
@@ -1701,8 +1701,8 @@ and sends the answer to the backup
 
 343
 00:14:44,730 --> 00:14:46,830
-backup不执行该指令
-and the backup does not execute that instruction
+backup不执行该指令  
+and the backup does not execute that instruction 
 
 344
 00:14:46,830 --> 00:14:48,900
@@ -1711,7 +1711,7 @@ but instead at the point
 
 345
 00:14:48,900 --> 00:14:50,120
-但是在执行该指令的地方
+但是在执行该指令的地方 
 where it would execute that instruction
 
 346
@@ -1726,28 +1726,28 @@ what the right answer would be and just
 
 348
 00:14:54,090 --> 00:14:56,670
-只是伪造了答案给软件
-sort of fakes that answer to the software
+只是伪造了答案给软件  
+sort of fakes that answer to the software 
 
 349
 00:14:56,670 --> 00:15:00,810
-我将讨论VMware方案如何做到这一点
+我将讨论VMware方案如何做到这一点 
 I'll talk about how
 
 350
 00:15:00,810 --> 00:15:04,550
-我将讨论VMware方案如何做到这一点
+我将讨论VMware方案如何做到这一点 
 the VMware scheme does that okay
 
 351
 00:15:04,550 --> 00:15:06,690
-有趣的是
-interestingly enough though
+有趣的是  
+interestingly enough though 
 
 352
 00:15:06,690 --> 00:15:09,810
-今天的论文都是关于复制状态机的
-today's paper is all about a replicated state machine
+今天的论文都是关于复制状态机的  
+today's paper is all about a replicated state machine 
 
 353
 00:15:09,810 --> 00:15:12,150
@@ -1756,8 +1756,8 @@ you may have noticed that
 
 354
 00:15:12,150 --> 00:15:13,680
-今天的论文仅涉及单处理器
-today's paper only deals with uni-processors
+今天的论文仅涉及单处理器  
+today's paper only deals with uni-processors 
 
 355
 00:15:13,680 --> 00:15:15,330
@@ -1787,7 +1787,7 @@ the two cores are
 360
 00:15:24,750 --> 00:15:26,610
 两个核的指令的交织是不确定的
-non-deterministic
+non-deterministic 
 
 361
 00:15:26,610 --> 00:15:27,720
@@ -1816,8 +1816,8 @@ going to be the same because they won't
 
 366
 00:15:34,670 --> 00:15:37,530
-因为它们不会在多核计算机上执行
-execute on multiple cores
+因为它们不会在多核计算机上执行  
+execute on multiple cores 
 
 367
 00:15:37,530 --> 00:15:39,600
@@ -1831,37 +1831,37 @@ completely different replication system
 
 369
 00:15:42,240 --> 00:15:44,070
-该系统可以在多核上运行
-that does work on multi-core
+该系统可以在多核上运行  
+that does work on multi-core 
 
 370
 00:15:44,070 --> 00:15:46,890
-在我看来，新系统使用状态转移而不是复制状态机
-and the new system appears to me to be using state transfer
+在我看来，新系统使用状态转移而不是复制状态机 
+and the new system appears to me to be using state transfer 
 
 371
 00:15:46,890 --> 00:15:49,530
-在我看来，新系统使用状态转移而不是复制状态机
-instead of replicated state machine
+在我看来，新系统使用状态转移而不是复制状态机  
+instead of replicated state machine 
 
 372
 00:15:49,530 --> 00:15:50,940
-因为面对多核和并行性，状态转移更加健壮
+因为面对多核和并行性，状态转移更加健壮 
 because state transferred is
 
 373
 00:15:50,940 --> 00:15:53,190
-因为面对多核和并行性，状态转移更加健壮
+因为面对多核和并行性，状态转移更加健壮 
 more robust in the face of
 
 374
 00:15:53,190 --> 00:15:56,340
-因为面对多核和并行性，状态转移更加健壮
-multi-core and parallelism
+因为面对多核和并行性，状态转移更加健壮  
+multi-core and parallelism 
 
 375
 00:15:56,340 --> 00:15:58,380
-如果您使用机器并将内存发送过来
+如果您使用机器并将内存发送过来 
 if you use the machine and send the memory over
 
 376
@@ -1871,7 +1871,7 @@ that the memory image is just that
 
 377
 00:16:00,690 --> 00:16:02,250
-内存映像只是机器的状态而已
+内存映像只是机器的状态而已 
 just is the state of the machine and
 
 378
@@ -1891,17 +1891,17 @@ machine scheme really has a problem with
 
 381
 00:16:08,280 --> 00:16:12,780
-而复制状态机方案确实存在并行性问题
-the parallelism
+而复制状态机方案确实存在并行性问题  
+the parallelism 
 
 382
 00:16:12,780 --> 00:16:15,000
-另一方面，我猜想这种新的多核方案会更昂贵
+另一方面，我猜想这种新的多核方案会更昂贵 
 on the other hand I'm guessing that this new
 
 383
 00:16:15,000 --> 00:16:20,930
-另一方面，我猜想这种新的多核方案会更昂贵
+另一方面，我猜想这种新的多核方案会更昂贵 
 multi-core scheme is more expensive okay
 
 384
@@ -1916,8 +1916,8 @@ replicated state machine scheme we got a
 
 386
 00:16:26,250 --> 00:16:31,200
-我们有很多问题要回答
-number of questions to answer
+我们有很多问题要回答  
+number of questions to answer 
 
 387
 00:16:31,200 --> 00:16:32,430
@@ -1927,7 +1927,7 @@ so we need to decide at what level we're gonna
 388
 00:16:32,430 --> 00:16:36,360
 我们需要决定要在什么级别上复制状态
-replicate state right so what state
+replicate state right so what state 
 
 389
 00:16:36,360 --> 00:16:44,430
@@ -1946,27 +1946,27 @@ primary and backup have to be right
 
 392
 00:16:49,710 --> 00:16:51,810
-因为primary可能领先backup执行一些
+因为primary可能领先backup执行一些 
 because it's likely the primary will
 
 393
 00:16:51,810 --> 00:16:53,400
-因为primary可能领先backup执行一些
+因为primary可能领先backup执行一些  
 execute a little bit ahead of the backup
 
 394
 00:16:53,400 --> 00:16:55,110
-毕竟，是primary看到输入
-after all it it's the primary that sees the inputs
+毕竟，是primary看到输入  
+after all it it's the primary that sees the inputs 
 
 395
 00:16:55,110 --> 00:16:57,570
-因此备份几乎必须滞后于
+因此备份几乎必须滞后于 
 so the backup almost
 
 396
 00:16:57,570 --> 00:17:00,360
-因此备份几乎必须滞后于
+因此备份几乎必须滞后于 
 necessarily must lag over that gives
 
 397
@@ -1981,23 +1981,23 @@ primary fails for the
 
 399
 00:17:04,500 --> 00:17:08,849
-且backup没能完全追上primary
-backup not to be fully caught up
+且backup没能完全追上primary  
+backup not to be fully caught up 
 
 400
 00:17:08,849 --> 00:17:11,760
-使backup与primary完全同步执行实际上是昂贵的
+使backup与primary完全同步执行实际上是昂贵的 
 having the backup actually executes really in
 
 401
 00:17:11,760 --> 00:17:12,959
-使backup与primary完全同步执行实际上是昂贵的
-lockstep with the primaries is expensive
+使backup与primary完全同步执行实际上是昂贵的  
+lockstep with the primaries is expensive 
 
 402
 00:17:12,959 --> 00:17:14,550
-因为需要很多时间
-because it requires a lot of chitchat
+因为需要很多时间  
+because it requires a lot of chitchat 
 
 403
 00:17:14,550 --> 00:17:16,319
@@ -2006,8 +2006,8 @@ so a lot of designs a lot of
 
 404
 00:17:16,319 --> 00:17:19,470
-人们担心的是同步有多紧密
-what people sweat about is how close the synchronization is
+人们担心的是同步有多紧密  
+what people sweat about is how close the synchronization is 
 
 405
 00:17:19,470 --> 00:17:27,810
@@ -2021,8 +2021,8 @@ or you know actually if the backup fails too
 
 407
 00:17:29,960 --> 00:17:31,590
-但是如果primary发生故障则更令人兴奋
-but it's more exciting if the primary fails
+但是如果primary发生故障则更令人兴奋  
+but it's more exciting if the primary fails 
 
 408
 00:17:31,590 --> 00:17:33,210
@@ -2031,8 +2031,8 @@ there has to be some scheme for
 
 409
 00:17:33,210 --> 00:17:34,650
-客户端必须知道
-switching over and the clients have to know
+客户端必须知道  
+switching over and the clients have to know 
 
 410
 00:17:34,650 --> 00:17:37,830
@@ -2056,8 +2056,8 @@ the backup on server two all the clients
 
 414
 00:17:47,970 --> 00:17:50,280
-所有客户端都必须以某种方式解决此问题
-have to somehow figure this out
+所有客户端都必须以某种方式解决此问题  
+have to somehow figure this out 
 
 415
 00:17:50,280 --> 00:17:53,340
@@ -2071,22 +2071,22 @@ impossible maybe impossible to design a
 
 417
 00:17:55,860 --> 00:17:58,560
-不会出现任何异常现象的切入系统
+不会出现任何异常现象的切入系统 
 cut over system in which no anomalies
 
 418
 00:17:58,560 --> 00:18:00,960
 不会出现任何异常现象的切入系统
-are ever visible
+are ever visible 
 
 419
 00:18:00,960 --> 00:18:03,000
 在这种理想的世界中
-in this sort of ideal world
+in this sort of ideal world 
 
 420
 00:18:03,000 --> 00:18:05,070
-如果primary失败，没有人注意到
+如果primary失败，没有人注意到 
 if the primary fails we'd like nobody to ever notice
 
 421
@@ -2096,13 +2096,13 @@ none of the clients to notice turns out
 
 422
 00:18:07,080 --> 00:18:10,920
-这基本上是无法实现的
-that's basically unattainable
+这基本上是无法实现的  
+that's basically unattainable 
 
 423
 00:18:10,920 --> 00:18:15,120
-所以在切入过程中会出现异常
-so there's going to be anomalies during the cut over
+所以在切入过程中会出现异常  
+so there's going to be anomalies during the cut over 
 
 424
 00:18:15,120 --> 00:18:16,500
@@ -2116,8 +2116,8 @@ cope with them and finally if the one of
 
 426
 00:18:19,560 --> 00:18:21,750
-如果我们的复制之一失败了
-the two if one of our replicas fails
+如果我们的复制之一失败了 
+the two if one of our replicas fails 
 
 427
 00:18:21,750 --> 00:18:23,790
@@ -2126,18 +2126,18 @@ we really need to have a new replica right
 
 428
 00:18:23,790 --> 00:18:26,820
-如果我们有两个复制，其中一个失败
+如果我们有两个复制，其中一个失败 
 if we have a two replicas and one fails
 
 429
 00:18:26,820 --> 00:18:29,010
-我们只是靠借来的时间生活
+我们只是靠借来的时间生活 
 we're just living on borrowed time right
 
 430
 00:18:29,010 --> 00:18:31,710
-因为第二个复制可能在某个时候失败
-because the second replica may fail at some point
+因为第二个复制可能在某个时候失败  
+because the second replica may fail at some point 
 
 431
 00:18:31,710 --> 00:18:33,990
@@ -2146,8 +2146,8 @@ so we absolutely need to get
 
 432
 00:18:33,990 --> 00:18:36,240
-因此，我们绝对需要使新复制尽快上线
-a new replica back online as fast as possible
+因此，我们绝对需要使新复制尽快上线 
+a new replica back online as fast as possible 
 
 433
 00:18:36,240 --> 00:18:41,250
@@ -2156,8 +2156,8 @@ so and that can be very
 
 434
 00:18:41,250 --> 00:18:44,610
-状态很大
-expensive the state is big
+状态很大 
+expensive the state is big 
 
 435
 00:18:44,610 --> 00:18:45,690
@@ -2181,8 +2181,8 @@ the two replicas in a replicated state
 
 439
 00:18:51,450 --> 00:18:53,040
-但复制状态机中的两个复制仍需要具有完整状态
-machine still need to have full state right
+但复制状态机中的两个复制仍需要具有完整状态 
+machine still need to have full state right 
 
 440
 00:18:53,040 --> 00:18:55,230
@@ -2201,22 +2201,22 @@ new replica we actually have no choice
 
 443
 00:18:59,700 --> 00:19:01,410
-只能进行状态转移以创建新的复制
-but state transfer to create the new replicas
+只能进行状态转移以创建新的复制 
+but state transfer to create the new replicas 
 
 444
 00:19:01,410 --> 00:19:03,090
-新复制需要具有状态的完整状态
+新复制需要具有状态的完整状态 
 the new replica needs to have a
 
 445
 00:19:03,090 --> 00:19:06,090
-新复制需要具有状态的完整状态
-complete copy of the state
+新复制需要具有状态的完整状态  
+complete copy of the state 
 
 446
 00:19:06,090 --> 00:19:08,100
-因此创建新复制将非常昂贵
+因此创建新复制将非常昂贵 
 so it's going to be expensive to create new replicas
 
 447
@@ -2241,23 +2241,23 @@ we'll see them again as we look
 
 451
 00:19:20,490 --> 00:19:22,980
-我们在查看其他复制状态机方案时会再次看到它们
-at other replicated state machine schemes
+我们在查看其他复制状态机方案时会再次看到它们  
+at other replicated state machine schemes 
 
 452
 00:19:22,980 --> 00:19:29,460
-所以关于什么状态要复制的话题
-so on the topic of what state to replicate
+所以关于什么状态要复制的话题  
+so on the topic of what state to replicate 
 
 453
 00:19:29,460 --> 00:19:33,720
-今天的论文对这个问题有一个非常有趣的答案
+今天的论文对这个问题有一个非常有趣的答案 
 the today's paper has a very
 
 454
 00:19:33,720 --> 00:19:35,880
-今天的论文对这个问题有一个非常有趣的答案
-interesting answer to this question
+今天的论文对这个问题有一个非常有趣的答案  
+interesting answer to this question 
 
 455
 00:19:35,880 --> 00:19:38,160
@@ -2276,8 +2276,8 @@ Machine registers it's like a very very
 
 458
 00:19:45,030 --> 00:19:48,780
-是一个非常详细的复制方案
-detailed replication scheme
+是一个非常详细的复制方案  
+detailed replication scheme 
 
 459
 00:19:48,780 --> 00:19:51,120
@@ -2291,12 +2291,12 @@ levels between the primary and the backup
 
 461
 00:19:52,620 --> 00:19:55,560
-对于复制方案而言，这是非常罕见的
+对于复制方案而言，这是非常罕见的 
 that's quite rare for replication
 
 462
 00:19:55,560 --> 00:19:56,670
-对于复制方案而言，这是非常罕见的
+对于复制方案而言，这是非常罕见的 
 schemes
 
 463
@@ -3579,7 +3579,7 @@ it was on the primary
 
 782
 00:34:35,080 --> 00:34:37,420
-At which?
+At which?  
 
 783
 00:34:37,420 --> 00:34:42,130
@@ -4010,6 +4010,7 @@ be totally different if different
 threads get the lock
 
 890
+
 00:39:26,960 --> 00:39:30,060
 so multi-core is the grim source among
 
@@ -4031,27 +4032,27 @@ are not really applicable the service
 
 895
 00:40:00,000 --> 00:40:01,980
-不能使用多核并行
-can't use multi-core parallel parallelism
+不能使用多核并行 
+can't use multi-core parallel parallelism 
 
 896
 00:40:01,980 --> 00:40:04,830
-硬件几乎可以肯定是多核并行的
+硬件几乎可以肯定是多核并行的  
 the hardware is almost
 
 897
 00:40:04,830 --> 00:40:06,960
-硬件几乎可以肯定是多核并行的
-certainly multi-core parallel
+硬件几乎可以肯定是多核并行的  
+certainly multi-core parallel 
 
 898
 00:40:06,960 --> 00:40:09,240
-但那是虚拟机monitor下面的硬件
+但那是虚拟机monitor下面的硬件 
 but that's the hardware sitting underneath the
 
 899
 00:40:09,240 --> 00:40:11,640
-但那是虚拟机monitor下面的硬件
+但那是虚拟机monitor下面的硬件 
 virtual machine monitor
 
 900
@@ -4072,17 +4073,17 @@ runs the primary backup that emulated
 903
 00:40:18,480 --> 00:40:21,000
 运行primary和backup的虚拟机
-virtual machine is a unicore
+virtual machine is a unicore 
 
 904
 00:40:21,000 --> 00:40:25,080
-是单核机器（在这篇论文中）
-is a uni-processor machine in this paper
+是单核机器（在这篇论文中） 
+is a uni-processor machine in this paper 
 
 905
 00:40:25,080 --> 00:40:26,790
 我猜他们没有一个简单的方法
-and I'm guessing there's not an easy way for them
+and I'm guessing there's not an easy way for them 
 
 906
 00:40:26,790 --> 00:40:31,550
@@ -4091,7 +4092,7 @@ to adapt this design to multi-core
 
 907
 00:40:31,550 --> 00:40:34,880
-可以使这种设计应用于多核虚拟机
+可以使这种设计应用于多核虚拟机 
 virtual machines
 
 908
@@ -4101,18 +4102,18 @@ okay so these are really
 
 909
 00:40:43,690 --> 00:40:44,950
-经过logging channel的这些事件
-it's these events that go over the logging channel
+经过logging channel的这些事件  
+it's these events that go over the logging channel 
 
 910
 00:40:44,950 --> 00:40:49,779
-日志记录的格式
-and so the format of a log record
+日志记录的格式  
+and so the format of a log record 
 
 911
 00:40:49,779 --> 00:40:55,660
 他们没有说清楚
-a log entry they don't quite say
+a log entry they don't quite say 
 
 912
 00:40:55,660 --> 00:40:57,160
@@ -4121,7 +4122,7 @@ but I'm guessing that there's
 
 913
 00:40:57,160 --> 00:40:58,269
-但我猜想日志条目中要有三样东西
+但我猜想日志条目中要有三样东西 
 really three things in a log entry
 
 914
@@ -4131,8 +4132,8 @@ the instruction number at which
 
 915
 00:41:01,240 --> 00:41:02,710
-（一是）事件发生时的指令号
-the event occurred
+（一是）事件发生时的指令号  
+the event occurred 
 
 916
 00:41:02,710 --> 00:41:04,420
@@ -4146,8 +4147,8 @@ input or whatever it better be delivered
 
 918
 00:41:06,249 --> 00:41:09,160
-最好将其传送到primary和backup中完全相同的位置
-at exactly the same place in the primary and backup
+最好将其传送到primary和backup中完全相同的位置  
+at exactly the same place in the primary and backup 
 
 919
 00:41:09,160 --> 00:41:10,569
@@ -4157,7 +4158,7 @@ so we need to know the
 920
 00:41:10,569 --> 00:41:11,799
 指令序号
-instruction number and by instruction number
+instruction number and by instruction number 
 
 921
 00:41:11,799 --> 00:41:14,170
@@ -4166,7 +4167,7 @@ I mean the number of
 
 922
 00:41:14,170 --> 00:41:15,910
-自机器启动以来的指令数量
+自机器启动以来的指令数量 
 instructions since the machine booted
 
 923
@@ -4176,18 +4177,18 @@ not the instruction address but like
 
 924
 00:41:18,279 --> 00:41:20,650
-例如，执行机器启动以来第40亿零79条指令
+例如，执行机器启动以来第40亿零79条指令  
 oh we're executing the four billion and
 
 925
 00:41:20,650 --> 00:41:23,499
-例如，执行机器启动以来第40亿零79条指令
-79th instructions since boot
+例如，执行机器启动以来第40亿零79条指令   
+79th instructions since boot 
 
 926
 00:41:23,499 --> 00:41:24,609
-所以日志条目将包含指令序号
-so log entry is gonna have an instruction number
+所以日志条目将包含指令序号  
+so log entry is gonna have an instruction number 
 
 927
 00:41:24,609 --> 00:41:31,210
@@ -4196,18 +4197,18 @@ for an interrupt, for input it's
 
 928
 00:41:31,210 --> 00:41:34,059
-它将是中断在primary发生时的指令序号
+它将是中断在primary发生时的指令序号 
 going to be the instruction at which the
 
 929
 00:41:34,059 --> 00:41:35,769
-它将是中断在primary发生时的指令序号
+它将是中断在primary发生时的指令序号 
 interrupt was delivered on the primary
 
 930
 00:41:35,769 --> 00:41:39,369
 对于一个怪异指令 比如获取一天中的时间
-and for a weird instruction like get time of day
+and for a weird instruction like get time of day 
 
 931
 00:41:39,369 --> 00:41:41,140
@@ -4216,28 +4217,28 @@ it's going to be the
 
 932
 00:41:41,140 --> 00:41:43,329
-获取时间的指令的指令序号
+获取时间的指令的指令序号  
 instruction number of the instruction of
 
 933
 00:41:43,329 --> 00:41:44,980
-获取时间的指令的指令序号
-the get time of day or whatever instruction
+获取时间的指令的指令序号  
+the get time of day or whatever instruction 
 
 934
 00:41:44,980 --> 00:41:46,960
-或者无论什么指令在primary上执行的序号
-that was executed on the primary
+或者无论什么指令在primary上执行的序号  
+that was executed on the primary 
 
 935
 00:41:46,960 --> 00:41:49,269
-这样backup就知道在哪里让此事件发生
+这样backup就知道在哪里让此事件发生 
 so that the backup
 
 936
 00:41:49,269 --> 00:41:52,450
-这样backup就知道在哪里让此事件发生
-knows where to where to call this event to occur
+这样backup就知道在哪里让此事件发生   
+knows where to where to call this event to occur 
 
 937
 00:41:52,450 --> 00:41:54,819
@@ -4247,7 +4248,7 @@ okay so there's gonna be a type
 938
 00:41:54,819 --> 00:41:58,089
 网络输入，或者怪异指令
-network input whatever, weird instruction
+network input whatever, weird instruction 
 
 939
 00:41:58,089 --> 00:42:00,220
@@ -4271,18 +4272,18 @@ weird instructions it's going to be the
 
 943
 00:42:06,430 --> 00:42:08,140
-在primary上执行后的结果
-result of the instruction
+在primary上执行后的结果  
+result of the instruction 
 
 944
 00:42:08,140 --> 00:42:10,450
-在primary上执行后的结果
-when it was executed on the primary
+在primary上执行后的结果  
+when it was executed on the primary 
 
 945
 00:42:10,450 --> 00:42:13,299
 这样备份虚拟机就可以伪造指令
-so that the backup virtual machine can sort of
+so that the backup virtual machine can sort of 
 
 946
 00:42:13,299 --> 00:42:15,549
@@ -4291,18 +4292,18 @@ fake the instruction and supply that same
 
 947
 00:42:15,549 --> 00:42:17,910
-然后提供相同的结果
+然后提供相同的结果 
 result
 
 948
 00:42:22,109 --> 00:42:27,520
 好的
-okay so as an example the
+okay so as an example the 
 
 949
 00:42:27,520 --> 00:42:34,960
-这两个操作系统，guest操作系统
-both of these operating systems guest operating system
+这两个操作系统，guest操作系统  
+both of these operating systems guest operating system 
 
 950
 00:42:34,960 --> 00:42:38,680
@@ -4316,13 +4317,13 @@ hardware in this case emulated hardware
 
 952
 00:42:40,240 --> 00:42:42,310
-其计时器每秒滴答一百次
+其计时器每秒滴答一百次 
 virtual machine has a timer that ticks
 
 953
 00:42:42,310 --> 00:42:44,680
-其计时器每秒滴答一百次
-say a hundred times a second
+其计时器每秒滴答一百次  
+say a hundred times a second 
 
 954
 00:42:44,680 --> 00:42:47,859
@@ -4336,8 +4337,8 @@ that's how the operating system keeps
 
 956
 00:42:49,540 --> 00:42:51,220
-计数计时器中断来跟踪其时间的方式
-track of time it's by counting these timer interrupts
+计数计时器中断来跟踪其时间的方式  
+track of time it's by counting these timer interrupts 
 
 957
 00:42:51,220 --> 00:42:54,700
@@ -4351,8 +4352,8 @@ out here, so the timers have to
 
 959
 00:42:56,500 --> 00:42:58,270
-在primary，backup中的完全相同的位置产生中断
-happen at exactly the same place in the primary and backup
+在primary，backup中的完全相同的位置产生中断  
+happen at exactly the same place in the primary and backup 
 
 960
 00:42:58,270 --> 00:43:00,609
@@ -4362,7 +4363,7 @@ otherwise they don't
 961
 00:43:00,609 --> 00:43:04,089
 否则他们不会执行相同的，并且分歧
-execute the same and diverge
+execute the same and diverge 
 
 962
 00:43:04,089 --> 00:43:06,810
@@ -4376,8 +4377,8 @@ there's a timer on the physical machine
 
 964
 00:43:10,720 --> 00:43:14,140
-在运行FT虚拟机monitor的物理机上有一个计时器
-that's running the FT virtual machine monitor
+在运行FT虚拟机monitor的物理机上有一个计时器 
+that's running the FT virtual machine monitor 
 
 965
 00:43:14,140 --> 00:43:16,060
@@ -4397,7 +4398,7 @@ a timer interrupt to the virtual machine
 968
 00:43:19,780 --> 00:43:23,560
 将计时器中断传递给primary上的虚拟机monitor
-monitor on the primary
+monitor on the primary 
 
 969
 00:43:23,560 --> 00:43:24,820
@@ -4407,7 +4408,7 @@ the virtual machine monitor at the
 970
 00:43:24,820 --> 00:43:29,859
 虚拟机monitor在适当的时候停止primary的执行
-appropriate moment stops the execution of the primary
+appropriate moment stops the execution of the primary 
 
 971
 00:43:29,859 --> 00:43:31,930
@@ -4421,8 +4422,8 @@ instruction number that it was at
 
 973
 00:43:34,180 --> 00:43:37,320
-记下自启动以来的指令序号
-instruction since boot
+记下自启动以来的指令序号 
+instruction since boot 
 
 974
 00:43:37,320 --> 00:43:39,790
@@ -4436,13 +4437,13 @@ interrupts into the guest operating
 
 976
 00:43:41,830 --> 00:43:43,240
-提供给primary中的guest操作系统
+提供给primary中的guest操作系统 
 system in the primary at that
 
 977
 00:43:43,240 --> 00:43:44,530
-提供给primary中的guest操作系统
-instruction number
+提供给primary中的guest操作系统  
+instruction number 
 
 978
 00:43:44,530 --> 00:43:46,570
@@ -4471,8 +4472,8 @@ that instruction number which the
 
 983
 00:43:52,599 --> 00:43:54,810
-将中断发生的指令号发送给backup
-interrupt happened to the backup
+将中断发生的指令号发送给backup  
+interrupt happened to the backup 
 
 984
 00:43:54,810 --> 00:43:59,260
@@ -4486,8 +4487,8 @@ machine monitor is also taking timer
 
 986
 00:44:00,520 --> 00:44:02,440
-也从其物理计时器获取计时器中断
-interrupts from its physical timer
+也从其物理计时器获取计时器中断  
+interrupts from its physical timer 
 
 987
 00:44:02,440 --> 00:44:04,660
@@ -4501,23 +4502,23 @@ its real physical timer interrupts
 
 989
 00:44:06,910 --> 00:44:10,000
-它忽略了它们
-to the backup operating system. it's just ignoring them
+它忽略了它们  
+to the backup operating system. it's just ignoring them 
 
 990
 00:44:10,000 --> 00:44:13,450
-当primary计时器中断的日志条目到达此处
+当primary计时器中断的日志条目到达此处 
 when the
 
 991
 00:44:13,450 --> 00:44:15,700
-当primary计时器中断的日志条目到达此处
+当primary计时器中断的日志条目到达此处 
 log entry for the primary's timer
 
 992
 00:44:15,700 --> 00:44:18,730
-当primary计时器中断的日志条目到达此处
-interrupts arrives here
+当primary计时器中断的日志条目到达此处  
+interrupts arrives here 
 
 993
 00:44:18,730 --> 00:44:20,500
@@ -4546,18 +4547,18 @@ instruction number
 
 998
 00:44:32,630 --> 00:44:34,130
-以使物理机在与primary相同的指令序号处中断
-at the timer interrupts tapped into the primary
+以使物理机在与primary相同的指令序号处中断  
+at the timer interrupts tapped into the primary 
 
 999
 00:44:34,130 --> 00:44:36,950
-此时，虚拟机monitor再次从guest操作系统取回控制
+此时，虚拟机monitor再次从guest操作系统取回控制 
 at that point the virtual
 
 1000
 00:44:36,950 --> 00:44:38,540
-此时，虚拟机monitor再次从guest操作系统取回控制
-machine monitor gets control again from the guest
+此时，虚拟机monitor再次从guest操作系统取回控制 
+machine monitor gets control again from the guest 
 
 1001
 00:44:38,540 --> 00:44:41,510
@@ -4567,7 +4568,7 @@ and then fakes the timer
 1002
 00:44:41,510 --> 00:44:43,970
 交给backup操作系统
-interrupts into the backup operating system
+interrupts into the backup operating system 
 
 1003
 00:44:43,970 --> 00:44:46,190
@@ -4576,8 +4577,8 @@ now exactly the same
 
 1004
 00:44:46,190 --> 00:44:47,930
-现在的指令号与主指令上的指令号完全相同
-instruction number as it occurred on the primary
+现在的指令号与主指令上的指令号完全相同  
+instruction number as it occurred on the primary 
 
 1005
 00:44:47,930 --> 00:45:17,060
@@ -4592,7 +4593,7 @@ that this relies on the CPU
 1007
 00:45:18,740 --> 00:45:20,930
 这依赖于CPU中有一些特殊的硬件
-having some special hardware in it
+having some special hardware in it 
 
 1008
 00:45:20,930 --> 00:45:24,440
@@ -4601,13 +4602,13 @@ where the vmm can tell the hardware， CPU please
 
 1009
 00:45:24,440 --> 00:45:26,930
-请从现在开始的第一千条指令处中断
-interrupt a thousand instructions from now
+请从现在开始的第一千条指令处中断    
+interrupt a thousand instructions from now 
 
 1010
 00:45:26,930 --> 00:45:29,930
 然后是虚拟机monitor
-and then the vmm where so that
+and then the vmm where so that 
 
 1011
 00:45:29,930 --> 00:45:32,990
@@ -4621,8 +4622,8 @@ right instruction number the same
 
 1013
 00:45:34,070 --> 00:45:35,720
-它会在与primary相同的中断序号处发生中断
-instruction as the primary did
+它会在与primary相同的中断序号处发生中断 
+instruction as the primary did 
 
 1014
 00:45:35,720 --> 00:45:38,570
@@ -4631,8 +4632,8 @@ and then the vmm just tells the cpu to
 
 1015
 00:45:38,570 --> 00:45:40,700
-恢复backup的执行
-resume executing again in the backup
+恢复backup的执行  
+resume executing again in the backup 
 
 1016
 00:45:40,700 --> 00:45:42,560
@@ -4647,7 +4648,7 @@ the CPU will force an interrupt into the
 1018
 00:45:44,720 --> 00:45:46,460
 CPU会强制将中断虚拟机monitor
-virtual machine monitor
+virtual machine monitor 
 
 1019
 00:45:46,460 --> 00:45:48,530
@@ -4656,18 +4657,18 @@ and that that's special hardware but it turns out it's
 
 1020
 00:45:48,530 --> 00:45:51,740
-但是所有英特尔芯片上有，因此它不是
+但是所有英特尔芯片上有，因此它不是 
 on all Intel chips so it's not
 
 1021
 00:45:51,740 --> 00:45:53,930
-那么特别
+那么特别 
 it's not that special anymore
 
 1022
 00:45:53,930 --> 00:45:56,960
-放在15年前，它还挺新鲜的，现在完全是常规操作
-15 years ago it was exotic now it's totally normal
+放在15年前，它还挺新鲜的，现在完全是常规操作  
+15 years ago it was exotic now it's totally normal 
 
 1023
 00:45:56,960 --> 00:45:59,510
@@ -4687,7 +4688,7 @@ you want to do profiling you wanna do
 1026
 00:46:02,930 --> 00:46:04,940
 您想做CPU时间性能分析
-CPU time profiling what you'd really like
+CPU time profiling what you'd really like 
 
 1027
 00:46:04,940 --> 00:46:07,550
@@ -4696,13 +4697,13 @@ or one way to do CPU time profiling
 
 1028
 00:46:07,550 --> 00:46:09,290
-是让微处理器每千条指令中断一次
+是让微处理器每千条指令中断一次 
 is to have the microprocessor interrupt
 
 1029
 00:46:09,290 --> 00:46:11,420
-是让微处理器每千条指令中断一次
-every thousand instructions right
+是让微处理器每千条指令中断一次  
+every thousand instructions right 
 
 1030
 00:46:11,420 --> 00:46:13,190
@@ -4711,38 +4712,38 @@ and this is the hardware that's this
 
 1031
 00:46:13,190 --> 00:46:15,470
-是和让微处理器每千条指令产生一个中断的相同的硬件
+是和让微处理器每千条指令产生一个中断的相同的硬件  
 Hardware also this is the same hardware
 
 1032
 00:46:15,470 --> 00:46:17,180
-是和让微处理器每千条指令产生一个中断的相同的硬件
+是和让微处理器每千条指令产生一个中断的相同的硬件  
 that would cause the microprocessor to
 
 1033
 00:46:17,180 --> 00:46:18,860
-是和让微处理器每千条指令产生一个中断的相同的硬件
-generate an interrupt every thousand instructions
+是和让微处理器每千条指令产生一个中断的相同的硬件   
+generate an interrupt every thousand instructions 
 
 1034
 00:46:18,860 --> 00:46:21,920
-所以这是你的CPU中非常自然的小工具
+所以这是你的CPU中非常自然的小工具 
 so it's a very natural sort
 
 1035
 00:46:21,920 --> 00:46:25,630
-所以这是你的CPU中非常自然的小工具
+所以这是你的CPU中非常自然的小工具 
 of gadget to want in your CPU
 
 1036
 00:46:31,430 --> 00:46:39,170
-好的，是的
+好的，是的 
 all right yes
 
 1037
 00:46:54,270 --> 00:46:56,070
-如果backup领先primary怎么办
-what if the backup gets ahead of the primary
+如果backup领先primary怎么办  
+what if the backup gets ahead of the primary 
 
 1038
 00:46:56,070 --> 00:46:59,760
@@ -4751,13 +4752,13 @@ we standing above
 
 1039
 00:46:59,760 --> 00:47:02,820
-primary即将在第一百万条指令处中断
+primary即将在第一百万条指令处中断 
 know that the primary is
 
 1040
 00:47:02,820 --> 00:47:04,680
-primary即将在第一百万条指令处中断
-about to take an interrupt at the millionth instruction
+primary即将在第一百万条指令处中断   
+about to take an interrupt at the millionth instruction 
 
 1041
 00:47:04,680 --> 00:47:08,970
@@ -4772,7 +4773,7 @@ already executed the million
 1043
 00:47:11,760 --> 00:47:14,010
 但是备份已经执行了第一百万零一条指令
-and first instruction
+and first instruction 
 
 1044
 00:47:14,010 --> 00:47:16,530
@@ -4781,12 +4782,12 @@ if we let this happen it's gonna be too
 
 1045
 00:47:16,530 --> 00:47:19,440
-那么传递中断将为时已晚
-late to deliver the interrupts
+那么传递中断将为时已晚  
+late to deliver the interrupts 
 
 1046
 00:47:19,440 --> 00:47:21,240
-如果我们允许backup领先primary执行
+如果我们允许backup领先primary执行 
 if we let the backup execute ahead of the primary
 
 1047
@@ -4801,13 +4802,13 @@ interrupts at the same point in the
 
 1049
 00:47:26,040 --> 00:47:27,510
-primary指令流和backup指令流的相同位置
+primary指令流和backup指令流的相同位置  
 primary instruction stream and the
 
 1050
 00:47:27,510 --> 00:47:29,310
-primary指令流和backup指令流的相同位置
-backup instruction stream
+primary指令流和backup指令流的相同位置  
+backup instruction stream 
 
 1051
 00:47:29,310 --> 00:47:31,560
@@ -4816,8 +4817,8 @@ so we cannot let that happen we cannot let the
 
 1052
 00:47:31,560 --> 00:47:33,660
-我们不能让backup在执行中领先于primary
-backup get ahead of the primary in execution
+我们不能让backup在执行中领先于primary  
+backup get ahead of the primary in execution 
 
 1053
 00:47:33,660 --> 00:47:37,860
@@ -4826,8 +4827,8 @@ and the way VMware FT does
 
 1054
 00:47:37,860 --> 00:47:45,450
-就是backup虚拟机monitor
-that is that the backup virtual machine monitor
+就是backup虚拟机monitor  
+that is that the backup virtual machine monitor 
 
 1055
 00:47:45,450 --> 00:47:46,680
@@ -4841,23 +4842,23 @@ buffer of waiting events that have
 
 1057
 00:47:49,680 --> 00:47:53,400
-存放来自primary的等待执行的事件
-arrived from the primary
+存放来自primary的等待执行的事件 
+arrived from the primary 
 
 1058
 00:47:53,400 --> 00:47:56,460
-它不会让backup执行
-and it will not let the backup execute unless
+它不会让backup执行  
+and it will not let the backup execute unless 
 
 1059
 00:47:56,460 --> 00:47:58,920
 除非该缓冲区中至少有一个事件
-there's at least one event in that buffer
+there's at least one event in that buffer 
 
 1060
 00:47:58,920 --> 00:48:01,500
-如果该缓冲区中有一个事件
-and if there's one event in that buffer
+如果该缓冲区中有一个事件  
+and if there's one event in that buffer 
 
 1061
 00:48:01,500 --> 00:48:02,910
@@ -4871,8 +4872,8 @@ the place at which it's got a force the
 
 1063
 00:48:07,410 --> 00:48:10,890
-那么它将根据指令编号，知道强制停止backup执行的位置
-backup to stop executing
+那么它将根据指令编号，知道强制停止backup执行的位置  
+backup to stop executing 
 
 1064
 00:48:10,890 --> 00:48:14,760
@@ -4891,8 +4892,8 @@ stopping point the next instruction
 
 1067
 00:48:19,710 --> 00:48:21,720
-即下一个停止的指令序号
-number of a stopping point is
+即下一个停止的指令序号 
+number of a stopping point is 
 
 1068
 00:48:21,720 --> 00:48:24,320
@@ -4901,13 +4902,13 @@ because the backup only executes if it has an
 
 1069
 00:48:24,320 --> 00:48:26,700
-backup才会执行
-event here that tells it where to stop next
+backup才会执行  
+event here that tells it where to stop next 
 
 1070
 00:48:26,700 --> 00:48:30,450
-所以这意味着它会在primary之后
-so that means it starts up after the primary
+所以这意味着它会在primary之后  
+so that means it starts up after the primary 
 
 1071
 00:48:30,450 --> 00:48:31,800
@@ -4922,12 +4923,12 @@ even start executing until the primary
 1073
 00:48:33,570 --> 00:48:35,790
 产生了第一个事件，并且该事件已经到达backup
-has generated the first event
+has generated the first event 
 
 1074
 00:48:35,790 --> 00:48:37,470
-产生了第一个事件，并且该事件已经到达backup
-and that event has arrived at the backup
+产生了第一个事件，并且该事件已经到达backup 
+and that event has arrived at the backup 
 
 1075
 00:48:37,470 --> 00:48:39,180
@@ -4941,8 +4942,8 @@ basically behind the at least one event
 
 1077
 00:48:41,700 --> 00:48:43,140
-落后primary至少一个事件
-behind the primary
+落后primary至少一个事件  
+behind the primary 
 
 1078
 00:48:43,140 --> 00:48:44,730
@@ -4951,33 +4952,33 @@ and if it's slower for some other whatever reason maybe
 
 1079
 00:48:44,730 --> 00:48:45,780
-可能是该物理机器上正在运行其他内容
+可能是该物理机器上正在运行其他内容 
 there's other stuff running on that
 
 1080
 00:48:45,780 --> 00:48:47,760
-可能是该物理机器上正在运行其他内容
-physical machine
+可能是该物理机器上正在运行其他内容  
+physical machine 
 
 1081
 00:48:47,760 --> 00:48:50,880
-那么backup可能落后primary多个事件
+那么backup可能落后primary多个事件 
 then the backup might get multiple events behind
 
 1082
 00:48:50,880 --> 00:48:53,360
-那么backup可能落后primary多个事件
+那么backup可能落后primary多个事件  
 the primary
 
 1083
 00:48:58,349 --> 00:49:03,099
-对于到达特定数据包的情况，通常会有一点复杂
+对于到达特定数据包的情况，通常会有一点复杂 
 alright there's a one little piece of
 
 1084
 00:49:03,099 --> 00:49:05,520
-对于到达特定数据包的情况，通常会有一点复杂
-mess about arriving the specific case of arriving packets
+对于到达特定数据包的情况，通常会有一点复杂  
+mess about arriving the specific case of arriving packets 
 
 1085
 00:49:05,520 --> 00:49:16,539
@@ -4986,13 +4987,13 @@ ordinarily when a
 
 1086
 00:49:16,539 --> 00:49:17,950
-数据包从网络接口卡到达
-packet arrives from a network interface card
+数据包从网络接口卡到达  
+packet arrives from a network interface card 
 
 1087
 00:49:17,950 --> 00:49:19,299
-如果我们没有运行虚拟机
-if we weren't running a virtual machine
+如果我们没有运行虚拟机  
+if we weren't running a virtual machine 
 
 1088
 00:49:19,299 --> 00:49:22,210
@@ -5001,12 +5002,12 @@ the network interface card would
 
 1089
 00:49:22,210 --> 00:49:24,670
-通过DMA方式将数据包内容传到它所在计算机的内存中
+通过DMA方式将数据包内容传到它所在计算机的内存中 
 DMA(Direct Memory Access) the packet content into the memory
 
 1090
 00:49:24,670 --> 00:49:27,730
-通过DMA方式将数据包内容传到它所在计算机的内存中
+通过DMA方式将数据包内容传到它所在计算机的内存中  
 of the computer that it's attached to
 
 1091
@@ -5016,13 +5017,13 @@ sort of as the data arrives from the
 
 1092
 00:49:30,490 --> 00:49:33,069
-当数据从网络接口卡到达时
-network interface card
+当数据从网络接口卡到达时 
+network interface card 
 
 1093
 00:49:33,069 --> 00:49:34,839
-你可能没有编写过这样的软件
-and that means you should never write software like this
+你可能没有编写过这样的软件  
+and that means you should never write software like this 
 
 1094
 00:49:34,839 --> 00:49:38,200
@@ -5046,7 +5047,7 @@ a packet as its DMA or copied from the
 
 1098
 00:49:44,230 --> 00:49:46,299
-当数据被从网络接口卡DMA或拷贝到内存时
+当数据被从网络接口卡DMA或拷贝到内存时 
 network interface card into memory right
 
 1099
@@ -5062,7 +5063,7 @@ know what operating this system is
 1101
 00:49:51,010 --> 00:49:52,150
 这个系统（VMM）被设计以支持任何操作系统
-designed so that it can support any operating system
+designed so that it can support any operating system 
 
 1102
 00:49:52,150 --> 00:49:53,950
@@ -5187,7 +5188,7 @@ no its instructions that might yield a different result if executed on the prima
 1126
 00:52:11,980 --> 00:52:15,300
 例如获取当前时间 获取当前处理器数量
-like instruction to get the current time of day or current processor number
+like instruction to get the current time of day or current processor number 
 
 1127
 00:52:15,340 --> 00:52:17,780
@@ -5202,7 +5203,7 @@ and those actually turn out to be relatively rare
 1129
 00:52:20,890 --> 00:52:23,620
 或者说像生成随机数
-there's also one them to get random tasks when some machines
+there's also one them to get random tasks when some machines 
 
 1130
 00:52:23,670 --> 00:52:27,490
@@ -5212,7 +5213,7 @@ to ask or a hardware generated random number for cryptography or something
 1131
 00:52:27,760 --> 00:52:29,590
 这些都不是日常的指令
-and but those are not everyday instructions
+and but those are not everyday instructions 
 
 1132
 00:52:29,930 --> 00:52:34,450
@@ -5457,7 +5458,7 @@ you know you can imagine the client could go
 1180
 00:57:19,080 --> 00:57:21,300
 把客户端改成能处理
-you know we could change the client to realize
+you know we could change the client to realize 
 
 1181
 00:57:21,380 --> 00:57:24,650
@@ -5607,7 +5608,7 @@ until the this log entry containing the input packet from the client
 1210
 00:59:45,570 --> 00:59:49,570
 被虚拟机监视器投递和缓冲
-is delivered to the virtual machine monitor and buffered by the virtual machine monitor
+is delivered to the virtual machine monitor and buffered by the virtual machine monitor 
 
 1211
 00:59:49,610 --> 00:59:51,350
@@ -5625,8 +5626,8 @@ it may be just waiting for the backup to get to that point in the instruction st
 and then the virtual machine monitor here will send an ACK packet back saying yes I did get that input
 
 1214
-01:00:01,370 --> 01:00:03,020
-直到主节点接收到ACK包时
+01:00:01,790 --> 01:00:03,350
+当确认消息抵达时
 and when the acknowledgment comes back
 
 1215
