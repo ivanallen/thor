@@ -9,64 +9,64 @@ so the scenario is
 the primary sends the reply
 and then either the primary send the close packet
 or the client closes the connect the TCP connection after it receives the primary's reply
-so now there's like no connection on the client side
+so now this's like no connection on the client side
 but there is a connection on the backup side
 and so now the backup
-so the backup consumes the very last log entry that as the input is now live
+so the backup consumes the very last log entry that is the input is now live
 so we're not responsible for replicating anything at this point right
-because the backup now live there's no other replica as the primary died
-so there's no like if if we don't if the backup fails to execute in log step with the primary
+because the backup is now live there's no other replica as the primary died
+so there's no like if if we don't if the backup fails to execute in lockstep with the primary
 that's fine actually
-because the primary is is dead and we do not want to execute in log step with it
-okay so the primer is now not it's live
+because the primary is is dead and we do not want to execute in lockstep with it
+okay so the primary is now not it's live
 it generates an output on this TCP connection that isn't closed yet from the backup point of view
-this packet arrives with the client on a TCP connection
+this packet arrives at the client on a TCP connection
 that doesn't exist anymore from the clients point of view
 like no big whoopee on the client right
-he's just going to throw away the packet as if nothing happened the application won't no
+he's just going to throw away the packet as if nothing happened the application won't know
 the client may send a reset
 something like a TCP error or whatever packet
 back to the backup and the backup does something or other with it
-but it doesn't matter b
-ecause we're not diverging from anything
+but it doesn't matter 
+because we're not diverging from anything
 because there's no primary to diverge from
-you can just handle a stray we said however it likes
-and what it'll in fact do is basically ignore
-but there's no now the backup has gone live there's just no
+you can just handle a straight reset however it likes
+and what it'll in fact do is basically ignore it
+but there's no now the backup has gone live there's no
 we don't owe anybody anything as far as replication
 yeah
-well you can bet since the backups memory image is identical to the primaries image
+well you can bet since the backup's memory image is identical to the primary's image
 that they're sending packets with the very same source TCP number
-and they're very same everything
+and the very same everything
 they're sending bit for bit identical packets
 you know at this level the server's don't have IP addresses
 or for our purposes
-the virtual machines you know the primary in the back up virtual machines have IP addresses
+the virtual machines you know the primary and backup virtual machines have IP addresses
 but the the physical computer and the vmm are transparent to the network
 it's not entirely true but it's basically the case that
 the virtual machine monitor in the physical machine
 don't really have identity of their own on the network
 because you can configure that then that way instead these they're not
-you know the virtual machine with a sewing operating system in its own TCP stack
-it doesn't IP address underneath there an address and all this other stuff
-which is identical between the primary in the backup
+you know the virtual machine with its own operating system in its own TCP stack
+it has IP address and ethernet address and all sort of stuff
+which is identical between the primary and the backup
 and when it sends a packet
-it sends it with the virtual machines IP address and Ethernet address
-and those bits least in my mental model are just simply passed through on to the local area network
+it sends it with the virtual machine's IP address and Ethernet address
+and those bits at least in my mental model are just simply passed through on to the local area network
 it's exactly what we want
-and so I think he doesn't generate exactly the same packets
+and so it will generate exactly the same packets
 that the primary would have generated
 there's maybe a little bit of trickery you know what the we
 if this is these are actually plugged into an Ethernet switch
-into the physical machines maybe it wasn't in two different ports of an Ethernet switch
+into the physical machines maybe plugged into different ports of an Ethernet switch
 and we'd like the Ethernet switch to change its mind about
 which of these two machines that delivers packets with replicated services Ethernet address
 and so there's a little bit of funny business there
 for the most part they're just generating identical packets
-so let me just send them out
+and we just send them out
 okay so another little detail I've been glossing over is that
 I've been assuming that the primary just fails or the backup just fails
-that is fail stop right
+that is fail-stop right
 but that's not the only option
 another very common situation that has to be dealt with is
 if the two machines are still up and running and executing
@@ -75,52 +75,52 @@ that causes them not to be able to talk to each other
 but to still be able to talk to some clients
 so if that happened if the primary backup couldn't talk to each other
 but they could still talk to the clients
-they would both think oh the other replicas dead
+they would both think oh the other replica is dead
 I better take over and go live
 and so now we have two machines going live with this service
 and now you know they're no longer sending each other log events or anything
 they're just diverging
-maybe they're accepting different client inputs and changes are stayed in different ways
+maybe they're accepting different client inputs and change their states in different ways
 so now we have a split brain disaster
-if we let the primary in the backup go live
+if we let the primary and the backup go live
 because it was a network that has some kind of failure instead of these machines
 and the way that this paper solves it I mean
 is by appealing to an outside authority to make the decision about
-which of the primary of the backup is allowed to be live
+which of the primary or the backup is allowed to be live
 and so
-it they're you know it turns out that their storage is actually not on local disk
+it there you know turns out that their storage is actually not on local disk
 this almost doesn't matter
 but their storage is on some external disk server
 and as well as being in this server as a like totally separate service
 there's nothing to do with disks
-there this server happens to abort this test and set
-test and set service over the network where you
-you can send a test and set request to it
+there this server happens to export this test-and-set
+test-and-set service over the network where you
+you can send a test-and-set request to it
 and there's some flag it's keeping in memory
 and it'll set the flag and return what the old value was
-so both primary and backup have to sort of acquire this test and set flag
+so both primary and backup have to sort of acquire this test-and-set flag
 it's a little bit like a lock
-in order to go live they both may be send test and set requests at the same time
-to this test and set server
+in order to go live they both may be send test-and-set requests at the same time
+to this test-and-set server
 the first one gets back a reply that says oh the flag used to be zero
-now it's one this second request to arrive
-the response from the test and set server is
+now it's one the second request to arrive
+the response from the test-and-set server is
 Oh actually the flag was already one when your request arrived
 so so basically you're not allowed to be primary
-and so this this test and set server
+and so this this test-and-set server
 and we can think of it as a single machine
 is the arbitrator that decides which of the two should go live
-if they both think the other ones dead due to a network partition
+if they both think the other one is dead due to a network partition
 any questions about this mechanism
 you're busted
-yeah if the test and set server should be dead at the critical moment when
+yeah the test-and-set server should be dead at the critical moment when
 and so actually even if there's not a network partition
 under all circumstances in which
 one or the other of these wants to go live because it thinks the others dead
 even when the other one really is dead
-the one that wants to collide still has to acquire the test and set lock
+the one that wants to go live still has to acquire the test-and-set lock
 because one of like the deep rules of 6.824 game is that
-you cannot tell whether or another computer is dead or not
+you cannot tell whether another computer is dead or not
 all you know is that you stopped receiving packets from it
 and you don't know whether it's because the other computer is dead
 or because something has gone wrong with the network between you and the other computer
@@ -130,22 +130,22 @@ primary probably sees the same thing
 so if there's a network partition
 they certainly have to ask the Test-and-Set server
 but since they don't know if it's a network partition
-they have to ask the test and set server regardless of whether it's a partition or not
-so anytime either wants to collide
-the test and set server also has to be alive
-because they always have to acquire this test and set lock
-so the test and set server sounds like a single point of failure
+they have to ask the test-and-set server regardless of whether it's a partition or not
+so anytime either wants to go live
+the test-and-set server also has to be alive
+because they always have to acquire this test-and-set lock
+so the test-and-set server sounds like a single point of failure
 they were trying to build a replicated fault tolerant whatever thing
 but in the end you know we can't failover unless unless this is alive so
 that's a bit of a bummer
 I'm guessing though
-I'm making a strong guess that the test and set server is actually
+I'm making a strong guess that the test-and-set server is actually
 itself a replicated service and is fault tolerant right
 it's almost certainly I mean these people of VMware
-where they're like happy to sell you a million dollar highly available storage system
+they're like happy to sell you a million dollar highly available storage system
 that uses enormous amounts of replication internally
-um since the test and set thing is on there dis server
+um since the test-and-set thing is on their this server
 I'm I'm guessing it's replicated too
 and the stuff you'll be doing in lab 2 in lab 3 is more than powerful enough
-for you to build your own fault-tolerant test and set server
+for you to build your own fault-tolerant test-and-set server
 so this problem can easily be eliminated
