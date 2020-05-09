@@ -1675,7 +1675,7 @@ writing a busy server that would really
 
 360
 00:14:39,910 --> 00:14:42,730
-你得相方设法把一台大型机器的 32 核都用上
+你得想方设法把一台大型机器的 32 核都用上
 like to keep you know 32 cores busy on a big server machine
 
 361
