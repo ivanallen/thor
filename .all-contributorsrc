@@ -67,6 +67,15 @@
       "contributions": [
         "content"
       ]
+    },
+    {
+      "login": "Laurel-rao",
+      "name": "Laurel-rao",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/42195541?v=4",
+      "profile": "https://github.com/Laurel-rao",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
