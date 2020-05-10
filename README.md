@@ -59,7 +59,7 @@ QQ群里大家维护的腾讯文档：
     <td align="center"><a href="https://github.com/hoooga"><img src="https://avatars3.githubusercontent.com/u/8995262?v=4" width="100px;" alt=""/><br /><sub><b>hoooga</b></sub></a><br /><a href="#content-hoooga" title="Content">🖋</a></td>
     <td align="center"><a href="https://allen.blog.csdn.net"><img src="https://avatars1.githubusercontent.com/u/12481610?v=4" width="100px;" alt=""/><br /><sub><b>Allen</b></sub></a><br /><a href="#content-ivanallen" title="Content">🖋</a></td>
     <td align="center"><a href="https://github.com/fisheuler"><img src="https://avatars2.githubusercontent.com/u/4300522?v=4" width="100px;" alt=""/><br /><sub><b>fisheuler</b></sub></a><br /><a href="https://github.com/ivanallen/thor/commits?author=fisheuler" title="Documentation">📖</a></td>
-    <td align="center"><a href="https://github.com/2014BDuck"><img src="https://avatars0.githubusercontent.com/u/30280396?v=4" width="100px;" alt=""/><br /><sub><b>2014bduck</b></sub></a><br /><a href="#content-2014BDuck" title="Content">🖋</a></td>
+    <td align="center"><a href="https://github.com/2014BDuck"><img src="https://avatars0.githubusercontent.com/u/30280396?v=4" width="100px;" alt=""/><br /><sub><b>2014bduck</b></sub></a><br /><a href="#content-2014BDuck" title="Content">🖋</a> <a href="https://github.com/ivanallen/thor/issues?q=author%3A2014BDuck" title="Bug reports">🐛</a></td>
   </tr>
 </table>
 
