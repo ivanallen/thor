@@ -6896,7 +6896,7 @@ saying the primary is server one right
 and that message is inflate in the network 
 
 1383
-01:05:47,809 --> 01:05:50,630、
+01:05:47,809 --> 01:05:50,630
 然后我发现 primary 出了故障
 and then I'm the master I you know 
 
