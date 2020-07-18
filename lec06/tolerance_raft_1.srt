@@ -1,365 +1,459 @@
 1
 00:00:00,670 --> 00:00:06,970
+（翻译：Allen, Adam）
+（https://github.com/ivanallen/thor）
+好啦，咱们开始上课
 all right well let's get started
 
 2
 00:00:06,970 --> 00:00:10,490
+今天和明天我们打算讲讲 RAFT
 today and indeed today and tomorrow I'm
 
 3
 00:00:10,490 --> 00:00:14,329
+今天和明天我们打算讲讲 RAFT
 gonna talk about raft both because I
 
 4
 00:00:14,329 --> 00:00:16,239
+希望这对你后面实现 labs 有所帮助
 hope it'll be helpful you for you in
 
 5
 00:00:16,239 --> 00:00:19,340
-implanting though the labs and also
+希望这对你后面实现 labs 有所帮助
+implementing though the labs and also
 
 6
 00:00:19,340 --> 00:00:21,650
+咱们会详尽的讨论实现正确的“复制状态机”的相关细节
 because you know it's just a case study
 
 7
 00:00:21,650 --> 00:00:23,210
+咱们会详尽的讨论实现正确的“复制状态机”的相关细节
 in the details of how to get state
 
 8
 00:00:23,210 --> 00:00:28,550
+咱们会详尽的讨论实现正确的“复制状态机”的相关细节
 machine replication correct so we have
 
 9
 00:00:28,550 --> 00:00:31,070
+这些问题之前我们都已经介绍过
 introduction to the problem you may have
 
 10
 00:00:31,070 --> 00:00:33,949
+你可能已经注意到目前为止所有介绍过的容错系统中的模式
 noticed a pattern in fault-tolerant
 
 11
 00:00:33,949 --> 00:00:35,800
+你可能已经注意到目前为止所有介绍过的容错系统中的模式
 systems that we've looked at so far
 
 12
 00:00:35,800 --> 00:00:40,640
+其中之一就是 MapReduce 里的复制方案
 one is that MapReduce replicates
 
 13
 00:00:40,640 --> 00:00:43,640
+但是它的整个复制完全由单个 master 所控制
 computation but the replication is
 
 14
 00:00:43,640 --> 00:00:45,949
+但是它的整个复制完全由单个 master 所控制
 controlled the whole computation is
 
 15
 00:00:45,949 --> 00:00:50,120
-controlled by a single master another
+但是它的整个复制完全由单个 master 所控制
+controlled by a single master
 
 16
 00:00:50,120 --> 00:00:52,129
-example I'd like to draw your attention
+另一个值得注意的例子是关于 GFS 复制数据
+another example I'd like to draw your attention
 
 17
 00:00:52,129 --> 00:00:55,339
+另一个值得注意的例子是关于 GFS 复制数据
 to is that GFS replicates data right as
 
 18
 00:00:55,339 --> 00:00:56,780
+它通过 primary backup(主备) 方案复制实际文件内容
 this primary backup scheme for
 
 19
 00:00:56,780 --> 00:00:58,550
+它通过 primary backup(主备) 方案复制实际文件内容
 replicating the actual contents of files
 
 20
 00:00:58,550 --> 00:01:01,489
+但这个方案依赖于单一的 master 节点为每一片数据选择 primary
 but it relies on a single master to
 
 21
 00:01:01,489 --> 00:01:03,710
+但这个方案依赖于单一的 master 节点为每一片数据选择 primary
 choose who the primary is for every
 
 22
 00:01:03,710 --> 00:01:07,909
+另一个是 vmware ft 复制方案
 piece of data another example vmware ft
 
 23
 00:01:07,909 --> 00:01:09,710
+它在一台 primary 虚拟机和 backup 虚拟机上执行写入
 replicates computational write on a
 
 24
 00:01:09,710 --> 00:01:11,840
+它在一台 primary 虚拟机和 backup 虚拟机上执行写入
 primary virtual machine and a backup
 
 25
 00:01:11,840 --> 00:01:14,630
+如果它们之一出故障 就需要搞清楚下一步该怎么做
 virtual machine but in order to figure
 
 26
 00:01:14,630 --> 00:01:16,250
+如果它们之一出故障 就需要搞清楚下一步该怎么做
 out what to do next if one of them seems
 
 27
 00:01:16,250 --> 00:01:19,189
+这需要借助 test-and-set 服务器来帮助它选择一台 backup 来接管 primary
 to a fail it relies on a single test and
 
 28
 00:01:19,189 --> 00:01:22,009
+这需要借助 test-and-set 服务器来帮助它选择一台 backup 来接管 primary
 set server to help the choose to help it
 
 29
 00:01:22,009 --> 00:01:23,719
+这需要借助 test-and-set 服务器来帮助它选择一台 backup 来接管 primary
 ensure that exactly one of the primary
 
 30
 00:01:23,719 --> 00:01:26,180
-of the backup takes over if there's some
+这需要借助 test-and-set 服务器来帮助它选择一台 backup 来接管 primary
+of the backup takes over if there's some kind of failure
 
 31
 00:01:26,180 --> 00:01:29,390
-kind of failure so in all three of these
+这三个案例都有一个复制系统
+so in all three of these
 
 32
 00:01:29,390 --> 00:01:31,820
+这三个案例都有一个复制系统
 cases sure there was a replication
 
 33
 00:01:31,820 --> 00:01:34,219
+它们的复制系统隐藏的比较深
 system but sort of tucked away in a
 
 34
 00:01:34,219 --> 00:01:36,079
+它们的复制系统隐藏的比较深
 corner in the replication system there
 
 35
 00:01:36,079 --> 00:01:37,880
+它们都有一个相同的模式
 was some scheme where a single entity
 
 36
 00:01:37,880 --> 00:01:40,189
+即需要一个单一的“实体”来判定谁是 primary
 was required to make a critical decision
 
 37
 00:01:40,189 --> 00:01:43,549
-about who the primary was in the cases
+即需要一个单一的 entity (实体)来判定谁是 primary
+about who the primary was in the cases we care about
 
 38
 00:01:43,549 --> 00:01:47,210
-we care about so a very nice thing about
+单一实体的好处是它能决定谁来当 primary
+so a very nice thing about
 
 39
 00:01:47,210 --> 00:01:50,119
+00:01:43,549 --> 00:01:47,210
+单一实体的好处是它能决定谁来当 primary，它不能否定它自己
 having a single entity decide who's
 
 40
 00:01:50,119 --> 00:01:53,119
+单一实体的好处是它能决定谁来当 primary，它不能否定它自己
 gonna be the primary is that it can't
 
 41
 00:01:53,119 --> 00:01:55,460
+单一实体的好处是它能决定谁来当 primary，它不能否定它自己
 disagree with itself right there's only
 
 42
 00:01:55,460 --> 00:01:57,619
+只有它才能做出这个决策
 one of it makes some decision that's the
 
 43
 00:01:57,619 --> 00:02:00,920
+但是这也导致一些缺点，比如会出现单点故障
 decision it made but the bad thing about
 
 44
 00:02:00,920 --> 00:02:03,020
+但是这也导致一些缺点，比如会出现单点故障
 having a single entity decide like who
 
 45
 00:02:03,020 --> 00:02:04,850
+但是这也导致一些缺点，比如会出现单点故障
 the primary is is that it itself as a
 
 46
 00:02:04,850 --> 00:02:06,590
+但是这也导致一些缺点，比如会出现单点故障
 single point of failure and so you can
 
 47
 00:02:06,590 --> 00:02:08,119
+所以你会发现这些系统它把 FT 的真正的核心机制放在一个角落里
 view these systems that we've looked at
 
 48
 00:02:08,119 --> 00:02:11,950
+所以你会发现这些系统它把 FT 的真正的核心机制放在一个角落里
 it sort of pushing the real heart of the
 
 49
 00:02:11,950 --> 00:02:13,790
+所以你会发现这些系统它把 FT 的真正的核心机制放在一个角落里
 fault tolerance
 
 50
 00:02:13,790 --> 00:02:16,610
+所以你会发现这些系统它把 FT 的真正的核心机制放在一个角落里
 Machinery into a little corner that is
 
 51
 00:02:16,610 --> 00:02:18,620
+即如果发生故障，用单一实体来决策谁是 primary
 the single entity that decides who's
 
 52
 00:02:18,620 --> 00:02:20,719
+即如果发生故障，用单一实体来决策谁是 primary
 going to be the primary if there's a
 
 53
 00:02:20,719 --> 00:02:23,810
+他们这么做的目的就是为了防止 split brain(脑裂)
 failure now this whole thing is about
 
 54
 00:02:23,810 --> 00:02:25,430
+他们这么做的目的就是为了防止 split brain(脑裂)
 how to avoid split brain the reason why
 
 55
 00:02:25,430 --> 00:02:27,560
+如果系统发生故障，需要非常小心的去决策谁是 primary
 we have to have have to be extremely
 
 56
 00:02:27,560 --> 00:02:29,989
+如果系统发生故障，需要非常小心的去决策谁是 primary
 careful about making the decision about
 
 57
 00:02:29,989 --> 00:02:31,519
+如果系统发生故障，需要非常小心的去决策谁是 primary
 who should be the primary if there's a
 
 58
 00:02:31,519 --> 00:02:33,950
+否则就会有 split brain 的风险
 failure is that otherwise we risks split
 
 59
 00:02:33,950 --> 00:02:38,030
+为了让这个问题变清晰
 brain and just make this point super
 
 60
 00:02:38,030 --> 00:02:45,109
+我打算提醒你一下，这是个什么样的问题，为什么这个问题很严重
 clear I'm gonna just remind you what the
 
 61
 00:02:45,109 --> 00:02:47,239
+我打算提醒你一下，这是个什么样的问题，为什么这个问题很严重
 problem is and why it's a serious
 
 62
 00:02:47,239 --> 00:02:49,989
+假设我们想构建一个有复制功能的 test-and-set 服务器
 problem so supposing for example where
 
 63
 00:02:49,989 --> 00:02:52,939
+假设我们想构建一个有复制功能的 test-and-set 服务器
 we want to build ourselves a replicated
 
 64
 00:02:52,939 --> 00:02:54,409
+假设我们想构建一个有复制功能的 test-and-set 服务器
 test and set server that is we're
 
 65
 00:02:54,409 --> 00:02:56,389
+我们比较担心的是 vmware ft 依赖于这个 test-and-set 服务器去选择谁是 primary,
 worried about the fact that vmware ft
 
 66
 00:02:56,389 --> 00:02:58,609
+我们比较担心的是 vmware ft 依赖于这个 test-and-set 服务器去选择谁是 primary
 relies on this test and set server to
 
 67
 00:02:58,609 --> 00:03:00,560
+让我们构建一个有复制能力的 test-and-set 服务器
 choose who the primary is so let's build
 
 68
 00:03:00,560 --> 00:03:02,750
-a replicated testing set server i'm
+让我们构建一个有复制能力的 test-and-set 服务器
+a replicated test and set server i'm
 
 69
 00:03:02,750 --> 00:03:04,519
+然后看看它发生故障后会是什么样子
 gonna do this it's gonna be broken it's
 
 70
 00:03:04,519 --> 00:03:08,959
+我只是想解释一下为什么解决脑裂的问题很难
 just an illustration for why why it's
 
 71
 00:03:08,959 --> 00:03:10,609
-difficult to get this but brain problem
+我只是想解释一下为什么解决脑裂的问题很难
+difficult to get split brain problem
 
 72
 00:03:10,609 --> 00:03:12,019
+我只是想解释一下为什么解决脑裂的问题很难
 correctly so you know we're gonna
 
 73
 00:03:12,019 --> 00:03:16,310
+想象一下我们有一个这样的网络
 imagine we have a network and maybe two
 
 74
 00:03:16,310 --> 00:03:18,379
+然后这里有 2 台服务器，假设他们就是 test-and-set 服务的副本
 servers which are supposed to be
 
 75
 00:03:18,379 --> 00:03:21,019
+然后这里有 2 台服务器，假设他们就是 test-and-set 服务的副本
 replicas of our test and set service
 
 76
 00:03:21,019 --> 00:03:23,180
+这里有 2 个客户端，它们需要知道谁是 primary
 connected and you know maybe two clients
 
 77
 00:03:23,180 --> 00:03:24,949
+这里有 2 个客户端，它们需要知道谁是 primary
 they need to know who's the primary
 
 78
 00:03:24,949 --> 00:03:26,540
+事实上在这个例子里 client 就是前面课中讲的 vmware ft 中的 primary 和 backup
 right now or actually maybe these
 
 79
 00:03:26,540 --> 00:03:28,940
+事实上在这个例子里 client 就是前面课中讲的 vmware ft 中的 primary 和 backup
 clients in this case are the primary in
 
 80
 00:03:28,940 --> 00:03:34,669
+事实上在这个例子里 client 就是前面课中讲的 vmware ft 中的 primary 和 backup
 the back up in vmware ft so if it's a
 
 81
 00:03:34,669 --> 00:03:36,169
+如果这里是 test-and-set 服务器
 test and set service then you know both
 
 82
 00:03:36,169 --> 00:03:38,120
+然后这里 2 个数据库会以它们自己的状态开始启动
 these databases mostly servers start out
 
 83
 00:03:38,120 --> 00:03:40,280
+然后这里 2 个数据库会以它们自己的状态开始启动
 with their state that is the state of
 
 84
 00:03:40,280 --> 00:03:42,620
-this test flight back in zero and the
+刚开始他们的值都是 0
+this test-and-set in zero and the
 
 85
 00:03:42,620 --> 00:03:44,720
+客户端的通过发送 test-and-set 指令把副本的 flag 设置成 1
 one operation their clients can send is
 
 86
 00:03:44,720 --> 00:03:46,250
+客户端的通过发送 test-and-set 指令把副本的 flag 设置成 1
 the test and set operation which is
 
 87
 00:03:46,250 --> 00:03:50,750
+客户端的通过发送 test-and-set 指令把副本的 flag 设置成 1
 supposed to set the flag of the
 
 88
 00:03:50,750 --> 00:03:52,879
+客户端的通过发送 test-and-set 指令把副本的 flag 设置成 1
 replicated service to one so i should
 
 89
 00:03:52,879 --> 00:03:55,190
+我应该要对这 2 个副本都进行设置，然后返回它的旧值
 set both copies and then return the old
 
 90
 00:03:55,190 --> 00:03:57,500
+所以它看起来特别像一个简单版的 lock server
 value so it's essentially acts as a kind
 
 91
 00:03:57,500 --> 00:04:02,510
+所以它看起来特别像一个简单版的 lock server
 of simplified lock server okay so the
 
 92
