@@ -1321,846 +1321,1064 @@ automated failover systems that can work
 
 262
 00:10:45,949 --> 00:10:48,980
+即使遇上那种诡异的网络故障，在这种网络可以分区(partition)的情况下，也没关系
 correctly in the face of flaky networks
 
 263
 00:10:48,980 --> 00:10:51,290
+即使遇上那种诡异的网络故障，在这种网络可以分区(partition)的情况下，也没关系
 of networks that could fail on the can
 
 264
 00:10:51,290 --> 00:10:53,209
+这种将网络一分为二，两边之间互相无法进行通信
 partition so this split of the network
 
 265
 00:10:53,209 --> 00:10:54,920
+这种将网络一分为二，两边之间互相无法进行通信
 in half where the two sides operate they
 
 266
 00:10:54,920 --> 00:10:56,600
+通常被称为 partition(分区)
 can't talk to each other that's usually
 
 267
 00:10:56,600 --> 00:11:04,910
+通常被称为 partition(分区)
 called a partition and the big insight
 
 268
 00:11:04,910 --> 00:11:06,889
+人们构建自动化的，不受脑裂影响的复制系统的关键是 少数服从多数的投票思想
 that people came up with in order to
 
 269
 00:11:06,889 --> 00:11:10,100
+人们构建自动化的，不受脑裂影响的复制系统的关键是 少数服从多数的投票思想
 build automated replication systems that
 
 270
 00:11:10,100 --> 00:11:12,589
+人们构建自动化的，不受脑裂影响的复制系统的关键是 少数服从多数的投票思想
 don't suffer from split brain is the
 
 271
 00:11:12,589 --> 00:11:17,649
+人们构建自动化的，不受脑裂影响的复制系统的关键是 少数服从多数的投票思想
 idea of a majority vote this is a
 
 272
 00:11:20,079 --> 00:11:22,459
+这种概念在 raft 论文里出现过
 concept that shows up in like every
 
 273
 00:11:22,459 --> 00:11:24,110
+这种概念在 raft 论文里出现过
 other sentence practically in the raft
 
 274
 00:11:24,110 --> 00:11:28,519
+这是取得后续进展的基石
 paper sort of fundamental way of
 
 275
 00:11:28,519 --> 00:11:31,459
+第一步，得有奇数台服务器，而不是偶数台
 proceeding the first step is to have an
 
 276
 00:11:31,459 --> 00:11:33,740
+第一步，得有奇数台服务器，而不是偶数台
 odd number of servers instead of an even
 
 277
 00:11:33,740 --> 00:11:35,779
+比如这里就有缺陷了，看起来有点太对称了
 number of servers like one flaw here is
 
 278
 00:11:35,779 --> 00:11:37,939
+比如这里就有缺陷了，看起来有点太对称了
 that it's a little bit too symmetric all
 
 279
 00:11:37,939 --> 00:11:39,379
+分裂的两边，它们看起来没什么区别
 right the two sides of the split here
 
 280
 00:11:39,379 --> 00:11:41,540
+分裂的两边，它们看起来没什么区别
 just they just look the same so they run
 
 281
 00:11:41,540 --> 00:11:42,589
+它们运行的相同的程序，做着一样的事情
 the same software they're gonna do the
 
 282
 00:11:42,589 --> 00:11:44,299
+这看起来不太好
 same thing and that's not good but if
 
 283
 00:11:44,299 --> 00:11:47,439
+但是如果你有奇数台服务器的话
 you have an odd number of servers then
 
 284
 00:11:47,439 --> 00:11:50,899
+那看起来就一点也不对称了
 it's not symmetric anymore right at
 
 285
 00:11:50,899 --> 00:11:52,939
+在只有一个分裂的网络中，起码是一边有 2 台，另一边只有 1 台
 least a single network split will be
 
 286
 00:11:52,939 --> 00:11:54,740
+在只有一个分裂的网络中，起码是一边有 2 台，另一边只有 1 台
 presumably two servers on one side and
 
 287
 00:11:54,740 --> 00:11:56,179
+在只有一个分裂的网络中，起码是一边有 2 台，另一边只有 1 台
 one server on the other side and they
 
 288
 00:11:56,179 --> 00:11:58,490
+它们一点也不对称，这也是多数投票(majority vote)方案所迷人的地方
 won't be symmetric at all and that's
 
 289
 00:11:58,490 --> 00:12:00,829
+它们一点也不对称，这也是多数投票(majority vote)方案所迷人的地方
 part of what majority vote majority
 
 290
 00:12:00,829 --> 00:12:04,220
+它们一点也不对称，这也是多数投票(majority vote)方案所迷人的地方
 voting schemes are appealing to so basic
 
 291
 00:12:04,220 --> 00:12:05,629
+所以基本思想就是得有奇数台服务器
 ideas you have an odd number of servers
 
 292
 00:12:05,629 --> 00:12:08,299
+为了取得进展，在 raft 的 leader 选举或是日志提交里
 in order to make progress of any kind so
 
 293
 00:12:08,299 --> 00:12:10,939
+为了取得进展，在 raft 的 leader 选举或是日志提交里
 in raft elect a leader or cause a log
 
 294
 00:12:10,939 --> 00:12:12,619
+为了取得进展，在 raft 的 leader 选举或是日志提交里
 entry to be committed in order to make
 
 295
 00:12:12,619 --> 00:12:15,379
+每一步都需要得到大多数的服务器，也就是超过一半的服务器支持
 any progress at each step you have to
 
 296
 00:12:15,379 --> 00:12:18,649
+每一步都需要得到大多数的服务器，也就是超过一半的服务器支持
 assemble a majority of the server's more
 
 297
 00:12:18,649 --> 00:12:20,149
+每一步都需要得到大多数的服务器，也就是超过一半的服务器支持
 than half more than half of all the
 
 298
 00:12:20,149 --> 00:12:22,489
+每一步都需要得到大多数的服务器，也就是超过一半的服务器支持
 servers in order to sort of approve that
 
 299
 00:12:22,489 --> 00:12:25,279
-step like vote for a meet or accept a
+这样才能让每一步（比如 leader 选举或是日志提交）得以成功执行
+step like vote for a leader or accept a
 
 300
 00:12:25,279 --> 00:12:29,059
+这样才能让每一步（比如 leader 选举或是日志提交）得以成功执行
 new log entry and commit it so you know
 
 301
 00:12:29,059 --> 00:12:32,749
+最直白的方式就是有 3 台服务器中有 2 台需要执行这些步骤
 the most straightforward way is that two
 
 302
 00:12:32,749 --> 00:12:36,669
-or three servers required to do anything
+最直白的方式就是有 3 台服务器中有 2 台需要执行这些步骤
+of three servers required to do anything
 
 303
 00:12:37,819 --> 00:12:40,249
+这种方式能正确工作的原因是
 one reason this works of course is that
 
 304
 00:12:40,249 --> 00:12:43,499
+如果遇到了 partition
 if there's a partition there can't be
 
 305
 00:12:43,499 --> 00:12:45,569
+绝不可能有超过一个以上的 partiton 同时拥有一半以上的服务器
 more than one partition with a majority
 
 306
 00:12:45,569 --> 00:12:47,639
+绝不可能有超过一个以上的 partiton 同时拥有一半以上的服务器
 of the server's in it that's one way to
 
 307
 00:12:47,639 --> 00:12:51,329
+举个例子，一个 partition 可以只有一台服务器在里头
 look at this a partition can have one
 
 308
 00:12:51,329 --> 00:12:53,009
+这时它就不是一个 majority 系统
 server in it which it's not a majority
 
 309
 00:12:53,009 --> 00:12:55,439
+又或者这个 partition 里有 2 台服务器，那另一个 parition 一定就只有 1 台了
 or maybe you can have two but if one
 
 310
 00:12:55,439 --> 00:12:56,550
+又或者这个 partition 里有 2 台服务器，那另一个 parition 一定就只有 1 台了
 partition has two then the other
 
 311
 00:12:56,550 --> 00:12:58,410
+又或者这个 partition 里有 2 台服务器，那另一个 parition 一定就只有 1 台了
 partition has to have only one server in
 
 312
 00:12:58,410 --> 00:13:00,689
+因此也无法聚合成为超过半数以上的服务器，也无法进行下一步操作
 it and therefore will never be able to
 
 313
 00:13:00,689 --> 00:13:02,279
+因此也无法聚合成为超过半数以上的服务器，也无法进行下一步操作
 assemble a majority and won't be able to
 
 314
 00:13:02,279 --> 00:13:07,350
+需要阐明一点的是，这里所说的大多数
 make progress and just to be totally
 
 315
 00:13:07,350 --> 00:13:09,600
+需要阐明一点的是，这里所说的大多数
 clear when we're talking about a
 
 316
 00:13:09,600 --> 00:13:11,610
+需要阐明一点的是，这里所说的大多数
 majority it's always a majority out of
 
 317
 00:13:11,610 --> 00:13:14,040
+是所有服务器（包括在线和宕机的）中的大多数，而不是仅指在线服务器中的大多数
 all of the server's not just a live
 
 318
 00:13:14,040 --> 00:13:15,930
+哈哈，关于这一点曾经也困扰了我相当长一段时间
 servers this is the point that confused
 
 319
 00:13:15,930 --> 00:13:17,430
+哈哈，关于这一点曾经也困扰了我相当长一段时间
 me for a long time but if you have a
 
 320
 00:13:17,430 --> 00:13:19,259
+如果你有 3 台服务器，或许其中有宕机的或是其它故障
 system with three servers and maybe some
 
 321
 00:13:19,259 --> 00:13:20,850
+如果你有 3 台服务器，或许其中有宕机的或是其它故障
 of them have failed or something if you
 
 322
 00:13:20,850 --> 00:13:22,259
+构成大多数的服务数据仍然是 3 个中的 2 个
 need to assemble in the majority it's
 
 323
 00:13:22,259 --> 00:13:24,720
+构成大多数的服务数据仍然是 3 个中的 2 个
 always two out of three even if you know
 
 324
 00:13:24,720 --> 00:13:26,309
+尽管你知道其中有一台宕机了
 that one has failed the majority is
 
 325
 00:13:26,309 --> 00:13:27,449
+那大多数也还是指 所有服务器总量的大多数
 always out of the total number of
 
 326
 00:13:27,449 --> 00:13:30,420
+有一个更加通用的公式来描述它
 servers there's a more general
 
 327
 00:13:30,420 --> 00:13:33,689
+因为大多数投票系统中，3 个有 2 个同意，就能取得进展
 formulation of this because a majority
 
 328
 00:13:33,689 --> 00:13:35,610
+因为大多数投票系统中，3 个有 2 个同意，就能取得进展
 voting system in which two out of three
 
 329
 00:13:35,610 --> 00:13:37,170
+因为大多数投票系统中，3 个有 2 个同意，就能取得进展
 are required to make progress it can
 
 330
 00:13:37,170 --> 00:13:40,889
+它能在 1 台服务器宕机的情况下继续存活
 survive the failure of one server right
 
 331
 00:13:40,889 --> 00:13:42,930
+另外 2 台服务器依然能够继续取得进展继续工作
 any two servers are enough to make
 
 332
 00:13:42,930 --> 00:13:45,180
+如果你担心系统的可靠性的话，你可以使用更多的服务器
 progress if you need to be able to if
 
 333
 00:13:45,180 --> 00:13:46,740
+如果你担心系统的可靠性的话，你可以使用更多的服务器
 you're you know you worried about how
 
 334
 00:13:46,740 --> 00:13:49,980
+如果你担心系统的可靠性的话，你可以使用更多的服务器
 reliable your servers are or then you
 
 335
 00:13:49,980 --> 00:13:51,569
+如果你担心系统的可靠性的话，你可以使用更多的服务器
 can build systems that have more servers
 
 336
 00:13:51,569 --> 00:13:53,490
+所以这个通用公式是这样的
 and so the more general formulation is
 
 337
 00:13:53,490 --> 00:13:59,490
+如果你有 2f + 1 台服务器，你就能承受 f 台服务故障
 if you have two F + 1 servers then you
 
 338
 00:13:59,490 --> 00:14:06,930
-can withstand you know so if it's three
+如果你有 2f + 1 台服务器，你就能承受 f 台服务故障
+can withstand f failures you know
 
 339
 00:14:06,930 --> 00:14:09,779
-that means F is one and the system with
+所以如果这里是 3 的话，这里就是 1
+so if it's three that means F is one and the system with
 
 340
 00:14:09,779 --> 00:14:12,809
+这个系统这里有 3 台服务器，因此你就能承受 1 台服务故障
 three servers you can tolerate F servers
 
 341
 00:14:12,809 --> 00:14:17,449
+它仍然能够继续运行
 step one failure and still keep going
 
 342
 00:14:19,769 --> 00:14:22,389
+好，这些东西通常我们称之为 quorum 系统(多数派系统)
 all right often these are called quorum
 
 343
 00:14:22,389 --> 00:14:25,350
+3 个中有 2 个及以上存活，就说明它们是一个 quorum
 systems because the two out of three is
 
 344
 00:14:25,350 --> 00:14:29,050
+3 个中有 2 个及以上存活，就说明它们是一个 quorum
 sometimes held a quorum okay so one
 
 345
 00:14:29,050 --> 00:14:30,519
+所以我们提及关于 Majority Voting System(大多数投票系统)
+的一个特征就是，至多有一个 parition 拥有大多数
 property I've already mentioned about
 
 346
 00:14:30,519 --> 00:14:34,029
+所以我们提及关于 Majority Voting System(大多数投票系统)
+的一个特征就是，至多有一个 parition 拥有大多数
 these majority voting systems is that at
 
 347
 00:14:34,029 --> 00:14:36,759
+所以我们提及关于 Majority Voting System(大多数投票系统)
+的一个特征就是，至多有一个 parition 拥有大多数
 most one partition can have a majority
 
 348
 00:14:36,759 --> 00:14:38,110
+因此，如果网络分区，我们就不能让所有的网络分区都能取得进展
 and therefore if the networks
 
 349
 00:14:38,110 --> 00:14:40,569
+因此，如果网络分区，我们就不能让所有的网络分区都能取得进展
 partitioned we can't have both halves of
 
 350
 00:14:40,569 --> 00:14:42,550
+因此，如果网络分区，我们就不能让所有的网络分区都能取得进展
 the network making progress another more
 
 351
 00:14:42,550 --> 00:14:44,499
+另一个比较微妙的事情况是
 subtle thing that's going on here is
 
 352
 00:14:44,499 --> 00:14:48,970
+你总需要得到大多数服务器的同意，才能得以继续进行下一步操作
 that if you always need a majority of
 
 353
 00:14:48,970 --> 00:14:52,629
+你总需要得到大多数服务器的同意，才能得以继续进行下一步操作
 the servers to proceed and you go
 
 354
 00:14:52,629 --> 00:14:54,249
+假设你有一系列的指令，在每一步中你都需要得到大多数的服务的支持
 through a sort of succession of
 
 355
 00:14:54,249 --> 00:14:55,990
+假设你有一系列的指令，在每一步中你都需要得到大多数的服务的支持
 operations in which reach operations
 
 356
 00:14:55,990 --> 00:14:58,089
+假设你有一系列的指令，在每一步中你都需要得到大多数的服务的支持
 somebody assembled a majority like you
 
 357
 00:14:58,089 --> 00:15:00,730
+比如说给 leader 投票，这里说的是 raft 中的 leader 投票
 know votes for leaders or let's say
 
 358
 00:15:00,730 --> 00:15:04,689
-votes for leaders arrived then at every
+比如说给 leader 投票，这里说的是 raft 中的 leader 投票
+votes for leaders at raft then at every
 
 359
 00:15:04,689 --> 00:15:06,519
+在每一步中，你所看到的 majority(大多数服务器里，后面不再翻译)
 step the majority you assemble for that
 
 360
 00:15:06,519 --> 00:15:09,339
+至少有 1 台服务器，它也在上一步中的 majority
 step must contain at least one server
 
 361
 00:15:09,339 --> 00:15:11,290
+至少有 1 台服务器，它也在上一步中的 majority
 that was in the previous majority that
 
 362
 00:15:11,290 --> 00:15:13,899
+这就是说，任意的 2 个 majority 中，至少会有 1 台服务器是重叠的
 is any two majorities overlap in at
 
 363
 00:15:13,899 --> 00:15:17,800
+这就是说，任意的 2 个 majority 中，至少会有 1 台服务器是重叠的
 least one server and it's really that
 
 364
 00:15:17,800 --> 00:15:21,009
+这个特点比其它的特点更加重要，且被 raft 所依赖，它能避免脑裂的问题
 property more than anything else that
 
 365
 00:15:21,009 --> 00:15:25,059
+这个特点比其它的特点更加重要，且被 raft 所依赖，它能避免脑裂的问题
 raft is relying on to avoid split brain
 
 366
 00:15:25,059 --> 00:15:27,220
+举个例子
 it's the fact that for example when you
 
 367
 00:15:27,220 --> 00:15:28,480
+当你执行一次成功的 leader 选举，leader 的选票来自于 majority
 have a leader a successful leader
 
 368
 00:15:28,480 --> 00:15:30,339
+当你执行一次成功的 leader 选举，leader 的选票来自于 majority
 election and leader assembles votes from
 
 369
 00:15:30,339 --> 00:15:32,980
+这个 majority 保证和上一次的 majority 有重叠
 a majority its majority is guaranteed to
 
 370
 00:15:32,980 --> 00:15:34,779
+这个 majority 保证和上一次的 leader 选举中的 majority 有重叠
 overlap with the previous leaders
 
 371
 00:15:34,779 --> 00:15:36,490
+在这个例子里，新产生的 leader 保证它是知道上一代 leader 的 term 号的
 majority and so for example the new
 
 372
 00:15:36,490 --> 00:15:39,220
+在这个例子里，新产生的 leader 保证它是知道上一代 leader 的 term 号的
 leader is guaranteed to know about the
 
 373
 00:15:39,220 --> 00:15:41,279
+在这个例子里，新产生的 leader 保证它是知道上一代 leader 的 term 号的
 term number used by the previous leader
 
 374
 00:15:41,279 --> 00:15:43,360
+因为它的 majority 和上一代 leader 的 majority 有所重叠
 because it's a majority overlaps with
 
 375
 00:15:43,360 --> 00:15:45,299
+因为它的 majority 和上一代 leader 的 majority 有所重叠
 the previous leaders majority and
 
 376
 00:15:45,299 --> 00:15:47,379
+上一代 majority 中的每个成员都知道上一代的 leader 的 term 号
 everybody in the previous leaders
 
 377
 00:15:47,379 --> 00:15:49,059
+上一代 majority 中的每个成员都知道上一代的 leader 的 term 号
 majority knew about the previous leaders
 
 378
 00:15:49,059 --> 00:15:50,069
+上一代 majority 中的每个成员都知道上一代的 leader 的 term 号
 term number
 
 379
 00:15:50,069 --> 00:15:53,019
+类似的在 raft 里，上一代的 leader 所提交的数据，也必须出现在 majority 中
 similarly anything the previous leader
 
 380
 00:15:53,019 --> 00:15:55,569
+类似的在 raft 里，上一代的 leader 所提交的数据，也必须出现在 majority 中
 could have committed must be present in
 
 381
 00:15:55,569 --> 00:15:57,970
+类似的在 raft 里，上一代的 leader 所提交的数据，也必须出现在 majority 中
 a majority of the servers in raft and
 
 382
 00:15:57,970 --> 00:15:59,769
+因此任意一个新的 leader majority 都至少有 1 台与上次重叠
 therefore any new leaders majority must
 
 383
 00:15:59,769 --> 00:16:01,869
+并且这台机器拥有所有已经提交的来自于上一代 leader 的记录
 overlap at at least one server with
 
 384
 00:16:01,869 --> 00:16:04,779
+并且这台机器拥有所有已经提交的来自于上一代 leader 的记录
 every committed entry from the previous
 
 385
 00:16:04,779 --> 00:16:08,529
+这也是 raft 正确的最大的原因
 leader this is a big part of why it is
 
 386
 00:16:08,529 --> 00:16:13,110
-that wrapped is correct
+这也是 raft 正确的最大的原因
+that raft is correct
 
 387
 00:16:14,440 --> 00:16:18,070
+关于 majority voting system 大家还有问题吗?
 any questions about the general concept
 
 388
 00:16:18,070 --> 00:16:22,860
+关于 majority voting system 大家还有问题吗?
 of majority voting systems
 
 389
 00:16:27,940 --> 00:16:31,470
-these muscle ad servers
+添加服务器是可能的
+it's possible to add servers
 
 390
 00:16:31,760 --> 00:16:34,070
+这是可能的，在 raft 论文里，可能是第 6 节就解释了如何添加、变更服务器集合
 it's possible intersection something
 
 391
 00:16:34,070 --> 00:16:36,710
+这是可能的，在 raft 论文里，可能是第 6 节就解释了如何添加、变更服务器集合
 maybe six in the paper explains how to
 
 392
 00:16:36,710 --> 00:16:41,110
+这是可能的，在 raft 论文里，可能是第 6 节就解释了如何添加、变更服务器集合
 add it or change the set of servers and
 
 393
 00:16:41,110 --> 00:16:44,600
+在一个长期运行的系统中，比如运行 5 年 10 年的，你可能就需要做这件事
 it's possible you need to do it in a
 
 394
 00:16:44,600 --> 00:16:45,920
+在一个长期运行的系统中，比如运行 5 年 10 年的，你可能就需要做这件事
 long-running system if you're running
 
 395
 00:16:45,920 --> 00:16:48,800
+在一个长期运行的系统中，比如运行 5 年 10 年的，你可能就需要做这件事
 your system for five ten years you know
 
 396
 00:16:48,800 --> 00:16:50,480
+你需要在一段时间后更换服务器，比如有些服务永久性的损坏了
 you're gonna need to replace the servers
 
 397
 00:16:50,480 --> 00:16:52,490
+你需要在一段时间后更换服务器，比如有些服务永久性的损坏了
 after a while you know one of them fails
 
 398
 00:16:52,490 --> 00:16:55,280
+又或者升级，或者将它转移到另一个不同的机房
 permanently or you upgrade or you move
 
 399
 00:16:55,280 --> 00:16:56,390
+又或者升级，或者将它转移到另一个不同的机房
 machine rooms to a different machine
 
 400
 00:16:56,390 --> 00:16:58,250
+你确实需要做一些支持变更集群的操作
 room you really do need to be able to
 
 401
 00:16:58,250 --> 00:17:00,200
+你确实需要做一些支持变更集群的操作
 support changing sets of servers so
 
 402
 00:17:00,200 --> 00:17:01,640
+当然了，这种事也不会每天都发生，但是它确实很关键
 that's a it certainly doesn't happen
 
 403
 00:17:01,640 --> 00:17:03,230
+当然了，这种事也不会每天都发生，但是它确实很关键
 every day but it's a critical part of
 
 404
 00:17:03,230 --> 00:17:05,390
+在长期需要维护的系统中, raft 提供了一种方案
 this or a long-term maintainability of
 
 405
 00:17:05,390 --> 00:17:08,480
-these systems and you know the RAF
+在长期需要维护的系统中, raft 提供了一种方案来处理这种情况
+these systems and you know the RAFT
 
 406
 00:17:08,480 --> 00:17:10,520
-authors sort of pat themselves on the
+在长期需要维护的系统中, raft 提供了一种方案来处理这种情况
+offers sort of pattern themselves on the
 
 407
 00:17:10,520 --> 00:17:13,099
+在长期需要维护的系统中, raft 提供了一种方案来处理这种情况
 back that they have a scheme that deals
 
 408
 00:17:13,099 --> 00:17:14,359
+在长期需要维护的系统中, raft 提供了一种方案来处理这种情况
 with this which as well they might
 
 409
 00:17:14,359 --> 00:17:21,859
+因为这真的很复杂
 because it's complex all right so using
 
 410
 00:17:21,859 --> 00:17:25,449
+这个想法在 1990 年就被使用了
 this idea in about 1990 or so there were
 
 411
 00:17:25,449 --> 00:17:28,040
+当时有两个系统几乎在同一时间发表这一观点
 two systems proposed at about the same
 
 412
 00:17:28,040 --> 00:17:31,550
+他们意识到，你能使用 majority voting system
 time that realized that you could use
 
 413
 00:17:31,550 --> 00:17:34,210
+他们意识到，你能使用 majority voting system
 this majority voting system to kind of
 
 414
 00:17:34,210 --> 00:17:38,020
+通过使用 3 台代替 2 台服务器的方法，同时采取投票表决
+来解决这种显然无法避免的的脑裂问题
 get around the apparent impossibility of
 
 415
 00:17:38,020 --> 00:17:41,150
+通过使用 3 台代替 2 台服务器的方法，同时采取投票表决
+来解决这种显然无法避免的的脑裂问题
 avoiding split brain by using basically
 
 416
 00:17:41,150 --> 00:17:43,070
+通过使用 3 台代替 2 台服务器的方法，同时采取投票表决
+来解决这种显然无法避免的的脑裂问题
 by using three servers instead of two
 
 417
 00:17:43,070 --> 00:17:46,520
+通过使用 3 台代替 2 台服务器的方法，同时采取投票表决
+来解决这种显然无法避免的的脑裂问题
 and taking majority votes and in one of
 
 418
 00:17:46,520 --> 00:17:48,380
+出现的比较早的就是 Paxos，raft 对此也讨论了许多
 these very early systems was called
 
 419
 00:17:48,380 --> 00:17:51,860
-Paxos the RAF paper talks about this a
+出现的比较早的就是 PAXOS，raft 对此也讨论了许多
+Paxos the RAFT paper talks about this a
 
 420
 00:17:51,860 --> 00:17:54,860
+另一个非常早的系统称为 View-Stamped Replication(VSR)
 lot and another of these very early
 
 421
 00:17:54,860 --> 00:17:56,420
-systems was called view stamp
+另一个非常早的系统称为 View-Stamped Replication(VSR)
+systems was called View-Stamped Replication
 
 422
 00:17:56,420 --> 00:18:00,170
-replication a previa des vs r4 view
+缩写为 VSR
+a abbreviation View-Stamped Replication
 
 423
 00:18:00,170 --> 00:18:02,840
-stamp replication and even though Paxos
+尽管 PAXOS 是更加被广为人知的系统
+and even though Paxos
 
 424
 00:18:02,840 --> 00:18:05,020
-pod is by far the more widely known
+尽管 PAXOS 是更加被广为人知的系统
+is by far the more widely known
 
 425
 00:18:05,020 --> 00:18:07,310
+尽管 PAXOS 是更加被广为人知的系统
 system in this department raft is
 
 426
 00:18:07,310 --> 00:18:09,590
+实际上 raft 在设计上更加接近 VSR
 actually closer to design in design to
 
 427
 00:18:09,590 --> 00:18:11,650
-view statment few stamp application
+实际上 raft 在设计上更加接近 VSR
+View-Stamped Replication
 
 428
 00:18:11,650 --> 00:18:16,970
+这是咱们 MIT 的大佬们发明的（自豪）
 which was invented by people at MIT and
 
 429
 00:18:16,970 --> 00:18:19,280
-so there's a sort of a law many decade
+所以这些系统都经历了数十年的历史
+so there's a sort of a long many decade
 
 430
 00:18:19,280 --> 00:18:21,620
+所以这些系统都经历了数十年的历史
 history of these systems and they only
 
 431
 00:18:21,620 --> 00:18:24,800
+大约在 15 年前（现在是 2020 年），它们才开始被用于大型分布式系统
 really came to the forefront and started
 
 432
 00:18:24,800 --> 00:18:27,200
+大约在 15 年前（现在是 2020 年），它们才开始被用于大型分布式系统
 being used a lot in deployed big
 
 433
 00:18:27,200 --> 00:18:29,270
-distributed sisty systems about 15 years
+大约在 15 年前（现在是 2020 年），它们才开始被用于大型分布式系统
+distributed systems about 15 years
 
 434
 00:18:29,270 --> 00:18:31,970
+自它们被发明以来，这 15 年它们都表现的非常棒
 ago a good 15 years after they were
 
 435
 00:18:31,970 --> 00:18:39,680
+自它们被发明以来，这 15 年它们都表现的非常棒
 originally invented okay so let me talk
 
 436
 00:18:39,680 --> 00:18:42,340
-about Rath now
+okay，接下来就要开始讨论 raft 啦
+about raft now
 
 437
 00:18:42,770 --> 00:18:46,169
+raft 以 lib 库的形式被链接到某些服务器程序中
 raft is a takes the form of a library
 
 438
 00:18:46,169 --> 00:18:49,049
+raft 以 lib 库的形式被链接到某些服务器程序中
 intended to be included in some service
 
 439
 00:18:49,049 --> 00:18:51,360
+所以，如果你有一个复制服务
 application so if you have a replicated
 
 440
 00:18:51,360 --> 00:18:53,580
+每一个副本都会添加一些类似 rpc 的代码然后再加上 raft 库
 service that each of the replicas in the
 
 441
 00:18:53,580 --> 00:18:55,020
+每一个副本都会添加一些类似 rpc 的代码然后再加上 raft 库
 service is gonna be some application
 
 442
 00:18:55,020 --> 00:18:57,150
+每一个副本都会添加一些类似 rpc 的代码然后再加上 raft 库
 code which you know receives rpcs or
 
 443
 00:18:57,150 --> 00:19:00,030
+每一个副本都会添加一些类似 rpc 的代码然后再加上 raft 库
 something plus a raft library and the
 
 444
 00:19:00,030 --> 00:19:01,740
+接下来 raft 库会互相协作来维护 replication
 raft libraries cooperate with each other
 
 445
 00:19:01,740 --> 00:19:06,030
-to mean replication maintain replication
+接下来 raft 库会互相协作来维护 replication
+to maintain replication
 
 446
 00:19:06,030 --> 00:19:10,260
+这里我们先了解一下单个 raft 副本的软件架构
 so sort of software overview of a single
 
 447
 00:19:10,260 --> 00:19:13,919
+在最上层，我们可以思考一下副本有哪些代码
 raft replica is that at the top we can
 
 448
 00:19:13,919 --> 00:19:15,539
+在最上层，我们可以思考一下副本有哪些代码
 think of the replicas having the
 
 449
 00:19:15,539 --> 00:19:17,850
+在 lab3 中，它是一个 key-value 服务器
 application code so it might be for lab
 
 450
 00:19:17,850 --> 00:19:20,789
+在 lab3 中，它是一个 key-value 服务器
 3 a key-value server so maybe we have
 
 451
 00:19:20,789 --> 00:19:24,390
-some key value server and in a state the
+这个 kv 数据库它是有状态的
+some key value server and it has state the
 
 452
 00:19:24,390 --> 00:19:26,880
+也就是应用程序是有状态的，raft 可以帮助它管理复制状态
 application has state that raft is
 
 453
 00:19:26,880 --> 00:19:28,710
+也就是应用程序是有状态的，raft 可以帮助它管理复制状态
 helping it manage replicated state and
 
 454
 00:19:28,710 --> 00:19:30,299
+对于 kv 服务器，通常它有一张表格来记录 key value
 for a key value server it's going to be
 
 455
 00:19:30,299 --> 00:19:39,179
+对于 kv 服务器，通常它有一张表格来记录 key value
 a table of keys and values the next
 
 456
 00:19:39,179 --> 00:19:44,340
+下面这一层是 raft 层
 layer down is a raft layer so the key
 
 457
 00:19:44,340 --> 00:19:45,770
+所以 kv 服务器会发起函数调用进入到 raft
 value server is gonna sort of make
 
 458
 00:19:45,770 --> 00:19:47,760
+所以 kv 服务器会发起函数调用进入到 raft
 function calls into raft and they're
 
 459
 00:19:47,760 --> 00:19:49,080
+他们之间会反复通信几次，raft 会保持一些状态
 gonna chitchat back and forth a little
 
 460
 00:19:49,080 --> 00:19:52,070
+他们之间会反复通信几次，raft 会保持一些状态
 bit and raft keeps a little bit of state
 
 461
 00:19:52,070 --> 00:19:54,840
-you can see it in Figure 2 and for our
+你可以在图 2 中看到
+you can see it in Figure 2 and
 
 462
 00:19:54,840 --> 00:19:56,280
-purposes really the most critical piece
+raft 中最关键的一个地方就是它有一个记录所有操作的 log 日志
+our purpose really the most critical piece
 
 463
 00:19:56,280 --> 00:19:59,419
+raft 中最关键的一个地方就是它有一个记录所有操作的 log 日志
 of state is that raft has a log of
 
 464
 00:19:59,419 --> 00:20:08,370
-operations and a system with 3 breath
+现在我们拥有一个 3 副本的复制系统
+operations and a system with 3 replicas
 
 465
 00:20:08,370 --> 00:20:09,510
-will cause we're actually gonna have you
+现在我们拥有一个 3 副本的复制系统
+we're actually gonna have you
 
 466
 00:20:09,510 --> 00:20:12,030
+它们 3 都有着完全相同的结构
 know 3 servers that have exactly the
 
 467
 00:20:12,030 --> 00:20:14,460
+它们 3 都有着完全相同的结构
 same identical structure and hopefully
 
 468
 00:20:14,460 --> 00:20:19,950
+在每一层都希望它们有完全相同的数据
 the very same data sitting in sitting at
 
 469
 00:20:19,950 --> 00:20:22,370
+在每一层都希望它们有完全相同的数据
 both layers
 
 470
 00:20:32,380 --> 00:20:35,720
+在这外面，还有一些客户端
 right outside of this there's gonna be
 
 471
 00:20:35,720 --> 00:20:38,870
+游戏是这样的，我们有客户端 C1, C2
 clients and the game is that so we have
 
 472
 00:20:38,870 --> 00:20:40,640
+游戏是这样的，我们有客户端 C1, C2
 you know client 1 and client two whole
 
 473
