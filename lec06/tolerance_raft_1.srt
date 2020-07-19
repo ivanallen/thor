@@ -458,682 +458,865 @@ of simplified lock server okay so the
 
 92
 00:04:02,510 --> 00:04:05,599
+当有一个 client 只能与这 2 台 server 之一通信，而不能与另一台通信
+我们所担心的脑裂就会发生
 problem situation the lowly worried
 
 93
 00:04:05,599 --> 00:04:08,930
+当有一个 client 只能与这 2 台 server 之一通信，而不能与另一台通信
+我们所担心的脑裂就会发生
 about split-brain arises when a client
 
 94
 00:04:08,930 --> 00:04:11,239
+当有一个 client 只能与这 2 台 server 之一通信，而不能与另一台通信
+我们所担心的脑裂就会发生
 can talk to one of the servers but can't
 
 95
 00:04:11,239 --> 00:04:12,769
+当有一个 client 只能与这 2 台 server 之一通信，而不能与另一台通信
+我们所担心的脑裂就会发生
 talk to the other so we're imagining
 
 96
 00:04:12,769 --> 00:04:14,989
-either that when clients send a request
+来想象一下，当客户端发送请求给这 2 个服务器
+either that when client send a request
 
 97
 00:04:14,989 --> 00:04:17,810
+来想象一下，当客户端发送请求给这 2 个服务器
 they send it to both I'm just gonna
 
 98
 00:04:17,810 --> 00:04:19,159
+我只是假设哈，这一点也不重要
 assume that now and almost doesn't
 
 99
 00:04:19,159 --> 00:04:20,930
+假设客户端发送任意的请求到这 2 个服务器
 matter so let's assume that the protocol
 
 100
 00:04:20,930 --> 00:04:22,190
-is that the clients supposed to send
+假设客户端发送任意的请求到这 2 个服务器
+is that the client supposed to send
 
 101
 00:04:22,190 --> 00:04:24,380
+假设客户端发送任意的请求到这 2 个服务器
 ordinarily any request to both servers
 
 102
 00:04:24,380 --> 00:04:27,260
+如果其中 1 个服务器不响应，思考一下，客户端该怎么做？
 and somehow we you know we need
 
 103
 00:04:27,260 --> 00:04:29,330
-think through what the clients should do
+如果其中 1 个服务器不响应，思考一下，客户端该怎么做？
+think through what the client should do
 
 104
 00:04:29,330 --> 00:04:31,270
+如果其中 1 个服务器不响应，思考一下，客户端该怎么做？
 if one of the server's doesn't respond
 
 105
 00:04:31,270 --> 00:04:33,410
+或者说系统应该怎么做？
 right or what the system should do if
 
 106
 00:04:33,410 --> 00:04:34,580
-one of the server seems to gotten
+或者说系统应该怎么做？
+one of the servers doesn't respond
 
 107
 00:04:34,580 --> 00:04:38,300
-responsive so let's imagine now the
+好，来想象一下，假设 C1 可以与 S1 通信，但不能与 S2 通信
+so let's imagine now the
 
 108
 00:04:38,300 --> 00:04:40,340
+好，来想象一下，假设 C1 可以与 S1 通信，但不能与 S2 通信
 client one can contact server one but
 
 109
 00:04:40,340 --> 00:04:42,200
+好，来想象一下，假设 C1 可以与 S1 通信，但不能与 S2 通信
 not server two how should the system
 
 110
 00:04:42,200 --> 00:04:46,520
+系统应该要怎么响应？
 react one possibility is for is that we
 
 111
 00:04:46,520 --> 00:04:48,380
+我们当然不想让 C1 只能和 S1 通信
 think well you know gosh we certainly
 
 112
 00:04:48,380 --> 00:04:49,610
+我们当然不想让 C1 只能和 S1 通信
 don't want to just talk to client to
 
 113
 00:04:49,610 --> 00:04:50,930
+我们当然不想让 C1 只能和 S1 通信
 server one because that would leave the
 
 114
 00:04:50,930 --> 00:04:53,450
+如果我们只把这里设置成 1，而没有把另一台设置成 1
+就会导致 S1 和 S2 数据不一致
 second replica inconsistent if we set
 
 115
 00:04:53,450 --> 00:04:54,980
+如果我们只把这里设置成 1，而没有把另一台设置成 1
+就会导致 S1 和 S2 数据不一致
 this value to one but didn't also set
 
 116
 00:04:54,980 --> 00:04:55,820
+如果我们只把这里设置成 1，而没有把另一台设置成 1
+就会导致 S1 和 S2 数据不一致
 this value to one
 
 117
 00:04:55,820 --> 00:04:57,650
+正确的规则是，对任何要发送的指令，客户端必须总是能和这 2 台副本进行通信
 so maybe the rule should be that the
 
 118
 00:04:57,650 --> 00:04:59,390
+正确的规则是，对任何要发送的指令，客户端必须总是能和这 2 台副本进行通信
 client is always required to talk to
 
 119
 00:04:59,390 --> 00:05:01,850
+正确的规则是，对任何要发送的指令，客户端必须总是能和这 2 台副本进行通信
 both replicas to both servers for any
 
 120
 00:05:01,850 --> 00:05:03,260
+只能和其中之一通信这是不允许的
 operation and shouldn't be allowed to
 
 121
 00:05:03,260 --> 00:05:05,840
+只能和其中之一通信这是不允许的
 just talk to one of them so why is that
 
 122
 00:05:05,840 --> 00:05:10,820
+为什么这会导致错误的结果？
 the wrong answer so the rule is o in our
 
 123
 00:05:10,820 --> 00:05:12,470
+在这个复制系统中，客户端必须总是能和所有副本通信，以便后续步骤能正常进行
 replicated system the clients always
 
 124
 00:05:12,470 --> 00:05:15,290
+在这个复制系统中，客户端必须总是能和所有副本通信，以便后续步骤能正常进行
 require to talk to both replicas in
 
 125
 00:05:15,290 --> 00:05:22,730
-order to make progress at all in fact
+在这个复制系统中，客户端必须总是能和所有副本通信，以便后续步骤能正常进行
+order to make progress
 
 126
 00:05:22,730 --> 00:05:25,490
-it's worse it's worse than talking to a
+这并不是一个容错系统，事实上这会让事情更加糟糕
+it's not fault tolerant at all in fact it's worse it's worse than talking to a
 
 127
 00:05:25,490 --> 00:05:27,230
+这比你和单个服务器通信还要糟糕
 single server because now the system has
 
 128
 00:05:27,230 --> 00:05:30,650
+因为现在系统如果有问题，其中之一宕机了
 a problem if either of these servers is
 
 129
 00:05:30,650 --> 00:05:33,470
+你就不能无法和它通信了
 crashed or or you can't talk to it at
 
 130
 00:05:33,470 --> 00:05:34,880
+至少在只有一台服务的非复制系统中，你仅仅只依赖一台 server
 least with a non replicated service
 
 131
 00:05:34,880 --> 00:05:36,140
+至少在只有一台服务的非复制系统中，你仅仅只依赖一台 server
 you're only depending on one server but
 
 132
 00:05:36,140 --> 00:05:37,580
-here we am both servers have to be a lot
+但现在，我们却要求这 2 台服务器都要在线
+here we am both servers have to be alive
 
 133
 00:05:37,580 --> 00:05:40,040
+如果我们要求客户端同时和 2 台服务器通信
 if we require the client to talk to both
 
 134
 00:05:40,040 --> 00:05:41,840
-servers then both servers has to be live
+那么所有服务器都必须在线
+servers then both servers has to be alive
 
 135
 00:05:41,840 --> 00:05:43,700
+事实上，我们不能要求客户端去等待所有的服务器的响应
+否则这就无法容错了
 so we can't possibly require the client
 
 136
 00:05:43,700 --> 00:05:46,850
+事实上，我们不能要求客户端去等待所有的服务器的响应
+否则这就无法容错了
 to actually you know wait for both
 
 137
 00:05:46,850 --> 00:05:49,010
+事实上，我们不能要求客户端去等待所有的服务器的响应
+否则这就无法容错了
 servers to respond if we don't have
 
 138
 00:05:49,010 --> 00:05:50,360
+所以我们要能去处理这种问题
 fault tolerance we need it to be able to
 
 139
 00:05:50,360 --> 00:05:52,550
+一个显而易见的答案是如果客户端不能和所有服务器通信
 proceed so another obvious answer is
 
 140
 00:05:52,550 --> 00:05:55,070
+一个显而易见的答案是如果客户端不能和所有服务器通信
 that if the client can't talk to both
 
 141
 00:05:55,070 --> 00:05:56,360
+那就让它能和那个可以通信的服务器通信就行了
 well it just talks to the one who can
 
 142
 00:05:56,360 --> 00:05:59,890
+并且还能告诉你另一台服务器已经挂了
 talk to and figures the other ones dead
 
 143
 00:05:59,890 --> 00:06:02,630
+但是这样做不对，为什么？
 so what's up why is that also not the
 
 144
 00:06:02,630 --> 00:06:04,900
+但是这样做不对，为什么？
 right answer
 
 145
 00:06:08,510 --> 00:06:10,250
+麻烦的是如果另一台服务器它并没有宕机
 the troubling scenario is if the other
 
 146
 00:06:10,250 --> 00:06:12,110
+麻烦的是如果另一台服务器它并没有宕机
 server is actually alive so suppose the
 
 147
 00:06:12,110 --> 00:06:13,940
+假设这台服务器没有宕机，看起来似乎挺好的
 actual problem or encountering is not
 
 148
 00:06:13,940 --> 00:06:16,760
+假设这台服务器没有宕机，看起来似乎挺好的
 that this server crashed which would be
 
 149
 00:06:16,760 --> 00:06:20,150
+但糟糕的是这里的网线出了点问题
 good for us but the much worse issue
 
 150
 00:06:20,150 --> 00:06:21,500
+但糟糕的是这里的网线出了点问题
 that something went wrong with the
 
 151
 00:06:21,500 --> 00:06:23,900
+但糟糕的是这里的网线出了点问题
 network cable and that this client can
 
 152
 00:06:23,900 --> 00:06:26,210
-talk to climb one can talk to server one
+C1 可以和 S1 通信但不能和 S2 通信
+talk to client one can talk to server one
 
 153
 00:06:26,210 --> 00:06:27,890
+C1 可以和 S1 通信但不能和 S2 通信
 but not server two and there's maybe
 
 154
 00:06:27,890 --> 00:06:29,600
+而另一个客户端 C2 可以和 S2 通信但是不能与 S1 通信
 some other client out there that conduct
 
 155
 00:06:29,600 --> 00:06:33,050
+而另一个客户端 C2 可以和 S2 通信但是不能与 S1 通信
 a server two but not server one so if we
 
 156
 00:06:33,050 --> 00:06:35,600
+如果我们制定这样的规则：如果客户端能和所有服务通信
 make the rule that if a client can talk
 
 157
 00:06:35,600 --> 00:06:38,300
+如果我们制定这样的规则：如果客户端能和所有服务通信
 to both servers that it's okay in order
 
 158
 00:06:38,300 --> 00:06:39,680
+为了能够容错，我只要和其中之一通信就 okay
 to be fault tolerant that I just talked
 
 159
 00:06:39,680 --> 00:06:43,520
+然后就会不可避免的发生一些事情，比如这里的网线断了
 to one then what's just inevitably gonna
 
 160
 00:06:43,520 --> 00:06:46,130
+然后就会不可避免的发生一些事情，比如这里的网线断了
 happen said this cable is gonna break
 
 161
 00:06:46,130 --> 00:06:48,170
+然后就会不可避免的发生一些事情，比如这里的网线断了
 thus cutting the network in half client
 
 162
 00:06:48,170 --> 00:06:51,320
+C1 打算发送一条 test-and-set 指令请求到 S1
 one is gonna send a test and set request
 
 163
 00:06:51,320 --> 00:06:53,750
+C1 打算发送一条 test-and-set 指令请求到 S1
 to server one server one will you know
 
 164
 00:06:53,750 --> 00:06:56,270
+把它的值设置成 1，并返回旧值 0 给 C1
 set it state to one and return the
 
 165
 00:06:56,270 --> 00:06:58,430
+把它的值设置成 1，并返回旧值 0 给 C1
 previous value of zero to client one and
 
 166
 00:06:58,430 --> 00:06:59,660
-so that mean client mom will think it
+所以 C1 认为它拿到了锁
+so that mean client one will think it
 
 167
 00:06:59,660 --> 00:07:02,180
+如果它是一台 vmware ft 服务器，那它就认为它能接管 primary
 has the lock and if it's a VMware ft
 
 168
 00:07:02,180 --> 00:07:04,310
+如果它是一台 vmware ft 服务器，那它就认为它能接管 primary
 server will think it can be takeovers
 
 169
 00:07:04,310 --> 00:07:06,740
+但是这个副本的值仍然是 0
 primarily but this replica still of zero
 
 170
 00:07:06,740 --> 00:07:08,570
+如果这个客户端 C2 也发送了一条 test-and-set 请求
 in it all right so now if client to
 
 171
 00:07:08,570 --> 00:07:10,310
+如果这个客户端 C2 也发送了一条 test-and-set 请求
 who've also sends a test and set request
 
 172
 00:07:10,310 --> 00:07:12,920
-to you know what price to send them to
+发送给所有的服务器，但是它发现 S2 挂掉了
+to you know what client send them to
 
 173
 00:07:12,920 --> 00:07:14,390
+发送给所有的服务器，但是它发现 S2 挂掉了
 both sees that server one appears to be
 
 174
 00:07:14,390 --> 00:07:16,820
+根据前面的规则，你只要能和其中之一服务器通信就 ok
 down follows the rule that says well you
 
 175
 00:07:16,820 --> 00:07:17,960
+根据前面的规则，你只要能和其中之一服务器通信就 ok
 just send to the one server but you can
 
 176
 00:07:17,960 --> 00:07:22,460
+接下来 C2 会认为它请求到了锁，你也认为它确实是请求到了这把锁
 talk to then it will also think that it
 
 177
 00:07:22,460 --> 00:07:23,870
-would either quiet because client you
+接下来 C2 会认为它请求到了锁，你也认为它确实是请求到了这把锁
+would acquire because client you
 
 178
 00:07:23,870 --> 00:07:25,520
+接下来 C2 会认为它请求到了锁，你也认为它确实是请求到了这把锁
 also think that it acquired the lock and
 
 179
 00:07:25,520 --> 00:07:27,230
+现在想象一下，这台 test-and-server 被用于 vmware ft
 so now you know if we were imagining
 
 180
 00:07:27,230 --> 00:07:28,820
+现在想象一下，这台 test-and-server 被用于 vmware ft
 this test and that server was going to
 
 181
 00:07:28,820 --> 00:07:29,990
-be used with the and where ft we have
+现在想象一下，这台 test-and-server 被用于 vmware ft
+be used with the vmware ft
 
 182
 00:07:29,990 --> 00:07:35,020
-not both replicas both of these VMware
+在没有请求服务器的情况下
+然而所有的 vmware 机器都认为它们可以成为 primary
+you know both replicas both of these VMware
 
 183
 00:07:35,020 --> 00:07:37,970
+在没有请求服务器的情况下
+然而所有的 vmware 机器都认为它们可以成为 primary
 machines I think they could be primary
 
 184
 00:07:37,970 --> 00:07:41,180
+在没有请求服务器的情况下
+然而所有的 vmware 机器都认为它们可以成为 primary
 by themselves without consulting the
 
 185
 00:07:41,180 --> 00:07:42,650
+所以这会导致一个完全错误的结果
 other server so that's a complete
 
 186
 00:07:42,650 --> 00:07:45,350
-failure so with this set up and two
+对于这种情况，我们要么等待 2 台服务器，放弃容错的功能
+failure so with this setup and two
 
 187
 00:07:45,350 --> 00:07:47,840
+对于这种情况，我们要么等待 2 台服务器，放弃容错的功能
 servers it seemed like we had this we
 
 188
 00:07:47,840 --> 00:07:49,700
+对于这种情况，我们要么等待 2 台服务器，放弃容错的功能
 just had to choose either you wait for
 
 189
 00:07:49,700 --> 00:07:52,120
+对于这种情况，我们要么等待 2 台服务器，放弃容错的功能
 both and you're not fault-tolerant or
 
 190
 00:07:52,120 --> 00:07:54,440
+要么就只等待其中之一的响应，放弃正确性
 you wait for just one and you're not
 
 191
 00:07:54,440 --> 00:07:57,350
-correct and then our correct version
+这个错误的版本通常被称为脑裂(split brain)
+correct and not correct version
 
 192
 00:07:57,350 --> 00:07:59,560
+这个错误的版本通常被称为脑裂(split brain)
 it's often called split brain so
 
 193
 00:07:59,560 --> 00:08:06,940
+好，还有啥问题没？
 everybody see this well
 
 194
 00:08:09,129 --> 00:08:12,639
+这基本上就是 80 年代末的代表了
 so this was basically where things stood
 
 195
 00:08:12,639 --> 00:08:16,520
+这基本上就是 80 年代末的代表了
 until the late 80s and when people but
 
 196
 00:08:16,520 --> 00:08:18,050
+但那时候人们也的确是想构建出这样一个复制系统出来
 people did want to build replicated
 
 197
 00:08:18,050 --> 00:08:20,509
+比如用于控制电话交换机的计算机
 systems you know like the computers that
 
 198
 00:08:20,509 --> 00:08:22,699
+比如用于控制电话交换机的计算机
 control telephone switches or the
 
 199
 00:08:22,699 --> 00:08:24,919
+又或是运行在银行的那些计算机
 computers that ran banks you know there
 
 200
 00:08:24,919 --> 00:08:26,509
-was placer when we spend a huge amount
+在这些地方，我们花费了大量的金钱，就是为了保证服务的可靠性
+was place when we spend a huge amount
 
 201
 00:08:26,509 --> 00:08:27,830
+在这些地方，我们花费了大量的金钱，就是为了保证服务的可靠性
 of money in order to have reliable
 
 202
 00:08:27,830 --> 00:08:29,449
+所以他们会去构建这样的复制系统
 service and so they would replicate they
 
 203
 00:08:29,449 --> 00:08:31,219
+所以他们会去构建这样的复制系统
 would build replicated systems and the
 
 204
 00:08:31,219 --> 00:08:33,529
-way they would deal then way would that
+他们会构建这样的副本
+way they would deal the way would that
 
 205
 00:08:33,529 --> 00:08:35,240
+但是尝试去消除掉脑裂需要一些其它技术
 they would have replication but try to
 
 206
 00:08:35,240 --> 00:08:38,240
+但是尝试去消除掉脑裂需要一些其它技术
 rule out of rule out split brain it's a
 
 207
 00:08:38,240 --> 00:08:41,089
+但是尝试去消除掉脑裂需要一些其它技术
 couple of techniques one is they would
 
 208
 00:08:41,089 --> 00:08:45,079
+其中之一就是构建一个不会出错的网络
 build a network that could not fail and
 
 209
 00:08:45,079 --> 00:08:47,360
+这什么意思呢？
 so usually what that means and in fact
 
 210
 00:08:47,360 --> 00:08:49,160
-you guys use networks that essentially
+你可以想象使用这样的网络基本上不可能出现故障
+you guess use networks that essentially
 
 211
 00:08:49,160 --> 00:08:51,259
+你可以想象使用这样的网络基本上不可能出现故障
 cannot fail all the time the wires
 
 212
 00:08:51,259 --> 00:08:53,839
+比如在你的电脑内，CPU 和 DRAM 之间的连接通常都很高效也不会出现故障
 inside your laptop you know connecting
 
 213
 00:08:53,839 --> 00:08:57,589
+比如在你的电脑内，CPU 和 DRAM 之间的连接通常都很高效也不会出现故障
 the CPU to the DRAM are effectively what
 
 214
 00:08:57,589 --> 00:08:59,410
+比如在你的电脑内，CPU 和 DRAM 之间的连接通常都很高效也不会出现故障
 you know a network that cannot fail
 
 215
 00:08:59,410 --> 00:09:02,930
+比如在你的电脑内，CPU 和 DRAM 之间的连接通常都很高效也不会出现故障
 between the between your CPU and DRAM so
 
 216
 00:09:02,930 --> 00:09:05,149
+所以你可以合理的去假设，大量的烧钱，小心的维护设备
 you know with reasonable assumptions and
 
 217
 00:09:05,149 --> 00:09:07,310
+所以你可以合理的去假设，大量的烧钱，小心的维护设备
 lots of money and you know sort of
 
 218
 00:09:07,310 --> 00:09:10,250
+所以你可以合理的去假设，大量的烧钱，小心的维护设备
 carefully controlled physical situation
 
 219
 00:09:10,250 --> 00:09:11,180
+比如你不会在地板上看到乱放的电缆
 like you don't want to have a cable
 
 220
 00:09:11,180 --> 00:09:12,800
+比如你不会在地板上看到乱放的电缆
 snaking across the floor that somebody
 
 221
 00:09:12,800 --> 00:09:15,040
+比如你不会在地板上看到乱放的电缆
 can step on you know it's got to be
 
 222
 00:09:15,040 --> 00:09:17,480
+因此你得好好去设计网线的安装方式
 physically designed set up with a
 
 223
 00:09:17,480 --> 00:09:19,759
+如果没有网络故障，那脑裂的问题自然就不会发生
 network that cannot fail you can rule
 
 224
 00:09:19,759 --> 00:09:21,139
+在大量资金保证和这种假设下，就能解决脑裂的问题
 out split brain it's bit of an
 
 225
 00:09:21,139 --> 00:09:22,939
+在大量资金保证和这种假设下，就能解决脑裂的问题
 assumption but with enough money people
 
 226
 00:09:22,939 --> 00:09:25,370
+在大量资金保证和这种假设下，就能解决脑裂的问题
 get quite close to this because if the
 
 227
 00:09:25,370 --> 00:09:27,050
+假设 C1 无法和 S2 通信，而且网络又不可能发生故障
 network cannot fail that basically means
 
 228
 00:09:27,050 --> 00:09:28,699
+假设 C1 无法和 S2 通信，而且网络又不可能发生故障
 that the client can't talk to a server
 
 229
 00:09:28,699 --> 00:09:31,310
+那就说明一定是 S2 宕机了
 to that means server two must be down
 
 230
 00:09:31,310 --> 00:09:33,439
+因为你网络不可能发生故障
 because it can't have been the network
 
 231
 00:09:33,439 --> 00:09:35,449
+所以这是一种人们构建没有脑裂的复制系统的一种方式
 malfunctioning so that was one way that
 
 232
 00:09:35,449 --> 00:09:38,660
+所以这是一种人们构建没有脑裂的复制系统的一种方式
 people sort of built replication systems
 
 233
 00:09:38,660 --> 00:09:41,949
+所以这是一种人们构建没有脑裂的复制系统的一种方式
 it didn't suffer from split brain
 
 234
 00:09:42,009 --> 00:09:44,240
+另一种可行的方式就是人类介入
 another possibility would be to have
 
 235
 00:09:44,240 --> 00:09:46,130
+另一种可行的方式就是人类介入
 some human beings sort out the problem
 
 236
 00:09:46,130 --> 00:09:48,139
+比如不要让系统自动的去处理任何事情
 that is don't automatically do anything
 
 237
 00:09:48,139 --> 00:09:49,970
+客户端它总是要去等待所有的服务器响应
 instead have the clients you know by
 
 238
 00:09:49,970 --> 00:09:51,860
+客户端它总是要去等待所有的服务器响应
 default clients always have to wait for
 
 239
 00:09:51,860 --> 00:09:54,110
+客户端它总是要去等待所有的服务器响应
 you know both replicas to respond or
 
 240
 00:09:54,110 --> 00:09:56,870
+决不允许只有一台服务器响应的情况下，继续执行
 something never allowed to proceed with
 
 241
 00:09:56,870 --> 00:09:58,519
+决不允许只有一台服务器响应的情况下，继续执行
 just one of them but you can you know
 
 242
 00:09:58,519 --> 00:10:00,709
+如果发生这种情况，就要拉响警报，拨打值班同学的电话
 call somebody's beeper to go off some
 
 243
 00:10:00,709 --> 00:10:02,540
+值班同学冲进机房，看到 2 个副本
 human being goes to the machine room and
 
 244
 00:10:02,540 --> 00:10:04,250
+值班同学冲进机房，看到 2 个副本
 sort of looks at the two replicas and
 
 245
 00:10:04,250 --> 00:10:07,009
+然后将它关机，以确保它确实关闭了
 either turns one off to make sure it's
 
 246
 00:10:07,009 --> 00:10:07,850
+然后将它关机，以确保它确实关闭了
 definitely dead
 
 247
 00:10:07,850 --> 00:10:10,130
+或者检查一下它们其中之一确实已经宕机，另一台还在线
 or verifies that one of them has indeed
 
 248
 00:10:10,130 --> 00:10:13,459
+或者检查一下它们其中之一确实已经宕机，另一台还在线
 crashed and if the other is alive and so
 
 249
 00:10:13,459 --> 00:10:14,990
+你得把人当作断路器
 you're essentially using the human as a
 
 250
 00:10:14,990 --> 00:10:17,600
+你得把人当作断路器
 as the tie breaker and the human is a
 
 251
 00:10:17,600 --> 00:10:20,750
+如果把人看作计算机的话，那人又成为了单点故障
 you know if they were a computer it
 
 252
 00:10:20,750 --> 00:10:21,769
-would be a single point if you
+如果把人看作计算机的话，那他们自己又成为了单点故障
+would be a single point of failure themselves
 
 253
 00:10:21,769 --> 00:10:25,670
-themselves so for a long time people use
+所以相当长一段时间人们会使用其它方案来构建复制系统
+so for a long time people use
 
 254
 00:10:25,670 --> 00:10:27,290
+所以相当长一段时间人们会使用其它方案来构建复制系统
 one of the other these schemes in order
 
 255
 00:10:27,290 --> 00:10:28,970
+所以相当长一段时间人们会使用其它方案来构建复制系统
 to build replicated systems and it's not
 
 256
 00:10:28,970 --> 00:10:31,009
+他们被迫需要做工作，而且人类通常也不能快速做出响应
 you know they can be made to work the
 
 257
 00:10:31,009 --> 00:10:32,480
+他们被迫需要做工作，而且人类通常也不能快速做出响应
 humans don't respond very quickly and
 
 258
 00:10:32,480 --> 00:10:34,459
+让网络不出故障成本又很高
 the network that cannot fail is
 
 259
 00:10:34,459 --> 00:10:38,869
+所以这些方案基本都不太可行
 expensive but it's not not doable but it
 
 260
 00:10:38,869 --> 00:10:42,019
+但是事实证明，我们确实是能构建出能够自动容错，并且能正确工作的系统
 turned out that you can actually build
 
 261
 00:10:42,019 --> 00:10:45,949
+但是事实证明，我们确实是能构建出能够自动容错，并且能正确工作的系统
 automated failover systems that can work
 
 262
