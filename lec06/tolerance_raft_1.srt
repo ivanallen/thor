@@ -2383,390 +2383,490 @@ you know client 1 and client two whole
 
 473
 00:20:40,640 --> 00:20:42,769
+clients 不必知道它和谁去通信
 bunch of clients the clients don't
 
 474
 00:20:42,769 --> 00:20:44,120
+它只需要增加一些加上一些外部的（lib 库) 的代码就能使用服务
 really know the clients are you know
 
 475
 00:20:44,120 --> 00:20:46,789
+它只需要增加一些加上一些外部的（lib 库) 的代码就能使用服务
 just external code that needs to be able
 
 476
 00:20:46,789 --> 00:20:49,580
+它只需要增加一些加上一些外部的（lib 库) 的代码就能使用服务
 to use the service and the hope is the
 
 477
 00:20:49,580 --> 00:20:50,960
+我们希望 clients 不用关心它到底是同哪一个副本服务通信
 clients won't really need to be aware
 
 478
 00:20:50,960 --> 00:20:52,309
+我们希望 clients 不用关心它到底是同哪一个副本服务通信
 that they're talking to a replicated
 
 479
 00:20:52,309 --> 00:20:53,690
+而是要让它看起来像是只和一个服务器通信
 service that to the clients that are
 
 480
 00:20:53,690 --> 00:20:55,940
+而是要让它看起来像是只和一个服务器通信
 looking almost like it's just one server
 
 481
 00:20:55,940 --> 00:20:59,029
+而是要让它看起来像是只和一个服务器通信
 and they talked with one server and so
 
 482
 00:20:59,029 --> 00:21:00,740
+clients 把 key 发送到当前 leader 的 application layer(应用层)
+leader 指的是 raft 中的 leader
 the clients actually send client
 
 483
 00:21:00,740 --> 00:21:04,220
+clients 把 key 发送到当前 leader 的 application layer(应用层)
+leader 指的是 raft 中的 leader
 requests to the key to the application
 
 484
 00:21:04,220 --> 00:21:08,090
+clients 把 key 发送到当前 leader 的 application layer(应用层)
+leader 指的是 raft 中的 leader
 layer of the current leader the replica
 
 485
 00:21:08,090 --> 00:21:11,720
+clients 把 key 发送到当前 leader 的 application layer(应用层)
+leader 指的是 raft 中的 leader
 that's the current leader in raft and so
 
 486
 00:21:11,720 --> 00:21:13,970
+接下来应用层请求这个 key-value 数据库
 these are gonna be you know application
 
 487
 00:21:13,970 --> 00:21:15,740
+接下来应用层请求这个 key-value 数据库
 level requests for a database for a key
 
 488
 00:21:15,740 --> 00:21:17,419
-value server these might be put in get
+可能是 put 和 get 请求
+value server these might be put and get
 
 489
 00:21:17,419 --> 00:21:20,570
+put 请求就是用 key 和 value 来更新这个 table
 requests you know put takes a key and a
 
 490
 00:21:20,570 --> 00:21:26,470
+put 请求就是用 key 和 value 来更新这个 table
 value and updates the table and get
 
 491
 00:21:26,470 --> 00:21:29,529
+get 就是根据当前的 key 来查询当前的 value
 asked the service to get the current key
 
 492
 00:21:29,529 --> 00:21:34,149
+get 就是根据当前的 key 来查询当前的 value
 current value corresponding to some key
 
 493
 00:21:34,149 --> 00:21:36,080
+看起来 raft 好像在这里啥也没干
 so this like has nothing about to do
 
 494
 00:21:36,080 --> 00:21:37,070
+看起来 raft 好像在这里啥也没干
 with raft it's just sort of
 
 495
 00:21:37,070 --> 00:21:38,510
+就只有简单的 client 和 server 之间的交互
 client-server interaction for whatever
 
 496
 00:21:38,510 --> 00:21:41,990
+就只有简单的 client 和 server 之间的交互
 service we're building but once one of
 
 497
 00:21:41,990 --> 00:21:43,580
+但是一旦这些请求被 client 发送到 server，会发生什么事？
 these commands gets sent from the
 
 498
 00:21:43,580 --> 00:21:44,990
+但是一旦这些请求被 client 发送到 server，会发生什么事？
 requests get sent from the clients of
 
 499
 00:21:44,990 --> 00:21:48,289
+但是一旦这些请求被 client 发送到 server，会发生什么事？
 the server what actually happens is you
 
 500
 00:21:48,289 --> 00:21:50,769
+在非副本服务器上，应用层代码执行这条请求并更新这个 table
 know on a non replicated server the
 
 501
 00:21:50,769 --> 00:21:53,000
+在非副本服务器上，应用层代码执行这条请求并更新这个 table
 application code would like execute this
 
 502
 00:21:53,000 --> 00:21:54,830
+在非副本服务器上，应用层代码执行这条请求并更新这个 table
 request and say update the table and
 
 503
 00:21:54,830 --> 00:21:56,690
-response to a book but not in a raft
+然后回复这条 put 请求，但是在 raft 副本服务器上不是这样的
+response to a put but not in a raft
 
 504
 00:21:56,690 --> 00:21:59,149
+假设 client 发送了一条请求到 leader 上
 replicated service instead if assuming
 
 505
 00:21:59,149 --> 00:22:00,740
+假设 client 发送了一条请求到 leader 上
 the client sends a request to leader
 
 506
 00:22:00,740 --> 00:22:04,190
+应用层会把请求向下透传到 raft 层
 what really happens is the application
 
 507
 00:22:04,190 --> 00:22:06,559
+应用层会把请求向下透传到 raft 层
 layer simply sends the request the
 
 508
 00:22:06,559 --> 00:22:08,480
+应用层会把请求向下透传到 raft 层
 clients request down into the raft layer
 
 509
 00:22:08,480 --> 00:22:09,909
+说，Hi 伙计，这儿有一条请求，请把它提交到 replicated log(复制日志)里
 to say look you know here's a request
 
 510
 00:22:09,909 --> 00:22:13,130
+说，Hi 伙计，这儿有一条请求，请把它提交到 replicated log(复制日志)里
 please get it committed into the
 
 511
 00:22:13,130 --> 00:22:15,440
+啥时候你搞定了，再通知我一下
 replicated log and tell me when you're
 
 512
 00:22:15,440 --> 00:22:17,600
+此时 raft 会互相进行通信
 done and so at this point the rafts
 
 513
 00:22:17,600 --> 00:22:23,840
+直到半数以上的副本把这条操作添加到各自的日志中，表示它已经复制完成
 chitchat with each other until all the
 
 514
 00:22:23,840 --> 00:22:25,820
+直到半数以上的副本把这条操作添加到各自的日志中，表示它已经复制完成
 replicas are a majority the replicas get
 
 515
 00:22:25,820 --> 00:22:29,000
+直到半数以上的副本把这条操作添加到各自的日志中，表示它已经复制完成
 this new operation into their logs said
 
 516
 00:22:29,000 --> 00:22:31,179
+当 leader 知道所有副本完成复制后，只有在这个时候，raft 才会向上面的 kv 层发送通知
 it is replicated and then when its
 
 517
 00:22:31,179 --> 00:22:34,909
-leader knows that all of the replicas of
+当 leader 知道所有副本完成复制后，只有在这个时候，raft 才会向上面的 kv 层发送通知
+and leader knows that all of the replicas of
 
 518
 00:22:34,909 --> 00:22:38,029
+当 leader 知道所有副本完成复制后，只有在这个时候，raft 才会向上面的 kv 层发送通知
 a copy of this only then as a raft sent
 
 519
 00:22:38,029 --> 00:22:40,340
+当 leader 知道所有副本完成复制后，只有在这个时候，raft 才会向上面的 kv 层发送通知
 a notification up back up to the key
 
 520
 00:22:40,340 --> 00:22:42,980
-value they are saying aha that operation
+说，啊哈，你 1 分钟前发我的那条操作
+value layer saying aha that operation
 
 521
 00:22:42,980 --> 00:22:44,389
-you sent me I mean
+说，啊哈，你 1 分钟前发我的那条操作
+you sent me a minute ago
 
 522
 00:22:44,389 --> 00:22:46,129
+现在已经提交到所有的副本中去了，它已经被安全的复制了
 it's been now committed into all the
 
 523
 00:22:46,129 --> 00:22:49,309
+现在已经提交到所有的副本中去了，它已经被安全的复制了
 replicas and so it's safely replicated
 
 524
 00:22:49,309 --> 00:22:51,919
+此时应用层就可以执行这条操作了
 and at this point it's okay to execute
 
 525
 00:22:51,919 --> 00:22:55,089
-that operation a raft you know the
+此时应用层就可以执行这条操作了
+that operation the raft you know the
 
 526
 00:22:55,089 --> 00:22:57,079
+raft... client 把请求把送给 kv 层
 client sends a request with the key
 
 527
 00:22:57,079 --> 00:22:59,119
-value layer Q value layer does not
+raft... client 把请求把送给 kv 层
+value layer key value layer does not
 
 528
 00:22:59,119 --> 00:23:01,999
+kv 层还没有执行，所以我们也不能保证它会执行
 execute it yet so we're not sure because
 
 529
 00:23:01,999 --> 00:23:04,579
+因为这条操作尚未被复制，只有它被复制到所有副本中的时候，raft 才会通知 leader
 it hasn't been replicated only when it's
 
 530
 00:23:04,579 --> 00:23:09,399
-in out and the logs of all the replicas
+因为这条操作尚未被复制，只有它被复制到所有副本中的时候，raft 才会通知 leader
+in all and the logs of all the replicas
 
 531
 00:23:09,399 --> 00:23:11,779
+因为这条操作尚未被复制，只有它被复制到所有副本中的时候，raft 才会通知 leader
 then raft notifies the leader now the
 
 532
 00:23:11,779 --> 00:23:13,429
+这时候 leader 才会真正的执行这条操作
 leader actually execute the operation
 
 533
 00:23:13,429 --> 00:23:15,440
-which corresponds to you know for a put
+对于 put 请求，就是更新这个 kv table
+which corresponds to you know for a put updating the key-value table
 
 534
 00:23:15,440 --> 00:23:20,359
-updating the value yet reading correct
+对于 get 请求，就是读取这个正确的 value 值
+for a get reading correct
 
 535
 00:23:20,359 --> 00:23:22,039
+最后会发送一个回复消息给客户端
 value out of the table and then finally
 
 536
 00:23:22,039 --> 00:23:26,659
+最后会发送一个回复消息给客户端
 sends the reply back to the client so
 
 537
 00:23:26,659 --> 00:23:34,759
-that's the ordinary operation of it
+这就是个普通操作
+that's the ordinary operation of the...
 
 538
 00:23:34,759 --> 00:23:36,319
-submitted if it's in a majority and
+超过半数被复制就会提交的
+it's committed when it's in a majority and
 
 539
 00:23:36,319 --> 00:23:38,479
+为什么不能是所有副本复制完再提交的原因是
 again the reason why I can't be all is
 
 540
 00:23:38,479 --> 00:23:39,589
+如果我们想构建这样一个容错系统
 that if we want to build a
 
 541
 00:23:39,589 --> 00:23:41,299
+它就必须有能力保证在部分服务宕机的情况下，也要保证系统正常运行
 fault-tolerant system it has to be able
 
 542
 00:23:41,299 --> 00:23:43,519
+它就必须有能力保证在部分服务宕机的情况下，也要保证系统正常运行
 to make progress even if some of the
 
 543
 00:23:43,519 --> 00:23:49,449
+它就必须有能力保证在部分服务宕机的情况下，也要保证系统正常运行
 server's have failed so yeah so ever
 
 544
 00:23:49,449 --> 00:23:53,679
-it's committed when it's in a majority
+所以有超过半数以上的副本都复制后，就能提交了
+so it's committed when it's in a majority
 
 545
 00:23:54,720 --> 00:23:57,890
-[Music]
+[提问]
 
 546
 00:24:08,170 --> 00:24:12,710
-yeah and so in addition when operations
+sorry，是的，还有一个额外的步骤是当所有操作被提交时
+sorry，yeah and so in addition when operations
 
 547
 00:24:12,710 --> 00:24:14,770
+每一个副本都会向上层发送所有操作
 finally committed each of the replicas
 
 548
 00:24:14,770 --> 00:24:17,660
+每一个副本都会向上层发送所有操作
 sends the operation up each of the raft
 
 549
 00:24:17,660 --> 00:24:20,780
+每个 raft 层都会向上层的本地的应用发送操作
 library layer sends the operation up to
 
 550
 00:24:20,780 --> 00:24:22,910
+每个 raft 层都会向上层的本地的应用发送操作
 the local application layer in the local
 
 551
 00:24:22,910 --> 00:24:24,590
+本地应用层会把所有操作应用到它的状态上
 application layer applies that operation
 
 552
 00:24:24,590 --> 00:24:27,050
+本地应用层会把所有操作应用到它的状态上
 to its state its state and so they all
 
 553
 00:24:27,050 --> 00:24:29,300
+所有的副本都能看到相同的操作序列
 so hopefully all the replicas seem the
 
 554
 00:24:29,300 --> 00:24:32,780
+所有的副本都能看到相同的操作序列
 same stream of operations they show up
 
 555
 00:24:32,780 --> 00:24:34,760
+这些向上的调用顺序都是一致的，并且以相同的顺序被应用到状态中
 in these up calls in the same order they
 
 556
 00:24:34,760 --> 00:24:36,350
+这些向上的调用顺序都是一致的，并且以相同的顺序被应用到状态中
 get applied to the state in the same
 
 557
 00:24:36,350 --> 00:24:38,960
+假设所有这些操作都是确定性的
 order and you know assuming the
 
 558
 00:24:38,960 --> 00:24:41,000
+假设所有这些操作都是确定性的，最好是这样
 operations are deterministic which they
 
 559
 00:24:41,000 --> 00:24:45,920
+假设所有这些操作都是确定性的，最好是这样
 better be the state of the replicas
 
 560
 00:24:45,920 --> 00:24:48,190
-replicated State will evolve in
+在所有的副本上，副本的状态都是一样的
+replicated State will of all in
 
 561
 00:24:48,190 --> 00:24:50,360
+在所有的副本上，副本的状态都是一样的
 identically on all the replicas so
 
 562
 00:24:50,360 --> 00:24:52,400
+典型的，这里这个 table 就是论文里说的 state
 typically this this table is what the
 
 563
 00:24:52,400 --> 00:24:55,780
+典型的，这里这个 table 就是论文里说的 state
 paper is talking about when it talks
 
 564
 00:24:55,780 --> 00:25:02,090
+咱们换种方式来看这个交互过程
 about state a different way of viewing
 
 565
 00:25:02,090 --> 00:25:05,480
+咱们换种方式来看这个交互过程
 this interaction and one that'll sort of
 
 566
 00:25:05,480 --> 00:25:07,100
+其中之一是这门课里将会多次提到的一种记号，时序图
 notation that will come up a lot in this
 
 567
 00:25:07,100 --> 00:25:10,220
+其中之一是这门课里将会多次提到的一种记号，时序图
 course is that a sort of time diagram
 
 568
 00:25:10,220 --> 00:25:11,780
+我待会儿画个给你看看，时序图里，消息是怎么传递的
 I'll draw you a time diagram of how the
 
 569
 00:25:11,780 --> 00:25:13,850
+假设有个 client
 messages work so let's imagine we have a
 
 570
