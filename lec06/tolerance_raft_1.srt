@@ -2866,407 +2866,507 @@ I'll draw you a time diagram of how the
 
 569
 00:25:11,780 --> 00:25:13,850
-假设有个 client
+假设有个 client(C1)，S1(leader), S2 和 S3
 messages work so let's imagine we have a
 
 570
 00:25:13,850 --> 00:25:18,590
+假设有个 client(C1)，S1(leader), S2 和 S3
 client and server one is the leader that
 
 571
 00:25:18,590 --> 00:25:23,750
+假设有个 client(C1)，S1(leader), S2 和 S3
 we also have server to server three and
 
 572
 00:25:23,750 --> 00:25:25,820
+朝下的方向表示时间流逝
 time flows downward on this diagram we
 
 573
 00:25:25,820 --> 00:25:27,470
+client 发送一条原始请求到 S1
 imagine the client sending the original
 
 574
 00:25:27,470 --> 00:25:31,940
+client 发送一条原始请求到 S1
 request to server one after that server
 
 575
 00:25:31,940 --> 00:25:35,330
+S1 的 raft 层发送一条 AppendEntries RPC 到另 2 个副本
 ones raft layer sends an append entries
 
 576
 00:25:35,330 --> 00:25:42,800
+S1 的 raft 层发送一条 AppendEntries RPC 到另 2 个副本
 RPC to each of the two replicas this is
 
 577
 00:25:42,800 --> 00:25:44,530
+这里是个普通的 put 请求
 just an ordinary I'll say a put request
 
 578
 00:25:44,530 --> 00:25:49,370
+这里是 AppendEntries 请求
 this is append entries requests the
 
 579
 00:25:49,370 --> 00:25:51,980
+这个 server 现在正在等待回复
 server is now waiting for replies and
 
 580
 00:25:51,980 --> 00:25:55,010
+S1 只要收到了半数以上节点的回复（包括它自己)
 the server's from other replicas as soon
 
 581
 00:25:55,010 --> 00:25:58,280
+S1 只要收到了半数以上节点的回复（包括它自己)
 as replies from a majority arrive back
 
 582
 00:25:58,280 --> 00:26:00,800
+S1 只要收到了半数以上节点的回复（包括它自己)
 including the leader itself so in a
 
 583
 00:26:00,800 --> 00:26:02,090
-system with only three about because the
+在这个仅有 3 副本的系统里
+system with only three replicas because the
 
 584
 00:26:02,090 --> 00:26:03,770
+leader 只要收到了其它任意一台副本的对 AppendEntries 的响应，就构成了 majority
 leader only has to wait for one other
 
 585
 00:26:03,770 --> 00:26:06,679
+leader 只要收到了其它任意一台副本的对 AppendEntries 的响应，就构成了 majority
 replica to respond positively to an
 
 586
 00:26:06,679 --> 00:26:09,309
+leader 只要收到了其它任意一台副本的对 AppendEntries 的响应，就构成了 majority
 append entries as soon as it assembles
 
 587
 00:26:09,309 --> 00:26:14,380
-positive responses from a majority the
+leader 只要收到了其它任意一台副本的对 AppendEntries 的响应，就构成了 majority
+positive responses from a majority
 
 588
 00:26:14,380 --> 00:26:15,530
-leader
+leader 执行 put 或 get 命令，并回复结果
+the leader
 
 589
 00:26:15,530 --> 00:26:18,230
+leader 执行 put 或 get 命令，并回复结果给 client
 execute a command figures out what the
 
 590
 00:26:18,230 --> 00:26:20,380
-answer is like forget
+leader 执行 put 或 get 命令，并回复结果给 client
+answer is like put or get
 
 591
 00:26:20,380 --> 00:26:25,420
+leader 执行 put 或 get 命令，并回复结果给 client
 and sends the reply back to the client
 
 592
 00:26:25,420 --> 00:26:27,250
-I mean why of course you know if s who's
+同时，你知道，S3 实际上还是在线的，它也会回复它的结果
+and meanwhile of course you know S3
 
 593
 00:26:27,250 --> 00:26:30,700
-actually awry alive it'll send back its
+同时，你知道，S3 实际上还是在线的，它也会回复它的结果
+actually alive it'll send back its
 
 594
 00:26:30,700 --> 00:26:32,200
+但是我们并不需要等待它的回复了
 response too but we're not waiting for
 
 595
 00:26:32,200 --> 00:26:35,470
+这个对理解图 2 来说很有用
 it although it's useful to know and
 
 596
 00:26:35,470 --> 00:26:40,890
-figure - all right everybody see this
+大家看到的这些就是对于没有异常情况下的普通操作
+figure 2 all right everybody see this
 
 597
 00:26:40,890 --> 00:26:43,120
+大家看到的这些就是对于没有异常情况下的普通操作
 this is the sort of ordinary operation
 
 598
 00:26:43,120 --> 00:26:46,890
+大家看到的这些就是对于没有异常情况下的普通操作
 of the system no no failures
 
 599
 00:26:51,200 --> 00:26:55,460
+Oh gosh，是的，我好像遗漏了一个重要步骤
 oh gosh yeah I like I left out important
 
 600
 00:26:55,460 --> 00:26:57,560
+你知道，在这个时候，leader 知道大多数的副本已经把这条操作添加到了日志中了
 steps so you know this point the leader
 
 601
 00:26:57,560 --> 00:26:59,750
-knows oh I got you know I'm adora t have
+你知道，在这个时候，leader 知道大多数的副本已经把这条操作添加到了日志中了
+knows oh I got you know majority
 
 602
 00:26:59,750 --> 00:27:01,520
-put it in no log I can go ahead and
+我可以现在可以执行客户端发来的命令，并回复 yes
+put it into log I can go ahead and
 
 603
 00:27:01,520 --> 00:27:03,230
+我可以现在可以执行客户端发来的命令，并回复 yes
 execute it and reply yes to the client
 
 604
 00:27:03,230 --> 00:27:05,150
+因为它(leader)提交了，但是 S2 还啥也不知道
 because it's committed but server two
 
 605
 00:27:05,150 --> 00:27:06,380
+因为它(leader)提交了，但是 S2 还啥也不知道
 doesn't know anything yet it just knows
 
 606
 00:27:06,380 --> 00:27:07,640
+它只知道，我从 leader 得到了一条请求，但是我不知道 leader 是否提交了它
 well you know I got this request from
 
 607
 00:27:07,640 --> 00:27:09,590
+它只知道，我从 leader 得到了一条请求，但是我不知道 leader 是否提交了它
 the leader but I don't know if it's
 
 608
 00:27:09,590 --> 00:27:11,780
+leader 是否提交依赖于，比如说依赖 S2 的回复是否被 leader 收到
 committed yet depends on for example
 
 609
 00:27:11,780 --> 00:27:13,520
+leader 是否提交依赖于，比如说依赖 S2 的回复是否被 leader 收到
 whether my reply got back to the leader
 
 610
 00:27:13,520 --> 00:27:15,260
-for all server to knows it's reply was
+比如说 S2 的回复在网络中丢失，leader 就收不到回复
+for all server 2 knows it's reply was
 
 611
 00:27:15,260 --> 00:27:16,940
-brought by the network maybe the leader
+比如说 S2 的回复在网络中丢失，leader 就收不到回复
+drop by the network maybe the leader
 
 612
 00:27:16,940 --> 00:27:18,710
+leader 因此也就决不会提交这条请求
 never heard the reply and never decided
 
 613
 00:27:18,710 --> 00:27:20,360
+leader 因此也就决不会提交这条请求
 to commit this request so there's
 
 614
 00:27:20,360 --> 00:27:24,010
+实际上这里还有另一个阶段还没讲
 actually another stage once the server
 
 615
 00:27:24,010 --> 00:27:28,340
+一旦 leader 意识到请求被提交，那么它就需要通知其它的副本这个事实
 realizes that a request is committed it
 
 616
 00:27:28,340 --> 00:27:31,070
-then needs to tell the other replicas
+一旦 leader 意识到请求被提交，那么它就需要通知其它的副本这个事实
+then needs to tell the other replicas that fact
 
 617
 00:27:31,070 --> 00:27:37,240
-that fact and so there are there's
+所以这里还有一条额外的消息
+and so there are there's
 
 618
 00:27:38,320 --> 00:27:40,730
+所以这里还有一条额外的消息
 there's an extra message here exactly
 
 619
 00:27:40,730 --> 00:27:42,200
+这条消息是什么，依赖于发生了什么事情
 what that message is depends a little
 
 620
 00:27:42,200 --> 00:27:45,860
+这条消息是什么，依赖于发生了什么事情
 bit on what what else is going on it's
 
 621
 00:27:45,860 --> 00:27:49,520
+至少在 raft 中，并不存在这样一条日志提交的消息
 at least in raft there's not an explicit
 
 622
 00:27:49,520 --> 00:27:51,320
+至少在 raft 中，并不存在这样一条日志提交的消息
 commit message instead the information
 
 623
 00:27:51,320 --> 00:27:53,720
+取而代之，leader 会在下一次的 AppendEntries 中，记录一些信息，然后发送出去
 is piggybacked inside the next append
 
 624
 00:27:53,720 --> 00:27:55,640
+取而代之，leader 会在下一次的 AppendEntries 中，记录一些信息，然后发送出去
 entries that leader sends out the next
 
 625
 00:27:55,640 --> 00:27:57,620
+取而代之，leader 会在下一次的 AppendEntries 中，记录一些信息，然后发送出去
 append entries RPC it sends out for
 
 626
 00:27:57,620 --> 00:28:00,260
+不管是什么原因，像 leader commit 或是别的什么东西，都会填充到 RPC 中
 whatever reason like there's a commit
 
 627
 00:28:00,260 --> 00:28:01,820
-meter commit or something filled in that
+不管是什么原因，像 leader commit 或是别的什么东西，都会填充到 RPC 中
+leader commit or something filled in that
 
 628
 00:28:01,820 --> 00:28:05,780
+在下次 leader 需要发送 heartbeat(心跳)的时候
 RPC and the next time the leader needs
 
 629
 00:28:05,780 --> 00:28:07,880
+在下次 leader 需要发送 heartbeat(心跳)的时候
 have to send a heartbeat heartbeat or
 
 630
 00:28:07,880 --> 00:28:10,100
+或是需要发送一条新的客户端请求的时候
 needs to send out a new client request
 
 631
 00:28:10,100 --> 00:28:13,370
+或是需要发送一条新的客户端请求的时候
 because some different client requests
 
 632
 00:28:13,370 --> 00:28:16,570
-or something it'll send out the new hire
+会把 leader 最新的 commit 值连带发送出去
+or something it'll send out the new higher
 
 633
 00:28:16,570 --> 00:28:19,280
+会把 leader 最新的 commit 值连带发送出去
 leader commit value and at that point
 
 634
 00:28:19,280 --> 00:28:25,250
+在那时候，副本就会去执行这些操作，应用到各自的状态机中
 the replicas will execute the operation
 
 635
 00:28:25,250 --> 00:28:30,790
+在那时候，副本就会去执行这些操作，应用到各自的状态机中
 and apply it to their state yes
 
 636
 00:28:39,700 --> 00:28:43,390
+是的，这个协议有相当多的的通信
 oh yes so this is a this is a protocol
 
 637
 00:28:43,390 --> 00:28:45,270
+是的，这个协议有相当多的的通信
 that has a quite a bit of chitchat in it
 
 638
 00:28:45,270 --> 00:28:51,130
+并且它的速度也不怎么快
 and it's not super fast indeed you know
 
 639
 00:28:51,130 --> 00:28:53,050
+你知道，客户端发送请求到 server，然后 server 同其它实例通信
 yeah client sends in request request has
 
 640
 00:28:53,050 --> 00:28:54,730
+你知道，客户端发送请求到 server，然后 server 同其它实例通信
 to get to the server the server talks to
 
 641
 00:28:54,730 --> 00:28:57,460
+你知道，客户端发送请求到 server，然后 server 同其它实例通信
 at least you know another instance that
 
 642
 00:28:57,460 --> 00:28:58,810
+这中间有多条请求的响应都需要进行等待
 multiple messages has to wait for the
 
 643
 00:28:58,810 --> 00:29:00,550
+这中间有多条请求的响应都需要进行等待
 responses send something back so there's
 
 644
 00:29:00,550 --> 00:29:02,200
-a bunch of message round-trip times kind
+而且这里好几轮消息需要来回发送多次
+a bunch of message round-trip times
 
 645
 00:29:02,200 --> 00:29:05,640
-of embedded here
+而且这里好几轮消息需要来回发送多次
+and added here
 
 646
 00:29:10,760 --> 00:29:15,260
+是的，实际上这取决于你的实现
 yes if so this is up to you as the
 
 647
 00:29:15,260 --> 00:29:17,929
+当 leader 把最新的 commitIndex 发送出去后
 implementer actually exactly when the
 
 648
 00:29:17,929 --> 00:29:21,169
+当 leader 把最新的 commitIndex 发送出去后
 leader sends out the updated commit
 
 649
 00:29:21,169 --> 00:29:26,600
+如果客户端只是偶尔发送一条请求
 index if client requests a comeback only
 
 650
 00:29:26,600 --> 00:29:29,090
+如果客户端只是偶尔发送一条请求
 very occasionally then you know the
 
 651
 00:29:29,090 --> 00:29:30,740
+leader 或许就会发送 heartbeat 或是发送一条特殊的 AppendEntries 消息
 leader may want to send out a heartbeat
 
 652
 00:29:30,740 --> 00:29:33,320
+leader 或许就会发送 heartbeat 或是发送一条特殊的 AppendEntries 消息
 or send out a special append entries
 
 653
 00:29:33,320 --> 00:29:37,549
+如果客户端请求相当频繁，那也没关系
 message if client requests come quite
 
 654
 00:29:37,549 --> 00:29:38,540
+如果客户端请求相当频繁，那也没关系
 frequently then it doesn't matter
 
 655
 00:29:38,540 --> 00:29:40,280
+因为如果每秒在上千条请求到来
 because if they come you know there's
 
 656
 00:29:40,280 --> 00:29:42,080
-thousand arrive per second and gee so
+因为如果每秒在上千条请求到来
+thousand arrive per second oh jesus
 
 657
 00:29:42,080 --> 00:29:43,520
-it'll be another one along very soon and
+oh, 天呐，这真的是相当的快
+it'll be very longer very soon and
 
 658
 00:29:43,520 --> 00:29:45,230
+所以你可以不用单独再生成一条额外的消息去通知其它副本，这个代价太高了
 so you can piggyback so without
 
 659
 00:29:45,230 --> 00:29:46,669
+所以你可以不用单独再生成一条额外的消息去通知其它副本，这个代价太高了
 generating an extra message which is
 
 660
 00:29:46,669 --> 00:29:48,410
+所以你只要把你的信息放在下一条消息里就行了
 somewhat expensive you can get the
 
 661
 00:29:48,410 --> 00:29:50,059
+所以你只要把你的信息放在下一条消息里就行了
 information out on the next message you
 
 662
 00:29:50,059 --> 00:29:53,450
+所以你只要把你的信息放在下一条消息里就行了
 were gonna send anyway in fact I I don't
 
 663
 00:29:53,450 --> 00:29:58,820
+事实上，我认为副本执行请求的时间点并不是关键
 think the time at which the replicas
 
 664
 00:29:58,820 --> 00:30:02,020
+事实上，我认为副本执行请求的时间点并不是关键
 execute the request is critical because
 
 665
 00:30:02,020 --> 00:30:04,640
+因为没有人需要等待它的返回结果
 nobody's waiting for it at least if
 
 666
 00:30:04,640 --> 00:30:06,500
+至少在在没有异常的情况下是这样
 there's no failures if there's no
 
 667
 00:30:06,500 --> 00:30:10,700
+如果没有异常，副本执行请求并不在关键路径中
 failures replicas executing the request
 
 668
 00:30:10,700 --> 00:30:12,679
+如果没有异常，副本执行请求并不在关键路径中
 isn't really on the critical path like
 
 669
 00:30:12,679 --> 00:30:13,970
+比如客户端并不需要去等待它们
 the client isn't waiting for them the
 
 670
