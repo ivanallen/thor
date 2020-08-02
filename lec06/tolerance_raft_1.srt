@@ -3356,889 +3356,1108 @@ there's no failures if there's no
 
 667
 00:30:06,500 --> 00:30:10,700
-如果没有异常，副本执行请求并不在关键路径中
+如果没有异常，副本执行请求就不在关键路径中
 failures replicas executing the request
 
 668
 00:30:10,700 --> 00:30:12,679
-如果没有异常，副本执行请求并不在关键路径中
+如果没有异常，副本执行请求就不在关键路径中
 isn't really on the critical path like
 
 669
 00:30:12,679 --> 00:30:13,970
-比如客户端并不需要去等待它们
+比如客户端并不需要去等待它们（其它副本）
 the client isn't waiting for them the
 
 670
 00:30:13,970 --> 00:30:15,200
-client saw me waiting for the leader to
+而是等待 leader 执行完
+client is waiting for the leader to
 
 671
 00:30:15,200 --> 00:30:20,540
+所以它并不会影响客户端的延时
 execute so it may not be that it may not
 
 672
 00:30:20,540 --> 00:30:23,600
+所以它并不会影响客户端的延时
 affect client perceived latency sort of
 
 673
 00:30:23,600 --> 00:30:26,980
+严格来说，这就是它的工作方式
 exactly how this gets staged
 
 674
 00:30:37,520 --> 00:30:45,900
+好，还有一个必须要正视的问题
 all right one question you should ask is
 
 675
 00:30:45,900 --> 00:30:48,750
+为什么系统要如此关注 log(日志)，日志又是用来干什么的？
 why does the system why is the system so
 
 676
 00:30:48,750 --> 00:30:52,640
-focused on blogs what are the logs doing
+为什么系统要如此关注 log(日志)，日志又是用来干什么的？
+focused on logs what are the logs doing
 
 677
 00:30:52,640 --> 00:30:54,930
+尝试找出这个问题的答案是有意义，有价值的
 and it's sort of worth trying to come up
 
 678
 00:30:54,930 --> 00:30:56,630
+尝试找出这个问题的答案是有意义，有价值的
 with an explicit answers to that one
 
 679
 00:30:56,630 --> 00:31:00,210
+日志如此重要的原因是，它是一种机制
 answer to why the system is totally
 
 680
 00:31:00,210 --> 00:31:04,200
+日志如此重要的原因是，它是一种机制
 focused on logs is that the log is the
 
 681
 00:31:04,200 --> 00:31:05,700
+通过这个机制，leader 可以维护操作的顺序
 kind of mechanism by which the leader
 
 682
 00:31:05,700 --> 00:31:08,730
+这个顺序对复制状态机业说非常重要
 orders operations it's vital for these
 
 683
 00:31:08,730 --> 00:31:10,830
+这个顺序对复制状态机业说非常重要
 replicated state machines that all the
 
 684
 00:31:10,830 --> 00:31:13,890
+所有的副本，不仅仅要应用客户端的同样的请求操作
 replicas apply not just the same client
 
 685
 00:31:13,890 --> 00:31:15,720
+所有的副本，不仅仅要应用客户端的同样的请求操作
 operations to their start but the same
 
 686
 00:31:15,720 --> 00:31:18,690
+而且还要以相同的顺序去执行
 operations in the same order but they
 
 687
 00:31:18,690 --> 00:31:20,610
+所有来自客户端的请求操作，都要以相同的顺序在不同副本上执行
 all have to apply that these operations
 
 688
 00:31:20,610 --> 00:31:22,260
+所有来自客户端的请求操作，都要以相同的顺序在不同副本上执行
 coming from the clients in the same
 
 689
 00:31:22,260 --> 00:31:24,240
+在众多的事情中，日志也是复制状态机的一部分
 order and the log among many other
 
 690
 00:31:24,240 --> 00:31:26,580
+在众多的事情中，日志也是复制状态机的一部分
 things is part of the machinery by which
 
 691
 00:31:26,580 --> 00:31:30,690
+通过它，leader 可以安排客户端请求操作的顺序
 the or the leader assigns an order to
 
 692
 00:31:30,690 --> 00:31:32,430
+通过它，leader 可以安排客户端请求操作的顺序
 the incoming client operations I give
 
 693
 00:31:32,430 --> 00:31:34,620
+如果有 10 个客户端并发请求 leader
 you know ten clients send operations to
 
 694
 00:31:34,620 --> 00:31:36,090
+如果有 10 个客户端并发请求 leader
 the leader at the same time the client
 
 695
 00:31:36,090 --> 00:31:37,950
+leader 需要选择一个顺序，确保所有的副本都要遵守这个顺序
 the leader has to pick pick an order
 
 696
 00:31:37,950 --> 00:31:39,300
+leader 需要选择一个顺序，确保所有的副本都要遵守这个顺序
 make sure everybody all the replicas
 
 697
 00:31:39,300 --> 00:31:41,880
+事实上，日志包含了一个一个编号的槽
 obey that order and the log is you know
 
 698
 00:31:41,880 --> 00:31:44,090
+事实上，日志包含了一个一个编号的槽
 the fact that the log has numbered slots
 
 699
 00:31:44,090 --> 00:31:46,740
-as part of half a meter expresses the
+它包含了 leader 传送过来的操作顺序
+this part have a leader expresses the
 
 700
 00:31:46,740 --> 00:31:52,680
+它包含了 leader 传送过来的操作顺序
 order it's chosen another use of the log
 
 701
 00:31:52,680 --> 00:31:56,700
+日志的另一个用途是，从这里到这里这个时间中间
 is that between this point and this
 
 702
 00:31:56,700 --> 00:32:00,330
+S3 收到了 leader 发来的操作，但是它不确定该操作是否已经提交
 point server 3 has received an operation
 
 703
 00:32:00,330 --> 00:32:02,520
+S3 收到了 leader 发来的操作，但是它不确定该操作是否已经提交
 that it is not yet sure is committed and
 
 704
 00:32:02,520 --> 00:32:04,560
+因此它还不能去执行，它必须把这条操作暂存起来
 it cannot execute it yet it has to put
 
 705
 00:32:04,560 --> 00:32:07,440
+因此它还不能去执行，它必须把这条操作暂存起来
 the this operation aside somewhere until
 
 706
 00:32:07,440 --> 00:32:11,340
+直到接收到 leader 的 commit 号增长这条消息
 the increment to the leader commit value
 
 707
 00:32:11,340 --> 00:32:13,500
+所以 log 另一个作用是，对于 follower 来说
 comes in and so another thing that the
 
 708
 00:32:13,500 --> 00:32:15,090
+所以 log 另一个作用是，对于 follower 来说
 log is doing is that on the followers
 
 709
 00:32:15,090 --> 00:32:17,130
+日志是 follwer 用于暂存操作的地方，这些操作都是暂定的
 the log is the place where the follower
 
 710
 00:32:17,130 --> 00:32:18,660
+日志是 follwer 用于暂存操作的地方，这些操作都是暂定的
 sort of sets aside operations that are
 
 711
 00:32:18,660 --> 00:32:20,490
+日志是 follwer 用于暂存操作的地方，这些操作都是暂定的
 still tentative that have arrived but
 
 712
 00:32:20,490 --> 00:32:21,990
+虽然已经收到了，但是还不确定是否可以提交
 are not yet known to be committed and
 
 713
 00:32:21,990 --> 00:32:23,340
+他们也可能会把它丢弃掉，后面我们将会看到这种情况
 they may have to be thrown away as we'll
 
 714
 00:32:23,340 --> 00:32:27,030
+所以这是另一种用法
 see so that's another use I'm the I sort
 
 715
 00:32:27,030 --> 00:32:29,730
-of do love that use on the leader side
+leader 使用日志是因为 leader 需要把操作记录在日志里
+of do log that use on the leader side
 
 716
 00:32:29,730 --> 00:32:33,500
+leader 使用日志是因为 leader 需要把操作记录在日志里
 is that the leader needs to remember
 
 717
 00:32:33,500 --> 00:32:36,300
+leader 使用日志是因为 leader 需要把操作记录在日志里
 operations in its log because it may
 
 718
 00:32:36,300 --> 00:32:38,970
+在部分 follower 离线时，可以进行重传
 need to retransmit them to followers if
 
 719
 00:32:38,970 --> 00:32:40,770
+在部分 follower 离线时，可以进行重传
 some followers offline maybe it's
 
 720
 00:32:40,770 --> 00:32:41,880
+比如网络发生短暂的故障或是消息丢失了
 something briefly happened to its
 
 721
 00:32:41,880 --> 00:32:42,269
+比如网络发生短暂的故障或是消息丢失了
 network
 
 722
 00:32:42,269 --> 00:32:44,149
+比如网络发生短暂的故障或是消息丢失了
 action or something misses some messages
 
 723
 00:32:44,149 --> 00:32:46,440
+leader 就要有能力重新发送 follower 错过的日志消息
 the leader needs to be able to resend
 
 724
 00:32:46,440 --> 00:32:49,109
+leader 就要有能力重新发送 follower 错过的日志消息
 log messages that any followers missed
 
 725
 00:32:49,109 --> 00:32:50,700
+所以 leader 需要有这么一个地方来保存客户端请求的 copy
 and so the leader needs a place where
 
 726
 00:32:50,700 --> 00:32:52,859
+所以 leader 需要有这么一个地方来保存客户端请求的 copy
 can set aside copies of messages of
 
 727
 00:32:52,859 --> 00:32:54,570
-client requests even ones that it's
+即使这些请求已经被执行过
+client requests even ones that it's already executed
 
 728
 00:32:54,570 --> 00:32:56,969
-already executed in order to be able to
+就是为了能够把它们重传给 client(似乎口误)
+in order to be able to
 
 729
 00:32:56,969 --> 00:33:00,539
-resend them to the client I mean we send
+就是为了能够把它们重传给 client(似乎口误)
+resend them to the client I mean resend
 
 730
 00:33:00,539 --> 00:33:04,019
+我意思是把他们重传给丢失了部分操作的副本（纠正了一下）
 them to replicas that missed missed that
 
 731
 00:33:04,019 --> 00:33:05,879
+最后一个他们保存日志的原因，至少在图 2 所描述的
 operation and a final reason for all of
 
 732
 00:33:05,879 --> 00:33:07,950
+最后一个保存日志的原因，至少在图 2 所描述的
 them to keep the log is that at least in
 
 733
 00:33:07,950 --> 00:33:11,009
+最后一个保存日志的原因，至少在图 2 所描述的
 the world of figure 2 if a server
 
 734
 00:33:11,009 --> 00:33:15,259
+如果一个 server 宕机后重启，并重新加入，那就需要这些日志
 crashes and restarts and wants to rejoin
 
 735
 00:33:15,259 --> 00:33:17,759
+如果你确实需要一台宕机的 server 启动并重新加入 raft 集群的话
 and you really need if it you really
 
 736
 00:33:17,759 --> 00:33:19,469
+如果你确实需要一台宕机的 server 启动并重新加入 raft 集群的话
 want a server that crashes - in fact we
 
 737
 00:33:19,469 --> 00:33:21,599
+如果你确实需要一台宕机的 server 启动并重新加入 raft 集群的话
 start and rejoin the raft cluster
 
 738
 00:33:21,599 --> 00:33:23,249
+如果不能重新加入，你现在可操作的机器就只剩下 3 台中的 2 台
 otherwise you're now operating with only
 
 739
 00:33:23,249 --> 00:33:24,809
+如果不能重新加入，你现在可操作的机器就只剩下 3 台中的 2 台
 two out of three servers and you can't
 
 740
 00:33:24,809 --> 00:33:26,820
+假设再发生点故障，你就无法容错了
 survive any more failures we need to
 
 741
 00:33:26,820 --> 00:33:29,399
+所以我们需要能把失败的机器重启并重新加入集群
 reincorporate failed and rebooted
 
 742
 00:33:29,399 --> 00:33:31,950
+server 在重新启动之后，会使用持久化在磁盘上的日志
 servers and the log is sort of where or
 
 743
 00:33:31,950 --> 00:33:34,440
+server 在重新启动之后，会使用持久化在磁盘上的日志
 what a server rebooted server uses the
 
 744
 00:33:34,440 --> 00:33:37,169
+server 在重新启动之后，会使用持久化在磁盘上的日志
 log persisted to its disk because one of
 
 745
 00:33:37,169 --> 00:33:39,570
+因为有一条规则是每个 raft server 需要把它的日志写入磁盘
 the rules is that each raft server needs
 
 746
 00:33:39,570 --> 00:33:41,159
+因为有一条规则是每个 raft server 需要把它的日志写入磁盘
 to write its log to its disk where it
 
 747
 00:33:41,159 --> 00:33:42,539
+这样即使它在宕机后，日志仍然存在
 will still be after it crashes and
 
 748
 00:33:42,539 --> 00:33:44,459
+重启之后，server 会使用，并对日志中的操作从头进行重演
 restarts that log is what the server
 
 749
 00:33:44,459 --> 00:33:48,239
+重启之后，server 会使用日志中的操作，从头进行重演
 uses or replays the operations in that
 
 750
 00:33:48,239 --> 00:33:50,369
+重启之后，server 会使用日志中的操作，从头进行重演
 log from the beginning to sort of create
 
 751
 00:33:50,369 --> 00:33:52,709
+直到创建出宕机之前的状态，然后继续运行
 its state as of when it crashed and then
 
 752
 00:33:52,709 --> 00:33:54,809
+直到创建出宕机之前的状态，然后继续运行
 then it carries on from there so the log
 
 753
 00:33:54,809 --> 00:33:56,339
+所以 log 也会被用于持久化，将来用于重建状态
 is also used as part of the persistence
 
 754
 00:33:56,339 --> 00:33:58,499
+所以 log 也会被用于持久化，将来用于重建状态
 plan as a sequence of commands to
 
 755
 00:33:58,499 --> 00:34:01,129
+所以 log 也会被用于持久化，将来用于重建状态
 rebuild the state
 
 756
 00:34:16,280 --> 00:34:20,270
+好吧，最后还是有人问了。。。问题是说
 well ultimately okay so the question is
 
 757
 00:34:20,270 --> 00:34:23,339
+假设 leader 有能力每秒处理 1000 个客户端的命令
 suppose the leader is capable of
 
 758
 00:34:23,339 --> 00:34:25,199
+假设 leader 有能力每秒处理 1000 个客户端的命令
 executing a thousand client commands a
 
 759
 00:34:25,199 --> 00:34:26,879
+但是 follower 每秒只能处理 100 个客户端命令
 second and the followers are only
 
 760
 00:34:26,879 --> 00:34:28,710
+但是 follower 每秒只能处理 100 个客户端命令
 incapable of executing a hundred client
 
 761
 00:34:28,710 --> 00:34:30,179
+但是 follower 每秒只能处理 100 个客户端命令
 commands per second that's sort of
 
 762
 00:34:30,179 --> 00:34:36,060
+这是它能处理的最大速率
 sustained rate you know full speed v so
 
 763
 00:34:36,060 --> 00:34:41,599
+其中一件事要注意的是
 one thing to note is that the the
 
 764
 00:34:41,599 --> 00:34:43,800
+副本，也就是 follower 在执行命令前需要先进行确认
 replicas the followers acknowledge
 
 765
 00:34:43,800 --> 00:34:45,629
+副本，也就是 follower 在执行命令前需要先进行确认
 commands before they execute them so
 
 766
 00:34:45,629 --> 00:34:47,190
-they mate rate at which they acknowledge
+在它们的日志中，确认和累积的速率是不受限制的
+the rate at which they acknowledge
 
 767
 00:34:47,190 --> 00:34:48,750
+在它们的日志中，确认和累积的速率是不受限制的
 and accumulate stuff in their logs is
 
 768
 00:34:48,750 --> 00:34:51,060
+所以它们可能会一秒一次确认 1000 条请求
 not limited so you know maybe they can
 
 769
 00:34:51,060 --> 00:34:52,469
+所以它们可能会一秒一次确认 1000 条请求
 acknowledge that a thousand requests per
 
 770
 00:34:52,469 --> 00:34:55,530
+如果它们一直这样做，将会导致日志大小没有上限
 second if they do that forever then they
 
 771
 00:34:55,530 --> 00:34:57,690
+如果它们一直这样做，将会导致日志大小没有上限
 will build up unbounded size logs
 
 772
 00:34:57,690 --> 00:35:00,300
+因为它们执行的速率远远落后于 leader 发送请求的速率
 because their execution rate falls it
 
 773
 00:35:00,300 --> 00:35:02,369
+因为它们执行的速率远远落后于 leader 发送请求的速率
 will fall on an unbounded amount behind
 
 774
 00:35:02,369 --> 00:35:04,710
+因为它们执行的速率远远落后于 leader 发送请求的速率
 the rate at which the leader has given
 
 775
 00:35:04,710 --> 00:35:06,210
+在我们的游戏规则里，这意味着它们最终会在某个时间点耗尽内存
 the messages sort of under the rules of
 
 776
 00:35:06,210 --> 00:35:08,820
+在我们的游戏规则里，这意味着它们最终会在某个时间点耗尽内存
 our game and so what that means they
 
 777
 00:35:08,820 --> 00:35:11,250
+在我们的游戏规则里，这意味着它们最终会在某个时间点耗尽内存
 will eventually run out of memory at
 
 778
 00:35:11,250 --> 00:35:13,440
+当它落后 10 亿条日志后
 some point so after they have a billion
 
 779
 00:35:13,440 --> 00:35:15,390
+当它落后 10 亿条日志后
 after they fall a billion log entries
 
 780
 00:35:15,390 --> 00:35:16,770
+内存分配器再为新的日志条目分配内存就会失败
 behind those just like they'll call the
 
 781
 00:35:16,770 --> 00:35:18,510
+内存分配器再为新的日志条目分配内存就会失败
 memory allocator for space for a new
 
 782
 00:35:18,510 --> 00:35:22,830
-blog entry and it will fail so yeah and
+内存分配器再为新的日志条目分配内存就会失败
+log entry and it will fail so yeah and
 
 783
 00:35:22,830 --> 00:35:27,420
-Raph doesn't Raph doesn't have the flow
+是的，Raft 不具备流量控制来处理这样的情况
+Raft doesn't Raft doesn't have the flow
 
 784
 00:35:27,420 --> 00:35:30,359
+是的，Raft 不具备流量控制来处理这样的情况
 controls that's required to cope with
 
 785
 00:35:30,359 --> 00:35:34,349
+所以我认为，在真实的系统中
 this so I think in a real system you
 
 786
 00:35:34,349 --> 00:35:36,180
+你知道可能会使用 piggyback
+(piggyback 捎带消息，就是前面讲过的，把消息放到下一次请求中一起发出去)
 would actually need you know probably
 
 787
 00:35:36,180 --> 00:35:37,770
+并且它也不需要那么的实时
 piggybacked and doesn't need to be
 
 788
 00:35:37,770 --> 00:35:39,920
+在这里，你可能需要一些额外的通信来表明执行到哪里了
 real-time but you probably need some
 
 789
 00:35:39,920 --> 00:35:43,920
+在这里，你可能需要一些额外的通信来表明执行到哪里了
 kind of additional communication here
 
 790
 00:35:43,920 --> 00:35:45,570
+在这里，你可能需要一些额外的通信来表明执行到哪里了
 that says well here's how far I've
 
 791
 00:35:45,570 --> 00:35:48,150
+这样便于 leader 发现，哦，我领先 follwer 上千条请求了
 gotten in execution so that the leader
 
 792
 00:35:48,150 --> 00:35:50,520
+这样便于 leader 发现，哦，我领先 follwer 上千条请求了
 can say well you know too many thousands
 
 793
 00:35:50,520 --> 00:35:53,099
+这样便于 leader 发现，哦，我领先 follwer 上千条请求了
 of requests ahead of the point in which
 
 794
 00:35:53,099 --> 00:35:55,050
+这样便于 leader 发现，哦，我领先 follwer 上千条请求了
 the followers have executed yes I think
 
 795
 00:35:55,050 --> 00:35:56,630
+在生产系统中，这种领先可能会推进到系统绝对最大值（达到系统上限)
 there's probably you know in a
 
 796
 00:35:56,630 --> 00:35:58,859
+在生产系统中，这种领先可能会推进到系统绝对最大值（达到系统上限
 production system that you're trying to
 
 797
 00:35:58,859 --> 00:36:01,650
+此时你就需要一些额外的信息来限制 leader，防止它领先太多
 push to the absolute max you would you
 
 798
 00:36:01,650 --> 00:36:03,300
+此时你就需要一些额外的信息来限制 leader，防止它领先太多
 might well need an extra message to
 
 799
 00:36:03,300 --> 00:36:05,250
+此时你就需要一些额外的信息来限制 leader，防止它领先太多
 throttle the leader if it got too far
 
 800
 00:36:05,250 --> 00:36:07,400
+此时你就需要一些额外的信息来限制 leader，防止它领先太多
 ahead
 
 801
 00:36:31,700 --> 00:36:36,079
+okay，问题是说如果这些 server 之一宕机
 okay so the question is if if one of
 
 802
 00:36:36,079 --> 00:36:38,299
+okay，问题是说如果这些 server 之一宕机
 these servers crashes it has this log
 
 803
 00:36:38,299 --> 00:36:39,920
+图 2 有一条规则说，日志需要持久化到磁盘上
 that it persisted to disk because that's
 
 804
 00:36:39,920 --> 00:36:42,890
+图 2 有一条规则说，日志需要持久化到磁盘上
 one of the rules of figure two so the
 
 805
 00:36:42,890 --> 00:36:43,940
+所以 server 可以从磁盘上就可以恢复出日志
 server will be able to be just logged
 
 806
 00:36:43,940 --> 00:36:47,030
+当然了，server 并不知道当前日志已经执行到哪里
 back from disk but of course that server
 
 807
 00:36:47,030 --> 00:36:49,819
+当然了，server 并不知道当前日志已经执行到哪里
 doesn't know how far it got in executing
 
 808
 00:36:49,819 --> 00:36:52,549
+至少第一次刚启动的时候它是不知道的
 the log and also it doesn't know at
 
 809
 00:36:52,549 --> 00:36:54,710
+至少第一次刚启动的时候它是不知道的
 least when it first reboots by the rule
 
 810
 00:36:54,710 --> 00:36:56,599
+根据图 2 的规则，它甚至不知道日志提交了多少
 that figure two it doesn't even know how
 
 811
 00:36:56,599 --> 00:36:59,329
+根据图 2 的规则，它甚至不知道日志提交了多少
 much of the log is committed so the
 
 812
 00:36:59,329 --> 00:37:00,619
+所以你的问题的答案是，如果一个 server 在宕机后重新启动
 first answer to your question is that
 
 813
 00:37:00,619 --> 00:37:03,920
+所以你的问题的答案是，如果一个 server 在宕机后重新启动
 immediately after a restart you know
 
 814
 00:37:03,920 --> 00:37:05,599
+所以你的问题的答案是，如果一个 server 在宕机后重新启动
 after a server crashes and restarts and
 
 815
 00:37:05,599 --> 00:37:07,490
+它会读取它的日志，除此之外它什么也不能做
 reads its log it is not allowed to do
 
 816
 00:37:07,490 --> 00:37:10,220
+它会读取它的日志，除此之外它什么也不能做
 anything with the log because it does
 
 817
 00:37:10,220 --> 00:37:11,869
+因为它不知道日志提交到多远的位置
 not know how far the system has
 
 818
 00:37:11,869 --> 00:37:14,780
+因为它不知道日志提交到多远的位置
 committed in its log maybe as long as
 
 819
 00:37:14,780 --> 00:37:16,549
+也许是 1000 条没有提交，0 条已提交
 has a thousand uncommitted entries and
 
 820
 00:37:16,549 --> 00:37:18,230
+也许是 1000 条没有提交，0 条已提交
 zero committed entries for all it notes
 
 821
 00:37:18,230 --> 00:37:20,799
+也许是 1000 条没有提交，0 条已提交
 so
 
 822
 00:37:24,810 --> 00:37:26,980
-it's a leader dye support that doesn't
+如果 leader 挂了，当然就没什么用了
+if a leader die of course that doesn't
 
 823
 00:37:26,980 --> 00:37:28,750
+但是我们可以假设，如果他们全宕机了
 help either but let's suppose they've
 
 824
 00:37:28,750 --> 00:37:32,589
+这对我来说有点超纲了
 all crashed this is getting ahead of its
 
 825
 00:37:32,589 --> 00:37:33,670
+这对我来说有点超纲了
 getting a bit ahead of me but well
 
 826
 00:37:33,670 --> 00:37:34,810
+不过还是假设它们都宕机了
 suppose they've all crashed and so all
 
 827
 00:37:34,810 --> 00:37:37,420
+图 2 显示，它们持有的状态被标记为非易失的
 they have is the state that was marked
 
 828
 00:37:37,420 --> 00:37:40,180
+图 2 显示，它们持有的状态被标记为非易失的
 as non-volatile in figure 2 which
 
 829
 00:37:40,180 --> 00:37:42,070
+还包括日志，好像还有最新的 term(任期号)
 includes the log and maybe the latest
 
 830
 00:37:42,070 --> 00:37:45,310
+所以它们不知道……如果他们全宕机了
 term and so they don't know some if
 
 831
 00:37:45,310 --> 00:37:46,869
+所以它们不知道……如果他们全宕机了
 there's a crash but they all crash and
 
 832
 00:37:46,869 --> 00:37:48,690
+它们当中没有人能知道它们曾经执行到了什么地方
 they always start none of them knows
 
 833
 00:37:48,690 --> 00:37:52,869
+它们当中没有人能知道它们曾经执行到了什么地方
 initially how far they had been have
 
 834
 00:37:52,869 --> 00:37:55,270
+它们当中没有人能知道它们曾经执行到了什么地方
 executed before the crash so what
 
 835
 00:37:55,270 --> 00:37:57,430
+所以接下来就会发生 leader 选举
 happens is that you leader election one
 
 836
 00:37:57,430 --> 00:38:00,339
+它们当中之一会选择一个 leader 出来
 of them gets picked as a leader and that
 
 837
 00:38:00,339 --> 00:38:03,820
+
 leader if you sort of track through what
 
 838
 00:38:03,820 --> 00:38:06,520
-figure 2 says about how a pendant Rees
+图 2 中会解释，AppendEntries 是如何工作的
+figure 2 says about how AppendEntries
 
 839
 00:38:06,520 --> 00:38:08,470
+图 2 中会解释，AppendEntries 是如何工作的
 is supposed to work the leader will
 
 840
 00:38:08,470 --> 00:38:10,680
+leader 实际上会从发送AppendEntries
 actually figure out as a byproduct of
 
 841
 00:38:10,680 --> 00:38:12,820
-sending out a pendant or sending out the
+发送心跳带来的副产品中断定一些信息
+sending out AppendEntries sending out the
 
 842
 00:38:12,820 --> 00:38:16,000
-first heartbeat really it'll fake it'll
+发送心跳带来的副产品中断定一些信息
+first heartbeat really it'll
 
 843
 00:38:16,000 --> 00:38:19,690
+它能够推断出最新的提交位置
 figure out what the latest point is
 
 844
 00:38:19,690 --> 00:38:28,300
+也就是半数以上的副本都能对它们的日志达成一致的位置
 basically that that all of the that a
 
 845
 00:38:28,300 --> 00:38:30,940
+也就是半数以上的副本都能对它们的日志达成一致的位置
 majority of the replicas agree on their
 
 846
 00:38:30,940 --> 00:38:33,690
-laws because that's the commit point
+因为这就是提交的位置
+logs because that's the commit point
 
 847
 00:38:33,690 --> 00:38:35,650
+另一种看待方式是
 another way of looking at it is that
 
 848
 00:38:35,650 --> 00:38:37,750
+一旦你选择了一个 leader
 once you choose a leader through the
 
 849
 00:38:37,750 --> 00:38:39,490
+通过 AppendEntries 机制
 append entries mechanism the leader
 
 850
 00:38:39,490 --> 00:38:41,560
+leader 会强制所有其它副本和 leader 有完全相同的日志
 forces all of the other replicas to have
 
 851
 00:38:41,560 --> 00:38:44,050
+leader 会强制所有其它副本和 leader 有完全相同的日志
 identical logs to the leader and at that
 
 852
 00:38:44,050 --> 00:38:46,480
+在这一点，论文作了一些解释
 point plus a little bit of extra the
 
 853
 00:38:46,480 --> 00:38:48,820
+在这一点，论文作了一些解释
 paper explains at that point since the
 
 854
 00:38:48,820 --> 00:38:50,589
+由于 leader 知道它强制让所有副本拥有相同的日志
 leader knows that it's forced all the
 
 855
 00:38:50,589 --> 00:38:52,570
-replicas to have it I didn't have logs
+由于 leader 知道它强制让所有副本拥有相同的日志
+replicas to have logs
 
 856
 00:38:52,570 --> 00:38:54,940
+由于 leader 知道它强制让所有副本拥有相同的日志
 that are identicals to it then it knows
 
 857
 00:38:54,940 --> 00:38:57,119
+它知道有半数以上的副本都拥有这些日志项
 that all the replicas must also have a
 
 858
 00:38:57,119 --> 00:39:00,790
+它知道有半数以上的副本都拥有这些日志项
 there must be a majority of replicas
 
 859
 00:39:00,790 --> 00:39:03,160
-with that all those log injuries in that
+它知道有半数以上的副本都拥有这些日志项
+with that all those log entires in that
 
 860
 00:39:03,160 --> 00:39:04,900
+这些日志是完全相同的，也必须是已被提交的
 logs which are now are identical must
 
 861
 00:39:04,900 --> 00:39:06,070
+因为它们被半数以上的副本所持有
 also be committed because they're held
 
 862
 00:39:06,070 --> 00:39:09,880
+因为它们被半数以上的副本所持有
 on a majority of replicas and at that
 
 863
 00:39:09,880 --> 00:39:13,720
+在这一点，leader……
 point a leader you know the append
 
 864
 00:39:13,720 --> 00:39:15,820
+图 2 中描述的，针对 leader 的 AppendEntires 代码
 entries code described in Figure 2 for
 
 865
 00:39:15,820 --> 00:39:17,800
+会递增 leader 的提交点
 the leader will increment the leaders
 
 866
 00:39:17,800 --> 00:39:19,930
+所有人现在都能从头开始执行完整的日志
 commit point and everybody can now
 
 867
 00:39:19,930 --> 00:39:21,820
+所有人现在都能从头开始执行完整的日志
 execute the entire log from the
 
 868
 00:39:21,820 --> 00:39:24,400
+从 0 开始重建他们的状态
 beginning and recreate their state from
 
 869
 00:39:24,400 --> 00:39:29,730
-scratch possibly extremely laborious Lee
+这可能相当的费时
+scratch possibly extremely laborious
 
 870
 00:39:29,880 --> 00:39:32,650
+所以这就是图 2 中所说的
 so that's what figure two says it's
 
 871
 00:39:32,650 --> 00:39:34,930
+显然从 0 开始执行，显的有点不太吸引人
 obviously this be executing from scratch
 
 872
 00:39:34,930 --> 00:39:37,780
+显然从 0 开始执行，显的有点不太吸引人
 is not very attractive but it's where
 
 873
 00:39:37,780 --> 00:39:40,000
+但是这就是基础协议规定要做的
 the basic protocol does and we'll see
 
 874
 00:39:40,000 --> 00:39:42,970
+不过明天我们能看到一个更高效的版本
 tomorrow that the the sort of version of
 
 875
 00:39:42,970 --> 00:39:44,110
+不过明天我们能看到一个更高效的版本
 this is more efficient to use as
 
 876
 00:39:44,110 --> 00:39:45,730
-checkpoints and we'll talk about
+它使用 checkpoint 机制，咱们明天会讲
+checkpoints and we'll talk about tomorrow
 
 877
 00:39:45,730 --> 00:39:50,890
-tomorrow okay so this was a sequence in
+okay，这就是普通的没异常的情况下的执行步骤
+okay so this was a sequence in
 
 878
 00:39:50,890 --> 00:39:54,990
+okay，这就是普通的没异常的情况下的执行步骤
 sort of ordinary non failure operation
 
 879
 00:39:55,380 --> 00:39:57,250
+另一件事是我想简单介绍下 raft 接口长啥样
 another thing I want to briefly mention
 
 880
 00:39:57,250 --> 00:40:00,760
+另一件事是我想简单介绍下 raft 接口长啥样
 is what this interface looks like you've
 
 881
 00:40:00,760 --> 00:40:03,220
+你们可能做 lab 的时候已经看到过了
 probably all seen a little bit of it due
 
 882
 00:40:03,220 --> 00:40:05,410
+你们可能做 lab 的时候已经看到过了
 to working on the labs but roughly
 
 883
 00:40:05,410 --> 00:40:07,420
+粗略来说，这里有一个 key-value 层，这里有它的状态
 speaking if you have let's say that this
 
 884
 00:40:07,420 --> 00:40:12,400
+粗略来说，这里有一个 key-value 层，这里有它的状态
 key value layer with its state and the
 
 885
 00:40:12,400 --> 00:40:16,000
+raft 层在它之下
 raft layer underneath it there's on each
 
 886
 00:40:16,000 --> 00:40:18,330
+在每个副本中，有 2 个非常重要的接口
 replica there's really two main pieces
 
 887
 00:40:18,330 --> 00:40:20,920
+在每个副本中，有 2 个非常重要的接口
 of the interface between them there's
 
 888
