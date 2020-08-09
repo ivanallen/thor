@@ -4462,854 +4462,1047 @@ of the interface between them there's
 
 888
 00:40:20,920 --> 00:40:24,010
+如果客户端发送请求过来，那么 key-value 层可以使用这个接口请求 raft 层
 this method by which the key value layer
 
 889
 00:40:24,010 --> 00:40:26,230
+如果客户端发送请求过来，那么 key-value 层可以使用这个接口请求 raft 层
 can relay if a client sends in a request
 
 890
 00:40:26,230 --> 00:40:27,910
+key-value 层必须把它传递给 raft
 the key value layer has to give it to
 
 891
 00:40:27,910 --> 00:40:29,890
-wrap and say please you know fit this
+说: Hi, raft, 请把这条请求放到日志的某个地方
+raft and say please you know fit this
 
 892
 00:40:29,890 --> 00:40:31,420
+说: Hi, raft, 请把这条请求放到日志的某个地方
 request into the log somewhere and
 
 893
 00:40:31,420 --> 00:40:36,760
+这个函数是 start(command)，后面你会在 raft.go 文件里看到它
 that's the start function that you'll
 
 894
 00:40:36,760 --> 00:40:40,420
-see in Raph go and really just takes one
+它只有一个参数，即客户端请求来的命令，它就是个 key-value 对
+see in raft.go and really just takes one
 
 895
 00:40:40,420 --> 00:40:44,350
+它只有一个参数，即客户端请求来的命令，它就是个 key-value 对
 argument the client command the key
 
 896
 00:40:44,350 --> 00:40:45,550
+start 函数会把这条命令放进 log，然后通知调用方日志何时被提交
 value they're saying please I got this
 
 897
 00:40:45,550 --> 00:40:47,110
+start 函数会把这条命令放进 log，然后通知调用方日志何时被提交
 command to get into the log and tell me
 
 898
 00:40:47,110 --> 00:40:50,320
+start 函数会把这条命令放进 log，然后通知调用方日志何时被提交
 when it's committed and the other piece
 
 899
 00:40:50,320 --> 00:40:54,310
+另一方面，调用此函数后，raft 层过会儿通知 key-value 层
 of the interface is that by and by the
 
 900
 00:40:54,310 --> 00:40:55,930
+另一方面，调用此函数后，raft 层过会儿通知 key-value 层
 raft layer will notify the key value
 
 901
 00:40:55,930 --> 00:40:58,180
+啊哈：刚刚你通过 start 命令发我的操作
 layer that AHA that operation that you
 
 902
 00:40:58,180 --> 00:40:59,740
+啊哈：刚刚你通过 start 命令发我的操作
 sent to me in a start command a while
 
 903
 00:40:59,740 --> 00:41:01,390
+注意了，不一定就是最近调用的那个 start
 ago which may well not be the most
 
 904
 00:41:01,390 --> 00:41:03,430
+注意了，不一定就是最近调用的那个 start
 recent start right there you know a
 
 905
 00:41:03,430 --> 00:41:05,320
+在任意一条日志被提交前，可能同时有 100 个客户端发起请求，并调用 start 函数
 hundred client commands could come in
 
 906
 00:41:05,320 --> 00:41:07,600
+在任意一条日志被提交前，可能同时有 100 个客户端发起请求，并调用 start 函数
 and cause calls to start before any of
 
 907
 00:41:07,600 --> 00:41:11,290
+在任意一条日志被提交前，可能同时有 100 个客户端发起请求，并调用 start 函数
 them are committed so by and by this
 
 908
 00:41:11,290 --> 00:41:14,260
+这里有一条向上的通信，它通过 go channel 发送一条消息
 upward communication is takes the form
 
 909
 00:41:14,260 --> 00:41:16,630
+这里有一条向上的通信，它通过 go channel 发送一条消息
 of a message on a go channel that the
 
 910
 00:41:16,630 --> 00:41:20,170
+raft 库向 channel 一端发送，key-value 层从另一端读取
 raft library sends on and key value
 
 911
 00:41:20,170 --> 00:41:23,920
+raft 库向 channel 一端发送，key-value 层从另一端读取
 layer is supposed to read from so
 
 912
 00:41:23,920 --> 00:41:28,120
+所以这里的 apply，被称之为 apply channel
 there's this apply called the apply
 
 913
-00:41:28,120 --> 00:41:31,360
-channel and on it on it you send apply
-
-914
-00:41:31,360 --> 00:41:33,900
-message
+00:41:28,120 --> 00:41:33,900
+在它之上你可以发送 apply 消息
+channel and on it on it you send apply message
 
 915
 00:41:37,440 --> 00:41:39,640
+start 函数，当然了，你需要……
 this start and of course you need the
 
 916
 00:41:39,640 --> 00:41:42,310
+key-value 层需要将 apply channel 接收到的消息同调用的 start 函数做匹配
 the key value layer needs to be able to
 
 917
 00:41:42,310 --> 00:41:44,560
+key-value 层需要将 apply channel 接收到的消息同调用的 start 函数做匹配
 match up message that receives an apply
 
 918
 00:41:44,560 --> 00:41:47,430
+key-value 层需要将 apply channel 接收到的消息同调用的 start 函数做匹配
 channel with calls to start that it made
 
 919
 00:41:47,430 --> 00:41:49,930
+start 函数会返回足够的信息，以确保可以做匹配工作
 and so the start command actually
 
 920
 00:41:49,930 --> 00:41:52,599
+start 函数会返回足够的信息，以确保可以做匹配工作
 returns enough information for that
 
 921
 00:41:52,599 --> 00:41:54,250
+它会返回 index(索引号)
 matchup to happen it returns the index
 
 922
 00:41:54,250 --> 00:41:58,540
+start 函数最重要的工作就是返回 log 中的 index
 that start functions basically returns
 
 923
 00:41:58,540 --> 00:42:00,460
+start 函数最重要的工作就是返回 log 中的 index
 the index in the log where if this
 
 924
 00:42:00,460 --> 00:42:02,170
+如果这条命令被提交了（也可能不会被提交）
 command is committed which it might not
 
 925
 00:42:02,170 --> 00:42:05,680
+那么它将来就会在这个 index 上被提交
 be it'll be committed at this index and
 
 926
 00:42:05,680 --> 00:42:07,150
+我认为，它还会返回当前的任期号，还有一些别的东西，不过不用太关注
 I think it also returns the current term
 
 927
 00:42:07,150 --> 00:42:08,380
+我认为，它还会返回当前的任期号，还有一些别的东西，不过不用太关注
 and some other stuff we don't care about
 
 928
 00:42:08,380 --> 00:42:11,589
+然后，这里的 ApplyMsg 将会包含 index 以及 command
 very much and then this apply message is
 
 929
 00:42:11,589 --> 00:42:26,530
+然后，这里的 ApplyMsg 将会包含 index 以及 command
 going to contain the index command and
 
 930
 00:42:26,530 --> 00:42:27,970
+所有的副本都将拿到这些 apply 消息
 all the replicas will get these apply
 
 931
 00:42:27,970 --> 00:42:29,770
-messages so they'll all know though I
+所以他们就知道，oh, 我应该要 apply 这条命令
+messages so they'll all know oh I
 
 932
 00:42:29,770 --> 00:42:33,520
+所以他们就知道，oh, 我应该要 apply 这条命令
 should apply this command figure out
 
 933
 00:42:33,520 --> 00:42:35,170
+我要理解这些命令的含义，然后把它应用到本地的状态里
 what this command means and apply it to
 
 934
 00:42:35,170 --> 00:42:37,510
-my local State and they also get the
+我要理解这些命令的含义，然后把它应用到本地的状态里
+my local state and they also get the
 
 935
 00:42:37,510 --> 00:42:38,980
-index the index is really only useful
+同样的，他们可以拿到这个 index，它只在上 leader 有用
+index the index is really only useful on the leader 
 
 936
 00:42:38,980 --> 00:42:42,280
-I'm the leader so it can figure out what
+所以它能理解客户端正在发什么请求
+so it can figure out what
 
 937
-00:42:42,280 --> 00:42:43,750
-client would what client requests were
-
-938
-00:42:43,750 --> 00:42:46,109
-talking about
-
-939
-00:43:00,890 --> 00:43:03,890
-by
+00:42:42,280 --> 00:42:46,109
+所以它能理解客户端正在发什么请求
+client would what client requests were talking about
 
 940
 00:43:14,410 --> 00:43:16,570
+这个问题的答案，有一点点不同
 the answer a slightly different question
 
 941
 00:43:16,570 --> 00:43:18,910
+我们假设客户端发送了做任意的请求，不管它是 put 还是 get，无所谓
 let's suppose the client sends any
 
 942
 00:43:18,910 --> 00:43:21,730
+我们假设客户端发送了做任意的请求，不管它是 put 还是 get，无所谓
 request in let's say it's a put or a get
 
 943
 00:43:21,730 --> 00:43:23,410
+我们假设客户端发送了做任意的请求，不管它是 put 还是 get，无所谓
 could be put or again it doesn't really
 
 944
 00:43:23,410 --> 00:43:29,950
+假设就是 GET，在这个位置客户端发送请求，然后等待响应
 matter I'd say it to get the point in
 
 945
 00:43:29,950 --> 00:43:32,500
+假设就是 GET，在这个位置客户端发送请求，然后等待响应
 which the it's a client sense and again
 
 946
 00:43:32,500 --> 00:43:33,910
+假设就是 GET，在这个位置客户端发送请求，然后等待响应
 and waits for a response the point at
 
 947
 00:43:33,910 --> 00:43:37,000
-which the leader will send a response at
+>>> leader 将会在这个位置发送响应，而不是在 leader 得知命令被提交之后
+which the leader will send a response not at
 
 948
 00:43:37,000 --> 00:43:39,640
+leader 将会在这个位置发送响应，而不是在 leader 得知命令被提交之后
 all is after the leader knows that
 
 949
 00:43:39,640 --> 00:43:41,680
+leader 将会在这个位置发送响应，而不是在 leader 得知命令被提交之后
 command is committed so this is going to
 
 950
 00:43:41,680 --> 00:43:48,970
+所以这里将会是 get 的回复
 be a sort of get reply so the client
 
 951
 00:43:48,970 --> 00:43:52,230
+所以客户端看不到任何东西返回
 doesn't see anything back I mean and so
 
 952
 00:43:52,230 --> 00:43:54,250
+这里意思是说，根据实际的 software stack(key-value 层和 raft 层形成的上下关系)
 that means in terms of the actual
 
 953
 00:43:54,250 --> 00:43:56,830
+这里意思是说，根据实际的 software stack(key-value 层和 raft 层形成的上下关系)
 software stack that means that the key
 
 954
 00:43:56,830 --> 00:43:59,440
+RPC 将到到达 key-value 层，然后调用 start 函数
 value the RPC will arrive the key value
 
 955
 00:43:59,440 --> 00:44:02,020
+RPC 将到到达 key-value 层，然后调用 start 函数
 layer will call the start function the
 
 956
 00:44:02,020 --> 00:44:03,820
+然后 start 函数返回到 key-value 层
 start function will return to the key
 
 957
 00:44:03,820 --> 00:44:06,700
+但是 key-value 层还不会返回给客户端
 value layer but the key value layer will
 
 958
 00:44:06,700 --> 00:44:08,650
+但是 key-value 层还不会返回给客户端
 not yet reply to the client because it
 
 959
 00:44:08,650 --> 00:44:10,840
+因为它不知道这条命令是否有效
 does not know if it's good actually it
 
 960
 00:44:10,840 --> 00:44:12,550
+实际上它还现在没执行客户端请求
 hasn't executed the clients request now
 
 961
 00:44:12,550 --> 00:44:13,840
+它甚至都不知道它是否会执行
 it doesn't even know if it ever will
 
 962
 00:44:13,840 --> 00:44:16,570
+因为它无法保证这条请求是否被提交
 because it's not sure if the request is
 
 963
 00:44:16,570 --> 00:44:18,820
+因为它无法保证这条请求是否被提交
 going to be committed right in the
 
 964
 00:44:18,820 --> 00:44:20,500
+比如它可能没有被提交
 situation which may not be committed is
 
 965
 00:44:20,500 --> 00:44:23,590
+假设 key-value 层调用 start，在 start 返回后立即宕机了
 if the key value layer you know guess
 
 966
 00:44:23,590 --> 00:44:25,270
+假设 key-value 层调用 start，在 start 返回后立即宕机了
 the request calls start and immediately
 
 967
 00:44:25,270 --> 00:44:27,160
-after starboard turn two crashes right
+假设 key-value 层调用 start，在 start 返回后立即宕机了
+after start return to crashes right
 
 968
 00:44:27,160 --> 00:44:28,960
+当然它还没发送它的 apply，append 消息或是别的东西
 certainly hasn't sent out its apply what
 
 969
 00:44:28,960 --> 00:44:30,220
+当然它还没发送它的 apply，append 消息或是别的东西
 append messages or whatever
 
 970
 00:44:30,220 --> 00:44:33,520
+什么也没有进行提交
 nothing's be committed yep so so the
 
 971
 00:44:33,520 --> 00:44:36,600
+所以 raft 中的规则是，当 start 函数返回
 game is start returns time passes the
 
 972
 00:44:36,600 --> 00:44:40,720
+过一段时间后，当和客户端请求相一致的 apply 消息
 relevant apply message corresponding to
 
 973
 00:44:40,720 --> 00:44:42,490
+过一段时间后，当和客户端请求相一致的 apply 消息
 that client request appears to the key
 
 974
 00:44:42,490 --> 00:44:44,200
+通过 apply channel 传递到 key-value 服务层的时候
 value server on the apply channel and
 
 975
 00:44:44,200 --> 00:44:47,440
+只有在这个时候，key-value 服务层才会执行请求，并发送 reply
 only then and that causes the key value
 
 976
-00:44:47,440 --> 00:44:50,650
-server to execute the request and send
-
-977
-00:44:50,650 --> 00:44:53,010
-her a plot
+00:44:47,440 --> 00:44:53,010
+只有在这个时候，key-value 服务层才会执行请求，并发送 reply
+server to execute the request and send reply
 
 978
 00:44:58,230 --> 00:45:00,160
+这一切都非常重要
 and that's like all this is very
 
 979
 00:45:00,160 --> 00:45:02,170
+如果一切都正常进行，这没什么大不了的
 important when it doesn't really matter
 
 980
 00:45:02,170 --> 00:45:04,360
+如果一切都正常进行，这没什么大不了的
 if all everything goes well but if
 
 981
 00:45:04,360 --> 00:45:06,640
-there's a failure we're now at the point
+但是如果有故障产生，你知道，我们要担心错误
+there's a failure we're now you know the point
 
 982
 00:45:06,640 --> 00:45:07,780
-where we start worrying about theatres I
+但是如果有故障产生，你知道，我们要担心错误
+we worrying about failure I
 
 983
 00:45:07,780 --> 00:45:09,760
+我的意思是说，我们更应该关心：如果产生错误，客户端会看到什么
 mean extremely interested in if there
 
 984
 00:45:09,760 --> 00:45:13,140
+我的意思是说，我们更应该关心：如果产生错误，客户端会看到什么
 was a failure what did the client see
 
 985
 00:45:13,950 --> 00:45:18,550
+好，还有一件事，你们也需要非常熟练
 all right and so one thing that does
 
 986
 00:45:18,550 --> 00:45:23,710
+好，还有一件事，你们也需要非常熟练
 come up is that all of you should be
 
 987
 00:45:23,710 --> 00:45:24,940
+好，还有一件事，你们也需要非常熟练
 familiar with this that at least
 
 988
 00:45:24,940 --> 00:45:26,710
+思考一下，各副本上的日志可能会产生不一致
 initially one interesting thing about
 
 989
 00:45:26,710 --> 00:45:28,540
+思考一下，各副本上的日志可能会产生不一致
 the logs is that they may not be
 
 990
 00:45:28,540 --> 00:45:30,760
+有很多情况会导致不一致
 identical there are a whole bunch of
 
 991
 00:45:30,760 --> 00:45:33,820
+至少在短时间内，不同副本的结尾的地方可能会产生分叉
 situations in which at least for brief
 
 992
 00:45:33,820 --> 00:45:36,369
+至少在短时间内，不同副本的结尾的地方可能会产生分叉
 periods of time the ends of the
 
 993
 00:45:36,369 --> 00:45:39,160
+至少在短时间内，不同副本的结尾的地方可能会产生分叉
 different replicas logs may diverge like
 
 994
 00:45:39,160 --> 00:45:41,710
+比如，如果一个 leader 发起一轮 AppendMessage
 for example if a leader starts to send
 
 995
 00:45:41,710 --> 00:45:43,390
+比如，如果一个 leader 发起一轮 AppendMessage
 out a round of append messages but
 
 996
 00:45:43,390 --> 00:45:45,160
+但是在发送完所有消息前宕机了
 crashes before it's able to send all
 
 997
 00:45:45,160 --> 00:45:46,900
+这意味着有些副本会拿到 append 消息，然后追加到日志中
 them out you know that'll mean that some
 
 998
 00:45:46,900 --> 00:45:48,100
+这意味着有些副本会拿到 append 消息，然后追加到日志中
 of the replicas that got the append
 
 999
 00:45:48,100 --> 00:45:50,500
+这意味着有些副本会拿到 AppendMessage，然后追加到日志中
 message will append you know that new
 
 1000
 00:45:50,500 --> 00:45:51,940
+而另一些副本拿不到 AppendMessage RPC，所以不会追加它们
 log entry and the ones that didn't get
 
 1001
 00:45:51,940 --> 00:45:54,400
+而另一些副本拿不到 AppendMessage RPC，所以不会追加它们
 that append messages RPC won't have
 
 1002
 00:45:54,400 --> 00:45:56,440
+所以很容易明白，日志有时候分产生分叉
 appended them so it's easy to see that
 
 1003
 00:45:56,440 --> 00:45:58,980
+所以很容易明白，日志有时候分产生分叉
 the logs are I'm gonna diverge sometimes
 
 1004
 00:45:58,980 --> 00:46:02,859
+好消息是，在一段时间后，raft 实际上最终会强制让日志变得完全相同
 the good news is that the the way a raft
 
 1005
 00:46:02,859 --> 00:46:05,380
+好消息是，在一段时间后，raft 实际上最终会强制让日志变得完全相同
 works actually ends up forcing the logs
 
 1006
 00:46:05,380 --> 00:46:08,230
+好消息是，在一段时间后，raft 实际上最终会强制让日志变得完全相同
 to be identical after a while there may
 
 1007
 00:46:08,230 --> 00:46:10,480
+尽管会存在短暂的不一致问题，但是在运行一段时间后
 be transient differences but in the long
 
 1008
 00:46:10,480 --> 00:46:13,240
+所有的日志都会被 leader 修改，直到 leader 确保所有日志是完全相同的
 run all the logs will sort of be
 
 1009
 00:46:13,240 --> 00:46:15,340
+所有的日志都会被 leader 修改，直到 leader 确保所有日志是完全相同的
 modified by the leader until the leader
 
 1010
 00:46:15,340 --> 00:46:17,140
+所有的日志都会被 leader 修改，直到 leader 确保所有日志是完全相同的
 insurers are all identical and only then
 
 1011
 00:46:17,140 --> 00:46:24,490
+并且只有在那时候，命令才会被执行
 are they executed okay so I think the
 
 1012
 00:46:24,490 --> 00:46:27,190
+嗐！还有 2 个大的关于 raft 的话题需要讨论！
 next there's really two big topics to
 
 1013
 00:46:27,190 --> 00:46:29,290
+嗐！还有 2 个大的关于 raft 的话题需要讨论！
 talk about here for raft one is how
 
 1014
 00:46:29,290 --> 00:46:31,450
+一个是 Leader Election(领导选举)是如何工作的，在 lab2 中需要完成
 leader election works which is lab two
 
 1015
 00:46:31,450 --> 00:46:35,170
+另一个是 leader 要如何处理不同的副本日志，尤其是出错之后
 and the other is how the leader deals
 
 1016
 00:46:35,170 --> 00:46:37,270
+另一个是 leader 要如何处理不同的副本日志，尤其是出错之后
 with the different replicas logs
 
 1017
 00:46:37,270 --> 00:46:39,700
+另一个是 leader 要如何处理不同的副本日志，尤其是出错之后
 particularly after failure so first I
 
 1018
 00:46:39,700 --> 00:46:42,690
+所以咱们先来谈谈 leader election
 want to talk about leader election
 
 1019
 00:46:44,940 --> 00:46:47,380
+有个要问的问题是，为什么系统需要 leader?
 question to ask is how come the system
 
 1020
 00:46:47,380 --> 00:46:48,880
+为什么我们需要 leader?
 even has a leader why do we need a
 
 1021
 00:46:48,880 --> 00:46:51,820
+答案之一是，你可以构建一个没有 leader 的系统
 leader the part of the answer is you do
 
 1022
 00:46:51,820 --> 00:46:53,710
+答案之一是，你可以构建一个没有 leader 的系统
 not need a leader to build a system like
 
 1023
 00:46:53,710 --> 00:46:56,890
+在一个集群上构建一个共识系统是可能的
 this you it is possible to build an
 
 1024
 00:46:56,890 --> 00:46:59,140
+在一个集群上构建一个共识系统是可能的
 agreement system by which a cluster of
 
 1025
 00:46:59,140 --> 00:47:02,140
+在不指定 leader 的情况下，你可以让日志中的一个序列的日志项达成一致
 servers agrees you know the sequence of
 
 1026
 00:47:02,140 --> 00:47:04,210
+在不指定 leader 的情况下，你可以让日志中的一个序列的日志项达成一致
 entries in a log without having any kind
 
 1027
 00:47:04,210 --> 00:47:05,740
+在不指定 leader 的情况下，你可以让日志中的一个序列的日志项达成一致
 of designated leader
 
 1028
 00:47:05,740 --> 00:47:07,960
-and indeed the original pack so system
+事实上，论文中提到了原始的 paxos 系统，它就没有 leader
+and indeed the original paxos system
 
 1029
 00:47:07,960 --> 00:47:09,910
+事实上，论文中提到了原始的 paxos 系统，它就没有 leader
 which the paper refers to original Paxos
 
 1030
 00:47:09,910 --> 00:47:13,150
+事实上，论文中提到了原始的 paxos 系统，它就没有 leader
 did not have a leader so it's possible
 
 1031
 00:47:13,150 --> 00:47:15,460
+那为什么在 raft 里 leader 是如此重要？
 the reason why raft has a leader is
 
 1032
 00:47:15,460 --> 00:47:18,790
+有很多可能的原因
 basically that there's probably a lot of
 
 1033
 00:47:18,790 --> 00:47:20,380
+但是，最重要的一个原因是，你能构建更加高效的系统
 reasons but one of the foremost reasons
 
 1034
 00:47:20,380 --> 00:47:22,150
+但是，最重要的一个原因是，你能构建更加高效的系统
 is that you can build a more efficient
 
 1035
 00:47:22,150 --> 00:47:24,400
+因为通常情况下，服务器很少会发生错误
 in the common case in which the server's
 
 1036
 00:47:24,400 --> 00:47:27,130
+所以如果有 leader 的话，你就能构建一个更加高效的系统
 don't fail it's possible to build a more
 
 1037
 00:47:27,130 --> 00:47:28,660
+所以如果有 leader 的话，你就能构建一个更加高效的系统
 efficient system if you have a leader
 
 1038
 00:47:28,660 --> 00:47:30,640
+因为指定了 leader 的话，所有人都知道 leader 是谁
 because with a designated leader
 
 1039
 00:47:30,640 --> 00:47:33,310
+因为指定了 leader 的话，所有人都知道 leader 是谁
 everybody knows who the leader is you
 
 1040
 00:47:33,310 --> 00:47:37,540
+每个客户端请求，只要发送一轮消息，就能达成一致
 can basically get agreement on requests
 
 1041
 00:47:37,540 --> 00:47:39,280
+每个客户端请求，只要发送一轮消息，就能达成一致
 that with one round of messages per
 
 1042
 00:47:39,280 --> 00:47:41,470
-request where as leader of this systems
+在无 leader 的系统中，就需要做更多的事情
+request without leader of this systems
 
 1043
 00:47:41,470 --> 00:47:43,480
+在无 leader 的系统中，就需要做更多的事情
 have more of the flavor of well you need
 
 1044
 00:47:43,480 --> 00:47:45,580
+首先你需要发送一轮消息为一个临时 leader 达成一致
 a first round to kind of agree on a
 
 1045
 00:47:45,580 --> 00:47:47,619
+然后再第二轮中实际发出请求
 temporary leader and then a second round
 
 1046
 00:47:47,619 --> 00:47:50,619
+所以这是使用 leader 加速系统的一个可能的 case(案例)
 actually send out the requests so it's
 
 1047
 00:47:50,619 --> 00:47:53,460
+所以这是使用 leader 加速系统的一个可能的 case(案例)
 probably the case that use of a leader
 
 1048
 00:47:53,460 --> 00:47:56,610
-now speeds up the system by a factor two
+所以这是使用 leader 加速系统的一个可能的 case(案例)
+speeds up the system by a factor two
 
 1049
 00:47:56,610 --> 00:47:58,750
+并且，有了 leader 之后，我们也能很容易的思考接下来的行为
 and it also makes it sort of easier to
 
 1050
 00:47:58,750 --> 00:48:04,210
-think about what's going on raft goes
+并且，有了 leader 之后，我们也能很容易的思考接下来的行为
+think about what's going on
 
 1051
 00:48:04,210 --> 00:48:08,680
-through a sequence of leaders and it
+raft 会经历一系列的 leader
+raft goes through a sequence of leaders and it
 
 1052
 00:48:08,680 --> 00:48:11,170
+它使用 term(任期，单调递增的逻辑时钟)号来标识不同的 leader
 uses these term numbers in order to sort
 
 1053
 00:48:11,170 --> 00:48:13,240
-of disambiguate which leader we're
+目的是为了和 leader 通信时，避免歧义
+of disambiguate which leader we're talking about
 
 1054
 00:48:13,240 --> 00:48:14,350
-talking about it turns out that
+其实 follower 并不需要知道 leader 的标识号
+it turns out that
 
 1055
 00:48:14,350 --> 00:48:15,609
+其实 follower 并不需要知道 leader 的标识号
 followers don't really need to know the
 
 1056
 00:48:15,609 --> 00:48:17,380
+其实 follower 并不需要知道 leader 的标识号
 identity of the leader they really just
 
 1057
 00:48:17,380 --> 00:48:18,520
-need to know what the current term
+它只要知道当前的 term 号就行了
+need to know what the current term number is
 
 1058
 00:48:18,520 --> 00:48:23,200
-number is each term has at most one
+每个 term 至多有一个 leader
+each term has at most one
 
 1059
 00:48:23,200 --> 00:48:25,990
+这是一个非常关键的性质
 leader that's a critical property you
 
 1060
 00:48:25,990 --> 00:48:27,369
+也不是每个任期内都有 leader 存在
 know for every term there might be no
 
 1061
 00:48:27,369 --> 00:48:29,020
+也不是每个任期内都有 leader 存在
 leader during that term or there might
 
 1062
 00:48:29,020 --> 00:48:31,359
+一个任期里可以有一个 leader，也可能没有 leader
 be one leader but there cannot be two
 
 1063
 00:48:31,359 --> 00:48:34,180
+在同一个任期里，不可能出现 2 个 leader，每个任期最多只能有 1 个
 leaders during the same term every term
 
 1064
 00:48:34,180 --> 00:48:42,190
+在同一个任期里，不可能出现 2 个 leader，每个任期最多只能有 1 个
 has it must most one leader how do the
 
 1065
 00:48:42,190 --> 00:48:44,490
+首先，怎么才能创建一个 leader 出来？
 leaders get created in the first place
 
 1066
 00:48:44,490 --> 00:48:48,100
+每一个 raft 服务器都会持有一个选举定时器
 every raft server keeps this election
 
 1067
 00:48:48,100 --> 00:48:50,200
+这个定时器超时后，就会去执行一些事情
 timer which is just a it's basically
 
 1068
 00:48:50,200 --> 00:48:52,030
+这个定时器超时后，就会去执行一些事情
 just out of time that it has recorded
 
 1069
 00:48:52,030 --> 00:48:54,130
+这个定时器超时后，就会去执行一些事情
 that says well if that time occurs I'm
 
 1070
 00:48:54,130 --> 00:48:56,320
+这个定时器超时后，就会去执行一些事情
 going to do something and the something
 
 1071
 00:48:56,320 --> 00:48:59,200
+做什么事情呢？如果一个完整的 leader 选举周期到期了
 that it does is that if an entire leader
 
 1072
 00:48:59,200 --> 00:49:02,470
+具体的说，如果一个完整的 leader 选举周期到期了
 election period expires without the
 
 1073
 00:49:02,470 --> 00:49:04,480
+但是 server （副本，follower)没有收到任何来自当前 leader 的消息
 server having heard any message from the
 
 1074
 00:49:04,480 --> 00:49:08,140
+但是 server （副本，follower)没有收到任何来自当前 leader 的消息
 current leader then the server sort of
 
 1075
 00:49:08,140 --> 00:49:10,030
+那么 server 就会假设: 咦，是不是 leader 挂了？
 assumes probably that the current leader
 
 1076
 00:49:10,030 --> 00:49:12,580
+然后它就开始发起一次新的选举
 is dead and starts an election so we
 
 1077
 00:49:12,580 --> 00:49:15,480
+所以，我们有这样一个选举定时器
 have this election timer
 
 1078
 00:49:17,869 --> 00:49:23,630
+如果它到期了，就发起一次选举
 and if it expires we start an election
 
 1079
 00:49:28,460 --> 00:49:30,690
+发起一次新的 leader 选举，主要做的事情是先执行 term++
 and what it means to start an election
 
 1080
 00:49:30,690 --> 00:49:35,570
+发起一次新的 leader 选举，主要做的事情是先执行 term++
 is basically that you increment the term
 
 1081
 00:49:35,570 --> 00:49:38,490
+然后 server 会变成 candidate 状态
 the the candidate the server that's
 
 1082
 00:49:38,490 --> 00:49:39,930
+然后 server 会变成 candidate 状态
 decided it's going to be a candidate and
 
 1083
 00:49:39,930 --> 00:49:41,520
+并且强制发起新一轮选举
 sort of force a new election first
 
 1084
 00:49:41,520 --> 00:49:43,950
+先增加 term 的原因是，它自己想成为新的 leader
 increments this term because it wants
 
 1085
 00:49:43,950 --> 00:49:45,450
+先增加 term 的原因是，它自己想成为新的 leader
 them to be a new leader namely itself
 
 1086
 00:49:45,450 --> 00:49:47,880
+你知道，同一个任期不允许超过一个 leader
 and you know leader a term can't have
 
 1087
 00:49:47,880 --> 00:49:49,170
+你知道，同一个任期不允许超过一个 leader
 more than one leader so we got to start
 
 1088
 00:49:49,170 --> 00:49:51,770
+所以我们需要从一个新的 term 开始，以选举出新的 leader
 a new term in order to have a new leader
 
 1089
 00:49:51,770 --> 00:49:54,570
-and then it sends out these requests
+然后，它会发送 RequestVotes RPC 给其它所有的 server
+and then it sends out these RequestVotes RPCs
 
 1090
 00:49:54,570 --> 00:50:00,840
-boats are pea seeds I'm going to send
+然后，它会发送 RequestVotes RPC 给其它所有的 server
+I'm going to send
 
 1091
 00:50:00,840 --> 00:50:02,820
+然后，它会发送 RequestVotes RPC 给其它所有的 server
 out a full round of request votes and
 
 1092
 00:50:02,820 --> 00:50:05,130
+可能只需要发送 N-1 条 RequestVotes 出去
 you may only have to send out n minus
 
 1093
 00:50:05,130 --> 00:50:06,450
+可能只需要发送 N-1 条 RequestVotes 出去
 one requests votes because one of the
 
 1094
 00:50:06,450 --> 00:50:08,340
+因为这其中有一条规则是，在选举过程中，candidate 总是先给它自己投一票
 rules is that a new candidate always
 
 1095
 00:50:08,340 --> 00:50:13,530
+因为这其中有一条规则是，在选举过程中，candidate 总是先给它自己投一票
 votes for itself in the election so one
 
 1096
 00:50:13,530 --> 00:50:16,470
+需要注意的一点是
 thing to note about this is that it's
 
 1097
 00:50:16,470 --> 00:50:17,970
+如果 leader 没有产生错误，那就不会产生选举
 not quite the case that if the leader
 
 1098
 00:50:17,970 --> 00:50:19,380
+，如果 leader 没有产生错误，那就不会产生选举
 didn't fail we won't have an election
 
 1099
 00:50:19,380 --> 00:50:22,350
+但是如果 leader 出错了，那么我们才会进行选举
 but if the leader does fail then we will
 
 1100
 00:50:22,350 --> 00:50:24,480
+但是如果 leader 出错了，那么我们才会进行选举
 have election an election assuming any
 
 1101
