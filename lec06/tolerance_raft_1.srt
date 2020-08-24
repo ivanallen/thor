@@ -5497,972 +5497,1216 @@ didn't fail we won't have an election
 
 1099
 00:50:19,380 --> 00:50:22,350
+假设其它所有的 server 都在正常运行
 但是如果 leader 出错了，那么我们才会进行选举
 but if the leader does fail then we will
 
 1100
 00:50:22,350 --> 00:50:24,480
+假设其它所有的 server 都在正常运行
 但是如果 leader 出错了，那么我们才会进行选举
 have election an election assuming any
 
 1101
 00:50:24,480 --> 00:50:26,400
+假设其它所有的 server 都在正常运行
+但是如果 leader 出错了，那么我们才会进行选举
 other server is up because some day the
 
 1102
 00:50:26,400 --> 00:50:28,230
+因为这时其它 server 的选举定时器会到期
 other servers election timers go will go
 
 1103
 00:50:28,230 --> 00:50:30,240
+但是 leader 一直安然无恙的话，也可能会很不幸的发起选举
 off but as leader didn't fail we might
 
 1104
 00:50:30,240 --> 00:50:32,400
+但是 leader 一直安然无恙的话，也可能会很不幸的发起选举
 still unfortunately get an election so
 
 1105
 00:50:32,400 --> 00:50:34,920
+比如网络太慢，或者心跳包丢失或是别的什么原因
 if the network is slow or drops a few
 
 1106
 00:50:34,920 --> 00:50:37,050
+比如网络太慢，或者心跳包丢失或是别的什么原因
 heartbeats or something we may end up
 
 1107
 00:50:37,050 --> 00:50:38,820
+最终还是会会导致选举定时器超时
 having election timers go off and even
 
 1108
 00:50:38,820 --> 00:50:40,440
+即使你有一个十分完美的 leader
 though there was a perfectly good leader
 
 1109
 00:50:40,440 --> 00:50:42,390
+然而也可能会有新选举产生
 we may nevertheless have a new election
 
 1110
 00:50:42,390 --> 00:50:43,740
+所以当我们考虑正确性的时候，需要要记住这一点
 so we have to sort of keep that in mind
 
 1111
 00:50:43,740 --> 00:50:44,640
-when we're thinking about the
+所以当我们考虑正确性的时候，需要要记住这一点
+we're thinking about the
 
 1112
 00:50:44,640 --> 00:50:48,510
-correctness and what that in turn means
+term 是做什么用的呢？
+correctness and what that in term means
 
 1113
 00:50:48,510 --> 00:50:50,369
+如果有新的选举发起，很容易想到的一个场景是
 is that if there's a new election it
 
 1114
 00:50:50,369 --> 00:50:52,410
+如果有新的选举发起，很容易想到的一个场景是
 could easily be the case that the old
 
 1115
 00:50:52,410 --> 00:50:54,359
+旧的 leader 仍然在运行，并且它仍然认为它自己是 leader
 leader is still hanging around and still
 
 1116
 00:50:54,359 --> 00:50:56,190
+旧的 leader 仍然在运行，并且它仍然认为它自己是 leader
 thinks it's the leader like if there's a
 
 1117
 00:50:56,190 --> 00:50:58,710
+比如网络产生分区的时候，旧的 leader 仍然存活
 network partition for example and the
 
 1118
 00:50:58,710 --> 00:51:00,869
+比如网络产生分区的时候，旧的 leader 仍然存活
 old leader is still alive and well in a
 
 1119
 00:51:00,869 --> 00:51:03,359
+并且处在一个只包含不到一半 server 的分区中
 minority partition the majority
 
 1120
 00:51:03,359 --> 00:51:05,280
+那么超过一半 server 的分区可能会发起选举
 partition may run an election and indeed
 
 1121
 00:51:05,280 --> 00:51:06,869
+并且也能成功选出一个新的 leader
 a successful election and choose a new
 
 1122
 00:51:06,869 --> 00:51:09,990
+它完全不知道旧的 leader 的存在
 leader all totally unknown to the
 
 1123
 00:51:09,990 --> 00:51:11,880
+所以我也们会担心，比如旧的 leader 会干啥
 previous leader so we also have to worry
 
 1124
 00:51:11,880 --> 00:51:13,530
+所以我也们会担心，比如旧的 leader 会干啥
 about you know what's that previous
 
 1125
 00:51:13,530 --> 00:51:15,420
+因为它也不知道发生了新的 leader 选举
 leader gonna do since it does not know
 
 1126
 00:51:15,420 --> 00:51:19,400
+因为它也不知道发生了新的 leader 选举
 there was a new election yes
 
 1127
 00:51:42,130 --> 00:51:44,869
+问题是：是否存在这种病态的 case，例如一个只能单向通信的网络
 okay so the question is are there can
 
 1128
 00:51:44,869 --> 00:51:46,940
+问题是：是否存在这种病态的 case，例如一个只能单向通信的网络
 there be pathological cases in which for
 
 1129
 00:51:46,940 --> 00:51:50,450
+问题是：是否存在这种病态的 case，例如一个只能单向通信的网络
 example one-way network communication
 
 1130
 00:51:50,450 --> 00:51:52,339
+在这种情况下，系统还能正常运行下去吗
 can prevent the system from making
 
 1131
 00:51:52,339 --> 00:51:54,550
+我认为答案是 yes
 progress I believe the answer is yes
 
 1132
 00:51:54,550 --> 00:51:56,930
+比如说，如果当前 leader，它的网络出现某种单向故障
 certainly so for example if the current
 
 1133
 00:51:56,930 --> 00:52:00,980
+比如说，如果当前 leader，它的网络出现某种单向故障
 leader if its network somehow half fails
 
 1134
 00:52:00,980 --> 00:52:02,839
+当前 leader 可以把心跳发送出去
 in a way the current leader can send out
 
 1135
 00:52:02,839 --> 00:52:04,000
+当前 leader 可以把心跳发送出去
 heartbeats
 
 1136
 00:52:04,000 --> 00:52:07,280
+但是无法接收任何客户端请求
 but can't receive any client requests
 
 1137
 00:52:07,280 --> 00:52:09,950
+因为网络的出口没问题，心跳包全都被发送出去了
 then the heartbeats that it sends out
 
 1138
 00:52:09,950 --> 00:52:11,869
+因为网络的出口没问题，心跳包全都被发送出去了
 which are delivered because it's
 
 1139
 00:52:11,869 --> 00:52:13,910
+因为网络的出口没问题，心跳包全都被发送出去了
 outgoing network connection works its
 
 1140
 00:52:13,910 --> 00:52:18,109
+它的心跳会压制住其它 server 发起选举
 outgoing heartbeats will suppress any
 
 1141
 00:52:18,109 --> 00:52:20,300
+它的心跳会压制住其它 server 发起选举
 other server from starting an election
 
 1142
 00:52:20,300 --> 00:52:22,280
+但是，网络入口却出了故障
 but the fact that it's incoming Network
 
 1143
 00:52:22,280 --> 00:52:24,800
+但是，网络入口却出了故障
 why or apparently is broken will prevent
 
 1144
 00:52:24,800 --> 00:52:26,720
+这就导致它无法接收到任何客户端的命令
 it from hearing and executing any client
 
 1145
 00:52:26,720 --> 00:52:29,210
+这也确实是 raft 不能解决所有疯狂的网络问题案例
 commands it's absolutely the case that
 
 1146
 00:52:29,210 --> 00:52:35,359
+这也确实是 raft 不能解决所有疯狂的网络问题案例
 raft is not proof against all sort of
 
 1147
 00:52:35,359 --> 00:52:37,190
+这也确实是 raft 不能解决所有疯狂的网络问题案例
 all crazy Network problems that can come
 
 1148
 00:52:37,190 --> 00:52:38,900
+我觉得这样应该可以解决问题
 up I believe the ones I've thought about
 
 1149
 00:52:38,900 --> 00:52:42,260
+我觉得这样应该可以解决问题
 I believe are fixable in the sense that
 
 1150
 00:52:42,260 --> 00:52:46,970
+从某种意义上来说，你可以做一个双向的心跳功能
 the we could solve this one by having a
 
 1151
 00:52:46,970 --> 00:52:49,339
+从某种意义上来说，你可以做一个双向的心跳功能
 sort of requiring a two-way heartbeat in
 
 1152
 00:52:49,339 --> 00:52:51,770
+比如 leader 发送出心跳包后，follwer 被要求回应心跳包
 which if the leader sends out heartbeats
 
 1153
 00:52:51,770 --> 00:52:53,450
+比如 leader 发送出心跳包后，follwer 被要求回应心跳包
 but you know there were in which
 
 1154
 00:52:53,450 --> 00:52:55,700
+比如 leader 发送出心跳包后，follwer 被要求回应心跳包
 followers are required to reply in some
 
 1155
 00:52:55,700 --> 00:52:56,990
+比如 leader 发送出心跳包后，follwer 被要求回应心跳包
 way to heartbeats I guess they are
 
 1156
 00:52:56,990 --> 00:52:59,240
+我猜在 apply 这一步，这些回应是需要的
 already required to apply if the leader
 
 1157
 00:52:59,240 --> 00:53:01,869
+如果 leader 没有看见对心跳的回应
 stop seeing replies to its heartbeats
 
 1158
 00:53:01,869 --> 00:53:04,460
+过一段很长一段时间后，才看见回应
 then after some amount of time and which
 
 1159
 00:53:04,460 --> 00:53:06,230
-is seasonals replies the leader decides
+过一段很长一段时间后，才看见回应
+see the replies the leader decides
 
 1160
 00:53:06,230 --> 00:53:09,230
+leader 就会自己决定下台
 to step down I feel like that specific
 
 1161
 00:53:09,230 --> 00:53:12,530
+我感觉这个特殊的 issue 是可以被修复的
 issue can be fixed and many others can
 
 1162
 00:53:12,530 --> 00:53:16,069
+当然其它的问题也是能被解决的
 too but I but you know you're absolutely
 
 1163
 00:53:16,069 --> 00:53:17,900
+不过我觉得你的问题也完全是正确的
 right that very strange things can
 
 1164
 00:53:17,900 --> 00:53:19,599
+网络协议没有准备就绪的话，这种奇怪的问题是可能会发生的
 happen to networks including some that
 
 1165
 00:53:19,599 --> 00:53:23,589
+网络协议没有准备就绪的话，这种奇怪的问题是可能会发生的
 the protocol is not prepared for
 
 1166
 00:53:28,740 --> 00:53:32,260
-okay so we got these meter elections we
+okay，leader 选举 就是这些
+okay so we got these leader elections we
 
 1167
 00:53:32,260 --> 00:53:33,849
+我们需要确保一个 term 至多只有一个 leader
 need to ensure that there is at most at
 
 1168
 00:53:33,849 --> 00:53:35,440
-most one meter per term
+我们需要确保一个 term 至多只有一个 leader
+most one leader per term
 
 1169
 00:53:35,440 --> 00:53:38,080
-how does Rath do that well Rath requires
+raft 如何做呢？对于一个 term 来说
+how does raft do that well raft requires
 
 1170
 00:53:38,080 --> 00:53:40,240
+raft 要求 candidate 得到半数以上 server 的投票
 in order to be elected for a term Raft
 
 1171
 00:53:40,240 --> 00:53:42,700
+raft 要求 candidate 得到半数以上 server 的投票
 requires a candidate to get yes votes
 
 1172
 00:53:42,700 --> 00:53:46,030
+raft 要求 candidate 得到半数以上 server 的 yes 投票
 from a majority of the server's the
 
 1173
 00:53:46,030 --> 00:53:47,980
+每个 server 在一个 term 中只能投一票 yes
 servers and each server will only cast
 
 1174
 00:53:47,980 --> 00:53:52,390
+每个 server 在一个 term 中只能投一票 yes
 one yes vote per term so in any given
 
 1175
 00:53:52,390 --> 00:53:55,690
+所以在任何一个 term 中，只能为一个 candidate 投一票
 term you know it basically means that in
 
 1176
 00:53:55,690 --> 00:53:58,180
-any given term Easter votes only once
+所以在任何一个 term 中，只能为一个 candidate 投一票
+any given term either votes only once
 
 1177
 00:53:58,180 --> 00:54:01,060
+所以在任何一个 term 中，只能为一个 candidate 投一票
 for only one candidate you can't have
 
 1178
 00:54:01,060 --> 00:54:03,280
+这样就不可能同时有 2 个 candidate 获得半数以上的选票
 two candidates both get a majority of
 
 1179
 00:54:03,280 --> 00:54:06,570
+因为每个只能投一次票
 votes because everybody votes only once
 
 1180
 00:54:06,570 --> 00:54:09,670
+所以 majority 规则保证了至多只有一个 candidate 胜出
 so the majorities majority rule causes
 
 1181
 00:54:09,670 --> 00:54:11,530
+所以 majority 规则保证了至多只有一个 candidate 胜出
 there to be at most one winning
 
 1182
 00:54:11,530 --> 00:54:17,400
+也以我们也能保证在一个 term 中至多只有一个 candidate 被选出
 candidate and so then we get at most one
 
 1183
 00:54:17,400 --> 00:54:21,150
-candidate elected per turn
+也以我们也能保证在一个 term 中至多只有一个 candidate 被选出
+candidate elected per term
 
 1184
 00:54:24,450 --> 00:54:28,630
+另外，majority 规则的关键含义是
 and in addition critically the majority
 
 1185
 00:54:28,630 --> 00:54:31,930
+即使有一些 server 宕机了，也能选举成功
 rule means that you can get elected even
 
 1186
 00:54:31,930 --> 00:54:34,450
+即使有一些 server 宕机了，也能选举成功
 if some servers have crashed right if a
 
 1187
 00:54:34,450 --> 00:54:36,010
+如果有不到一半的 server 宕机了，不可用了，网络故障了
 minority of servers are crashed aren't
 
 1188
 00:54:36,010 --> 00:54:37,690
+如果有不到一半的 server 宕机了，不可用了，网络故障了
 available and network problems we can
 
 1189
 00:54:37,690 --> 00:54:39,700
+我们仍然能选出一个 leader
 still elect a leader if more than half a
 
 1190
 00:54:39,700 --> 00:54:41,530
+如果有超过一半宕机，不可用或处于其它的分区中
 crash or not available or in another
 
 1191
 00:54:41,530 --> 00:54:43,390
+那么整个系统就坐那不动了（停止）
 partition or something then actually the
 
 1192
 00:54:43,390 --> 00:54:44,830
+那么整个系统就坐那不动了（停止）
 system will just sit there trying again
 
 1193
 00:54:44,830 --> 00:54:47,080
+它会一遍又一遍的发起 leader 选举，但是却又永远选不出 leader
 and again to elect a leader and never
 
 1194
 00:54:47,080 --> 00:54:49,480
+因为存活的机器不超过一半，事实上也不能选出 leader
 elect one if it cannot in fact they're
 
 1195
 00:54:49,480 --> 00:54:54,730
+因为存活的机器不超过一半，事实上也不能选出 leader
 not a majority of live servers if an
 
 1196
 00:54:54,730 --> 00:54:57,400
+如果选举成功，并且每个节点都知道了这件事，那么一切安好
 election succeeds everybody would be
 
 1197
 00:54:57,400 --> 00:54:58,960
+如果选举成功，并且每个节点都知道了这件事，那么一切安好
 great if everybody learned about it I
 
 1198
 00:54:58,960 --> 00:55:01,359
+我们需要问一下自己，假设没有 server 宕机
 mean need to ask ourselves how do all
 
 1199
 00:55:01,359 --> 00:55:02,980
+所有的 server 是如何知道哪个 server 赢得了选举？
 the parties learn learn what happened
 
 1200
 00:55:02,980 --> 00:55:04,750
+所有的 server 是如何知道哪个 server 赢得了选举？
 the server that wins an election
 
 1201
 00:55:04,750 --> 00:55:07,300
+所有的 server 是如何知道哪个 server 赢得了选举？
 assuming it doesn't crash the server
 
 1202
 00:55:07,300 --> 00:55:09,550
+赢得选举的 server 也确实看到了半数以上对它的投票
 that wins election will actually see a
 
 1203
 00:55:09,550 --> 00:55:12,730
+赢得选举的 server 也确实看到了半数以上其它 server 对它的投票
 majority or positive votes for its
 
 1204
 00:55:12,730 --> 00:55:15,400
+赢得选举的 server 也确实看到了半数以上其它 server 对它的投票
 request vote from a majority of the
 
 1205
 00:55:15,400 --> 00:55:17,740
+发起选举的 candidate 赢得了投票
 other servers so the candidates running
 
 1206
 00:55:17,740 --> 00:55:19,540
-the election that wins it the Kennedy
+发起选举的 candidate 赢得了投票
+the election that wins it the candidates
 
 1207
 00:55:19,540 --> 00:55:20,710
+发起选举的 candidate 赢得了投票
 that wins the election will actually
 
 1208
 00:55:20,710 --> 00:55:22,960
+它自己当然很清楚自己赢得了半数以上的选票
 know directly uh I got a majority of
 
 1209
 00:55:22,960 --> 00:55:26,020
+但是其它的 server 不知道呀
 votes but nobody else directly knows who
 
 1210
 00:55:26,020 --> 00:55:28,900
+但是其它的 server 不知道呀
 the winner was or whether anybody one so
 
 1211
 00:55:28,900 --> 00:55:30,790
+所以取胜的 candidate 需要通知其它 server
 the way that the candidate informs other
 
 1212
 00:55:30,790 --> 00:55:33,670
+也就是使用心跳
 servers is that heartbeat the rules and
 
 1213
 00:55:33,670 --> 00:55:34,869
-figure to say oh if you're in an
+图 2 中说，如果你赢得了选举
+figure 2 say oh if you win an
 
 1214
 00:55:34,869 --> 00:55:36,280
+就应该立刻发送 AppendEntries 到其它 server
 election your immediately required to
 
 1215
 00:55:36,280 --> 00:55:37,359
-send out an independent
+就应该立刻发送 AppendEntries 到其它 server
+send out AppendEntries
 
 1216
 00:55:37,359 --> 00:55:39,940
-trees to all the other servers now the
+就应该立刻发送 AppendEntries 到其它 server
+to all the other servers now the
 
 1217
 00:55:39,940 --> 00:55:41,920
+AppendEntries 并不直接会包含这个信息
 append entries that heartbeat append
 
 1218
 00:55:41,920 --> 00:55:45,160
+哦，我赢得了选票，我是 term 23 的 leader
 entries doesn't explicitly say I won the
 
 1219
 00:55:45,160 --> 00:55:47,829
+哦，我赢得了选票，我是 term 23 的 leader
 election you know I'm a leader for term
 
 1220
 00:55:47,829 --> 00:55:51,009
+这里有一点微妙的地方
 23 it's a little more subtle than that
 
 1221
 00:55:51,009 --> 00:55:53,710
+除了 leader，其它人是不允许发送 AppendEntries 消息的
 the the way the information is
 
 1222
 00:55:53,710 --> 00:55:57,549
+除了 leader，其它人是不允许发送 AppendEntries 消息的
 communicated is that no one is allowed
 
 1223
 00:55:57,549 --> 00:56:00,249
+除了 leader，其它人是不允许发送 AppendEntries 消息的
 to send out an append entries unless
 
 1224
 00:56:00,249 --> 00:56:02,799
+除了 leader，其它人是不允许发送 AppendEntries 消息的
 they're a leader for that term so the
 
 1225
 00:56:02,799 --> 00:56:05,559
+所以事实上是这样，我是一个 server
 fact that I I'm a you know I'm a server
 
 1226
 00:56:05,559 --> 00:56:07,029
+我看到了在 term 19 的那次选举
 and I saw oh there's an election for
 
 1227
 00:56:07,029 --> 00:56:09,579
+过了一会儿，我leader 发送了一条 term 为 19 的 AppendEntires
 term 19 and then by-and-by I sent an
 
 1228
 00:56:09,579 --> 00:56:12,730
+过了一会儿，leader 发送了一条 term 为 19 的 AppendEntires
 append entries whose term is 19 that
 
 1229
 00:56:12,730 --> 00:56:15,009
+然后我收到了，我就知道有人赢得了这次选举，虽然我不清楚是谁赢得了选举
 tells me that somebody I don't know who
 
 1230
 00:56:15,009 --> 00:56:18,099
+然后我收到了，我就知道有人赢得了这次选举，虽然我不清楚是谁赢得了选举
 but somebody won the election so that's
 
 1231
 00:56:18,099 --> 00:56:19,390
+所以这就是其它 server 如何得知有人赢得选举的
 how the other servers knows they were
 
 1232
 00:56:19,390 --> 00:56:21,359
+它们接收到那个 term 的 AppendEntries 消息
 receiving append entries for that term
 
 1233
 00:56:21,359 --> 00:56:24,670
+那条 AppendEntries 消息，也会重置每个 server 的选举定时器
 and that append entries also has the
 
 1234
 00:56:24,670 --> 00:56:27,369
+那条 AppendEntries 消息，也会重置每个 server 的选举定时器
 effect of resetting everybody's election
 
 1235
 00:56:27,369 --> 00:56:30,279
+只要 leader 存活，那就会发送心跳消息，或者说是 AppendEntries
 time timer so as long as the leader is
 
 1236
 00:56:30,279 --> 00:56:32,109
+只要 leader 存活，那就会发送心跳消息，或者说是 AppendEntries
 up and it sends out heartbeat messages
 
 1237
 00:56:32,109 --> 00:56:34,599
+只要 leader 存活，那就会发送心跳消息，或者说是 AppendEntries
 or append entries at least you know at
 
 1238
 00:56:34,599 --> 00:56:36,910
+每次 server 收到了一条 AppendEntries
 the rate that's supposed to every time a
 
 1239
 00:56:36,910 --> 00:56:38,650
+每次 server 收到了一条 AppendEntries
 server receives an append entries it'll
 
 1240
 00:56:38,650 --> 00:56:42,569
+它就会重置它的选举定时器
 reset its selection timer and sort of
 
 1241
 00:56:42,569 --> 00:56:45,249
+压制任何人变成为 candidate
 suppress anybody from being a new
 
 1242
 00:56:45,249 --> 00:56:47,289
+只要一切运作正常，这些重复的心跳就能阻止新的选举产生
 candidate so as long as everything's
 
 1243
 00:56:47,289 --> 00:56:49,539
+只要一切运作正常，这些重复的心跳就能阻止新的选举产生
 functioning the repeated heartbeats will
 
 1244
 00:56:49,539 --> 00:56:52,299
+只要一切运作正常，这些重复的心跳就能阻止新的选举产生
 prevent any further elections of course
 
 1245
 00:56:52,299 --> 00:56:53,859
+当然了，如果有网络故障，或是丢失消息
 it the network fails or packets are
 
 1246
 00:56:53,859 --> 00:56:55,569
+仍然会导致新的选举被发起
 dropped there may nevertheless be an
 
 1247
 00:56:55,569 --> 00:56:57,880
+若一切安好，那就不太可能发起新的选举
 election but if all goes well we're sort
 
 1248
 00:56:57,880 --> 00:57:03,489
+若一切安好，那就不太可能发起新的选举
 of unlikely to get an election this
 
 1249
 00:57:03,489 --> 00:57:05,739
+这个方案可能会失效
 scheme could fail in the sense that it
 
 1250
 00:57:05,739 --> 00:57:07,329
-can't fail in the sense of electing to
+对于同一个 term 来说，不会选出 2 个 leader 出来
+can't fail in the sense of electing two
 
 1251
 00:57:07,329 --> 00:57:09,849
-leaders fair term but it can fail in the
+对于同一个 term 来说，不会选出 2 个 leader 出来
+leaders for a term but it can fail in the
 
 1252
 00:57:09,849 --> 00:57:11,380
+但可能会一个 leader 都选不出来，这时候就失败了
 sense of electing zero leaders for a
 
 1253
 00:57:11,380 --> 00:57:14,319
-term that's sort of morningway it may
+有太多种情况会导致失败
+term that's sort of many way it may
 
 1254
 00:57:14,319 --> 00:57:16,210
+比如有太多的服务器宕机或不可用，网络连接故障
 fail is that if too many servers are
 
 1255
 00:57:16,210 --> 00:57:18,279
+比如有太多的服务器宕机或不可用，网络连接故障
 dead or unavailable or a bad network
 
 1256
 00:57:18,279 --> 00:57:19,690
+所以这个时候，你就没办法组合出 majoirity 出来
 connection so if you can't assemble a
 
 1257
 00:57:19,690 --> 00:57:21,880
+因此也就无法选出任何 leader 出来，啥也不会发生
 majority you can't be elected nothing
 
 1258
 00:57:21,880 --> 00:57:24,489
+还有一些更有趣的选举失败的方式
 happens the more interesting way in
 
 1259
 00:57:24,489 --> 00:57:27,150
+还有一些更有趣的选举失败的方式
 which an election can fail is if
 
 1260
 00:57:27,150 --> 00:57:30,069
+所有人都是健在的，也没有网络丢包
 everybody's up you know there's no
 
 1261
 00:57:30,069 --> 00:57:33,130
+所有人都是健在的，也没有网络丢包
 failures no packets are dropped but two
 
 1262
 00:57:33,130 --> 00:57:35,799
+但是同时有 2 个 leaders(可能是口误，应该是2个 follower)
+几乎在同一时刻成为了 candidate
 leaders become candidate close together
 
 1263
 00:57:35,799 --> 00:57:38,499
+他们之间将会瓜分选票，或者说是有 3 个人一起瓜分吧
 enough in time that they split the vote
 
 1264
 00:57:38,499 --> 00:57:43,109
+他们之间将会瓜分选票，或者说是有 3 个人一起瓜分吧
 between them or say three leaders
 
 1265
 00:57:45,020 --> 00:57:46,369
-so supposing we have three liters
+假设我们有 3 个 leader
+so supposing we have three leaders
 
 1266
 00:57:46,369 --> 00:57:49,180
+假设我们的系统中有 3 个副本
 supposing we have a three replica system
 
 1267
 00:57:49,180 --> 00:57:51,860
+他们 3 个人的选举定时器几乎在同一时刻到期，每个人都先给自己投一票
 all their election timers go off at the
 
 1268
 00:57:51,860 --> 00:57:54,760
-same time every server both for itself
+他们 3 个人的选举定时器几乎在同一时刻到期，每个人都先给自己投一票
+same time every server votes for itself
 
 1269
 00:57:54,760 --> 00:57:57,650
+接下来，他们每个人又会收到其它 server 的选票请求
 and then when each of them receives a
 
 1270
 00:57:57,650 --> 00:57:59,060
+接下来，他们每个人又会收到其它 server 的选票请求
 request vote from another server well
 
 1271
 00:57:59,060 --> 00:58:00,710
+好了，因为它自己已经把票投给了自己，所以它就会回复 no. 
 it's already cast its vote for itself
 
 1272
 00:58:00,710 --> 00:58:02,780
+这样的结果就是 3 个服务器各自有一张选票
 and so it says no so that means that it
 
 1273
 00:58:02,780 --> 00:58:04,100
-all three of the server's needs to get
+这样的结果就是 3 个服务器各自有一张选票
+all three of the servers each get
 
 1274
 00:58:04,100 --> 00:58:05,930
+没有一个人的选票超过半数，所以也就没有 leader 被选出
 one vote each nobody gets a majority and
 
 1275
 00:58:05,930 --> 00:58:09,800
+没有一个人的选票超过半数，所以也就没有 leader 被选出
 nobody's elected so then their election
 
 1276
 00:58:09,800 --> 00:58:11,450
+然后他们的选举定时器会再一次超时
 timers will go off again because the
 
 1277
 00:58:11,450 --> 00:58:12,890
-election timers only be said if it gets
+因为只有在收到 AppendEntires 时选举定时器才会被重置
+election timers only reset if it gets
 
 1278
 00:58:12,890 --> 00:58:14,360
+但是没有 leader 被选出来，因此也就没有 AppendEntries 消息
 an append entries but there's no leader
 
 1279
 00:58:14,360 --> 00:58:16,460
+但是没有 leader 被选出来，因此也就没有 AppendEntries 消息
 so no append entries they'll all have
 
 1280
 00:58:16,460 --> 00:58:17,930
+他们的选举定时器会再一次超时
 their election timers go off again and
 
 1281
 00:58:17,930 --> 00:58:19,100
+如果很不幸的是又在同一时刻超时
 if we're unlucky
 
 1282
 00:58:19,100 --> 00:58:20,270
+如果很不幸的是又在同一时刻超时
 they'll all go off at the same time
 
 1283
 00:58:20,270 --> 00:58:22,160
-they'll all go for themselves nobody
+于是他们又会自己给自己投票
+they'll all vote for themselves nobody
 
 1284
 00:58:22,160 --> 00:58:27,140
+然后又没有人拿到半数以上的选票
 will get a majority so so clearly I'm
 
 1285
 00:58:27,140 --> 00:58:28,360
+我相信你们都已经注意到这一点了
 sure you're all aware at this point
 
 1286
 00:58:28,360 --> 00:58:31,520
+这个故事还有更多的后续
 there's more to this story and the way
 
 1287
 00:58:31,520 --> 00:58:35,630
+raft 让这种瓜分选票的概率变的非常低，但是也不是不可能发生
 Raft makes this possibility of split
 
 1288
 00:58:35,630 --> 00:58:38,720
+raft 让这种瓜分选票的概率变的非常低，但是也不是不可能发生
 votes unlikely but not impossible
 
 1289
 00:58:38,720 --> 00:58:41,060
+raft 通过随机化选举定时器的超时时间
 is by randomizing these election timers
 
 1290
 00:58:41,060 --> 00:58:44,210
+怎么去想这件事呢？
 so the way to think of it and the
 
 1291
 00:58:44,210 --> 00:58:46,400
+怎么去思考随机化呢？
 randomization the way to think of it is
 
 1292
 00:58:46,400 --> 00:58:47,900
+假设有一条时间线
 that supposing you have some time line
 
 1293
 00:58:47,900 --> 00:58:52,130
-I'm gonna draw a vents on there's some
+我打算在某些位置上画一些事件
+I'm gonna draw events on there's some
 
 1294
 00:58:52,130 --> 00:58:54,170
+在这里，是每个人收到最后一次 AppendEntries 的时间
 point at which everybody received the
 
 1295
 00:58:54,170 --> 00:58:57,440
+在这里，是每个人收到最后一次 AppendEntries 的时间
 last append entries right and then maybe
 
 1296
-00:58:57,440 --> 00:58:58,790
+00:58:57,440 --> 00:58:58,
+然后我们假设发送最后一个心跳的服务器宕机了
 the server died let's just assume the
 
 1297
 00:58:58,790 --> 00:59:01,100
+然后我们假设发送最后一个心跳的服务器宕机了
 server send out a last heartbeat and
 
 1298
 00:59:01,100 --> 00:59:07,990
+所有 follower 会在这个位置重置他们的选举定时器
 then died well all of the followers have
 
 1299
 00:59:08,109 --> 00:59:11,119
+所有 follower 会在这个位置重置他们的选举定时器
 this we set their election timers when
 
 1300
 00:59:11,119 --> 00:59:13,160
+因为他们可能会在同时收到这条 AppendEntries
 they received at the same time because
 
 1301
 00:59:13,160 --> 00:59:14,570
+因为他们可能会在同时收到这条 AppendEntries
 they probably all receive this append
 
 1302
 00:59:14,570 --> 00:59:16,040
+因为他们可能会在同时收到这条 AppendEntries
 enters at the same time they all reset
 
 1303
 00:59:16,040 --> 00:59:18,290
+然后在这个位置重置选举定时器
 their election timers for some point in
 
 1304
 00:59:18,290 --> 00:59:21,530
+在未来的某个时间点这些定时器会到期
 the future the future but they chose
 
 1305
 00:59:21,530 --> 00:59:23,630
+它们他们会选择一个随机的时间来设定这个定时器
 different random times in the future
 
 1306
 00:59:23,630 --> 00:59:25,369
+它们他们会选择一个随机的时间来设定这个定时器
 which then we're gonna go off
 
 1307
 00:59:25,369 --> 00:59:27,050
+假设 leader S1 宕机了
 so it's suppose the dead leader server
 
 1308
 00:59:27,050 --> 00:59:30,230
+所以现在 S2 和 S2 会在这里设置他们选举定时器
 one so now server two and server 3 at
 
 1309
 00:59:30,230 --> 00:59:32,359
+所以现在 S2 和 S2 会在这里设置他们选举定时器
 this point set their election timers for
 
 1310
 00:59:32,359 --> 00:59:34,010
+并未来的某个时刻随机选一个位置表示到期时间
 a random point in the future let's say
 
 1311
 00:59:34,010 --> 00:59:37,970
-server to set their I like some timer to
+假设 S2 设定在这个位置表示到期
+server 2 set there I like some timer to
 
 1312
 00:59:37,970 --> 00:59:41,030
+S3 选择在这个位置到期
 go off here and server 3 set its
 
 1313
 00:59:41,030 --> 00:59:43,880
+S3 选择在这个位置到期
 election timer to go off there and the
 
 1314
 00:59:43,880 --> 00:59:46,210
+这幅图的一个关键点是假设他们选择了一个不同的随机数字
 crucial point about this picture is that
 
 1315
 00:59:46,210 --> 00:59:48,080
+这幅图的一个关键点是假设他们选择了一个不同的随机数字
 assuming they picked different random
 
 1316
 00:59:48,080 --> 00:59:51,260
+它是第一个，它是第二个
 numbers one of them is first and the
 
 1317
 00:59:51,260 --> 00:59:54,560
+它是第一个，它是第二个
 other one is second right that's what's
 
 1318
 00:59:54,560 --> 00:59:56,600
+这里将会发生什么？
 going on here and the one that's first
 
 1319
 00:59:56,600 --> 00:59:58,069
+假设这里之间的间隙足够长
 assuming
 
 1320
 00:59:58,069 --> 01:00:00,079
+假设这里之间的间隙足够长
 this gap is big enough the one that's
 
 1321
 01:00:00,079 --> 01:00:01,400
+第一个位置选举定时器会在另一个之前到期
 first it's election time will go off
 
 1322
 01:00:01,400 --> 01:00:02,869
+第一个位置选举定时器会在另一个之前到期
 first before the other ones election
 
 1323
 01:00:02,869 --> 01:00:05,930
-timer and if we're close were not
+如果我们不会那么不走运
+timer and if we were not
 
 1324
 01:00:05,930 --> 01:00:06,410
+如果我们不会那么不走运
 unlucky
 
 1325
 01:00:06,410 --> 01:00:08,420
+那么这里就有足够长的时间发送一轮投票，并能得到每个人的回复
 it'll have time to send out a full round
 
 1326
 01:00:08,420 --> 01:00:11,750
+那么这里就有足够长的时间发送一轮投票，并能得到每个人的回复
 of vote requests and get answers from
 
 1327
 01:00:11,750 --> 01:00:13,630
+那么这里就有足够长的时间发送一轮投票，并能得到每个人的回复
 everybody who everybody's alive before
 
 1328
 01:00:13,630 --> 01:00:16,819
+这些都会在第二个选举定时器到期之前发生
 the second election timer goes off from
 
 1329
 01:00:16,819 --> 01:00:22,569
+所以，大家明白随机化是怎么去同步化操作的了吗？
 any other server so does everybody see
 
 1330
 01:00:22,569 --> 01:00:26,140
-how the randomization D synchronizes
+所以，大家明白随机化是怎么去同步化操作的了吗？
+how the randomization desynchronizes
 
 1331
 01:00:26,140 --> 01:00:30,710
+所以不幸的是，给这些定时器设定内容需要一点点艺术
 these candidates unfortunately there's a
 
 1332
 01:00:30,710 --> 01:00:33,230
+所以不幸的是，给这些定时器设定内容需要一点点艺术
 bit of art in setting the contents
 
 1333
 01:00:33,230 --> 01:00:34,970
+所以不幸的是，给这些定时器设定内容需要一点点艺术
 constants for these election timers
 
 1334
 01:00:34,970 --> 01:00:36,490
+你可能需要满足一些条件
 there's some sort of competing
 
 1335
 01:00:36,490 --> 01:00:40,210
+你可能需要满足一些条件
 requirements you might want to fulfill
 
 1336
 01:00:40,210 --> 01:00:43,309
+典型的条件之一是
 so one obvious requirement is that the
 
 1337
 01:00:43,309 --> 01:00:45,230
+定时器的超时时间至少要和 2 次心跳间隔的时间一样长
 election timer has to be at least as
 
 1338
 01:00:45,230 --> 01:00:47,030
+定时器的超时时间至少要和 2 次心跳间隔的时间一样长
 long as the expected interval between
 
 1339
 01:00:47,030 --> 01:00:47,809
+定时器的超时时间至少要和 2 次心跳间隔的时间一样长
 heartbeats
 
 1340
 01:00:47,809 --> 01:00:49,790
+
 you know this is pretty obvious that the
 
 1341
