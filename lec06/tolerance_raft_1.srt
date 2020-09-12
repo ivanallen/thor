@@ -185,14 +185,7 @@ was required to make a critical decision
 即需要一个单一的 entity (实体)来判定谁是 primary
 about who the primary was in the cases we care about
 
-38
-00:01:43,549 --> 00:01:47,210
-单一实体的好处是它能决定谁来当 primary
-so a very nice thing about
-
-39
-00:01:47,210 --> 00:01:50,119
-00:01:43,549 --> 00:01:47,210
+00:01:43,549 --> 00:01:50,119
 单一实体的好处是它能决定谁来当 primary，它不能否定它自己
 having a single entity decide who's
 
