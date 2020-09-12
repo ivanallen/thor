@@ -7654,669 +7654,828 @@ second slot the server one has nothing
 
 1532
 01:10:10,239 --> 01:10:14,800
+所以，这个问题，也是咱们的第一个问题，它是如何发生的？
 there at all and so question for this
 
 1533
 01:10:14,800 --> 01:10:16,480
+所以，这个问题，也是咱们的第一个问题，它是如何发生的？
 like the very first question is can this
 
 1534
 01:10:16,480 --> 01:10:21,659
+这种情况会发生吗？怎么发生的？
 arrive could this setup arise and how
 
 1535
 01:10:21,659 --> 01:10:24,659
+是的
 yes
 
 1536
 01:11:02,130 --> 01:11:04,840
+S3 可能是 leader
 so you know maybe server 3 was the
 
 1537
 01:11:04,840 --> 01:11:06,280
+我就把你刚刚说的话重复一下
 leader for just repeating what you said
 
 1538
 01:11:06,280 --> 01:11:08,320
+S3 可能是 term 3 的 leader
 maybe server 3 is the leader for term 3
 
 1539
 01:11:08,320 --> 01:11:09,970
+它收到了一条命令，然后发给每个人
 he got a command that sent out to
 
 1540
 01:11:09,970 --> 01:11:11,380
-everybody everybody received a dependent
+然后每个收到它追加到自己的 log 中
+everybody everybody received and apended
 
 1541
 01:11:11,380 --> 01:11:14,350
+接下来 S3 又收到了一条来自客户端的请求
 at the log and then I got a server 3 got
 
 1542
 01:11:14,350 --> 01:11:18,160
+接下来 S3 又收到了一条来自客户端的请求
 a second request from a client and maybe
 
 1543
 01:11:18,160 --> 01:11:19,810
+它可能发它发送给了所有的 server
 it sent it to all three servers but the
 
 1544
 01:11:19,810 --> 01:11:21,130
+但是这条消息在发送给 S1 时丢失了，也可能是 S1 宕机了
 message got lost on the way to server
 
 1545
 01:11:21,130 --> 01:11:23,020
+但是这条消息在发送给 S1 时丢失了，也可能是 S1 宕机了
 one or maybe server was down at the time
 
 1546
 01:11:23,020 --> 01:11:25,030
-or something and so only server to the
+leader 在发送 AppendEntires 之前
+or something and so only server two the
 
 1547
 01:11:25,030 --> 01:11:28,150
+总是能追加新的命令到自己的 log 中的
 leader always append new commands to its
 
 1548
 01:11:28,150 --> 01:11:29,830
+总是能追加新的命令到自己的 log 中的
 log before it sends out append entries
 
 1549
 01:11:29,830 --> 01:11:32,380
+AppendEntires RPC 仅仅被  S2 收到
 and maybe the append entry RPC only got
 
 1550
 01:11:32,380 --> 01:11:34,390
+所以在这种情况下
 to server 2 so this situation you know
 
 1551
 01:11:34,390 --> 01:11:36,160
-it's like the simplest situation and was
+这只是一种很简单的日志不一致的情况
+it's like the simplest situation in which
 
 1552
 01:11:36,160 --> 01:11:38,460
+这只是一种很简单的日志不一致的情况
 actually the logs are not different and
 
 1553
 01:11:38,460 --> 01:11:43,480
+我们知道它可能会怎么样发生
 we know how it could possibly arise and
 
 1554
 01:11:43,480 --> 01:11:45,250
+所以如果作为 leader 的 S3 宕机了
 so if server 3 which is a leadership
 
 1555
 01:11:45,250 --> 01:11:46,480
+那么现在你就必须得再选一个新的 server
 crash now you know the next server
 
 1556
 01:11:46,480 --> 01:11:49,300
+那么现在你就必须得再选一个新的 server
 they're gonna need to make sure server 1
 
 1557
 01:11:49,300 --> 01:11:54,820
+那么现在你就必须得再选一个新的 server
 well first of all if server 3 crashes or
 
 1558
 01:11:54,820 --> 01:11:56,140
+那么现在你就必须得再选一个新的 server
 we'll be at an election and some of the
 
 1559
 01:11:56,140 --> 01:11:57,790
+会有某个 leader 被选出来
 leader is chosen you know two things
 
 1560
 01:11:57,790 --> 01:12:00,160
+有 2 件事件一定会发生
 have to happen the new leader has got to
 
 1561
 01:12:00,160 --> 01:12:04,990
+新的 leader 需要能识别出这条命令是提交过的
 recognize that this command could have
 
 1562
-01:12:04,990 --> 01:12:06,910
-committed it's not allowed to throw it
-
-1563
-01:12:06,910 --> 01:12:07,750
-away
+01:12:04,990 --> 01:12:07,750
+它也不允许丢弃这条日志
+committed it's not allowed to throw it away
 
 1564
 01:12:07,750 --> 01:12:09,940
+另外它需要保证 S1 填充此处的空白
 and it needs to make sure server one
 
 1565
 01:12:09,940 --> 01:12:12,070
+另外它需要保证 S1 填充此处的空白
 fills in this blank here with indeed
 
 1566
 01:12:12,070 --> 01:12:13,600
+以和别人在同样的位置保持一致
 this very same command that everybody
 
 1567
 01:12:13,600 --> 01:12:17,950
+以和别人在同样的位置保持一致
 else had in that slot all right so after
 
 1568
 01:12:17,950 --> 01:12:20,440
+所以在某个 server 宕机后
 a crash somebody you know server 3
 
 1569
 01:12:20,440 --> 01:12:22,420
+所以另一种可能出现此情况的方式是
 suppose another way this can come up is
 
 1570
 01:12:22,420 --> 01:12:24,160
+S3 在给 S2 发送 AppendEntries 后，但是在给 S1 发送前宕机了
 server 3 might have sent out the append
 
 1571
 01:12:24,160 --> 01:12:26,140
+S3 在给 S2 发送 AppendEntries 后，但是在给 S1 发送前宕机了
 entries the server 2 but then crashed
 
 1572
 01:12:26,140 --> 01:12:27,700
-before sending the append entries to
+S3 在给 S2 发送 AppendEntries 后，但是在给 S1 发送前宕机了
+before sending the append entries to server 3（口误，应该是 S1）
 
 1573
 01:12:27,700 --> 01:12:30,400
-server 3 so if were you know electing a
+所以，如果你你选了一个新的 leader 出来
+so if were you know electing a
 
 1574
 01:12:30,400 --> 01:12:32,410
+在发送消息之前就宕机了，这就导致了这种情况
 new leader it could because we got a
 
 1575
 01:12:32,410 --> 01:12:34,530
+在发送消息之前就宕机了，这就导致了这种情况
 crash before the message was sent
 
 1576
 01:12:34,530 --> 01:12:37,080
+我们再考虑另一种情况，仍然有 3 个 server
 here's another scenario to think about
 
 1577
 01:12:37,080 --> 01:12:44,830
-three servers again no I mean a number
+我们再考虑另一种情况，仍然有 3 个 server
+three servers again now I mean a number
 
 1578
 01:12:44,830 --> 01:12:48,190
-the slots in the law and so we can refer
+日志里有一些槽，假设它们编号分别是 10, 11, 12, 13
+the slots in the log and so we can refer
 
 1579
-01:12:48,190 --> 01:12:55,560
+01:12:48,190 --> 01:12:57,150
+日志里有一些槽，假设它们编号分别是 10, 11, 12, 13
 to them got slot 10 11 12 13
-
-1580
-01:12:55,730 --> 01:12:57,150
-[Music]
 
 1581
 01:12:57,150 --> 01:13:04,360
+这里设置相同的值，除了 12 号槽
 again it's same setup except now we have
 
 1582
 01:13:04,360 --> 01:13:07,780
-in slide 12 we have server 2 as a
+我们假设 S2 在 term 4 有一条命令
+in slot 12 we have server 2 as a
 
 1583
 01:13:07,780 --> 01:13:11,170
-command from term for and server 3 has a
+而 S3 在 term 5 时有一条命令
+command from term 4 and server 3 has a
 
 1584
 01:13:11,170 --> 01:13:14,730
+而 S3 在 term 5 时有一条命令
 term command from term 5
 
 1585
 01:13:15,790 --> 01:13:19,610
+呃，在我们分析这个情形前，我们先思考一下
 so you know before we analyze these to
 
 1586
 01:13:19,610 --> 01:13:21,470
+这种情况会发生吗？
 figure out what would happen and what
 
 1587
 01:13:21,470 --> 01:13:22,970
+如果 server 看到这种情况，应该要怎么做？
 would a server do if it saw this we need
 
 1588
 01:13:22,970 --> 01:13:24,980
+如果 server 看到这种情况，应该要怎么做？
 to ask could this even occur because
 
 1589
 01:13:24,980 --> 01:13:27,050
+如果出现了这种情况的话，有时候大家的回答是
 sometimes the answer to the question oh
 
 1590
 01:13:27,050 --> 01:13:28,520
+Oh! 上帝，这发生了什么？
 jeez what would happen if this
 
 1591
 01:13:28,520 --> 01:13:30,620
+Oh! 上帝，这发生了什么？
 configuration arose sometimes the answer
 
 1592
 01:13:30,620 --> 01:13:32,900
+有时候的答案是，它不可能出现，所以我们也不用担心这个问题
 is it cannot arise so we do not have to
 
 1593
 01:13:32,900 --> 01:13:37,130
+所以我们的问题是，这种情况会发生吗？如果会的话，怎么才能出现？
 worry about it the question is could
 
 1594
 01:13:37,130 --> 01:13:39,940
+所以我们的问题是，这种情况会发生吗？如果会的话，怎么才能出现？
 this arise and how
 
 1595
 01:13:57,900 --> 01:14:02,990
+不错
 all right so any
 
 1596
 01:14:12,820 --> 01:14:15,910
-[Music]
+(回答问题)
 
 1597
 01:14:52,659 --> 01:14:55,659
+太棒了
 yeah
 
 1598
 01:14:59,060 --> 01:15:02,430
+我简单说一下，这种情况是可能出现的
 in brief we know this configuration can
 
 1599
 01:15:02,430 --> 01:15:05,670
+这里变成 4 和 5 的方式可以是这样的
 arise and so the way we can then get the
 
 1600
 01:15:05,670 --> 01:15:07,530
+这里变成 4 和 5 的方式可以是这样的
 four and a five here is let's suppose in
 
 1601
 01:15:07,530 --> 01:15:08,910
+我们假设开始进行一次 leader 选举
 the next leader election server twos
 
 1602
 01:15:08,910 --> 01:15:11,700
-elected leader now for term for its
+S2 成为了 term 4 的 leader
+elected leader now for term 4 its
 
 1603
 01:15:11,700 --> 01:15:13,440
-elected leader because a request from a
+这时候客户端发起一次请求，S2 追加了一条日志后 crash 掉
+selected leader because a request from a
 
 1604
 01:15:13,440 --> 01:15:15,900
+这时候客户端发起一次请求，S2 追加了一条日志后 crash 掉
 client it appends it to its own log and
 
 1605
 01:15:15,900 --> 01:15:20,040
+所以这里变成了 4
 crashes so now we have this right we
 
 1606
 01:15:20,040 --> 01:15:21,480
+因为 leader S2 刚刚 crash 了
 need a new election because the leader
 
 1607
 01:15:21,480 --> 01:15:25,410
+现在我们需要进行一次新的选举
 just crashed now in this election and
 
 1608
 01:15:25,410 --> 01:15:27,510
+现在我们需要问一下自己，谁可以被选为 leader
 then so now we have to ask whether who
 
 1609
 01:15:27,510 --> 01:15:29,370
+我们必须回过头好好想想，什么样的 server 可以被选出来
 could be elected or we have to give him
 
 1610
 01:15:29,370 --> 01:15:30,720
+我们必须回过头好好想想，什么样的 server 可以被选出来
 back of our heads oh gosh what could be
 
 1611
 01:15:30,720 --> 01:15:32,730
+这里 S3 可以被选为 leader
 elected so we're gonna claim server
 
 1612
 01:15:32,730 --> 01:15:34,470
+这里 S3 可以被选为 leader
 three could be elected the reason why I
 
 1613
 01:15:34,470 --> 01:15:35,760
+为什么我能选它是因为它只要获得了大多数的选票就行
 could be elected is because it only
 
 1614
 01:15:35,760 --> 01:15:38,130
+为什么我能选它是因为它只要获得了大多数的选票就行
 needs request vote responses from
 
 1615
 01:15:38,130 --> 01:15:40,500
+这里 majority 是 S1 和 S3
 majority that majority is server one and
 
 1616
 01:15:40,500 --> 01:15:42,780
+因为 S1 和 S3 的 log 并没什么冲突
 server three you know there's no no
 
 1617
 01:15:42,780 --> 01:15:44,370
+因为 S1 和 S3 的 log 并没什么冲突
 problem no conflict between these two
 
 1618
 01:15:44,370 --> 01:15:46,560
+所以 S3 可以被选为 term 5 的 leader
 logs so server three can be elected for
 
 1619
 01:15:46,560 --> 01:15:48,770
+然后 S3 收到了客户端的请求，追加了一条日志后就 crash
 term five get a request from a client
 
 1620
 01:15:48,770 --> 01:15:51,810
+然后 S3 收到了客户端的请求，追加了一条日志后就 crash
 append it to its own log and crash and
 
 1621
 01:15:51,810 --> 01:15:54,180
+这就是形成这种情况的方式
 that's how you get this this
 
 1622
 01:15:54,180 --> 01:15:57,150
+你需要反复思考这些事情，并达到理解的程度
 configuration so you know you need to be
 
 1623
 01:15:57,150 --> 01:16:04,140
+你需要反复思考这些事情，并达到理解的程度
 able to to work through these things in
 
 1624
 01:16:04,140 --> 01:16:05,790
+并能够回答这个问题：是的，这种情况可以发生
 order to get to the stage of saying yes
 
 1625
 01:16:05,790 --> 01:16:07,140
+因此 raft 必须为此做一些明智的事情
 this could happen and therefore raft
 
 1626
 01:16:07,140 --> 01:16:09,390
+而不是因为有些事不能发生，你就说不会发生这种情况
 must do something sensible as opposed to
 
 1627
 01:16:09,390 --> 01:16:11,310
+而不是因为有些事不能发生，你就说不会发生这种情况
 it cannot happen because some things
 
 1628
 01:16:11,310 --> 01:16:13,730
+而不是因为有些事不能发生，你就说不会发生这种情况
 can't happen
 
 1629
 01:16:17,539 --> 01:16:23,929
+好，现在我们已经知道这种情况发生的原因
 all right so so what can happen now we
 
 1630
 01:16:23,929 --> 01:16:27,050
+好，现在我们已经知道这种情况发生的原因
 know this can occur so hopefully we can
 
 1631
 01:16:27,050 --> 01:16:29,110
+我们要让自己信服，raft 确实是做了一些明智的事情
 convince ourselves that raft actually
 
 1632
 01:16:29,110 --> 01:16:34,550
+我们要让自己信服，raft 确实是做了一些明智的事情
 does something sensible now as for the
 
 1633
 01:16:34,550 --> 01:16:36,769
+对于这些事情，在讨论 raft 实际做了什么之前
 range of things before we talk about
 
 1634
 01:16:36,769 --> 01:16:39,860
-what RAF would actually would actually
+对于这些事情，在讨论 raft 实际做了什么之前
+what raft would actually would actually
 
 1635
 01:16:39,860 --> 01:16:43,610
+我们需要对什么样的结果是可接受的要有一定的认知
 do we need to have some sense of what
 
 1636
 01:16:43,610 --> 01:16:48,489
+我们需要对什么样的结果是可接受的要有一定的认知
 would be an acceptable outcome right and
 
 1637
 01:16:48,489 --> 01:16:53,449
+请认真看这里，我们知道 10 号槽里的命令，在所有副本上都有
 just eyeballing this we know that the
 
 1638
 01:16:53,449 --> 01:16:55,190
+请认真看这里，我们知道 10 号槽里的命令，在所有副本上都有
 command in slot 10 since it's known by
 
 1639
 01:16:55,190 --> 01:16:59,030
+请认真看这里，我们知道 10 号槽里的命令，在所有副本上都有
 all all the replicas it could have been
 
 1640
 01:16:59,030 --> 01:17:01,610
+它可能是会被提交的，所以我们不能丢弃它
 committed so we cannot throw it away
 
 1641
 01:17:01,610 --> 01:17:04,070
+类似的，11 号槽里的命令，因为它被复制到了半数以上节点
 similarly the command in slot 11 since
 
 1642
 01:17:04,070 --> 01:17:05,659
+类似的，11 号槽里的命令，因为它被复制到了半数以上节点
 it's in a majority of the replicas it
 
 1643
 01:17:05,659 --> 01:17:06,949
+它也是有可能被提交的，所以不能丢弃
 could for all we know have been
 
 1644
 01:17:06,949 --> 01:17:09,380
+它也是有可能被提交的，所以不能丢弃
 committed so we can't throw it away the
 
 1645
 01:17:09,380 --> 01:17:11,300
+在 12 号槽中，这里面的命令都不可能被提交
 command in slot 12 however neither of
 
 1646
 01:17:11,300 --> 01:17:13,190
+在 12 号槽中，这里面的命令都不可能被提交
 them could possibly have been committed
 
 1647
 01:17:13,190 --> 01:17:16,150
+所以我们有权利……我们不知道实际上要怎么做
 so we're entitled we don't know haven't
 
 1648
 01:17:16,150 --> 01:17:18,739
+但是 raft 是有权利把它丢弃掉的
 we'll actually do but raft is entitled
 
 1649
 01:17:18,739 --> 01:17:21,679
+但是 raft 是有权利把它(12 号槽)丢弃掉的
 to drop both of these even though it is
 
 1650
 01:17:21,679 --> 01:17:23,480
+即便它没有权利丢弃 10 或 11 号槽的命令
 not entitled to drop it and either of
 
 1651
 01:17:23,480 --> 01:17:26,889
+即便它没有权利丢弃 10 或 11 号槽的命令
 the commands in a 10 or 11
 
 1652
 01:17:26,889 --> 01:17:28,849
+这是有权利丢弃的，但这不是必须要把 2 个都丢弃
 this is entitled dropped it's not
 
 1653
 01:17:28,849 --> 01:17:31,579
+这是有权利丢弃的，但这不是必须要把 2 个都丢弃
 required to drop either one of them but
 
 1654
 01:17:31,579 --> 01:17:33,380
+我意思是它必须丢弃其中一个，至少是一个
 I mean oh it certainly must drop one at
 
 1655
 01:17:33,380 --> 01:17:35,329
+因为你必须要让 log 尾部的内容保持完全一致
 least one because you have to have
 
 1656
 01:17:35,329 --> 01:17:39,639
+因为你必须要让 log 尾部的内容保持完全一致
 identical log contents in the end
 
 1657
 01:17:43,290 --> 01:17:47,560
+这是可能被提交的
 this could have been committed it the we
 
 1658
 01:17:47,560 --> 01:17:50,100
-can't tell by looking at the laws
+通过看 log 是无法判断的
+can't tell by looking at the logs
 
 1659
 01:17:50,100 --> 01:17:52,330
+严格的说，我们无法判断 leader 在 crash 前 log 提交到哪个位置
 exactly how far the leader got before
 
 1660
 01:17:52,330 --> 01:17:55,510
+一种可能性是，对于这条命令，又甚至是这条命令
 crashing so one possibility is that for
 
 1661
 01:17:55,510 --> 01:17:59,140
+一种可能性是，对于这条命令，又甚至是这条命令
 this command or even this command one
 
 1662
 01:17:59,140 --> 01:18:00,790
+leader 发送带有新命令的 Append 消息后，立即 crash 了
 possibility is that leaders send out the
 
 1663
 01:18:00,790 --> 01:18:02,830
+leader 发送带有新命令的 Append 消息后，立即 crash 了
 append messages with a new command and
 
 1664
 01:18:02,830 --> 01:18:05,620
+leader 发送带有新命令的 Append 消息后，立即 crash 了
 then immediately crashed so it never got
 
 1665
 01:18:05,620 --> 01:18:08,110
+所以它就永远无法收到响应，因为它 crash 了
 any response back because it crashed so
 
 1666
 01:18:08,110 --> 01:18:09,640
+因此旧的 leader 并不知道它是否已经被提交
 the old leader did not know if it was
 
 1667
 01:18:09,640 --> 01:18:12,340
+如果它没有收到响应，这也意味着它没有去执行它
 committed and if it didn't get a
 
 1668
 01:18:12,340 --> 01:18:14,410
+如果它没有收到响应，这也意味着它没有去执行它
 response back that means it didn't
 
 1669
 01:18:14,410 --> 01:18:17,590
+它也不会发送增加 commit index 的消息
 execute it and it didn't send out but
 
 1670
 01:18:17,590 --> 01:18:18,940
+它也不会发送增加 commit index 的消息
 you know it didn't send out that
 
 1671
 01:18:18,940 --> 01:18:22,239
+它也不会发送增加 commit index 的消息
 incremented commit index and so maybe
 
 1672
 01:18:22,239 --> 01:18:24,610
+所以，副本也不会去执行这条命令
 the replicas didn't execute it either so
 
 1673
 01:18:24,610 --> 01:18:26,949
+所以实际上可能这个位置是没有提交的
 it's actually possible that this wasn't
 
 1674
 01:18:26,949 --> 01:18:29,980
-committed so even though RAF doesn't
+所以实际上可能这个位置是没有提交的
+committed so even though raft doesn't
 
 1675
 01:18:29,980 --> 01:18:35,610
+所以尽管 raft 不知道，对于 raft，它也是合法的
 know it could be legal for raft
 
 1676
 01:18:35,610 --> 01:18:40,780
+如果 raft 知道更多的事情话，丢弃这条日志可能是合法的
 if raft knew more than it does know it
 
 1677
 01:18:40,780 --> 01:18:43,600
+如果 raft 知道更多的事情话，丢弃这条日志可能是合法的
 might be legal to drop this log entry
 
 1678
 01:18:43,600 --> 01:18:45,040
+因为它可能没被提交
 because it might not have been committed
 
 1679
 01:18:45,040 --> 01:18:48,310
+但是，根据这些证据，你也没有任何方式去反驳它已被提交
 but because on the evidence there's no
 
 1680
 01:18:48,310 --> 01:18:51,010
+但是，根据这些证据，你也没有任何方式去反驳它已被提交
 way to disprove it was committed based
 
 1681
 01:18:51,010 --> 01:18:52,989
+它可能被提交，但是 raft 无法去证明它
 on this evidence it could have been
 
 1682
 01:18:52,989 --> 01:18:55,300
+它可能被提交，但是 raft 无法去证明它
 committed and raft can't prove it wasn't
 
 1683
 01:18:55,300 --> 01:18:58,449
+所以 raft 只能当作它被提交
 so it must treat it as committed because
 
 1684
 01:18:58,449 --> 01:19:01,060
+因为 leader 也可能在收到 AppendEntries 的响应之后
+并且回复了客户端之后 crash 掉
 the leader might have received it might
 
 1685
 01:19:01,060 --> 01:19:03,310
+因为 leader 也可能在收到 AppendEntries 的响应之后
+并且回复了客户端之后 crash 掉
 have crashed just after receiving the
 
 1686
 01:19:03,310 --> 01:19:05,620
+因为 leader 也可能在收到 AppendEntries 的响应之后
+并且回复了客户端之后 crash 掉
 append entry replies and replying to the
 
 1687
 01:19:05,620 --> 01:19:08,260
+所以看到这种情形，我们不能排除掉这种可能性
 client so just looking at this we can't
 
 1688
 01:19:08,260 --> 01:19:10,600
+所以看到这种情形，我们不能排除掉这种可能性
 rule out the possibility that either
 
 1689
 01:19:10,600 --> 01:19:14,140
+即 leader 回复了客户端之后（crash）
 possibility that the leader responded to
 
 1690
 01:19:14,140 --> 01:19:15,790
+在这种情况下，我们不能丢弃这条日志
 the client in which case we cannot throw
 
 1691
 01:19:15,790 --> 01:19:17,230
+因为客户端知道它请求成功了
 away this entry because a client knows
 
 1692
 01:19:17,230 --> 01:19:18,969
+又或是另一种可能，leader 可能什么也没做过
 about it or the possibility the leader
 
 1693
 01:19:18,969 --> 01:19:23,080
+是的，我们不得不假设它是被提交过的
 never did and yeah we could you know if
 
 1694
 01:19:23,080 --> 01:19:26,670
+是的，我们不得不假设它是被提交过的
 we have to assume that it was committed
 
 1695
 01:19:33,390 --> 01:19:36,390
+嗯呢
 yeah
 
 1696
 01:19:46,489 --> 01:19:51,590
-no there's no mañana server crash before
+不是，没有。我意思是在这种情况下
+no there's no. I mean in this situation maybe
 
 1697
 01:19:51,590 --> 01:19:53,630
-getting the response it's alright well
+服务器可能会在收到响应之前 crash 掉
+the server crash before getting the response
 
 1698
-01:19:53,630 --> 00:00:00,000
-let's continue this on Thursday
+01:19:53,630 --> 01:19:59,000
+好啦，咱们周四见，拜拜！
+it's alright well let's continue this on Thursday
 
