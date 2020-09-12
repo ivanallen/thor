@@ -6706,771 +6706,950 @@ heartbeats
 
 1340
 01:00:47,809 --> 01:00:49,790
-
+这一点很明显
 you know this is pretty obvious that the
 
 1341
 01:00:49,790 --> 01:00:51,410
+leader 每隔几百毫秒发送一次心跳
 leader sends out heartbeats every
 
 1342
 01:00:51,410 --> 01:00:53,690
+每隔几百毫秒发送一次心跳
 hundred milliseconds you better make
 
 1343
 01:00:53,690 --> 01:00:55,520
+你最好得确保在这之间不会有人的选举定时器超时
 sure there's no point in having the
 
 1344
 01:00:55,520 --> 01:00:57,319
+你最好得确保在这之间不会有人的选举定时器超时
 election time or anybody's election time
 
 1345
 01:00:57,319 --> 01:00:58,849
-or ever go off Borja for 100
+你最好得确保在这之间不会有人的选举定时器超时
+or ever go off for 100
 
 1346
 01:00:58,849 --> 01:01:00,530
+如果它在最低的限制之前超时
 milliseconds because then it will go off
 
 1347
 01:01:00,530 --> 01:01:06,799
+如果它在最低的限制之前超时
 before the lower limit is certainly the
 
 1348
 01:01:06,799 --> 01:01:08,569
+最低的限制就是心跳之间的间隔
 lower limit is one heartbeat interval in
 
 1349
 01:01:08,569 --> 01:01:10,940
+因为网络可能会丢弃数据包
 fact because the network may drop
 
 1350
 01:01:10,940 --> 01:01:13,700
+所以你可能会想着把这个最小的选举超时时间设定为心跳间隔时间的 2 倍
 packets you probably want to have the
 
 1351
 01:01:13,700 --> 01:01:16,309
+所以你可能会想着把这个最小的选举超时时间设定为心跳间隔时间的 2 倍
 minimum election timer value be a couple
 
 1352
 01:01:16,309 --> 01:01:18,829
+所以你可能会想着把这个最小的选举超时时间设定为心跳间隔时间的 2 倍
 of times the heartbeat interval so 400
 
 1353
 01:01:18,829 --> 01:01:20,089
+所以你可以设置成 400ms，也可能设置一个最短的选举时间
 millisecond heartbeats you probably want
 
 1354
 01:01:20,089 --> 01:01:21,440
+所以你可以设置成 400ms，也可能设置一个最短的选举时间
 to have the very shortest possible
 
 1355
 01:01:21,440 --> 01:01:24,319
+又或是设置成心跳间隔时间的 3 倍，比如 300ms
 election time or be you know say 300
 
 1356
 01:01:24,319 --> 01:01:26,119
+又或是设置成心跳间隔时间的 3 倍，比如 300ms
 milliseconds you know three times the
 
 1357
 01:01:26,119 --> 01:01:29,450
+这里是最小的心跳时间间隔
 heartbeat interval so that's the sort of
 
 1358
 01:01:29,450 --> 01:01:33,710
+这里是最小的心跳时间间隔
 minimum is the heart heartbeat so this
 
 1359
 01:01:33,710 --> 01:01:35,569
+这里是最小的心跳时间间隔
 frequent you want the minimum to be you
 
 1360
 01:01:35,569 --> 01:01:39,470
+这里是心跳间隔的 2 倍
 know a couple of times that or here so
 
 1361
 01:01:39,470 --> 01:01:40,640
+最大值在哪里呢
 what about the maximum you know you're
 
 1362
 01:01:40,640 --> 01:01:43,010
+你可以假定使用一个均匀分布生成某个范围的随机值
 gonna presumably randomize uniformly
 
 1363
 01:01:43,010 --> 01:01:45,710
+你可以假定使用一个均匀分布生成某个范围的随机值
 over some range of times you know where
 
 1364
 01:01:45,710 --> 01:01:50,960
+我们应该设置一个最大值在这儿，这里随机出的最大时间
 should we set the kind of maximum time
 
 1365
 01:01:50,960 --> 01:01:54,710
+我们应该设置一个最大值在这儿，这里随机出的最大时间
 that we're randomizing over there's a
 
 1366
 01:01:54,710 --> 01:01:57,740
+在真实系统中，这里有 2 点考虑
 couple of considerations here in a real
 
 1367
 01:01:57,740 --> 01:02:04,410
+最大时间会影响系统有多快能从故障中恢复
 system you know this maximum time effect
 
 1368
 01:02:04,410 --> 01:02:06,240
+最大时间会影响系统有多快能从故障中恢复
 how quickly the system can recover from
 
 1369
 01:02:06,240 --> 01:02:09,420
+因为，假设服务器从这个位置开始出故障
 failure because remember from the time
 
 1370
 01:02:09,420 --> 01:02:11,910
+因为，假设服务器从这个位置开始出故障
 at which the server fails until the
 
 1371
 01:02:11,910 --> 01:02:14,730
+那么在选举定时器超时之前，整体系统都处于不可用状态
 first election timer goes off the whole
 
 1372
 01:02:14,730 --> 01:02:17,430
+那么在选举定时器超时之前，整体系统都处于不可用状态
 system is frozen there's no leader you
 
 1373
 01:02:17,430 --> 01:02:18,870
+此时没有任何 leader，客户端发的所有请求都会被丢弃
 know the clients requests are being
 
 1374
 01:02:18,870 --> 01:02:20,190
+此时没有任何 leader，客户端发的所有请求都会被丢弃
 thrown away because there's no leader
 
 1375
 01:02:20,190 --> 01:02:22,320
+而且我们也没有重新指定一个新的 leader 出来
 and we're not assigning a new leader
 
 1376
 01:02:22,320 --> 01:02:24,870
+即使你知道其它的这些 server 是健康的
 even though you know presumably these
 
 1377
 01:02:24,870 --> 01:02:27,390
-other servers are up so the beer we
+即使你知道其它的这些 server 是健康的
+other servers are up so the be away
 
 1378
 01:02:27,390 --> 01:02:29,670
-choose this maximum the long or delay
+所以我们选的最大值越靠后，延迟就越长
+choose this maximum the longer delay
 
 1379
 01:02:29,670 --> 01:02:32,040
+在系统恢复前，对客户端的影响就越长
 we're imposing on clients before
 
 1380
 01:02:32,040 --> 01:02:34,770
+你知道，关于这一点，取决于你想要多高的性能
 recovery occurs you know whether that's
 
 1381
 01:02:34,770 --> 01:02:38,220
+你知道，关于这一点，取决于你想要多高的性能
 important depends on sort of how high
 
 1382
 01:02:38,220 --> 01:02:40,200
+你知道，关于这一点，取决于你想要多高的性能、故障发生的频率
 performance we need this to be and how
 
 1383
 01:02:40,200 --> 01:02:42,870
+你知道，关于这一点，取决于你想要多高的性能、故障发生的频率
 often we think there will be failures
 
 1384
-01:02:42,870 --> 01:02:44,910
-failures happen once a year then who
-
-1385
-01:02:44,910 --> 01:02:46,310
-cares
+01:02:42,870 --> 01:02:46,310
+一年只发生一次故障的话，鬼才会去关心这个问题
+failures happen once a year then who cares
 
 1386
 01:02:46,310 --> 01:02:48,600
+如果故障发生很频率的话
 we're expecting failures frequently we
 
 1387
 01:02:48,600 --> 01:02:51,330
+那我们就需要去关心到底要设置的多长的时间，让故障恢复
 may care very much how long it takes to
 
 1388
 01:02:51,330 --> 01:02:53,670
+所以这是第一个我们需要考虑的问题
 recover okay so that's one consideration
 
 1389
 01:02:53,670 --> 01:02:56,330
+另一个要考虑的事情是这里这个间隔
 the other consideration is that this gap
 
 1390
 01:02:56,330 --> 01:02:59,400
+S1 超时，到 S2 超时这个时间间隔
 that is the expected gap in time between
 
 1391
 01:02:59,400 --> 01:03:01,410
+S1 超时，到 S2 超时这个时间间隔
 the first time are going off and the
 
 1392
 01:03:01,410 --> 01:03:04,890
+S1 超时，到 S2 超时这个时间间隔
 second timer going off this gap really
 
 1393
 01:03:04,890 --> 01:03:07,890
+这个间隔非常有用，而且它要足够的长
 in order to be useful has to be longer
 
 1394
 01:03:07,890 --> 01:03:09,930
+足够让 candidate 能收到其它人的投票
 than the time it takes for the candidate
 
 1395
 01:03:09,930 --> 01:03:12,330
+足够让 candidate 能收到其它人的投票
 to assemble votes from everybody that is
 
 1396
 01:03:12,330 --> 01:03:15,060
+它要比一次 RPC 请求到响应的来回时间要长一些
 longer than the expected round-trip time
 
 1397
 01:03:15,060 --> 01:03:16,590
+它要比一次 RPC 请求到响应的来回时间要长一些
 the amount of time it takes to send an
 
 1398
 01:03:16,590 --> 01:03:19,050
+它要比一次 RPC 请求到响应的来回时间要长一些
 RPC and get the response and so maybe it
 
 1399
 01:03:19,050 --> 01:03:21,840
+比如发送一次 RPC 到收到所有其它 server 响应需要 10ms
 takes 10 milliseconds to send an RPC and
 
 1400
 01:03:21,840 --> 01:03:25,860
+比如发送一次 RPC 到收到所有其它 server 响应需要 10ms
 get a response a response from all the
 
 1401
 01:03:25,860 --> 01:03:27,810
+在这种情况下，我们设置的最大值，至少要让这个间隔大于 10ms
 other servers and if that's the case we
 
 1402
 01:03:27,810 --> 01:03:28,980
+在这种情况下，我们设置的最大值，至少要让这个间隔大于 10ms
 need to make maximum at least long
 
 1403
 01:03:28,980 --> 01:03:30,570
+在这种情况下，我们设置的最大值，至少要让这个间隔大于 10ms
 enough that there's pretty likely to be
 
 1404
 01:03:30,570 --> 01:03:32,220
+也就是最小的这个随机数到下一个最小的随机数之间的差值能大于 10ms
 10 milliseconds difference between the
 
 1405
 01:03:32,220 --> 01:03:34,110
+也就是最小的这个随机数到下一个最小的随机数之间的差值能大于 10ms
 smallest random number and the next
 
 1406
 01:03:34,110 --> 01:03:37,040
+也就是最小的这个随机数到下一个最小的随机数之间的差值能大于 10ms
 smallest random number
 
 1407
 01:03:40,550 --> 01:03:46,470
+对你们来说，那些测试代码可能会让你们感觉到痛苦
 and for you the test code will get upset
 
 1408
 01:03:46,470 --> 01:03:54,359
+如果经过若干秒后你的 leader 都未能从故障中恢复
 if you if you don't recover from a
 
 1409
 01:03:54,359 --> 01:03:56,850
+如果经过若干秒后你的 leader 都未能从故障中恢复
 leader failure in a couple seconds and
 
 1410
 01:03:56,850 --> 01:03:58,920
+那你就需要考虑一下调优这个最大值，把它设置的小一点
 so just pragmatically you need to tune
 
 1411
 01:03:58,920 --> 01:04:00,990
+那你就需要考虑一下调优这个最大值，把它设置的小一点
 this maximum down so that it's highly
 
 1412
 01:04:00,990 --> 01:04:03,720
+只要它能让你在几秒内完成 leader 选举就行
 likely that you'll be able to complete a
 
 1413
 01:04:03,720 --> 01:04:05,940
+只要它能让你在几秒内完成 leader 选举就行
 leader election within a few seconds but
 
 1414
 01:04:05,940 --> 01:04:09,540
+这就算是一个不那么紧的约束
 that's not a very tight constraint any
 
 1415
 01:04:09,540 --> 01:04:13,670
+关于选举时间大家还有问题吗？
 questions about the election time outs
 
 1416
 01:04:13,670 --> 01:04:19,910
+还有一个不起眼的问题是
 one tiny point is that you want to
 
 1417
 01:04:19,910 --> 01:04:23,190
+每次你都应该选择一个新的随机超时时间
 choose new random time outs every time
 
 1418
 01:04:23,190 --> 01:04:26,700
-there's every time you every time I node
+是的，每次都需要随机生成一个
+there's every time you every time I note
 
 1419
 01:04:26,700 --> 01:04:28,740
+每次你都需要重新设定这个定时器
 sets it to like me sets its election
 
 1420
 01:04:28,740 --> 01:04:31,230
+你不要在服务器启动的时候，随机生成一个数字重复使用它
 timer that is don't choose a random
 
 1421
 01:04:31,230 --> 01:04:34,830
+你不要在服务器启动的时候，随机生成一个数字重复使用它
 number when the server is first created
 
 1422
 01:04:34,830 --> 01:04:36,090
+你不要在服务器启动的时候，随机生成一个数字重复使用它
 and then we use that same number over
 
 1423
 01:04:36,090 --> 01:04:37,470
+你不要在服务器启动的时候，随机生成一个数字重复使用它
 and over again because you make an
 
 1424
 01:04:37,470 --> 01:04:39,720
+如果你这样做，你的服务器可能会产生一些不良行为
 unlucky choice that is you choose this
 
 1425
 01:04:39,720 --> 01:04:42,270
+如果你这样做，你的服务器可能会产生一些不良行为
 one server happens by ill chance to
 
 1426
 01:04:42,270 --> 01:04:44,160
+比如会导致每次选举的选票都被瓜分掉，直到永远
 choose the same random number as another
 
 1427
 01:04:44,160 --> 01:04:46,050
+比如会导致每次选举的选票都被瓜分掉，直到永远
 server that means that you're gonna have
 
 1428
 01:04:46,050 --> 01:04:48,830
+比如会导致每次选举的选票都被瓜分掉，直到永远
 split votes over and over again forever
 
 1429
 01:04:48,830 --> 01:04:51,300
+这就是为什么你需要每次都生成一个新的随机数来设定选举超时时间
 that's why you want to almost certainly
 
 1430
 01:04:51,300 --> 01:04:53,340
+这就是为什么你需要每次都生成一个新的随机数来设定选举超时时间
 choose a different a new fresh random
 
 1431
 01:04:53,340 --> 01:04:56,130
+这就是为什么你需要每次都生成一个新的随机数来设定选举超时时间
 number for the election time out value
 
 1432
 01:04:56,130 --> 01:05:02,940
+这就是为什么你需要每次都生成一个新的随机数来设定选举超时时间
 every time you reset the timer all right
 
 1433
 01:05:02,940 --> 01:05:06,800
+好，最后一个关于 leader 选举的问题
 so the final issue about leader election
 
 1434
 01:05:06,800 --> 01:05:09,030
+假设我们在这样一种情形
 suppose we are in this situation where
 
 1435
 01:05:09,030 --> 01:05:11,190
+旧的 leader 处于一个网络分区中，比如网线断了
 the old leaders partition you know the
 
 1436
 01:05:11,190 --> 01:05:12,960
+旧的 leader 处于一个网络分区中，比如网线断了
 network cable is broken and the old
 
 1437
 01:05:12,960 --> 01:05:14,790
+旧 leader 以及 2 个客户端
 leader is sort of out there with a
 
 1438
 01:05:14,790 --> 01:05:17,220
+还有不越过半数的 server 在这个分区中
 couple clients and a minority of servers
 
 1439
 01:05:17,220 --> 01:05:20,520
+另一半的网络分区中有超过半数的 server
 and there's a majority in the other half
 
 1440
 01:05:20,520 --> 01:05:21,630
+在这个超过半数 server 的分区中又选举出了一个新的 leader
 of the network and the majority of the
 
 1441
 01:05:21,630 --> 01:05:22,710
+在这个超过半数 server 的分区中又选举出了一个新的 leader
 new half of the network elects a new
 
 1442
 01:05:22,710 --> 01:05:28,200
+那旧的 leader 会怎么样？
 leader what about the old leader why why
 
 1443
-01:05:28,200 --> 01:05:32,790
-won't the old leader cause incorrect
-
-1444
-01:05:32,790 --> 01:05:35,390
-execution
+01:05:28,200 --> 01:05:35,390
+为什么旧的 leader 不会导致错误的行为
+won't the old leader cause incorrect execution
 
 1445
 01:06:06,310 --> 01:06:09,980
+是的，有 2 个潜在的问题
 yes to two potential problems one is or
 
 1446
 01:06:09,980 --> 01:06:12,860
+其中一个问题是
 one some non problem is that if there's
 
 1447
 01:06:12,860 --> 01:06:14,510
+如果有一个 leader 处于一个不超过半数 server 的分区中
 a leader off in another partition and it
 
 1448
 01:06:14,510 --> 01:06:17,030
+如果有一个 leader 处于一个不超过半数 server 的分区中
 doesn't have a majority then the next
 
 1449
 01:06:17,030 --> 01:06:20,930
+客户端发送给它请求后，你知道这个 leader 处在少数派的分区中
 time a client sends it a request that
 
 1450
 01:06:20,930 --> 01:06:24,260
+客户端发送给它请求后，你知道这个 leader 处在少数派的分区中
 that leader that you know in a partition
 
 1451
 01:06:24,260 --> 01:06:25,400
+客户端发送给它请求后，你知道这个 leader 处在少数派的分区中
 with a minority yeah it'll send out
 
 1452
 01:06:25,400 --> 01:06:27,500
+它会发送 AppendEntries，但是因为在少数派中
 append entries but because it's in the
 
 1453
 01:06:27,500 --> 01:06:29,930
+所以它无法得到半数以上 server（包括自己） 的回应
 minority partition it won't be able to
 
 1454
 01:06:29,930 --> 01:06:31,940
+所以它无法得到半数以上 server（包括自己） 的回应
 get responses back from a majority of
 
 1455
 01:06:31,940 --> 01:06:33,860
+所以它无法得到半数以上 server（包括自己） 的回应
 the server's including itself and so it
 
 1456
 01:06:33,860 --> 01:06:36,110
+所以它永远都不会把客户端请求的操作进行提交
 will never commit the operation it will
 
 1457
 01:06:36,110 --> 01:06:37,100
+也永远不会去执行它
 never execute it
 
 1458
 01:06:37,100 --> 01:06:39,830
+它永远也不会去响应客户端说它执行完了这条命令
 it'll never respond to the client saying
 
 1459
 01:06:39,830 --> 01:06:42,470
+它永远也不会去响应客户端说它执行完了这条命令
 that it executed it either and so that
 
 1460
 01:06:42,470 --> 01:06:45,860
+这意思是说如果一个旧的 server(leader)
 means that yeah an old server often a
 
 1461
 01:06:45,860 --> 01:06:47,930
+经常处于不同的分区中
 different partition people many clients
 
 1462
 01:06:47,930 --> 01:06:49,670
+许多客户可能发送的请求都无法得到响应
 may send a request but they'll never get
 
 1463
 01:06:49,670 --> 01:06:54,020
+所以客户端也不会误以为旧的 server 执行过任何命令
 responses so no client will be fooled
 
 1464
 01:06:54,020 --> 01:06:56,630
+所以客户端也不会误以为旧的 server 执行过任何命令
 into thinking that that old server
 
 1465
 01:06:56,630 --> 01:07:02,000
+所以客户端也不会误以为旧的 server 执行过任何命令
 executed anything for it the other sort
 
 1466
 01:07:02,000 --> 01:07:05,450
+另一个更加 tricky（巧合) 的问题，待会儿咱们再说
 of more tricky issue which actually I'll
 
 1467
 01:07:05,450 --> 01:07:07,040
+另一个更加 tricky（巧合) 的问题，待会儿咱们再说
 talk about in a few minutes is the
 
 1468
 01:07:07,040 --> 01:07:10,670
+是关于 server 在发送 AppendEntries 到一部分 server 后宕机的可能性
 possibility that before server fails it
 
 1469
 01:07:10,670 --> 01:07:14,080
+是关于 server 在发送 AppendEntries 到一部分 server 后宕机的可能性
 sends out append entries to a subset of
 
 1470
 01:07:14,080 --> 01:07:17,660
+是关于 server 在发送 AppendEntries 到一部分 server 后宕机的可能性
 the servers and then crashes before
 
 1471
 01:07:17,660 --> 01:07:21,050
-making a commission and as a very
+在做 commit 决策之前，它就宕机了
+making a commit decision and as a very
 
 1472
 01:07:21,050 --> 01:07:24,830
+这是一个很有趣的问题，我可能得花 45 分钟来讨论它
 interesting question which I'll probably
 
 1473
 01:07:24,830 --> 01:07:27,760
+这是一个很有趣的问题，我可能得花 45 分钟来讨论它
 spend a good 45 minutes talking about
 
 1474
 01:07:27,760 --> 01:07:30,050
+我们先回到刚刚话题
 and so actually before I turn to the
 
 1475
 01:07:30,050 --> 01:07:33,260
+关于 leader 选举，大家还有其它问题吗？
 back topic in general any more questions
 
 1476
 01:07:33,260 --> 01:07:40,390
+关于 leader 选举，大家还有其它问题吗？
 about in leader election okay
 
 1477
 01:07:42,220 --> 01:07:44,930
+好，关于 log 中的内容是什么样的
 okay so how about the contents of the
 
 1478
 01:07:44,930 --> 01:07:49,160
+在前一个 leader 挂掉之后，如何进行新一轮 leader 选举
 logs and how in particular how a newly
 
 1479
 01:07:49,160 --> 01:07:51,740
+在前一个 leader 挂掉之后，如何进行新一轮 leader 选举
 elected leader possibly picking up the
 
 1480
 01:07:51,740 --> 01:07:54,440
+在前一个 leader 挂掉之后，如何进行新一轮 leader 选举
 pieces after an awkward crash of the
 
 1481
 01:07:54,440 --> 01:07:56,750
+log 产生分叉的话，如何进行 leader 选举
 previous leader how does a newly elected
 
 1482
 01:07:56,750 --> 01:07:59,630
+log 产生分叉的话，如何进行 leader 选举
 leader sort out the possibly divergent
 
 1483
 01:07:59,630 --> 01:08:02,300
+log 产生分叉的话，如何进行 leader 选举
 logs on the different replicas in order
 
 1484
 01:08:02,300 --> 01:08:06,140
+来恢复系统中的一致性的状态
 to restore sort of consistent state in
 
 1485
 01:08:06,140 --> 01:08:14,660
+来恢复系统中的一致性的状态
 the system all right so the first
 
 1486
 01:08:14,660 --> 01:08:17,870
+关于第一个问题，你能想到什么
 question is what can think this is this
 
 1487
 01:08:17,870 --> 01:08:19,670
+这是一个完整的话题
 whole topic it's really only interesting
 
 1488
 01:08:19,670 --> 01:08:21,920
+关于 server 宕机后我们唯一比较感兴趣的事情
 after a server crashes right if the
 
 1489
 01:08:21,920 --> 01:08:25,460
+如果 server 一直很健康，并且一切事情进展顺利
 server stays up then relatively few
 
 1490
 01:08:25,460 --> 01:08:26,930
+如果 server 一直很健康，并且一切事情进展顺利
 things can go wrong if we have a server
 
 1491
 01:08:26,930 --> 01:08:28,640
+我们拥有一个健康的 server 和超过半数的机器
 that's up and has a majority you know
 
 1492
 01:08:28,640 --> 01:08:29,870
+在一段时间内他们都是健康的
 during the period of time when it's up
 
 1493
 01:08:29,870 --> 01:08:34,069
+在一段时间内他们都是健康的
 and has a majority it just tells the
 
 1494
 01:08:34,069 --> 01:08:35,899
+leader 只要通知 follwer 日志应该是什么样的就行
 followers what the logs should look like
 
 1495
 01:08:35,899 --> 01:08:37,759
+follwer 是不允许反对 leader 的
 and the followers are not allowed to
 
 1496
 01:08:37,759 --> 01:08:39,649
+如果它们基本上都是保持最新的状态的
+那么只需要服从 leader，只要按照图 2 中的规则做事就行
 disagree they're required to accept they
 
 1497
 01:08:39,649 --> 01:08:41,420
+如果它们基本上都是保持最新的状态的
+那么只需要服从 leader，只要按照图 2 中的规则做事就行
 just do by the rules of figure two if
 
 1498
 01:08:41,420 --> 01:08:43,100
+如果它们基本上都是保持最新的状态的
+那么只需要服从 leader，只要按照图 2 中的规则做事就行
 they've been more or less keeping up you
 
 1499
 01:08:43,100 --> 01:08:44,660
+它们就只是简单的使用 leader 发给他们的 AppendEntires
 know they just take whatever the leader
 
 1500
 01:08:44,660 --> 01:08:46,219
-sends them independent reason appended
+它们就只是简单的使用 leader 发给他们的 AppendEntires
+sends them AppendEntries appended
 
 1501
 01:08:46,219 --> 01:08:48,500
+追加到自己的日志上，并提交这些消息，然后执行
 to the log and obey commit messages and
 
 1502
 01:08:48,500 --> 01:08:50,299
+这几乎不会发生什么错误
 execute there's hardly anything to go
 
 1503
 01:08:50,299 --> 01:08:52,069
-wrong the things that go wrong in Rapp
+在 raft 中，有些事情会导致故障
+wrong the things that go wrong in raft
 
 1504
 01:08:52,069 --> 01:08:55,609
+比如当一个旧的 leader 在发送消息的中途宕机了
 go wrong when a the old leader crashes
 
 1505
 01:08:55,609 --> 01:08:58,520
+比如当一个旧的 leader 在发送消息的中途宕机了
 sort of midway through you know sending
 
 1506
 01:08:58,520 --> 01:09:01,939
+又或者是刚刚新选举的 leader 宕机了
 out messages or a new leader crashes you
 
 1507
 01:09:01,939 --> 01:09:03,229
+又或者是刚刚新选举的 leader，啥了没干就宕机了
 know sort of just after it's been
 
 1508
 01:09:03,229 --> 01:09:06,950
+又或者是刚刚新选举的 leader，啥了没干就宕机了
 elected but before it's done anything
 
 1509
 01:09:06,950 --> 01:09:10,130
+所以我们感兴趣的是，这经过一连串的 crase 后，log 长啥样？
 very useful so one thing we're very
 
 1510
 01:09:10,130 --> 01:09:11,779
+所以我们感兴趣的是，这经过一连串的 crase 后，log 长啥样？
 interested in is what can the logs look
 
 1511
 01:09:11,779 --> 01:09:16,670
+所以我们感兴趣的是，这经过一连串的 crase 后，log 长啥样？
 like after some sequence of crashes okay
 
 1512
 01:09:16,670 --> 01:09:19,520
+来，咱们讲个例子，假设我们有 3 台服务器
 so here's an example supposing we have
 
 1513
 01:09:19,520 --> 01:09:26,180
-two servers and the way I'm gonna draw
+我准备画一些图，等会我们会看到很多情况
+three servers and the way I'm gonna draw
 
 1514
 01:09:26,180 --> 01:09:27,589
+我准备画一些图，等会我们会看到很多情况
 out these diagrams because we're gonna
 
 1515
 01:09:27,589 --> 01:09:30,880
+我准备画一些图，等会我们会看到很多情况
 be looking a lot at a lot of sort of
 
 1516
 01:09:30,880 --> 01:09:32,988
+不同情况下的 log 都是什么样的
 situations where the logs look like this
 
 1517
 01:09:32,988 --> 01:09:34,790
+我们需要推演各种可能性下会发生什么
 and we're gonna be wondering is that
 
 1518
 01:09:34,790 --> 01:09:36,649
+我们需要推演各种可能性下会发生什么
 possible and what happens if they do
 
 1519
 01:09:36,649 --> 01:09:38,479
+我会在这里使用一些记号表示日志项
 look like that so my notation is going
 
 1520
 01:09:38,479 --> 01:09:40,370
+我会在这里使用一些记号表示日志项
 to be I'm gonna write out log entries
 
 1521
 01:09:40,370 --> 01:09:44,870
+对于每个 server，相同位置的槽都是对齐的
 for each of the servers sort of aligned
 
 1522
 01:09:44,870 --> 01:09:47,839
+对于每个 server，相同位置的槽都是对齐的
 to indicate slots corresponding slots in
 
 1523
 01:09:47,839 --> 01:09:50,270
+这里这个数字表示的是 term 号，不是客户端命令
 the log and the values I'm going to
 
 1524
-01:09:50,270 --> 01:09:53,330
-write here are the term numbers rather
-
-1525
-01:09:53,330 --> 01:09:54,340
-than
+01:09:50,270 --> 01:09:54,340
+这里这个数字表示的是 term 号，不是客户端命令
+write here are the term numbers rather than
 
 1526
 01:09:54,340 --> 01:09:56,889
+这里这个数字表示的是 term 号，不是客户端命令
 client operations I'm going to you know
 
 1527
 01:09:56,889 --> 01:09:59,219
-this is slot one this is thought to
+这里是槽 1，这里这是槽 2
+this is slot one this is slot two
 
 1528
 01:09:59,219 --> 01:10:02,380
+所有的服务器在 1 号槽上都看到了来自 term 3 的命令
 everybody saw a command from term three
 
 1529
 01:10:02,380 --> 01:10:05,230
-in slot 1 and server tuned server three
+S2 和 S3 看到了来自 term 3 的命令
+in slot 1 and server 2 server 3
 
 1530
 01:10:05,230 --> 01:10:08,320
+S2 和 S3 看到了来自 term 3 的命令
 saw command from also term three and the
 
 1531
 01:10:08,320 --> 01:10:10,239
+而在 2 号槽上，S1 什么也没有
 second slot the server one has nothing
 
 1532
