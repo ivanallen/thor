@@ -643,17 +643,17 @@ a problem if either of these servers is
 
 129
 00:05:30,650 --> 00:05:33,470
-你就不能无法和它通信了
+你就无法和它通信了
 crashed or or you can't talk to it at
 
 130
 00:05:33,470 --> 00:05:34,880
-至少在只有一台服务的非复制系统中，你仅仅只依赖一台 server
+至少 在只有一台服务的 非复制系统中，你只依赖一台 server
 least with a non replicated service
 
 131
 00:05:34,880 --> 00:05:36,140
-至少在只有一台服务的非复制系统中，你仅仅只依赖一台 server
+至少 在只有一台服务的 非复制系统中，你只依赖一台 server
 you're only depending on one server but
 
 132
@@ -911,20 +911,20 @@ be used with the vmware ft
 
 182
 00:07:29,990 --> 00:07:35,020
-在没有请求服务器的情况下
-然而所有的 vmware 机器都认为它们可以成为 primary
+在没有访问其它服务器的情况下
+所有的 vmware 机器都认为它们可以成为 primary
 you know both replicas both of these VMware
 
 183
 00:07:35,020 --> 00:07:37,970
-在没有请求服务器的情况下
-然而所有的 vmware 机器都认为它们可以成为 primary
+在没有访问其它服务器的情况下
+所有的 vmware 机器都认为它们可以成为 primary
 machines I think they could be primary
 
 184
 00:07:37,970 --> 00:07:41,180
-在没有请求服务器的情况下
-然而所有的 vmware 机器都认为它们可以成为 primary
+在没有访问其它服务器的情况下
+所有的 vmware 机器都认为它们可以成为 primary
 by themselves without consulting the
 
 185
@@ -969,7 +969,7 @@ it's often called split brain so
 
 193
 00:07:59,560 --> 00:08:06,940
-好，还有啥问题没？
+好，大家明白没？
 everybody see this well
 
 194
@@ -1284,12 +1284,12 @@ to build replicated systems and it's not
 
 256
 00:10:28,970 --> 00:10:31,009
-他们被迫需要做工作，而且人类通常也不能快速做出响应
+他们被迫工作，而且人类通常也不能快速做出响应
 you know they can be made to work the
 
 257
 00:10:31,009 --> 00:10:32,480
-他们被迫需要做工作，而且人类通常也不能快速做出响应
+他们被迫工作，而且人类通常也不能快速做出响应
 humans don't respond very quickly and
 
 258
@@ -1344,22 +1344,26 @@ called a partition and the big insight
 
 268
 00:11:04,910 --> 00:11:06,889
-人们构建自动化的，不受脑裂影响的复制系统的关键是 少数服从多数的投票思想
+人们构建自动化的，不受脑裂影响的复制系统的关键是
+少数服从多数的投票思想
 that people came up with in order to
 
 269
 00:11:06,889 --> 00:11:10,100
-人们构建自动化的，不受脑裂影响的复制系统的关键是 少数服从多数的投票思想
+人们构建自动化的，不受脑裂影响的复制系统的关键是
+少数服从多数的投票思想
 build automated replication systems that
 
 270
 00:11:10,100 --> 00:11:12,589
-人们构建自动化的，不受脑裂影响的复制系统的关键是 少数服从多数的投票思想
+人们构建自动化的，不受脑裂影响的复制系统的关键是
+少数服从多数的投票思想
 don't suffer from split brain is the
 
 271
 00:11:12,589 --> 00:11:17,649
-人们构建自动化的，不受脑裂影响的复制系统的关键是 少数服从多数的投票思想
+人们构建自动化的，不受脑裂影响的复制系统的关键是
+少数服从多数的投票思想
 idea of a majority vote this is a
 
 272
@@ -1429,17 +1433,20 @@ it's not symmetric anymore right at
 
 285
 00:11:50,899 --> 00:11:52,939
-在只有一个分裂的网络中，起码是一边有 2 台，另一边只有 1 台
+在只有一个分裂的网络中
+起码是一边有 2 台，另一边只有 1 台
 least a single network split will be
 
 286
 00:11:52,939 --> 00:11:54,740
-在只有一个分裂的网络中，起码是一边有 2 台，另一边只有 1 台
+在只有一个分裂的网络中
+起码是一边有 2 台，另一边只有 1 台
 presumably two servers on one side and
 
 287
 00:11:54,740 --> 00:11:56,179
-在只有一个分裂的网络中，起码是一边有 2 台，另一边只有 1 台
+在只有一个分裂的网络中
+起码是一边有 2 台，另一边只有 1 台
 one server on the other side and they
 
 288
@@ -1464,17 +1471,17 @@ ideas you have an odd number of servers
 
 292
 00:12:05,629 --> 00:12:08,299
-为了取得进展，在 raft 的 leader 选举或是日志提交里
+为了推进每一步，在 raft 的 leader 选举或是日志提交里
 in order to make progress of any kind so
 
 293
 00:12:08,299 --> 00:12:10,939
-为了取得进展，在 raft 的 leader 选举或是日志提交里
+为了推进每一步，在 raft 的 leader 选举或是日志提交里
 in raft elect a leader or cause a log
 
 294
 00:12:10,939 --> 00:12:12,619
-为了取得进展，在 raft 的 leader 选举或是日志提交里
+为了推进每一步，在 raft 的 leader 选举或是日志提交里
 entry to be committed in order to make
 
 295
@@ -1549,17 +1556,20 @@ server in it which it's not a majority
 
 309
 00:12:53,009 --> 00:12:55,439
-又或者这个 partition 里有 2 台服务器，那另一个 parition 一定就只有 1 台了
+又或者这个 partition 里有 2 台服务器
+那另一个 parition 铁定就只有 1 台了
 or maybe you can have two but if one
 
 310
 00:12:55,439 --> 00:12:56,550
-又或者这个 partition 里有 2 台服务器，那另一个 parition 一定就只有 1 台了
+又或者这个 partition 里有 2 台服务器
+那另一个 parition 铁定就只有 1 台了
 partition has two then the other
 
 311
 00:12:56,550 --> 00:12:58,410
-又或者这个 partition 里有 2 台服务器，那另一个 parition 一定就只有 1 台了
+又或者这个 partition 里有 2 台服务器
+那另一个 parition 铁定就只有 1 台了
 partition has to have only one server in
 
 312
@@ -1625,10 +1635,12 @@ always two out of three even if you know
 324
 00:13:24,720 --> 00:13:26,309
 尽管你知道其中有一台宕机了
+那大多数也还是指 所有服务器总量的大多数
 that one has failed the majority is
 
 325
 00:13:26,309 --> 00:13:27,449
+尽管你知道其中有一台宕机了
 那大多数也还是指 所有服务器总量的大多数
 always out of the total number of
 
@@ -1639,17 +1651,17 @@ servers there's a more general
 
 327
 00:13:30,420 --> 00:13:33,689
-因为大多数投票系统中，3 个有 2 个同意，就能取得进展
+因为大多数投票系统中，3 个有 2 个同意，就能推进执行
 formulation of this because a majority
 
 328
 00:13:33,689 --> 00:13:35,610
-因为大多数投票系统中，3 个有 2 个同意，就能取得进展
+因为大多数投票系统中，3 个有 2 个同意，就能推进执行
 voting system in which two out of three
 
 329
 00:13:35,610 --> 00:13:37,170
-因为大多数投票系统中，3 个有 2 个同意，就能取得进展
+因为大多数投票系统中，3 个有 2 个同意，就能推进执行
 are required to make progress it can
 
 330
@@ -1659,7 +1671,7 @@ survive the failure of one server right
 
 331
 00:13:40,889 --> 00:13:42,930
-另外 2 台服务器依然能够继续取得进展继续工作
+另外 2 台服务器依然能够继续推进工作
 any two servers are enough to make
 
 332
@@ -1747,17 +1759,17 @@ most one partition can have a majority
 
 348
 00:14:36,759 --> 00:14:38,110
-因此，如果网络分区，我们就不能让所有的网络分区都能取得进展
+因此，如果网络分区，我们就不能让所有的网络分区都能推进执行
 and therefore if the networks
 
 349
 00:14:38,110 --> 00:14:40,569
-因此，如果网络分区，我们就不能让所有的网络分区都能取得进展
+因此，如果网络分区，我们就不能让所有的网络分区都能推进执行
 partitioned we can't have both halves of
 
 350
 00:14:40,569 --> 00:14:42,550
-因此，如果网络分区，我们就不能让所有的网络分区都能取得进展
+因此，如果网络分区，我们就不能让所有的网络分区都能推进执行
 the network making progress another more
 
 351
@@ -1802,7 +1814,7 @@ votes for leaders at raft then at every
 
 359
 00:15:04,689 --> 00:15:06,519
-在每一步中，你所看到的 majority(大多数服务器里，后面不再翻译)
+在每一步中，你所看到的 majority
 step the majority you assemble for that
 
 360
@@ -2341,12 +2353,12 @@ we're actually gonna have you
 
 466
 00:20:09,510 --> 00:20:12,030
-它们 3 都有着完全相同的结构
+它们 3 个都有着完全相同的结构
 know 3 servers that have exactly the
 
 467
 00:20:12,030 --> 00:20:14,460
-它们 3 都有着完全相同的结构
+它们 3 个都有着完全相同的结构
 same identical structure and hopefully
 
 468
@@ -2994,17 +3006,17 @@ it although it's useful to know and
 
 596
 00:26:35,470 --> 00:26:40,890
-大家看到的这些就是对于没有异常情况下的普通操作
+大家明白了吗？
 figure 2 all right everybody see this
 
 597
 00:26:40,890 --> 00:26:43,120
-大家看到的这些就是对于没有异常情况下的普通操作
+这些就是对于没有异常情况下的普通操作
 this is the sort of ordinary operation
 
 598
 00:26:43,120 --> 00:26:46,890
-大家看到的这些就是对于没有异常情况下的普通操作
+这些就是对于没有异常情况下的普通操作
 of the system no no failures
 
 599
@@ -3654,12 +3666,12 @@ client requests even ones that it's already executed
 
 728
 00:32:54,570 --> 00:32:56,969
-就是为了能够把它们重传给 client(似乎口误)
+就是为了能够把它们重传给 client(口误，应该是重传给 server)
 in order to be able to
 
 729
 00:32:56,969 --> 00:33:00,539
-就是为了能够把它们重传给 client(似乎口误)
+就是为了能够把它们重传给 client(口误，应该是重传给 server)
 resend them to the client I mean resend
 
 730
@@ -4200,7 +4212,7 @@ of them gets picked as a leader and that
 
 837
 00:38:00,339 --> 00:38:03,820
-
+如果你看过论文的话，你就能看到
 leader if you sort of track through what
 
 838
@@ -4735,8 +4747,8 @@ and waits for a response the point at
 
 947
 00:43:33,910 --> 00:43:37,000
->>> leader 将会在这个位置发送响应，而不是在 leader 得知命令被提交之后
-which the leader will send a response not at
+leader 将会在这个位置发送响应，而不是在 leader 得知命令被提交之后
+which the leader will send a response (not) at
 
 948
 00:43:37,000 --> 00:43:39,640
@@ -5485,7 +5497,7 @@ not quite the case that if the leader
 
 1098
 00:50:17,970 --> 00:50:19,380
-，如果 leader 没有产生错误，那就不会产生选举
+如果 leader 没有产生错误，那就不会产生选举
 didn't fail we won't have an election
 
 1099
@@ -5723,17 +5735,17 @@ it from hearing and executing any client
 
 1145
 00:52:26,720 --> 00:52:29,210
-这也确实是 raft 不能解决所有疯狂的网络问题案例
+这也确实是 raft 不能解决所有疯狂的网络问题的案例
 commands it's absolutely the case that
 
 1146
 00:52:29,210 --> 00:52:35,359
-这也确实是 raft 不能解决所有疯狂的网络问题案例
+这也确实是 raft 不能解决所有疯狂的网络问题的案例
 raft is not proof against all sort of
 
 1147
 00:52:35,359 --> 00:52:37,190
-这也确实是 raft 不能解决所有疯狂的网络问题案例
+这也确实是 raft 不能解决所有疯狂的网络问题的案例
 all crazy Network problems that can come
 
 1148
@@ -6478,7 +6490,7 @@ point at which everybody received the
 last append entries right and then maybe
 
 1296
-00:58:57,440 --> 00:58:58,
+00:58:57,440 --> 00:58:58,790
 然后我们假设发送最后一个心跳的服务器宕机了
 the server died let's just assume the
 
@@ -6499,17 +6511,17 @@ this we set their election timers when
 
 1300
 00:59:11,119 --> 00:59:13,160
-因为他们可能会在同时收到这条 AppendEntries
+因为他们可能会同时收到这条 AppendEntries
 they received at the same time because
 
 1301
 00:59:13,160 --> 00:59:14,570
-因为他们可能会在同时收到这条 AppendEntries
+因为他们可能会同时收到这条 AppendEntries
 they probably all receive this append
 
 1302
 00:59:14,570 --> 00:59:16,040
-因为他们可能会在同时收到这条 AppendEntries
+因为他们可能会同时收到这条 AppendEntries
 enters at the same time they all reset
 
 1303
@@ -6524,12 +6536,12 @@ the future the future but they chose
 
 1305
 00:59:21,530 --> 00:59:23,630
-它们他们会选择一个随机的时间来设定这个定时器
+它们会选择一个随机的时间来设定这个定时器
 different random times in the future
 
 1306
 00:59:23,630 --> 00:59:25,369
-它们他们会选择一个随机的时间来设定这个定时器
+它们会选择一个随机的时间来设定这个定时器
 which then we're gonna go off
 
 1307
@@ -6594,12 +6606,12 @@ going on here and the one that's first
 
 1319
 00:59:56,600 --> 00:59:58,069
-假设这里之间的间隙足够长
+假设这里的间隙足够长
 assuming
 
 1320
 00:59:58,069 --> 01:00:00,079
-假设这里之间的间隙足够长
+假设这里的间隙足够长
 this gap is big enough the one that's
 
 1321
@@ -6614,12 +6626,12 @@ first before the other ones election
 
 1323
 01:00:02,869 --> 01:00:05,930
-如果我们不会那么不走运
+如果我们走运的话
 timer and if we were not
 
 1324
 01:00:05,930 --> 01:00:06,410
-如果我们不会那么不走运
+如果我们走运的话
 unlucky
 
 1325
@@ -6654,17 +6666,17 @@ how the randomization desynchronizes
 
 1331
 01:00:26,140 --> 01:00:30,710
-所以不幸的是，给这些定时器设定内容需要一点点艺术
+不幸的是，给定时器设定超时时间需要一点技巧
 these candidates unfortunately there's a
 
 1332
 01:00:30,710 --> 01:00:33,230
-所以不幸的是，给这些定时器设定内容需要一点点艺术
+不幸的是，给定时器设定超时时间需要一点技巧
 bit of art in setting the contents
 
 1333
 01:00:33,230 --> 01:00:34,970
-所以不幸的是，给这些定时器设定内容需要一点点艺术
+不幸的是，给定时器设定超时时间需要一点技巧
 constants for these election timers
 
 1334
@@ -6714,17 +6726,20 @@ hundred milliseconds you better make
 
 1343
 01:00:53,690 --> 01:00:55,520
-你最好得确保在这之间不会有人的选举定时器超时
+你最好得确保在心跳之间
+比如 100ms 内不会有定时器超时
 sure there's no point in having the
 
 1344
 01:00:55,520 --> 01:00:57,319
-你最好得确保在这之间不会有人的选举定时器超时
+你最好得确保在心跳之间
+比如 100ms 内不会有定时器超时
 election time or anybody's election time
 
 1345
 01:00:57,319 --> 01:00:58,849
-你最好得确保在这之间不会有人的选举定时器超时
+你最好得确保在心跳之间
+比如 100ms 内不会有定时器超时
 or ever go off for 100
 
 1346
@@ -6819,12 +6834,12 @@ over some range of times you know where
 
 1364
 01:01:45,710 --> 01:01:50,960
-我们应该设置一个最大值在这儿，这里随机出的最大时间
+我们应该设置一个最大值在这儿，这是能够随机出的最大时间
 should we set the kind of maximum time
 
 1365
 01:01:50,960 --> 01:01:54,710
-我们应该设置一个最大值在这儿，这里随机出的最大时间
+我们应该设置一个最大值在这儿，这是能够随机出的最大时间
 that we're randomizing over there's a
 
 1366
@@ -6854,12 +6869,12 @@ at which the server fails until the
 
 1371
 01:02:11,910 --> 01:02:14,730
-那么在选举定时器超时之前，整体系统都处于不可用状态
+那么在选举定时器超时之前，整个系统都处于不可用状态
 first election timer goes off the whole
 
 1372
 01:02:14,730 --> 01:02:17,430
-那么在选举定时器超时之前，整体系统都处于不可用状态
+那么在选举定时器超时之前，整个系统都处于不可用状态
 system is frozen there's no leader you
 
 1373
@@ -6899,22 +6914,26 @@ we're imposing on clients before
 
 1380
 01:02:32,040 --> 01:02:34,770
-你知道，关于这一点，取决于你想要多高的性能
+你知道，关于这一点
+取决于你想要多高的性能、故障发生的频率
 recovery occurs you know whether that's
 
 1381
 01:02:34,770 --> 01:02:38,220
-你知道，关于这一点，取决于你想要多高的性能
+你知道，关于这一点
+取决于你想要多高的性能、故障发生的频率
 important depends on sort of how high
 
 1382
 01:02:38,220 --> 01:02:40,200
-你知道，关于这一点，取决于你想要多高的性能、故障发生的频率
+你知道，关于这一点
+取决于你想要多高的性能、故障发生的频率
 performance we need this to be and how
 
 1383
 01:02:40,200 --> 01:02:42,870
-你知道，关于这一点，取决于你想要多高的性能、故障发生的频率
+你知道，关于这一点
+取决于你想要多高的性能、故障发生的频率
 often we think there will be failures
 
 1384
@@ -6924,7 +6943,7 @@ failures happen once a year then who cares
 
 1386
 01:02:46,310 --> 01:02:48,600
-如果故障发生很频率的话
+如果故障发生很频繁的话
 we're expecting failures frequently we
 
 1387
@@ -7184,7 +7203,7 @@ leader is sort of out there with a
 
 1438
 01:05:14,790 --> 01:05:17,220
-还有不越过半数的 server 在这个分区中
+还有不超过半数的 server 在这个分区中
 couple clients and a minority of servers
 
 1439
@@ -7527,27 +7546,27 @@ out messages or a new leader crashes you
 
 1507
 01:09:01,939 --> 01:09:03,229
-又或者是刚刚新选举的 leader，啥了没干就宕机了
+又或者是刚刚新选举的 leader，啥也没干就宕机了
 know sort of just after it's been
 
 1508
 01:09:03,229 --> 01:09:06,950
-又或者是刚刚新选举的 leader，啥了没干就宕机了
+又或者是刚刚新选举的 leader，啥也没干就宕机了
 elected but before it's done anything
 
 1509
 01:09:06,950 --> 01:09:10,130
-所以我们感兴趣的是，这经过一连串的 crase 后，log 长啥样？
+所以我们感兴趣的是，这经过一连串的 crash 后，log 长啥样？
 very useful so one thing we're very
 
 1510
 01:09:10,130 --> 01:09:11,779
-所以我们感兴趣的是，这经过一连串的 crase 后，log 长啥样？
+所以我们感兴趣的是，这经过一连串的 crash 后，log 长啥样？
 interested in is what can the logs look
 
 1511
 01:09:11,779 --> 01:09:16,670
-所以我们感兴趣的是，这经过一连串的 crase 后，log 长啥样？
+所以我们感兴趣的是，这经过一连串的 crash 后，log 长啥样？
 like after some sequence of crashes okay
 
 1512
@@ -7832,22 +7851,25 @@ suppose another way this can come up is
 
 1570
 01:12:22,420 --> 01:12:24,160
-S3 在给 S2 发送 AppendEntries 后，但是在给 S1 发送前宕机了
+S3 在给 S2 发送 AppendEntries 后
+但是在给 S1 发送前宕机了
 server 3 might have sent out the append
 
 1571
 01:12:24,160 --> 01:12:26,140
-S3 在给 S2 发送 AppendEntries 后，但是在给 S1 发送前宕机了
+S3 在给 S2 发送 AppendEntries 后
+但是在给 S1 发送前宕机了
 entries the server 2 but then crashed
 
 1572
 01:12:26,140 --> 01:12:27,700
-S3 在给 S2 发送 AppendEntries 后，但是在给 S1 发送前宕机了
+S3 在给 S2 发送 AppendEntries 后
+但是在给 S1 发送前宕机了
 before sending the append entries to server 3（口误，应该是 S1）
 
 1573
 01:12:27,700 --> 01:12:30,400
-所以，如果你你选了一个新的 leader 出来
+所以，如果你选了一个新的 leader 出来
 so if were you know electing a
 
 1574
@@ -7961,7 +7983,7 @@ all right so any
 
 1597
 01:14:52,659 --> 01:14:55,659
-太棒了
+是的
 yeah
 
 1598
@@ -8321,17 +8343,17 @@ response back that means it didn't
 
 1669
 01:18:14,410 --> 01:18:17,590
-它也不会发送增加 commit index 的消息
+它也不会发送推进 commit index 的消息
 execute it and it didn't send out but
 
 1670
 01:18:17,590 --> 01:18:18,940
-它也不会发送增加 commit index 的消息
+它也不会发送推进 commit index 的消息
 you know it didn't send out that
 
 1671
 01:18:18,940 --> 01:18:22,239
-它也不会发送增加 commit index 的消息
+它也不会发送推进 commit index 的消息
 incremented commit index and so maybe
 
 1672
@@ -8371,12 +8393,14 @@ because it might not have been committed
 
 1679
 01:18:45,040 --> 01:18:48,310
-但是，根据这些证据，你也没有任何方式去反驳它已被提交
+但是，仅根据当前这些证据
+你也没有任何方式去反驳它已被提交
 but because on the evidence there's no
 
 1680
 01:18:48,310 --> 01:18:51,010
-但是，根据这些证据，你也没有任何方式去反驳它已被提交
+但是，仅根据当前这些证据
+你也没有任何方式去反驳它已被提交
 way to disprove it was committed based
 
 1681
@@ -8469,6 +8493,6 @@ the server crash before getting the response
 
 1698
 01:19:53,630 --> 01:19:59,000
-好啦，咱们周四见，拜拜！
+好啦，咱们周四继续讨论，拜拜！
 it's alright well let's continue this on Thursday
 
