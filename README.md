@@ -12,33 +12,9 @@ QQ:1035287657
 
 - https://www.bilibili.com/video/BV1R7411t71W?p=1
 
-## 如何开始
-可以阅读doc目录下面的[翻译流程介绍](https://github.com/ivanallen/thor/blob/master/doc/manual.md) 文档，会介绍人物领取方式，翻译需要做的工作，以及一些常见问题总结。
+## 快速开始
 
-也可以参照 “鱼蛋是我我是橘猫” 同学制作的b站视频来了解翻译流程，[MIT6.824翻译工作流分享](https://www.bilibili.com/video/BV1pQ4y1M7dv)。
-
-该同学也提供了了doc目录下的 [分布式系统翻译工作流分享](https://github.com/ivanallen/thor/blob/master/doc/Translate_Workflow.pdf) 文档，也可以做参考。
-
-这个PR可供参考：[Lec04-3翻译任务](https://github.com/ivanallen/thor/pull/24)
-
-QQ群里大家维护的腾讯文档：
-
-[翻译指南](https://docs.qq.com/doc/DZURQaXBrdXhXb0dx?tdsourcetag=s_macqq_grpfile)
-
-[建议翻译流程](https://docs.qq.com/doc/BXXro31NHmDg4Kega60fkDTU4l51be2cdG2H4OMrVN3NzUlm0huLua1goly331XKV42Dko7Y0)
-
-
-
-## 一些有用的工具
-
-[VS Subtitles Editor](https://marketplace.visualstudio.com/items?itemName=pepri.subtitles-editor)
-
-[抽取视频字幕的网站](https://downsub.com/)
-
-[Free Google Translate API](https://pypi.org/project/googletrans/)
-
-[自动切分时间轴](https://jingyan.baidu.com/article/e73e26c07ce0a824acb6a755.html)
-
+[如何翻译](https://github.com/ivanallen/thor/wiki/%E5%A6%82%E4%BD%95%E7%BF%BB%E8%AF%91)
 
 ## 版权声明
 
@@ -71,3 +47,16 @@ QQ群里大家维护的腾讯文档：
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+
+### 参考资料和工具
+
+- [翻译流程介绍](https://github.com/ivanallen/thor/blob/master/doc/manual.md)
+- [MIT6.824翻译工作流分享](https://www.bilibili.com/video/BV1pQ4y1M7dv)
+- [分布式系统翻译工作流分享](https://github.com/ivanallen/thor/blob/master/doc/Translate_Workflow.pdf)
+- 参考PR：[Lec04-3翻译任务](https://github.com/ivanallen/thor/pull/24)
+- [翻译指南](https://docs.qq.com/doc/DZURQaXBrdXhXb0dx?tdsourcetag=s_macqq_grpfile)
+- [建议翻译流程](https://docs.qq.com/doc/BXXro31NHmDg4Kega60fkDTU4l51be2cdG2H4OMrVN3NzUlm0huLua1goly331XKV42Dko7Y0)
+- [VS Subtitles Editor](https://marketplace.visualstudio.com/items?itemName=pepri.subtitles-editor)
+- [抽取视频字幕的网站](https://downsub.com/)
+- [Free Google Translate API](https://pypi.org/project/googletrans/)
+- [自动切分时间轴](https://jingyan.baidu.com/article/e73e26c07ce0a824acb6a755.html)
