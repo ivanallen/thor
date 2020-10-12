@@ -2287,7 +2287,7 @@ just no difference at the even of the lowest
 460
 00:19:51,120 --> 00:19:52,620
 primary和backup，即使是最底层，也完全一样
-levels between the primary and the backup
+levels between the primary and the backup.
 
 461
 00:19:52,620 --> 00:19:55,560
@@ -2311,474 +2311,593 @@ more like GFS where GFS absolutely did
 
 465
 00:20:01,200 --> 00:20:03,630
-not replicate you know they had
+不会复制（具体到每个bit）。你知道，GFS有
+not replicate , you know they had
 
 466
 00:20:03,630 --> 00:20:05,700
+复制方案，但他不是复制
 replication but it wasn't replicating
 
 467
 00:20:05,700 --> 00:20:08,220
+内存中的每一个bit
 every single you know bit of memory
 
 468
 00:20:08,220 --> 00:20:10,170
-between the primaries and the backups
+在primary和backup之间。
+between the primaries and the backups.
 
 469
 00:20:10,170 --> 00:20:12,180
-it was replicating much more application
+他们的复制更多是在应用层面
+it was replicating much more application level
 
 470
 00:20:12,180 --> 00:20:14,910
-level table of chunks
+(例如)块的表。
+(e.g.) table of chunks.
 
 471
 00:20:14,910 --> 00:20:16,950
-I had this abstraction of you know
+我曾经概括过（GFS），正如你所知
+I had this abstraction of (GFS) , you know
 
 472
 00:20:16,950 --> 00:20:18,630
+块和块id
 chunks and chunk identifiers and that's
 
 473
 00:20:18,630 --> 00:20:20,370
-what it was replicating it wasn't
+是被复制的东西（在GFS中）。他不会
+what it was replicating . it wasn't
 
 474
 00:20:20,370 --> 00:20:22,290
+复制除此以外的任何东西，
 replicating sort of everything else
 
 475
 00:20:22,290 --> 00:20:24,570
+不是尝试花费巨大的代价
 wasn't going to the expense of
 
 476
 00:20:24,570 --> 00:20:26,430
+去复制这些机器上面所有除此之外的东西。
 replicating every single other thing
 
 477
 00:20:26,430 --> 00:20:28,440
+只要这些机器拥有同样的
 in that machines we're doing okay as long
 
 478
 00:20:28,440 --> 00:20:31,410
+应用可见的chunk的集合
 as they had the same sort of application
 
 479
 00:20:31,410 --> 00:20:37,410
-visible set of chunks so most
+我们就认为可以了。因此，
+visible set of chunks . so most
 
 480
 00:20:37,410 --> 00:20:40,530
+大多数复制方案都采用与GFS相似的方案
 replication schemes out there go the GFS
 
 481
 00:20:40,530 --> 00:20:42,750
+实际上，几乎除了这篇论文
 route in fact almost everything except
 
 482
 00:20:42,750 --> 00:20:46,800
+以及一些类似的系统之外
 pretty much this paper and a few handful
 
 483
 00:20:46,800 --> 00:20:48,750
+的所有方案
 of similar systems almost everything
 
 484
 00:20:48,750 --> 00:20:50,220
+他们几乎都使用了
 uses application at some level
 
 485
 00:20:50,220 --> 00:20:53,730
+应用级别的复制
 application level of replication because
 
 486
 00:20:53,730 --> 00:20:56,940
+因为这样可以更有效率
 it can be much more efficient because we
 
 487
 00:20:56,940 --> 00:20:58,560
+因为我们不必费力的
 don't have to go to the we don't have to
 
 488
 00:20:58,560 --> 00:21:00,960
+去确保，例如，
 go to the trouble of for example making
 
 489
 00:21:00,960 --> 00:21:02,790
+在主和副本服务运行时
 sure that interrupts occur at exactly
 
 490
 00:21:02,790 --> 00:21:04,980
+中断发生在完全相同的时间点
 the same point in the execution of the
 
 491
 00:21:04,980 --> 00:21:07,260
+GFS完全不用担心这点
 primary and backup GFS does not sweat
 
 492
 00:21:07,260 --> 00:21:09,420
+但是这篇论文必须要确保这点
 that at all but this paper has to do
 
 493
 00:21:09,420 --> 00:21:11,340
+因为它在很低的级别进行复制
 because it replicates at such a low
 
 494
 00:21:11,340 --> 00:21:14,520
+因此大多数人
 level so most people build efficient
 
 495
 00:21:14,520 --> 00:21:16,560
+使用特定于应用程序的复制来构建高效的系统
 systems with applications specific
 
 496
 00:21:16,560 --> 00:21:18,840
+这样做的后果是
 replication the consequence of that
 
 497
 00:21:18,840 --> 00:21:20,880
+必须将复制方案
 though is that the replication has to be
 
 498
 00:21:20,880 --> 00:21:21,900
+内置到应用程序中
 built into the right into the
 
 499
 00:21:21,900 --> 00:21:23,580
+例如，如果你需要获取
 application right if you're getting a
 
 500
 00:21:23,580 --> 00:21:26,790
+应用程序级别的业务流程
 feed of application level operations for
 
 501
 00:21:26,790 --> 00:21:28,950
+你就需要
 example you really need to have the
 
 502
 00:21:28,950 --> 00:21:31,010
+让应用程序参与其中
 application participate in that because
 
 503
 00:21:31,010 --> 00:21:33,720
+因为有些通用的复制方案
 some generic replication thing like
 
 504
 00:21:33,720 --> 00:21:34,320
+例如今天的论文
 today's paper
 
 505
 00:21:34,320 --> 00:21:37,440
+并不能理解
 doesn't really can't understand the
 
 506
 00:21:37,440 --> 00:21:41,120
+哪些东西需要被复制的语义
 semantics of what needs to be replicated
 
 507
 00:21:41,240 --> 00:21:44,520
+因此大多数方案是针对于特定应用的
 so anyway so most teams are application
 
 508
 00:21:44,520 --> 00:21:47,340
+例如GFS以及我们将要在这个主题下阅读的
 specific like GFS and every other paper
 
 509
 00:21:47,340 --> 00:21:49,310
+所有其他论文
 we're going to read on this topic
 
 510
 00:21:49,310 --> 00:21:52,320
+今天的论文的不同之处在于
 today's paper is unique in that it
 
 511
 00:21:52,320 --> 00:21:54,420
+它是在机器级别进行复制的
 replicates at the level of the machine
 
 512
 00:21:54,420 --> 00:21:55,890
+因此它不关心在其上
 and therefore does not care what
 
 513
 00:21:55,890 --> 00:21:57,870
+运行了什么软件
 software you run on it right it
 
 514
 00:21:57,870 --> 00:22:00,450
+它复制低级别的
 replicates the low-level memory and
 
 515
 00:22:00,450 --> 00:22:01,920
+内存以及寄存器
 machine registers you can run any
 
 516
 00:22:01,920 --> 00:22:03,600
+你可以其上运行任何软件
 software you like on it as long as it
 
 517
 00:22:03,600 --> 00:22:05,250
+只要它可以在
 runs on that kind of microprocessor
 
 518
 00:22:05,250 --> 00:22:06,870
+这种复制方案支持的微处理器上运行
 that's being represented this
 
 519
 00:22:06,870 --> 00:22:08,730
+这种复制方案
 replication scheme applies to the
 
 520
 00:22:08,730 --> 00:22:10,399
+可以适应任何软件
 software can be anything
 
 521
 00:22:10,399 --> 00:22:14,080
+缺点是
 and you know the downside is that it's
 
 522
 00:22:14,080 --> 00:22:16,399
+效率不一定高
 not that efficient necessarily the
 
 523
 00:22:16,399 --> 00:22:18,559
+优点是你可以使用任何现有的软件
 upside is that you can take any existing
 
 524
 00:22:18,559 --> 00:22:20,000
+甚至你没有源代码
 piece of software maybe you don't even
 
 525
 00:22:20,000 --> 00:22:21,889
+或者不知道它是如何工作的
 have source code for it or understand
 
 526
 00:22:21,889 --> 00:22:26,029
+在一定的限制下
 how it works and you know do within some
 
 527
 00:22:26,029 --> 00:22:27,440
+你就可以
 limits you can just run it under this
 
 528
 00:22:27,440 --> 00:22:29,299
+在VMware的复制方案下运行它
 under VMware's replication scheme and
 
 529
 00:22:29,299 --> 00:22:33,940
+它可以正常工作，像魔法一样
 it'll just work which is sort of magic
 
 530
 00:22:33,940 --> 00:22:36,889
+且对于任意软件都可以进行容错
 fault-tolerance wand for arbitrary
 
 531
 00:22:36,889 --> 00:22:44,260
+现在
 software all right now let me talk about
 
 532
 00:22:44,260 --> 00:22:51,230
+我们来讨论VMware FT
 how this is VMware FT first of all
 
 533
 00:22:51,230 --> 00:22:53,029
+首先，VMware是一家虚拟机公司
 VMware is a virtual machine company
 
 534
 00:22:53,029 --> 00:22:56,960
+他们的很多业务
 they're what their business is a lot of
 
 535
 00:22:56,960 --> 00:22:58,340
+都是销售虚拟机技术
 their business is selling virtual
 
 536
 00:22:58,340 --> 00:23:00,320
+虚拟机
 machine technology and what virtual
 
 537
 00:23:00,320 --> 00:23:04,279
+指的是
 machines refer to is the idea of you
 
 538
 00:23:04,279 --> 00:23:07,269
+你买一台电脑
 know you buy a single computer and
 
 539
 00:23:07,269 --> 00:23:09,289
+在硬件上不是启动
 instead of booting an operating system
 
 540
 00:23:09,289 --> 00:23:12,289
+像Linux这样的操作系统
 like Linux on the hardware you boot
 
 541
 00:23:12,289 --> 00:23:16,190
+你在硬件上
 we'll call a virtual machine monitor or
 
 542
 00:23:16,190 --> 00:23:18,169
+启动虚拟机监视器
 hypervisor on the hardware and the
 
 543
 00:23:18,169 --> 00:23:19,669
+虚拟机监视器就会
 hypervisor's job is actually to
 
 544
 00:23:19,669 --> 00:23:24,429
+在此硬件上
 simulate multiple multiple computers
 
 545
 00:23:24,429 --> 00:23:27,110
+模拟多台虚拟的电脑
 multiple virtual computers on this piece
 
 546
 00:23:27,110 --> 00:23:28,820
+因此虚拟机监视器可能会启动
 of hardware so the virtual machine
 
 547
 00:23:28,820 --> 00:23:31,220
+一个Linux实例
+
 monitor may boot up you know one
 
 548
 00:23:31,220 --> 00:23:34,580
+或者多个Linux实例
 instance of Linux may be multiple
 
 549
 00:23:34,580 --> 00:23:37,149
+或者一个Windows实例
 instances of Linux may be a Windows
 
 550
 00:23:37,149 --> 00:23:40,399
+这台计算机上的
 machine you can the virtual machine
 
 551
 00:23:40,399 --> 00:23:42,260
+虚拟机监视器可以运行
 monitor on this one computer can run a
 
 552
 00:23:42,260 --> 00:23:45,470
+许多不同的操作系统
 bunch of different operating systems you
 
 553
 00:23:45,470 --> 00:23:49,399
+它们每个
 know each of these as is itself some
 
 554
 00:23:49,399 --> 00:23:51,549
+包含某种操作系统内核
 sort of operating system kernel and then
 
 555
 00:23:51,549 --> 00:23:55,909
+以及应用程序
 applications so this is the technology
 
 556
 00:23:55,909 --> 00:23:58,700
+所以这是他们开始使用的技术
 they're starting with and you know the
 
 557
 00:23:58,700 --> 00:24:00,409
+原因是
 reason for this is that if you know you
 
 558
 00:24:00,409 --> 00:24:03,049
+事实证明
 need to it just turns out there's many
 
 559
 00:24:03,049 --> 00:24:04,760
+在硬件和操作系统之间
 many reasons why it's very convenient to
 
 560
 00:24:04,760 --> 00:24:06,320
+进行这种级别的间接干预
 kind of interpose this level of
 
 561
 00:24:06,320 --> 00:24:08,419
+非常方便
 indirection between the hardware and the
 
 562
 00:24:08,419 --> 00:24:10,039
+非常方便的原因有很多
 operating systems and means that we can
 
 563
 00:24:10,039 --> 00:24:11,899
+这意味着我们可以购买一台计算机
 buy one computer and run lots of
 
 564
 00:24:11,899 --> 00:24:14,059
+并在其上运行许多不同的操作系统
 different operating systems on it we can
 
 565
 00:24:14,059 --> 00:24:16,130
+如果我们运行
 have each if we run lots and lots of
 
 566
 00:24:16,130 --> 00:24:18,139
+大量的小型服务
 little services instead of having to
 
 567
 00:24:18,139 --> 00:24:19,730
+比起使用大量的计算机
 have lots and lots of computers one per
 
 568
 00:24:19,730 --> 00:24:21,679
+每台运行一个服务
 service you can just buy one computer
 
 569
 00:24:21,679 --> 00:24:23,660
+你可以只购买一台计算机
 and run each service in the operating
 
 570
 00:24:23,660 --> 00:24:25,850
+在基于虚拟机上的操作系统中运行每个服务
 system that it needs I'm using these
 
 571
 00:24:25,850 --> 00:24:28,250
+这就是他们的出发点
 virtual machines so this was their
 
 572
 00:24:28,250 --> 00:24:29,300
+他们已经构建了这项功能
 starting point they already had this
 
 573
 00:24:29,300 --> 00:24:31,430
+和许多其他复杂的东西
 stuff and a lot of sophisticated things
 
 574
 00:24:31,430 --> 00:24:35,000
+在最开始设计VMware FT时
 built around it at the start of
 
 575
 00:24:35,000 --> 00:24:38,690
+所以这就是虚拟机
 designing vmware ft so this is just
 
 576
 00:24:38,690 --> 00:24:43,070
+论文要做的是
 virtual machines um what the paper's
 
 577
 00:24:43,070 --> 00:24:46,910
+要搭建一台机器
 doing is that it's gonna set up one
 
 578
 00:24:46,910 --> 00:24:51,620
+或者说他们需要两台物理机
 machine or they did requires two
 
 579
 00:24:51,620 --> 00:24:54,940
+因为在同一台物理计算机上
 physical machines because there's no
 
 580
 00:24:54,940 --> 00:24:57,680
+的不同虚拟机中
 point in running the primary and backup
 
 581
 00:24:57,680 --> 00:24:59,720
+运行主和副本软件
 software in different virtual machines
 
 582
 00:24:59,720 --> 00:25:01,400
+毫无意义
 on the same physical machine because
 
 583
