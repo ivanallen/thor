@@ -2902,450 +2902,562 @@ on the same physical machine because
 
 583
 00:25:01,400 --> 00:25:03,500
+因为我们正在努力应对硬件故障
 we're trying to guard against hardware
 
 584
 00:25:03,500 --> 00:25:06,710
+因此，你有两台计算机分别运行其虚拟机监视器
 failures so you're gonna to at least you
 
 585
 00:25:06,710 --> 00:25:08,900
+因此，你有两台计算机分别运行其虚拟机监视器
 know you have two machines running their
 
 586
 00:25:08,900 --> 00:25:15,590
+而主虚拟机将在一台计算机上运行
 virtual machine monitors and the primary
 
 587
 00:25:15,590 --> 00:25:16,970
+而副本虚拟机将在另一台上运行
 is going to run on one, the backup is on
 
 588
 00:25:16,970 --> 00:25:18,950
+在其中一台计算机上有一个guest操作系统...
 the other so on one of these machines we
 
 589
 00:25:18,950 --> 00:25:23,750
+在其中一台计算机上有一个guest操作系统..
 have a guest you know we only it might
 
 590
 00:25:23,750 --> 00:25:25,040
+它可能正在运行许多虚拟机
 be running a lot of virtual machines we
 
 591
 00:25:25,040 --> 00:25:26,930
+我们只在乎其中的一个（虚拟机）
 only care about one of them it's gonna
 
 592
 00:25:26,930 --> 00:25:28,670
+它会运行多个guest操作系统
 be running some guest operating system
 
 593
 00:25:28,670 --> 00:25:32,330
+以及服务应用程序
 and some sort of server application
 
 594
 00:25:32,330 --> 00:25:35,300
+也许是数据库服务，MapReduce主数据库或其他东西
 maybe a database server, MapReduce master,
 
 595
 00:25:35,300 --> 00:25:37,790
+我们称这个为主虚拟机
 or something so I'll call this the
 
 596
 00:25:37,790 --> 00:25:40,250
+这里有第二台计算机
 primary and there'll be a second machine
 
 597
 00:25:40,250 --> 00:25:43,490
+其运行相同的虚拟机监视器
 that you know runs the same virtual
 
 598
 00:25:43,490 --> 00:25:47,600
+也有运行副本服务的相同的虚拟机
 machine monitor and an identical virtual
 
 599
 00:25:47,600 --> 00:25:49,580
+也有运行副本服务的相同的虚拟机
 machine holding the backup so we have
 
 600
 00:25:49,580 --> 00:25:50,960
+因此，无论是何种操作系统，我们都具有完全相同的东西
 the same whatever the operating system
 
 601
 00:25:50,960 --> 00:25:55,250
+因此，无论是何种操作系统，我们都具有完全相同的东西
 is exactly the same and the virtual
 
 602
 00:25:55,250 --> 00:25:58,250
+虚拟机为这些guest操作系统、主和副本服务器
 machine is you know giving these guest
 
 603
 00:25:58,250 --> 00:26:00,170
+虚拟机为这些guest操作系统、主和副本服务器
 operating systems the primary and backup
 
 604
 00:26:00,170 --> 00:26:02,270
+提供一定范围的内存空间
 a each range of memory and this memory
 
 605
 00:26:02,270 --> 00:26:04,760
+并且这两个内存镜像是完全相同的
 images will be identical or the goal is
 
 606
 00:26:04,760 --> 00:26:07,190
+或其目标是使它们在主和副本虚拟机中完全相同
 to make them identical in the primary in
 
 607
 00:26:07,190 --> 00:26:09,740
+我们有两台物理计算机
 the backup we have two physical machines
 
 608
 00:26:09,740 --> 00:26:13,070
+每台都在运行
 each one of them running a virtual
 
 609
 00:26:13,070 --> 00:26:15,680
+guest虚拟机
 machine guest with its own copy of the
 
 610
 00:26:15,680 --> 00:26:17,630
+该虚拟机上带有我们关心的服务的副本
 service we care about we're assuming
 
 611
 00:26:17,630 --> 00:26:22,640
+我们假设有一个网络
 that there's a network connecting these
 
 612
 00:26:22,640 --> 00:26:25,240
+连接了这两台机器
 two machines and in addition on this
 
 613
 00:26:25,240 --> 00:26:27,530
+此外，在此局域网上还有一些客户端
 local area network in addition on this
 
 614
 00:26:27,530 --> 00:26:29,480
+此外，在此局域网上还有一些客户端
 network there's some set of clients
 
 615
 00:26:29,480 --> 00:26:30,950
+事实上，它们不一定是是客户端
 really, they don't have to be clients
 
 616
 00:26:30,950 --> 00:26:33,160
+它们可能是其他计算机
 they're just maybe other computers that
 
 617
 00:26:33,160 --> 00:26:35,750
+复制服务需要与之通信
 our replicated service needs to talk
 
 618
 00:26:35,750 --> 00:26:37,470
+其中一些是
 with some of them are clients
 
 619
 00:26:37,470 --> 00:26:39,270
+来发送请求的客户端
 sending requests it turns out in this
 
 620
 00:26:39,270 --> 00:26:44,820
+这篇论文中的复制服务
 paper there the replicated service
 
 621
 00:26:44,820 --> 00:26:47,100
+实际上并不使用本地磁盘
 actually doesn't use a local disk and
 
 622
 00:26:47,100 --> 00:26:49,530
+而是假设
 instead assumes that there's some sort
 
 623
 00:26:49,530 --> 00:26:53,370
+与某种磁盘服务器进行通信
 of disk server that it talks to him
 
 624
 00:26:53,370 --> 00:26:55,309
+尽管从本篇论文中
 although it's a little bit hard to
 
 625
 00:26:55,309 --> 00:26:59,760
+很难意识到这一点
 realize this from the paper the scheme
 
 626
 00:26:59,760 --> 00:27:01,710
+该方案实际上
 actually does not really treat the
 
 627
 00:27:01,710 --> 00:27:04,140
+并没有特殊对待这种服务器
 server particularly especially it's just
 
 628
 00:27:04,140 --> 00:27:07,289
+它只是数据包的另一个外部来源
 another external source of packets and
 
 629
 00:27:07,289 --> 00:27:09,929
+只是复制状态机可能会将数据包发送到的地方
 place that the replicated state machine
 
 630
 00:27:09,929 --> 00:27:12,000
+这与其他客户端没有太大不同
 may send packets to not very much
 
 631
 00:27:12,000 --> 00:27:17,370
+因此，基本方案是
 different from clients okay so the basic
 
 632
 00:27:17,370 --> 00:27:20,370
+我们假设
 scheme is that the we assume that these
 
 633
 00:27:20,370 --> 00:27:24,120
+这两个副本、两个虚拟机
 two replicas, the two virtual machines,
 
 634
 00:27:24,120 --> 00:27:27,870
+或者说主和副本虚拟机，都是精确的副本
 primary and backup, are exact
 
 635
 00:27:27,870 --> 00:27:30,150
-replicas some client, you know database
+某个客户端，例如数据库客户端
+replicas . some client, you know database
 
 636
 00:27:30,150 --> 00:27:31,559
+复制服务器的某个客户端
 client who knows who has some client of
 
 637
 00:27:31,559 --> 00:27:33,600
+向主虚拟机发送请求
 our replicated server sends a request to
 
 638
 00:27:33,600 --> 00:27:37,080
+而这实际上是
 the primary and that really takes the
 
 639
 00:27:37,080 --> 00:27:38,909
+以网络数据包的形式发送的
 form of a network packet that's what
 
 640
 00:27:38,909 --> 00:27:40,590
+就是我们刚刚讨论的
 we're talking about that generates an
 
 641
 00:27:40,590 --> 00:27:41,220
+它生成一个中断
 interrupt
 
 642
 00:27:41,220 --> 00:27:43,140
+该中断进入
 and this interrupt actually goes to the
 
 643
 00:27:43,140 --> 00:27:45,270
+第一个实例的
 virtual machine monitor at least in the
 
 644
 00:27:45,270 --> 00:27:47,789
+虚拟机监视器
 first instance the virtual machine
 
 645
 00:27:47,789 --> 00:27:50,010
+虚拟机监视器发现
 monitor sees here's the input for
 
 646
 00:27:50,010 --> 00:27:54,059
+复制服务的输入到来了
 this replicated service and so the
 
 647
 00:27:54,059 --> 00:27:55,679
+因此，虚拟机监视器会做两件事
 virtual machine monitor does two things
 
 648
 00:27:55,679 --> 00:27:58,429
+第一件事
 one is it sort of simulates a network
 
 649
 00:27:58,429 --> 00:28:01,799
+它模拟网络数据包到达中断
 packet arrival interrupt into the
 
 650
 00:28:01,799 --> 00:28:04,110
+传递给主guest操作系统
 primary guest operating system to
 
 651
 00:28:04,110 --> 00:28:07,470
+以此将其传递给
 deliver it to the primary copy of the
 
 652
 00:28:07,470 --> 00:28:09,600
+应用程序的主副本
 application and in addition the virtual
 
 653
 00:28:09,600 --> 00:28:11,760
+第二件事，虚拟机监视器知道
 machine monitor you know knows that this
 
 654
 00:28:11,760 --> 00:28:13,679
+这是复制虚拟机的输入
 is an input to a replicated virtual
 
 655
 00:28:13,679 --> 00:28:15,780
+因此，它通过网络
 machine and it's so it sends back out on
 
 656
 00:28:15,780 --> 00:28:19,710
+将数据包副本
 the network a copy of that packet to the
 
 657
 00:28:19,710 --> 00:28:23,010
+发送给副本虚拟机监视器
 backup virtual machine monitor it also
 
 658
 00:28:23,010 --> 00:28:26,280
+所以它（副本虚拟机监视器）也得到了数据包，副本虚拟机监视器
 gets it and backup virtual machine
 
 659
 00:28:26,280 --> 00:28:28,470
+知道它是
 monitor knows ha it is a packet for this
 
 660
 00:28:28,470 --> 00:28:30,030
+此复制状态机的数据包
 particular replicated state machine and
 
 661
 00:28:30,030 --> 00:28:34,530
+它在副本虚拟机中也会构造
 it also fakes a sort of network packet
 
 662
 00:28:34,530 --> 00:28:36,150
+网络数据包到达中断
 arrival interrupt at the backup and
 
 663
 00:28:36,150 --> 00:28:39,090
+并传送数据包
 delivers the packet so now both the
 
 664
 00:28:39,090 --> 00:28:40,799
+所以现在主和副本虚拟机都有了数据包的一份副本
 primary and the backup have a copy this
 
 665
 00:28:40,799 --> 00:28:42,780
+得到相同的输入
 packet they looks at, the same input you
 
 666
 00:28:42,780 --> 00:28:44,059
+其中有一些细节
 know with a lot of details are gonna
 
 667
 00:28:44,059 --> 00:28:48,059
+被以相同的方式处理
 process it in the same way and stay
 
 668
 00:28:48,059 --> 00:28:50,299
+并保持同步
 synchronized
 
 669
 00:28:50,750 --> 00:28:52,100
+当然，服务可能
 course the service is probably going to
 
 670
 00:28:52,100 --> 00:28:55,420
+会在主虚拟机上回复客户
 reply to the client on the primary the
 
 671
 00:28:55,420 --> 00:28:58,030
+服务将生成一个回复数据包
 service will generate a reply packet and
 
 672
 00:28:58,030 --> 00:29:02,330
+将其发送到虚拟机监视器
 send it on the NIC that the virtual
 
 673
 00:29:02,330 --> 00:29:06,230
+所模拟的NIC上
 machine monitor is emulating and then
 
 674
 00:29:06,230 --> 00:29:07,550
+然后，虚拟机监视器将会
 the virtual machine monitor will
 
 675
 00:29:07,550 --> 00:29:09,050
+在主计算机上输出该数据包
 we'll see that output packet on the
 
 676
 00:29:09,050 --> 00:29:11,270
+他们将真正地发送回复给客户端
 primary they'll actually send the reply
 
 677
 00:29:11,270 --> 00:29:13,930
+在网络上
 back out on the network to the client
 
 678
 00:29:13,930 --> 00:29:16,340
+由于副本在运行
 because the backup is running exactly
 
 679
 00:29:16,340 --> 00:29:17,810
+完全相同的指令序列
 the same sequence of instructions it
 
 680
 00:29:17,810 --> 00:29:20,360
+它也会生成一个回复数据包返回给客户端
 also generates a reply packet back to
 
 681
 00:29:20,360 --> 00:29:23,270
+发送该回复数据包
 the client and sends that reply packet
 
 682
 00:29:23,270 --> 00:29:27,230
+到其模拟的NIC上
 on its emulated NIC it's the virtual
 
 683
 00:29:27,230 --> 00:29:28,550
+虚拟机监视器模拟了该网卡
 machine monitor that's emulating that
 
 684
 00:29:28,550 --> 00:29:31,010
+虚拟机监视器模拟了该网卡
 network interface card and it says aha
 
 685
 00:29:31,010 --> 00:29:32,480
+虚拟机监视器知道这是副本虚拟机
 you know the virtual machine monitor
 
 686
 00:29:32,480 --> 00:29:34,430
+虚拟机监视器知道这是副本虚拟机
 says I know this was the backup only the
 
 687
 00:29:34,430 --> 00:29:35,990
+而它只允许主虚拟机生成输出
 primary is allowed to generate output
 
 688
 00:29:35,990 --> 00:29:39,050
+因此，虚拟机监视器会丢弃回复数据包
 and the virtual machine monitor drops
 
 689
 00:29:39,050 --> 00:29:42,140
+所以他们两个都看到了输入，而只有主虚拟机产生了输出
 the reply packet so both of them see
 
 690
 00:29:42,140 --> 00:29:44,240
+所以他们两个都看到了输入，而只有主虚拟机产生了输出
 inputs and only the primary generates
 
 691
 00:29:44,240 --> 00:29:53,510
+就术语而言，这篇论文将这种输入事件流
 outputs as far as terminology goes the
 
 692
 00:29:53,510 --> 00:29:59,690
+就术语而言，这篇论文将这种输入事件流
 paper calls this stream of input events
 
 693
 00:29:59,690 --> 00:30:01,400
+以及之后要讨论的其他事件流
 and other things, other events we'll talk
 
 694
 00:30:01,400 --> 00:30:04,310
+称为日志记录通道
 about from the stream is called the
 
 695
