@@ -3462,803 +3462,1002 @@ about from the stream is called the
 
 695
 00:30:04,310 --> 00:30:06,890
+这些通道应该都处于同一个网络中
 logging Channel it all goes over the
 
 696
 00:30:06,890 --> 00:30:10,550
+这些通道应该都处于同一个网络中
 same network presumably but these events
 
 697
 00:30:10,550 --> 00:30:12,050
+而将这种从主到备的事件流称为日志通道中的事件
 the primary send to the backup are called
 
 698
 00:30:12,050 --> 00:30:16,450
+而这种将从主到备的事件流称为日志通道中的事件
 log events on the log Channel
 
 699
 00:30:22,240 --> 00:30:24,740
+容错的关键在于
 where the fault tolerance comes in is
 
 700
 00:30:24,740 --> 00:30:29,030
+当主机宕机的时候
 that those the primary crashes what the
 
 701
 00:30:29,030 --> 00:30:31,490
+备机将如何感知到它的宕机
 backup is going to see is that it stops
 
 702
 00:30:31,490 --> 00:30:34,040
+备机将如何感知到它的宕机
 getting stuff on the stops getting log
 
 703
 00:30:34,040 --> 00:30:37,310
+备机会感知到无法从日志通道获取到任何内容
 entries a log entry stops getting log
 
 704
 00:30:37,310 --> 00:30:42,110
+备机会感知到无法从日志通道获取到任何内容
 entries on the logging channel and we
 
 705
 00:30:42,110 --> 00:30:45,500
+并且我们知道实际上备机每秒钟会期望获得很多数据
 know it it turns out that the backup can
 
 706
 00:30:45,500 --> 00:30:47,210
+并且我们知道实际上备机每秒钟会期望获得很多数据
 expect to get many per second because
 
 707
 00:30:47,210 --> 00:30:49,760
+原因在于每个主机都有一个周期性的定时器中断来生成日志
 one of the things that generates log
 
 708
 00:30:49,760 --> 00:30:52,370
+原因在于每个主机都有一个周期性的定时器中断来生成日志
 entries is periodic timer interrupts in
 
 709
 00:30:52,370 --> 00:30:55,310
+原因在于每个主机都有一个周期性的定时器中断来生成日志
 the in the primary each one of which
 
 710
 00:30:55,310 --> 00:30:57,290
+这样会使得每次中断都产生一条日志进入备机
 turns out every interrupt generates a
 
 711
 00:30:57,290 --> 00:30:59,510
+这样会使得每次中断都产生一条日志进入备机
 log entries into the backup these timer
 
 712
 00:30:59,510 --> 00:31:01,130
+这些中断大概每秒触发100次
 interrupts are going to happen like 100
 
 713
 00:31:01,130 --> 00:31:02,420
+这些中断大概每秒触发100次
 times a second so the backups can
 
 714
 00:31:02,420 --> 00:31:04,280
+因此备机肯定期望
 certainly expect to see
 
 715
 00:31:04,280 --> 00:31:07,400
+从日志通道收到很多消息
 a lot of chitchat on the logging Channel
 
 716
 00:31:07,400 --> 00:31:09,110
+如果主机挂了
 if the primaries up if the primary
 
 717
 00:31:09,110 --> 00:31:11,510
+或翻车了
 crashes then the virtual machine
 
 718
 00:31:11,510 --> 00:31:12,980
+然后虚拟机监视器会说 我去
 monitored over here will say gosh you
 
 719
 00:31:12,980 --> 00:31:14,330
+你知道吗我已经有大约1秒钟没从日志通道收到消息了
 know I haven't received anything on the
 
 720
 00:31:14,330 --> 00:31:15,890
+你知道吗我已经有大约1秒钟没从日志通道收到消息了
 logging channel for like a second or
 
 721
 00:31:15,890 --> 00:31:19,480
+不管主机挂了或发生了啥
 however long the primary must be dead or
 
 722
 00:31:19,480 --> 00:31:25,310
+在这种情况下
 or something and in that case when the
 
 723
 00:31:25,310 --> 00:31:28,700
+当备机收不到任何主机发来的日志时
 backup stop seeing log entries from the
 
 724
 00:31:28,700 --> 00:31:31,280
+这篇论文的方式是
 primary the paper the way the paper
 
 725
 00:31:31,280 --> 00:31:33,320
+激活备机
 phrases it is that the backup goes live
 
 726
 00:31:33,320 --> 00:31:35,780
+这意味着它
 and what that means is that it stops
 
 727
 00:31:35,780 --> 00:31:42,920
+不再在日志通道上等待主机的日志
 waiting for these input events on the
 
 728
 00:31:42,920 --> 00:31:46,850
+不再在日志通道上等待主机的日志
 logging Channel from the primary and
 
 729
 00:31:46,850 --> 00:31:49,160
+相反虚拟机监视器
 instead this virtual machine monitor
 
 730
 00:31:49,160 --> 00:31:51,790
+会让备机自动执行
 just lets this backup execute freely
 
 731
 00:31:51,790 --> 00:31:54,590
+而无需等待来自主机的输入事件
 without waiting for without being driven
 
 732
 00:31:54,590 --> 00:31:59,000
+而无需等待来自主机的输入事件
 by input events from the primary the vmm
 
 733
 00:31:59,000 --> 00:32:00,680
+虚拟机监视器会让网络中的
 does something to the network to cause
 
 734
 00:32:00,680 --> 00:32:02,510
+客户端请求
 future client requests to go to the
 
 735
 00:32:02,510 --> 00:32:05,000
+发给备机而非主机
 backup instead of the primary and the
 
 736
 00:32:05,000 --> 00:32:09,770
+虚拟机监视器会停止丢弃备机
 VMM here stops discarding the backup
 
 737
 00:32:09,770 --> 00:32:11,150
+(这里备机成了主机)
 personnel it's the primary not the
 
 738
 00:32:11,150 --> 00:32:13,940
+停止丢弃备机虚拟机产生的输出
 backup stops discarding output from this
 
 739
 00:32:13,940 --> 00:32:15,770
+所以现在这台备机
 virtual machine so now this or machine
 
 740
 00:32:15,770 --> 00:32:18,170
+就能直接接收输入
 directly gets the inputs and there's a
 
 741
 00:32:18,170 --> 00:32:20,270
+并且也有很多输出
 lot of produce output and now our backup
 
 742
 00:32:20,270 --> 00:32:22,520
+现在备机完全接管了主机的工作
 is taken over and similarly you know
 
 743
 00:32:22,520 --> 00:32:25,280
+你也知道这让人没啥兴趣
 that this is less interesting but has to
 
 744
 00:32:25,280 --> 00:32:26,330
+但为了让它正常工作
 work correctly
 
 745
 00:32:26,330 --> 00:32:29,390
+如果备机挂了
 if the backup fails a similar primary
 
 746
 00:32:29,390 --> 00:32:31,130
+主机一样必须使用类似的流程舍弃备机
 has to use a similar process to abandon
 
 747
 00:32:31,130 --> 00:32:34,550
+停止向备机发送事件
 the backup stop sending it events and
 
 748
 00:32:34,550 --> 00:32:37,100
+这更像单节点服务器而非副本服务器
 just sort of act much more like a single
 
 749
 00:32:37,100 --> 00:32:39,080
+因此如果其中一个挂了则另一个会被激活
 non replicated server so either one of
 
 750
 00:32:39,080 --> 00:32:41,090
+因此如果其中一个挂了则另一个会被激活
 them can go live if the other one
 
 751
 00:32:41,090 --> 00:32:43,460
+就像你知道的
 appears to be dead stops you know stops
 
 752
 00:32:43,460 --> 00:32:46,390
+它会停止产生网络流量
 generating network traffic
 
 753
 00:32:51,220 --> 00:32:57,230
+这取决于我们依赖的网络技术是什么
 magic now it depends you know depends on
 
 754
 00:32:57,230 --> 00:33:01,550
+这取决于我们依赖的网络技术是什么
 what the networking technology is I
 
 755
 00:33:01,550 --> 00:33:04,940
+ 我觉得在这篇论文中
 think with the paper one possibility is
 
 756
 00:33:04,940 --> 00:33:07,910
+一种可能性是互联网上的
 that this is sitting on Ethernet every
 
 757
 00:33:07,910 --> 00:33:09,530
+每一台物理机
 physical computer on the Internet or
 
 758
 00:33:09,530 --> 00:33:15,430
+或每一个物理网卡都有一个48位的唯一ID
 really every NIC has a 48 bit unique ID
 
 759
 00:33:16,720 --> 00:33:21,320
+我想说的是 事实上
 I'm making this up now the it could be
 
 760
 00:33:21,320 --> 00:33:22,910
+不是每台物理机都有一个唯一的ID
 that in fact instead of each physical
 
 761
 00:33:22,910 --> 00:33:25,400
+不是每台物理机都有一个唯一的ID
 computer having a unique ID each virtual
 
 762
 00:33:25,400 --> 00:33:30,710
+而是每台虚拟机都有一个唯一的ID 
 machine does and when the backup takes
 
 763
 00:33:30,710 --> 00:33:36,430
+当备机接管后 实际上它会将主机的
 over it essentially claims the primary's
 
 764
 00:33:36,430 --> 00:33:39,320
+以太网ID声明为自己的
 Ethernet ID as its own and it starts
 
 765
 00:33:39,320 --> 00:33:41,090
+并通知所有人我才是这个ID的拥有者
 saying you know I'm the owner of that ID
 
 766
 00:33:41,090 --> 00:33:42,620
+然后网络上的其他人
 and then other people on the ethernet
 
 767
 00:33:42,620 --> 00:33:46,010
+开始向我们发送数据包
 will start sending us packets that's my
 
 768
 00:33:46,010 --> 00:34:02,690
+这是我的解释
 interpretation the designers believed
 
 769
 00:34:02,690 --> 00:34:04,370
+设计者相信他们已经识别出了所有的数据包来源
 they had identified all such sources and
 
 770
 00:34:04,370 --> 00:34:07,700
+并且对于每一个包主机都会进行操作
 for each one of them the primary does
 
 771
 00:34:07,700 --> 00:34:10,159
+你知道的
 whatever it is you know executes the
 
 772
 00:34:10,159 --> 00:34:12,139
+执行随机数生成指令
 random number generator instruction or
 
 773
 00:34:12,139 --> 00:34:14,360
+或在某个时间点进行中断
 takes an interrupt at some time the
 
 774
 00:34:14,360 --> 00:34:17,360
+备机不会做的
 backup does not and the back of virtual
 
 775
 00:34:17,360 --> 00:34:19,639
+但备机上的虚拟机监视器会监测到
 machine monitor sort of detects any such
 
 776
 00:34:19,639 --> 00:34:22,429
+所有这类指令并进行拦截
 instruction and and intercepts that and
 
 777
 00:34:22,429 --> 00:34:24,560
+而且什么也不会做
 doesn't do it and he said the backup
 
 778
 00:34:24,560 --> 00:34:26,270
+然后备机会等待日志通道中的一个事件
 waits for an event on the logging
 
 779
 00:34:26,270 --> 00:34:28,610
+这个指令
 Channel saying this instruction number
 
 780
 00:34:28,610 --> 00:34:30,980
+随机数生成指令
 you know the random number was whatever
 
 781
 00:34:30,980 --> 00:34:33,700
+是在主机上产生的
 it was on the primary
 
 782
 00:34:35,080 --> 00:34:37,420
+啥？
 At which?  
 
 783
 00:34:37,420 --> 00:34:42,130
+是的 是的
 yes yes
 
 784
 00:34:42,670 --> 00:34:46,639
+这篇论文在疯狂暗示英特尔
 yeah the paper hints that they got Intel
 
 785
 00:34:46,639 --> 00:34:50,840
+在他们的微处理器上增加新特性
 to add features to the microprocessor to
 
 786
 00:34:50,840 --> 00:34:54,650
+来完全支持这项功能
 support exactly this but they don't say
 
 787
 00:34:54,650 --> 00:35:03,370
+但他们也没说清楚到底是啥
 what it was okay
 
 788
 00:35:04,180 --> 00:35:08,090
+ 好了 在这个话题中目前为止你所知道的假设是
 okay so on that topic the so far that
 
 789
 00:35:08,090 --> 00:35:09,320
+只要备机能收到客户端发来的数据包
 you know the story is sort of assumed
 
 790
 00:35:09,320 --> 00:35:16,010
+只要备机能收到客户端发来的数据包
 that as long as the backup to sees the
 
 791
 00:35:16,010 --> 00:35:17,450
+就会执行和主机相同的处理方式
 package from the clients it'll execute
 
 792
 00:35:17,450 --> 00:35:21,020
+就会执行和主机相同的处理方式
 in identically to the primary and that's
 
 793
 00:35:21,020 --> 00:35:25,310
+这实际上掩饰了一些重要的细节
 actually glossing over some huge and
 
 794
 00:35:25,310 --> 00:35:30,050
+这实际上掩饰了一些重要的细节
 important details so one problem is that
 
 795
 00:35:30,050 --> 00:35:31,190
+其中一个问题就像这两个人所说的
 as a couple of people have mentioned
 
 796
 00:35:31,190 --> 00:35:33,710
+有些情况是不确定的
 there are some things that are
 
 797
 00:35:33,710 --> 00:35:36,020
+计算机中发生的每件事都应该是确定性的函数
 non-deterministic now it's not the case
 
 798
 00:35:36,020 --> 00:35:37,430
+计算机中发生的每件事都应该是确定性的函数
 that every single thing that happens in
 
 799
 00:35:37,430 --> 00:35:39,440
+哪怕是内存里的内容也是一个确定性函数
 the computer is a deterministic function
 
 800
 00:35:39,440 --> 00:35:41,330
+哪怕是内存里的内容也是一个确定性函数
 of the contents of the memory of the
 
 801
 00:35:41,330 --> 00:35:44,420
+它通常是一种串行执行的代码
 computer it is for a sort of straight
 
 802
 00:35:44,420 --> 00:35:46,280
+但肯定不可能老是这样
 line code execution often but certainly
 
 803
 00:35:46,280 --> 00:35:49,430
+所以需要担心的是
 not always so worried about is things
 
 804
 00:35:49,430 --> 00:35:51,290
+当前的状态可能不是一个严格的函数
 that may happen that are not a strict
 
 805
 00:35:51,290 --> 00:35:53,270
+当前的状态可能不是一个严格的函数
 function of the current state that is
 
 806
 00:35:53,270 --> 00:35:54,920
+如果在主机和备机中没有仔细考虑
 that might be different if we're not
 
 807
 00:35:54,920 --> 00:35:56,960
+那么情况可能会有所不同
 careful on the primary and backup so
 
 808
 00:35:56,960 --> 00:35:58,760
+这里有很多可能发生的某种不确定性事件
 these are sort of non-deterministic
 
 809
 00:35:58,760 --> 00:36:04,040
+这里有很多可能发生的某种不确定性事件
 events that may happen so the designers
 
 810
 00:36:04,040 --> 00:36:05,540
+所以设计者们不得不坐下来想办法
 had to sit down and like figure out what
 
 811
 00:36:05,540 --> 00:36:10,570
+让它们全都正常工作
 they all work and here are the ones
 
 812
 00:36:10,570 --> 00:36:12,350
+接下来就是他们讨论出来的东西
 here's the kind of stuff they talked
 
 813
 00:36:12,350 --> 00:36:16,520
+其中一种来自外部源的输入
 about so one is inputs from external
 
 814
 00:36:16,520 --> 00:36:18,860
+比如客户端
 sources like clients which arrive just
 
 815
 00:36:18,860 --> 00:36:20,420
+我们也不知道客户端输入什么时候会来
 whenever they arrive right they're not
 
 816
 00:36:20,420 --> 00:36:21,890
+很多情况下客户端请求并不是那么严格
 predictable there are no sense in which
 
 817
 00:36:21,890 --> 00:36:24,170
+很多情况下客户端请求并不是那么严格
 the time at which a client request
 
 818
 00:36:24,170 --> 00:36:25,520
+我们也不知道服务的状态是不是一个确定性函数
 arrives or its content is a
 
 819
 00:36:25,520 --> 00:36:27,080
+我们也不知道服务的状态是不是一个确定性函数
 deterministic function of the services
 
 820
 00:36:27,080 --> 00:36:31,090
+因为它不可知
 state because it's not so these actually
 
 821
 00:36:31,090 --> 00:36:34,550
+所以实际上这个系统真正致力于
 this system is really dedicated to a
 
 822
 00:36:34,550 --> 00:36:37,550
+服务只在网络上通讯的环境
 world in which services only talk over
 
 823
 00:36:37,550 --> 00:36:39,830
+服务只在网络上通讯的环境
 the network and so the only really
 
 824
 00:36:39,830 --> 00:36:41,630
+所以这个系统基本上支持
 basically the only form of input or
 
 825
 00:36:41,630 --> 00:36:44,060
+基于网络数据包收发的输入输出操作
 output in this system is supported by
 
 826
 00:36:44,060 --> 00:36:46,240
+基于网络数据包收发的输入输出操作
 this system seems to be network packets
 
 827
 00:36:46,240 --> 00:36:48,620
+所以我们讲的到达
 coming and going so we didn't put
 
 828
 00:36:48,620 --> 00:36:50,060
+实际意思是数据包的到达
 arrives at what that really means it's a
 
 829
 00:36:50,060 --> 00:36:50,540
+实际意思是数据包的到达
 packet
 
 830
 00:36:50,540 --> 00:36:53,810
+并且数据包除了包括
 arrives and what a packet really
 
 831
 00:36:53,810 --> 00:36:56,990
+发送给我们的数据
 consists of for us is the data in the
 
 832
 00:36:56,990 --> 00:37:01,820
+还有一个中断
 packet plus the interrupt
 
 833
 00:37:01,820 --> 00:37:05,570
+用来发送数据包已抵达的信号量
 that's signaled that the packet had
 
 834
 00:37:05,570 --> 00:37:08,090
+所以这很重要
 arrived so that's quite important so
 
 835
 00:37:08,090 --> 00:37:10,870
+当数据包收到后
 when a packet arrives
 
 836
 00:37:11,050 --> 00:37:16,250
+通常由NIC通过DMA
 I'm ordinarily the NIC DMAs the packet
 
 837
 00:37:16,250 --> 00:37:20,720
+将包内数据写入内存
 contents into memory and then raises an
 
 838
 00:37:20,720 --> 00:37:22,070
+并发起一个操作系统可感知的中断
 interrupt which the operating system
 
 839
 00:37:22,070 --> 00:37:23,420
+这个中断会在指令流中的某个位置触发
 feels and the interrupt happens at some
 
 840
 00:37:23,420 --> 00:37:26,210
+这个中断会在指令流中的某个位置触发
 point in the instruction stream and so
 
 841
 00:37:26,210 --> 00:37:29,000
+所以这两个指令流必须在主备中一模一样
 both of those have to look identical on
 
 842
 00:37:29,000 --> 00:37:30,860
+所以这两个指令流必须在主备中一模一样
 the primary and backup or else we're
 
 843
 00:37:30,860 --> 00:37:33,050
+否则执行起来会有分歧
 gonna have they're also executions gonna
 
 844
 00:37:33,050 --> 00:37:35,540
+所以真正的问题是
 diverge and so you know the real issue
 
 845
 00:37:35,540 --> 00:37:38,090
+当中断精确发生在哪条指令上时
 is when the interrupt occurs exactly at
 
 846
 00:37:38,090 --> 00:37:40,190
+当中断精确发生在哪条指令上时
 which instruction the interrupts happen
 
 847
 00:37:40,190 --> 00:37:42,500
+备机和主机最好全都一样
 to occur and better be the same on the
 
 848
 00:37:42,500 --> 00:37:44,420
+备机和主机最好全都一样
 primary in the backup otherwise their
 
 849
 00:37:44,420 --> 00:37:46,400
+否则他们的执行逻辑不同状态也不同
 execution is different and their states
 
 850
 00:37:46,400 --> 00:37:49,040
+因此我们关心的是包数据
 are gonna diverge and so we care about
 
 851
 00:37:49,040 --> 00:37:50,900
+和中断发生的时机
 the content of the packet and the timing
 
 852
 00:37:50,900 --> 00:37:54,290
+和中断发生的时机
 of the interrupt and then as a couple of
 
 853
 00:37:54,290 --> 00:37:56,830
+并且有两个人已经提到了
 people have mentioned there's a few
 
 854
 00:37:56,830 --> 00:38:04,580
+有一些指令在不同的机器上的表现不同
 instructions that that behave
 
 855
 00:38:04,580 --> 00:38:06,920
+有一些指令在不同的机器上的表现不同
 differently on different computers or
 
 856
 00:38:06,920 --> 00:38:09,590
+或依赖不同
 differently depending on something like
 
 857
 00:38:09,590 --> 00:38:11,300
+例如生成随机数指令
 there's maybe a random number generator
 
 858
 00:38:11,300 --> 00:38:13,250
+还有调用获取时间的指令
 instruction there's I get time-of-day
 
 859
 00:38:13,250 --> 00:38:15,260
+生成唯一ID的指令
 instructions that will yield different
 
 860
 00:38:15,260 --> 00:38:16,640
+都会产生不同的结果
 answers have called at different times
 
 861
 00:38:16,640 --> 00:38:21,410
+另一个产生非确定性因素的原因是
 and unique ID instructions another huge
 
 862
 00:38:21,410 --> 00:38:22,850
+另一个产生非确定性因素的原因是
 source of non determinism which the
 
 863
 00:38:22,850 --> 00:38:27,440
+论文不是基于多核并行（实现）的
 paper basically rules out is multi-core
 
 864
 00:38:27,440 --> 00:38:33,320
+这是个适用于单核而非多核的系统
 parallelism this is a uni-process only
 
 865
 00:38:33,320 --> 00:38:34,910
+这是个适用于单核而非多核的系统
 system there's no multi-core in this
 
 866
 00:38:34,910 --> 00:38:36,920
+原因在于如果使用多核环境
 world the reason for this is that if it
 
 867
 00:38:36,920 --> 00:38:40,340
+那么服务肯定运行在多核之上
 allowed multi-core then then the service
 
 868
 00:38:40,340 --> 00:38:41,780
+那么服务肯定运行在多核之上
 would be running on multiple cores and
 
 869
 00:38:41,780 --> 00:38:45,050
+服务的指令在不同的核上交错执行
 the instructions of the service the rest
 
 870
 00:38:45,050 --> 00:38:45,890
+服务的指令在不同的核上交错执行
 of you know the different cores are
 
 871
 00:38:45,890 --> 00:38:48,140
+其执行顺序是不可预测的
 interleaved in some way which is not
 
 872
 00:38:48,140 --> 00:38:50,810
+所以当我们在备机上运行相同的代码
 predictable and so really if we run the
 
 873
 00:38:50,810 --> 00:38:52,910
+所以当我们在备机上运行相同的代码
 same code on the on the backup in the
 
 874
 00:38:52,910 --> 00:38:54,890
+如果它是运行在多核之上的并行代码
 server if it's parallel code running on
 
 875
 00:38:54,890 --> 00:38:56,900
+如果它是运行在多核之上的并行代码
 a multi-core the tube interleave the
 
 876
 00:38:56,900 --> 00:38:58,520
+则硬件会以不同的方式在两个核上交错执行这些指令
 instructions in the two cores in
 
 877
 00:38:58,520 --> 00:39:00,790
+则硬件会以不同的方式在两个核上交错执行这些指令
 different ways the hardware will and
 
 878
 00:39:00,790 --> 00:39:03,450
+这会导致产生不同的结果
 that can just cause
 
 879
 00:39:03,450 --> 00:39:05,910
+这会导致产生不同的结果
 different results because you know
 
 880
 00:39:05,910 --> 00:39:08,850
+因为可以假设这种情况 两个核共同执行一段代码
 supposing the code and the two cores you
 
 881
 00:39:08,850 --> 00:39:10,500
+在某些情况下会同时请求对数据进行加锁
 know they both asked for a lock on some
 
 882
 00:39:10,500 --> 00:39:13,050
+在某些情况下会同时请求对数据进行加锁
 data well on the master you know
 
 883
 00:39:13,050 --> 00:39:15,060
+在主机上核1可能比核2优先获得锁
 core one may get the lock before core two
 
 884
 00:39:15,060 --> 00:39:17,160
+而在备机上可能由于微小的时间差异
 on the slave just because of a tiny
 
 885
 00:39:17,160 --> 00:39:19,140
+使得核2先获得锁
 timing difference core two may got the
 
 886
 00:39:19,140 --> 00:39:21,480
+你懂的 这样会导致执行结果完全不一样
 lock first and the you know execution
 
 887
 00:39:21,480 --> 00:39:23,610
+你懂的 这样会导致执行结果完全不一样
 results are totally different likely to
 
 888
 00:39:23,610 --> 00:39:25,230
+就像不同的线程获得锁
 be totally different if different
 
 889
 00:39:25,230 --> 00:39:26,960
+会导致执行结果不同一样
 threads get the lock
 
 890
-
 00:39:26,960 --> 00:39:30,060
+因此多核是不确定性因素里最严峻的挑战
 so multi-core is the grim source among
 
 891
 00:39:30,060 --> 00:39:32,400
+因此多核是不确定性因素里最严峻的挑战
 non-determinisms just totally
 
 892
 00:39:32,400 --> 00:39:36,750
+只是在这篇论文中完全被屏蔽了而已
 outlawed in this papers world and indeed
 
 893
 00:39:36,750 --> 00:39:39,210
+实际上到现在为止我所讲的技术
 like as far as I can tell the techniques
 
 894
 00:39:39,210 --> 00:40:00,000
+貌似不是那么好使
 are not really applicable the service
 
 895
@@ -4268,12 +4467,12 @@ can't use multi-core parallel parallelism
 
 896
 00:40:01,980 --> 00:40:04,830
-硬件几乎可以肯定是多核并行的  
+而硬件几乎可以肯定是多核并行的  
 the hardware is almost
 
 897
 00:40:04,830 --> 00:40:06,960
-硬件几乎可以肯定是多核并行的  
+而硬件几乎可以肯定是多核并行的  
 certainly multi-core parallel 
 
 898
