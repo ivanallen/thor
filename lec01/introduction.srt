@@ -3022,12 +3022,12 @@ tends to happen with these systems is
 
 605
 00:27:26,700 --> 00:27:29,309
-你现在又了10台 20台 甚至100台web服务器
+你现在有了10台 20台 甚至100台web服务器
 that at some point after you have 10 or
 
 606
 00:27:29,309 --> 00:27:31,379
-你现在又了10台 20台 甚至100台web服务器
+你现在有了10台 20台 甚至100台web服务器
 20 or 100 web servers all talking to the
 
 607
@@ -3067,7 +3067,7 @@ some point you run out of gas because
 
 614
 00:27:46,710 --> 00:27:48,600
-越累越多的机器
+越来越多的机器
 the place at which you are adding more
 
 615
@@ -3702,12 +3702,12 @@ but after the repair occurs the system
 
 741
 00:33:19,650 --> 00:33:21,900
-系统给可以继续正常运行
+系统将可以继续正常运行
 will be able to continue as if nothing
 
 742
 00:33:21,900 --> 00:33:24,420
-系统给可以继续正常运行
+系统将可以继续正常运行
 bad had gone wrong right so this is sort
 
 743
@@ -5112,13 +5112,13 @@ consistency potentially extremely
 
 1023
 00:45:42,350 --> 00:45:44,450
-就像每次你想做一部歌剧一样
+就像每次你想要执行其中一项put操作一样
 expensive like every time you want to do
 
 1024
 00:45:44,450 --> 00:45:45,319
-就像每次你想做一部歌剧一样
-one of these put opera
+就像每次你想要执行其中一项put操作一样
+one of these put operation
 
 1025
 00:45:45,319 --> 00:45:46,999
@@ -6152,17 +6152,17 @@ well some a little bit of terminology
 
 1231
 00:55:09,100 --> 00:55:12,480
-这整个计算称为任务
+这整个计算称为作业（job）
 the whole computation is called the job
 
 1232
 00:55:12,480 --> 00:55:16,900
-MapReduce的每个调用都称为一个任务
+MapReduce的每个调用都称为一个任务（task）
 any one invocation of MapReduce is called
 
 1233
 00:55:16,900 --> 00:55:19,000
-我们有整个任务
+我们有整个作业
 a task so we have the entire job and
 
 1234
@@ -6472,7 +6472,7 @@ MapReduce users to you know define a
 
 1296
 00:58:55,939 --> 00:58:58,219
-MapReduce任务，需要一些输入和
+MapReduce作业，需要一些输入和
 MapReduce job that took some inputs and
 
 1297
@@ -6482,7 +6482,7 @@ produce some outputs and then have a
 
 1298
 00:59:00,169 --> 00:59:01,969
-第二个MapReduce任务
+第二个MapReduce作业
 second MapReduce job you know you're
 
 1299
@@ -6537,7 +6537,7 @@ they originally did you have to run the
 
 1309
 00:59:26,539 --> 00:59:28,909
-你必须多次运行MapReduce任务
+你必须多次运行MapReduce作业
 MapReduce job multiple times and the
 
 1310
@@ -6562,7 +6562,7 @@ webpage so it was routine to take this
 
 1314
 00:59:38,359 --> 00:59:40,279
-并用它作为另一个MapReduce任务的输入是很日常的
+并用它作为另一个MapReduce作业的输入是很日常的
 output and then use it as the input to
 
 1315
@@ -6597,7 +6597,7 @@ format or as the information required
 
 1321
 01:00:05,419 --> 01:00:07,939
-给下一个MapReduce任务，我的意思是这
+给下一个MapReduce作业，我的意思是这
 for the next MapReduce job I mean this
 
 1322
@@ -6707,7 +6707,7 @@ from multiple MapReduce distinct
 
 1343
 01:00:58,390 --> 01:01:00,730
-MapReduce任务和更高级的系统
+MapReduce作业和更高级的系统
 MapReduce jobs and more advanced systems
 
 1344
@@ -7422,7 +7422,7 @@ GFS and a separate set of physical
 
 1486
 01:08:27,779 --> 01:08:40,489
-介于GFS和一组单独运行MapReduce任务的物理机器之间
+介于GFS和一组单独运行MapReduce作业的物理机器之间
 machines that run MapReduce jobs okay
 
 1487
@@ -7752,7 +7752,7 @@ route switch or of the total network
 
 1552
 01:11:27,999 --> 01:11:30,610
-容量的每台机器分量仅为每秒50MB
+容量的每台机器分量仅为每秒50Mb
 capacity was only 50 megabits per second
 
 1553
@@ -7762,12 +7762,12 @@ per second in their setup 50 megabits
 
 1554
 01:11:36,309 --> 01:11:41,530
-每台机器每秒50MB
+每台机器每秒50Mb
 per second per machine and then might
 
 1555
 01:11:41,530 --> 01:11:43,090
-看起来好像是很多50MB
+看起来好像是很多50Mb
 seem like a lot 50 megabits gosh
 
 1556
@@ -7787,7 +7787,7 @@ run or CPUs run and so this with their
 
 1559
 01:11:51,999 --> 01:11:53,769
-他们的网络，每秒50MB
+他们的网络，每秒50Mb
 network this 50 megabits per second was
 
 1560
@@ -8352,7 +8352,7 @@ of data and then indeed it is from any
 
 1672
 01:16:42,430 --> 01:16:44,140
-MapReduce任务，尽管不是全部的
+MapReduce作业，尽管不是全部的
 MapReduce jobs although not all there's
 
 1673
@@ -8377,7 +8377,7 @@ the output of Reduce into another
 
 1677
 01:16:52,900 --> 01:16:55,150
-MapReduce任务，的确如此，那是
+MapReduce作业，的确如此，那是
 MapReduce job and indeed that was often
 
 1678
@@ -8652,8 +8652,8 @@ same machine as the data stored on they
 
 1732
 01:19:06,939 --> 01:19:08,139
-很高兴能从任何地方对数据进行投票
-were happy to vote the data from
+很高兴能从任何地方对数据进行读取
+were happy to load the data from
 
 1733
 01:19:08,139 --> 01:19:11,369
