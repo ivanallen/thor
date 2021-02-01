@@ -8652,8 +8652,8 @@ same machine as the data stored on they
 
 1732
 01:19:06,939 --> 01:19:08,139
-很高兴能从任何地方对数据进行投票
-were happy to vote the data from
+很高兴能从任何地方对数据进行读取
+were happy to load the data from
 
 1733
 01:19:08,139 --> 01:19:11,369
