@@ -3797,7 +3797,7 @@ library so the applications linked with
 760
 00:35:47,869 --> 00:35:52,099
 就是那个底层发送数据到不同 server 的依赖库
-a library that sends our pcs to the
+a library that sends our rpc to the
 
 761
 00:35:52,099 --> 00:35:54,230
