@@ -4022,8 +4022,8 @@ microprocessors good things like flash
 
 805
 00:36:06,970 --> 00:36:08,990
-life is quite a bit better but still
 即便已经在闪存读写上好了很多
+life is quite a bit better but still
 
 806
 00:36:08,990 --> 00:36:10,760
