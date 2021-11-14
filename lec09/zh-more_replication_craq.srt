@@ -1,0 +1,8010 @@
+1
+00:00:00,729 --> 00:00:03,409
+今天我想做两件我想做的事
+today I want to do two things I want to
+
+2
+00:00:03,409 --> 00:00:06,200
+结束对动物园饲养员和
+finish the discussion of zookeeper and
+
+3
+00:00:06,200 --> 00:00:10,610
+那就说破解这个特殊的
+then talk about crack the particular
+
+4
+00:00:10,610 --> 00:00:12,320
+我最感兴趣的事情
+things that I'm most interested in
+
+5
+00:00:12,320 --> 00:00:15,139
+谈论一个糟糕的动物园饲养员是
+talking about a bad zookeeper are the
+
+6
+00:00:15,139 --> 00:00:17,690
+其API的设计允许
+design of its API that allows the
+
+7
+00:00:17,690 --> 00:00:19,180
+动物园饲养员须为通用动物饲养员
+zookeeper to be a general-purpose
+
+8
+00:00:19,180 --> 00:00:21,650
+真正令人满意的服务
+service that really bites off
+
+9
+00:00:21,650 --> 00:00:24,560
+分配的重要任务
+significant tasks that distributed
+
+10
+00:00:24,560 --> 00:00:27,200
+系统需要，那么为什么会这样呢？你知道为什么吗？
+systems need so why is this you know why
+
+11
+00:00:27,200 --> 00:00:29,870
+这是一个好的API设计，然后
+is that a good API design and then the
+
+12
+00:00:29,870 --> 00:00:33,649
+确实更具体的迷你主题
+really more specific topic of mini
+
+13
+00:00:33,649 --> 00:00:35,179
+事务结果表明，这是一个
+transactions turns out this is a
+
+14
+00:00:35,179 --> 00:00:38,600
+值得了解的想法，所以他们有了API
+worthwhile idea to know so they got API
+
+15
+00:00:38,600 --> 00:00:50,120
+我只是个召回动物园的管理员
+and I'm just just a recall zookeepers
+
+16
+00:00:50,120 --> 00:00:52,159
+基于木筏，所以我们可以想到它
+based on raft and so we can think of it
+
+17
+00:00:52,159 --> 00:00:54,949
+因为它是并且确实是容错的
+as being and indeed it is fault tolerant
+
+18
+00:00:54,949 --> 00:00:56,420
+并且做了正确的事情
+and does the right thing with respect to
+
+19
+00:00:56,420 --> 00:01:00,679
+它有这样一种分区
+partitions it has this sort of
+
+20
+00:01:00,679 --> 00:01:04,099
+通过以下方式增强性能：读取
+performance enhancement by which reads
+
+21
+00:01:04,099 --> 00:01:06,200
+可以在任何副本上处理，并且
+can be processed at any replica and
+
+22
+00:01:06,200 --> 00:01:08,060
+因此，读数可能会变得陈旧，所以我们
+therefore the reads can be stale so we
+
+23
+00:01:08,060 --> 00:01:09,320
+只是要记住这一点，因为我们正在
+just have to keep this in mind as we're
+
+24
+00:01:09,320 --> 00:01:12,560
+浅析动物园饲养员的各种用途
+analyzing various uses of the zookeeper
+
+25
+00:01:12,560 --> 00:01:15,649
+另一方面，动物园饲养员的界面
+interface on the other hand zookeeper
+
+26
+00:01:15,649 --> 00:01:18,170
+确实保证了每一份复制品
+does guarantee that every replicas
+
+27
+00:01:18,170 --> 00:01:20,689
+按顺序处理权利流
+process the stream of rights in order
+
+28
+00:01:20,689 --> 00:01:22,570
+使用所有复制副本，一次一个
+one at a time with all replicas
+
+29
+00:01:22,570 --> 00:01:24,920
+以相同的顺序执行权利
+executing the rights in the same order
+
+30
+00:01:24,920 --> 00:01:27,979
+所以复制品在某种程度上是向前推进的
+so that the replicas advance sort of in
+
+31
+00:01:27,979 --> 00:01:30,170
+他们所有人的状态完全不同于
+their states of all than exactly the
+
+32
+00:01:30,170 --> 00:01:33,409
+同样的方式，所有的操作
+same way and that all of the operation
+
+33
+00:01:33,409 --> 00:01:36,710
+生成的
+reads and writes produced by a generated
+
+34
+00:01:36,710 --> 00:01:38,659
+由单个客户端处理或由
+by a single client or processed by the
+
+35
+00:01:38,659 --> 00:01:41,000
+系统还按顺序既按顺序又按顺序
+system also in order both in the order
+
+36
+00:01:41,000 --> 00:01:43,899
+客户签发了这些证书，并且
+that the client issued them in and
+
+37
+00:01:43,899 --> 00:01:45,950
+给定的连续运算
+successive operations from a given
+
+38
+00:01:45,950 --> 00:01:48,859
+客户端始终看到相同的状态或
+client always see the same state or
+
+39
+00:01:48,859 --> 00:01:51,679
+稍后在正确的流中作为
+later in the right stream as the
+
+40
+00:01:51,679 --> 00:01:53,869
+上一次读取操作权限任意
+previous read operation right any
+
+41
+00:01:53,869 --> 00:01:59,299
+客户端操作正常，因此
+operation from that client okay so
+
+42
+00:01:59,299 --> 00:02:02,119
+在我深入了解API的外观之前
+before I dive into what the API looks
+
+43
+00:02:02,119 --> 00:02:06,200
+喜欢和为什么它是有用的，它是值得的
+like and why it's useful it's worth just
+
+44
+00:02:06,200 --> 00:02:08,179
+思考什么样的问题
+thinking about what kinds of problems
+
+45
+00:02:08,179 --> 00:02:10,250
+动物园管理员的目标是解决或可能是
+zookeeper is aiming to solve or could be
+
+46
+00:02:10,250 --> 00:02:12,470
+希望能解决这样的问题
+expected to solve so
+
+47
+00:02:12,470 --> 00:02:13,819
+对我来说
+for me
+
+48
+00:02:13,819 --> 00:02:23,030
+激励的一个完全核心的例子
+a totally central example of motivation
+
+49
+00:02:23,030 --> 00:02:25,159
+你为什么要用Ooh Keeper
+of why you would want to use ooh keeper
+
+50
+00:02:25,159 --> 00:02:28,249
+这是作为
+this is it as an implementation of the
+
+51
+00:02:28,249 --> 00:02:31,549
+测试和设置VMware FT服务
+test and set service that vmware ft
+
+52
+00:02:31,549 --> 00:02:34,969
+这是必需的，以便任一台服务器
+required in order for either server to
+
+53
+00:02:34,969 --> 00:02:38,569
+当另一个人失败的时候接手
+take over when the other one failed it
+
+54
+00:02:38,569 --> 00:02:39,980
+在VMware中是一个有点神秘的东西
+was a bit of a mystery in the vmware
+
+55
+00:02:39,980 --> 00:02:40,340
+纸
+paper
+
+56
+00:02:40,340 --> 00:02:43,280
+这个测试即时服务是什么？
+what is this test instant service how is
+
+57
+00:02:43,280 --> 00:02:45,169
+您可能知道它是容错的吗？
+it may you know is it fault tolerant
+
+58
+00:02:45,169 --> 00:02:49,819
+它本身是否容忍分区，但是
+does it itself tolerate partitions but
+
+59
+00:02:49,819 --> 00:02:51,620
+动物园管理员实际上给了我们工具
+zookeeper actually gives us the tools to
+
+60
+00:02:51,620 --> 00:02:55,849
+编写容错测试并设置
+write a fault tolerant test and set
+
+61
+00:02:55,849 --> 00:03:00,199
+与VMware完全相同的服务类型
+service of exactly the kind that vmware
+
+62
+00:03:00,199 --> 00:03:03,530
+FT需要具有容错和
+ft needed that is fault tolerant and
+
+63
+00:03:03,530 --> 00:03:05,329
+在分区下做正确的事情吗
+does do the right thing under partitions
+
+64
+00:03:05,329 --> 00:03:06,829
+这在某种程度上是一种中心的事情
+that's sort of a central kind of thing
+
+65
+00:03:06,829 --> 00:03:09,409
+动物园管理员在那里做的事也是
+that zookeepers doing there's also a
+
+66
+00:03:09,409 --> 00:03:10,849
+一堆其他的方式证明
+bunch of other ways that turns out
+
+67
+00:03:10,849 --> 00:03:12,379
+人们使用它，Suki是非常成功的
+people use it suki was very successful
+
+68
+00:03:12,379 --> 00:03:15,859
+人们用它来做很多事情
+people use it for a lot of stuff one
+
+69
+00:03:15,859 --> 00:03:17,659
+人们使用的那种东西就是
+kind of thing people use is just to
+
+70
+00:03:17,659 --> 00:03:20,060
+仅发布配置信息
+publish just configuration information
+
+71
+00:03:20,060 --> 00:03:21,799
+供其他服务器使用，如
+for other servers to use like for
+
+72
+00:03:21,799 --> 00:03:24,189
+当前主机的IP地址示例
+example the IP address of the current
+
+73
+00:03:24,189 --> 00:03:29,120
+对于某些工人来说，这是主机
+master for some set of workers this is
+
+74
+00:03:29,120 --> 00:03:33,459
+仅配置配置信息
+just config configuration information
+
+75
+00:03:34,509 --> 00:03:37,069
+动物园管理员的另一个经典用法是
+another classic use of zookeepers to
+
+76
+00:03:37,069 --> 00:03:39,019
+选一位你知道的大师如果我们想
+elect a master you know if we want to
+
+77
+00:03:39,019 --> 00:03:41,120
+当老师傅失败的时候，我们需要一个
+have a when the old master fails we need
+
+78
+00:03:41,120 --> 00:03:43,129
+让每个人都同意谁是新的
+to have everyone agree on who the new
+
+79
+00:03:43,129 --> 00:03:45,290
+师父是，甚至只选一位师父
+master is and only elect one master even
+
+80
+00:03:45,290 --> 00:03:49,340
+如果有分区，您可以选择一个
+if there's partitions you can elect a
+
+81
+00:03:49,340 --> 00:03:58,579
+主控件使用ZooKeeper基元(如果
+master using zookeeper primitives if the
+
+82
+00:03:58,579 --> 00:04:00,379
+少量规定的大师
+master for small amounts of stated
+
+83
+00:04:00,379 --> 00:04:02,359
+不管你选哪位大师
+anyway if whatever master you elect
+
+84
+00:04:02,359 --> 00:04:03,680
+需要保持一些它需要的状态
+needs to keep some state it needs to
+
+85
+00:04:03,680 --> 00:04:06,340
+让它保持最新状态，就像你可能知道
+keep it up-to-date like maybe you know
+
+86
+00:04:06,340 --> 00:04:09,379
+主要身份等信息
+informations such as who the primary is
+
+87
+00:04:09,379 --> 00:04:11,000
+对于给定的数据块，就像您
+for a given chunk of data like you'd
+
+88
+00:04:11,000 --> 00:04:13,909
+需要在GFS中，主服务器可以存储其
+want in GFS the master can store its
+
+89
+00:04:13,909 --> 00:04:16,099
+动物园饲养员的状态，它知道新的饲养员
+state in zookeeper it knows new keepers
+
+90
+00:04:16,099 --> 00:04:17,570
+不会失去它，如果主人
+not going to lose it if the master
+
+91
+00:04:17,570 --> 00:04:19,399
+坠毁了，我们选举了一位新的大师
+crashes and we elect a new master to
+
+92
+00:04:19,399 --> 00:04:21,380
+将其替换为新的母版只能读取
+replace it that new master can just read
+
+93
+00:04:21,380 --> 00:04:22,639
+就在这个古老的主人公的国度里
+the old master state right out of
+
+94
+00:04:22,639 --> 00:04:24,949
+动物园看守人，并依赖于它实际上是
+zookeeper and rely on it actually being
+
+95
+00:04:24,949 --> 00:04:27,050
+那里
+there
+
+96
+00:04:27,050 --> 00:04:30,360
+你可能想象的其他事情，也许你
+other things you might imagine maybe you
+
+97
+00:04:30,360 --> 00:04:32,310
+像系统工作人员一样了解MapReduce
+know MapReduce like systems workers
+
+98
+00:04:32,310 --> 00:04:34,020
+可以通过创建
+could register themselves by creating
+
+99
+00:04:34,020 --> 00:04:38,910
+小文件和动物园管理员一遍又一遍
+little files and zookeeper and again
+
+100
+00:04:38,910 --> 00:04:40,740
+使用像MapReduce这样的系统，您可以
+with systems like MapReduce you can
+
+101
+00:04:40,740 --> 00:04:43,050
+想象一下，师父告诉工人们
+imagine the master telling the workers
+
+102
+00:04:43,050 --> 00:04:45,390
+写东西要做什么？
+what to do by writing things in
+
+103
+00:04:45,390 --> 00:04:47,940
+动物园管理员喜欢写工作清单
+zookeeper like writing lists of work in
+
+104
+00:04:47,940 --> 00:04:49,950
+动物园管理员和工作人员有点像是
+zookeeper and then worker sort of take
+
+105
+00:04:49,950 --> 00:04:52,290
+这些工作项一个接一个地从
+those work items one by one out of
+
+106
+00:04:52,290 --> 00:04:54,270
+动物园管理员并删除它们，因为它们
+zookeeper and delete them as they
+
+107
+00:04:54,270 --> 00:04:56,340
+完成它们，但是人们使用动物园管理员
+complete them but people use zookeeper
+
+108
+00:04:56,340 --> 00:05:00,080
+因为所有这些问题
+for all these things question
+
+109
+00:05:03,800 --> 00:05:06,370
+嗯
+yeah
+
+110
+00:05:11,960 --> 00:05:16,530
+正是如此，所以问题是，哦，怎么做呢？
+exactly yeah so the question is oh how
+
+111
+00:05:16,530 --> 00:05:18,210
+人们使用动物园管理员，一般情况下
+people use zookeeper and in generally
+
+112
+00:05:18,210 --> 00:05:19,860
+是的，你会的，如果你在竞选的话
+yeah you you would if you're running
+
+113
+00:05:19,860 --> 00:05:21,390
+某个大数据中心，您可以运行所有
+some big data center and you run all
+
+114
+00:05:21,390 --> 00:05:23,160
+您的数据中心中的各种东西会让您
+kinds of stuff in your data center you
+
+115
+00:05:23,160 --> 00:05:26,040
+了解Web服务器存储系统
+know web servers storage systems
+
+116
+00:05:26,040 --> 00:05:28,110
+MapReduce，谁知道您可能会触发什么
+MapReduce who knows what you might fire
+
+117
+00:05:28,110 --> 00:05:30,270
+把一个动物园管理员群放到一个动物园管理员群上
+up a zookeeper one zookeeper cluster
+
+118
+00:05:30,270 --> 00:05:31,950
+因为这个通用的用途可以
+because this general purpose can be used
+
+119
+00:05:31,950 --> 00:05:34,590
+很多东西，所以你知道五个或五个
+for lots of things so you know five or
+
+120
+00:05:34,590 --> 00:05:37,410
+七个动物园管理员的复制品，然后当你
+seven zookeeper replicas and then as you
+
+121
+00:05:37,410 --> 00:05:39,540
+部署您要设计的各种服务
+deploy various services you would design
+
+122
+00:05:39,540 --> 00:05:41,070
+用于存储某些
+the services to store some of the
+
+123
+00:05:41,070 --> 00:05:43,230
+您的一名动物园管理员处于危急状态
+critical state in your one zookeeper
+
+124
+00:05:43,230 --> 00:05:50,760
+群集好的API动物园管理员看起来
+cluster alright the API zookeeper looks
+
+125
+00:05:50,760 --> 00:05:53,420
+就像文件系统一样，它在某些级别上有一个
+like a filesystem some levels it's got a
+
+126
+00:05:53,420 --> 00:05:56,130
+目录层次结构您知道有一个
+directory hierarchy you know there's a
+
+127
+00:05:56,130 --> 00:05:58,620
+根目录，然后也许您可以
+root directory and then maybe you could
+
+128
+00:05:58,620 --> 00:06:01,350
+也许每个应用程序都有自己的SUB
+maybe each application has its own sub
+
+129
+00:06:01,350 --> 00:06:03,120
+目录，所以可能是应用程序的
+directory so maybe the application one
+
+130
+00:06:03,120 --> 00:06:05,960
+将其文件保存在此目录中
+keeps its files here in this directory
+
+131
+00:06:05,960 --> 00:06:08,190
+应用程序2将其文件保存在此
+app two keeps its files in this
+
+132
+00:06:08,190 --> 00:06:11,520
+目录，您知道这些目录
+directory and you know these directories
+
+133
+00:06:11,520 --> 00:06:12,930
+下面有文件和目录
+have files and directories underneath
+
+134
+00:06:12,930 --> 00:06:13,920
+他们
+them
+
+135
+00:06:13,920 --> 00:06:16,560
+其中一个原因就是因为你
+one reason for this is just because you
+
+136
+00:06:16,560 --> 00:06:18,170
+看守人就像刚才提到的是一个
+keeper is like just mentioned is a
+
+137
+00:06:18,170 --> 00:06:20,640
+设计可在多个人之间共享
+design to be shared between many
+
+138
+00:06:20,640 --> 00:06:23,160
+可能是无关的活动，我们只是
+possibly unrelated activities we just
+
+139
+00:06:23,160 --> 00:06:25,320
+需要一个命名系统才能
+need a naming system to be able to keep
+
+140
+00:06:25,320 --> 00:06:27,050
+从这些活动中获得的信息
+the information from these activities
+
+141
+00:06:27,050 --> 00:06:30,150
+截然不同，这样他们就不会被弄糊涂了
+distinct so they don't get confused and
+
+142
+00:06:30,150 --> 00:06:32,070
+误读对方数据
+read each other's data by mistake
+
+143
+00:06:32,070 --> 00:06:34,950
+在每个应用程序中，结果是
+within each application it turns out
+
+144
+00:06:34,950 --> 00:06:36,600
+有很多方便的使用方式
+that a lot of convenient ways of using
+
+145
+00:06:36,600 --> 00:06:39,510
+动物园管理员将涉及创建多个
+zookeeper will involve creating multiple
+
+146
+00:06:39,510 --> 00:06:42,330
+文件，让我们看几个示例，如
+files let's see a couple examples like
+
+147
+00:06:42,330 --> 00:06:47,160
+几分钟后就可以了，好的，看起来
+this in a few minutes okay so it looks
+
+148
+00:06:47,160 --> 00:06:49,320
+就像文件系统一样，这是你不知道的
+like a filesystem this is you know not
+
+149
+00:06:49,320 --> 00:06:51,000
+很深，不是，实际上不是
+very deep it doesn't it's not actually
+
+150
+00:06:51,000 --> 00:06:52,920
+你知道你不能把它当做
+you know you can't really use it like a
+
+151
+00:06:52,920 --> 00:06:54,510
+挂载意义上的文件系统
+file system in the sense of mounting it
+
+152
+00:06:54,510 --> 00:06:56,250
+运行LS和CAT以及所有这些
+and running LS and cat and all those
+
+153
+00:06:56,250 --> 00:06:58,290
+事情只是在内部它
+things it's just that internally it
+
+154
+00:06:58,290 --> 00:07:00,360
+使用这些路径名命名对象，如下所示
+names objects with these path names so
+
+155
+00:07:00,360 --> 00:07:04,260
+你知道这里有几个这样的xy&z吗？
+you know one this x y&z here few
+
+156
+00:07:04,260 --> 00:07:06,210
+当你说话时你知道的不同文件
+different files you know when you talk
+
+157
+00:07:06,210 --> 00:07:08,250
+你派一个RPC动物园管理员对我说
+to me you send an RPC - zookeeper saying
+
+158
+00:07:08,250 --> 00:07:11,190
+你知道，请阅读这些数据，你会
+you know please read this data you would
+
+159
+00:07:11,190 --> 00:07:13,350
+命名您想要的数据，可能加起来
+name the data you want maybe add up to
+
+160
+00:07:13,350 --> 00:07:16,920
+劈开X这里只有一种
+slash X there's just a sort of
+
+161
+00:07:16,920 --> 00:07:21,390
+分层命名方案这些
+hierarchical naming scheme these these
+
+162
+00:07:21,390 --> 00:07:23,780
+文件和目录称为Z节点
+files and directories are called Z nodes
+
+163
+00:07:23,780 --> 00:07:27,620
+结果是有三个
+and it turns out it's there's three
+
+164
+00:07:27,620 --> 00:07:30,170
+你必须了解的对你有帮助的类型
+types you have to know about that helps
+
+165
+00:07:30,170 --> 00:07:31,520
+你为自己保留或解决各种问题
+you keep or solve various problems for
+
+166
+00:07:31,520 --> 00:07:33,260
+我们只有普通的Z节点，如果
+us there's just regular Z nodes where if
+
+167
+00:07:33,260 --> 00:07:36,380
+你创造了一个，它是永久的，直到你
+you create one it's permanent until you
+
+168
+00:07:36,380 --> 00:07:40,370
+删除它有一个股骨Z节点
+delete it there's a femoral Z nodes
+
+169
+00:07:40,370 --> 00:07:42,800
+其中，如果客户端创建短暂的Z
+where if a client creates an ephemeral Z
+
+170
+00:07:42,800 --> 00:07:45,710
+节点动物园管理员会将其删除
+node zookeeper will delete that
+
+171
+00:07:45,710 --> 00:07:48,169
+临时Z节点(如果它相信
+ephemeral Z node if it believes that the
+
+172
+00:07:48,169 --> 00:07:50,030
+客户已经死了，它实际上和它有关
+client has died it's actually tied to
+
+173
+00:07:50,030 --> 00:07:52,639
+客户端会话，因此客户端必须排序
+client sessions so clients have to sort
+
+174
+00:07:52,639 --> 00:07:54,530
+每隔一次发送一个小小的心跳
+of send a little heartbeat in every once
+
+175
+00:07:54,530 --> 00:07:56,360
+一会儿进入动物园管理员进入
+a while into the zookeeper into
+
+176
+00:07:56,360 --> 00:07:57,680
+动物园管理员说，哦，我还活着，我还活着
+zookeeper say oh I'm still alive I'm
+
+177
+00:07:57,680 --> 00:07:59,840
+仍然活着，所以动物园管理员不会删除
+still alive so zookeeper won't delete
+
+178
+00:07:59,840 --> 00:08:04,220
+他们的临时文件和最后一份
+their ephemeral files and the last
+
+179
+00:08:04,220 --> 00:08:07,240
+特征文件可能具有的是
+characteristic files may have is
+
+180
+00:08:07,240 --> 00:08:10,760
+这意味着当你问起
+sequential and that means when you ask
+
+181
+00:08:10,760 --> 00:08:12,380
+要创建具有给定名称的文件，请执行以下操作
+to create a file with a given name what
+
+182
+00:08:12,380 --> 00:08:14,720
+您实际上最终创建的是一个文件
+you actually end up creating is a file
+
+183
+00:08:14,720 --> 00:08:16,580
+有那个名字，但有一个号码
+with that name but with a number
+
+184
+00:08:16,580 --> 00:08:18,830
+附加到Main和ZooKeeper
+appended to the main and zookeeper
+
+185
+00:08:18,830 --> 00:08:21,229
+保证在以下情况下不会重复数字
+guarantees never to repeat a number if
+
+186
+00:08:21,229 --> 00:08:23,440
+多个客户端尝试创建
+multiple clients try to create
+
+187
+00:08:23,440 --> 00:08:25,729
+同时创建顺序文件，并且
+sequential files at the same time and
+
+188
+00:08:25,729 --> 00:08:29,930
+还要始终使用蒙特递增
+also to always use montt increasing
+
+189
+00:08:29,930 --> 00:08:32,240
+序列号的编号
+numbers for the for the sequence numbers
+
+190
+00:08:32,240 --> 00:08:34,429
+它们是文件名的笔，我们会看到
+that are pens to filenames and we'll see
+
+191
+00:08:34,429 --> 00:08:37,719
+所有这些都在示例中出现。
+all of these things come up in examples
+
+192
+00:08:37,719 --> 00:08:40,700
+在一个级别上，RPC的操作
+at one level the operations the RPC
+
+193
+00:08:40,700 --> 00:08:44,660
+ZooKeeper公开接口是排序的
+interface that zookeeper exposes is sort
+
+194
+00:08:44,660 --> 00:08:47,900
+您可能会对您的文件有什么期望
+of what you might expect for your files
+
+195
+00:08:47,900 --> 00:08:51,350
+就是创建RPC，在那里您给它一个
+was to create RPC where you give it a
+
+196
+00:08:51,350 --> 00:08:57,920
+真的要命名一个完整的路径名吗？
+name really a full path name some
+
+197
+00:08:57,920 --> 00:09:02,030
+初始数据和以下各项的某种组合
+initial data and some combination of
+
+198
+00:09:02,030 --> 00:09:09,200
+这些标志和有趣的语义
+these flags and interesting semantics of
+
+199
+00:09:09,200 --> 00:09:11,540
+创造是独一无二的，也就是
+create is that it's exclusive that is
+
+200
+00:09:11,540 --> 00:09:13,700
+当我将CREATE发送到ZooKeeper时，询问
+when I send a create into zookeeper ask
+
+201
+00:09:13,700 --> 00:09:15,230
+它可以创建一个文件，这样您就可以保留您的
+it to create a file so you keep your
+
+202
+00:09:15,230 --> 00:09:18,140
+如果该文件为“是”或“否”，则返回“是”或“否
+responds with a yes or no if that file
+
+203
+00:09:18,140 --> 00:09:20,210
+并不存在，我是第一个客户
+didn't exist and I'm the first client
+
+204
+00:09:20,210 --> 00:09:21,830
+谁想创造它？动物园管理员说
+who wants to create it zookeeper says
+
+205
+00:09:21,830 --> 00:09:23,540
+是，并创建文件该文件
+yes and creates the file the file
+
+206
+00:09:23,540 --> 00:09:26,060
+已经存在的动物园管理员说不或者
+already exists zookeeper says no or
+
+207
+00:09:26,060 --> 00:09:28,730
+返回错误，以便客户端知道它是
+returns an error so clients know it's
+
+208
+00:09:28,730 --> 00:09:30,530
+独占创建和客户端知道
+exclusive create and clients know
+
+209
+00:09:30,530 --> 00:09:32,240
+如果他们是唯一的客户
+whether they were the one client if
+
+210
+00:09:32,240 --> 00:09:33,470
+多个客户端正在尝试创建
+multiple clients are trying to create
+
+211
+00:09:33,470 --> 00:09:35,390
+我们将在锁定中看到的相同文件
+the same file which we'll see in locking
+
+212
+00:09:35,390 --> 00:09:36,740
+样本
+samples
+
+213
+00:09:36,740 --> 00:09:38,390
+客户会知道他们是不是
+the clients will know whether they were
+
+214
+00:09:38,390 --> 00:09:40,220
+他实际上成功地创造了
+the one who actually managed to create
+
+215
+00:09:40,220 --> 00:09:43,990
+该文件
+the file
+
+216
+00:09:46,180 --> 00:09:54,530
+还有删除，还有一件事我
+there's also delete and one thing I
+
+217
+00:09:54,530 --> 00:09:56,270
+没有提到曾经容易的音符有一个
+didn't mention is ever easy note has a
+
+218
+00:09:56,270 --> 00:09:57,830
+版本设置为当前版本号，该版本号
+version as a current version number that
+
+219
+00:09:57,830 --> 00:10:01,670
+随着其修改和删除而前进
+advances as its modified and delete
+
+220
+00:10:01,670 --> 00:10:06,050
+以及其他一些更新操作
+along with some other update operations
+
+221
+00:10:06,050 --> 00:10:07,820
+您可以发送一个版本号，上面写着
+you can send an a version number saying
+
+222
+00:10:07,820 --> 00:10:10,310
+只有在以下情况下才执行此操作
+only do this operation if the files
+
+223
+00:10:10,310 --> 00:10:12,320
+当前版本号为版本
+current version number is the version
+
+224
+00:10:12,320 --> 00:10:15,380
+这是明确规定的，结果会是
+that was specified and that'll turn out
+
+225
+00:10:15,380 --> 00:10:17,240
+如果你担心的是
+to be helpful if you're worried about in
+
+226
+00:10:17,240 --> 00:10:18,830
+多个客户端可能
+situations where multiple clients might
+
+227
+00:10:18,830 --> 00:10:20,810
+正试图在以下位置执行相同的操作
+be trying to do the same operation at
+
+228
+00:10:20,810 --> 00:10:23,570
+同时，这样您就可以传递一个版本
+the same time so you can pass a version
+
+229
+00:10:23,570 --> 00:10:27,470
+只说删除就有存在
+saying only delete there's an exists
+
+230
+00:10:27,470 --> 00:10:33,350
+调用哦，名为xenu的路径是否存在
+call oh does this path named Xenu exist
+
+231
+00:10:33,350 --> 00:10:36,470
+另一个有趣的额外论点是
+an interesting extra argument is that
+
+232
+00:10:36,470 --> 00:10:39,740
+您可以要求查看对
+you can ask to watch for changes to
+
+233
+00:10:39,740 --> 00:10:42,230
+无论您指定的路径名是什么，您都可以
+whatever path name you specified you can
+
+234
+00:10:42,230 --> 00:10:43,760
+假设此路径名是否存在，并且
+say does this path name exist and
+
+235
+00:10:43,760 --> 00:10:46,550
+无论是否存在，它现在都存在，如果
+whether or not exists it exists now if
+
+236
+00:10:46,550 --> 00:10:48,260
+如果你传入的是真的，你就把这只表调好
+you set this watch if you pass in true
+
+237
+00:10:48,260 --> 00:10:50,450
+对于这块表旗，动物园管理员保证
+for this watch flag zookeeper guarantees
+
+238
+00:10:50,450 --> 00:10:53,600
+如果有任何更改，请通知客户端
+to notify the client if anything changes
+
+239
+00:10:53,600 --> 00:10:55,430
+有关该路径名的信息，就像它是创建的一样
+about that path name like it's created
+
+240
+00:10:55,430 --> 00:11:00,910
+或删除或修改，并且进一步
+or deleted or modified and furthermore
+
+241
+00:11:00,910 --> 00:11:03,830
+检查文件是否
+the the check for whether the file
+
+242
+00:11:03,830 --> 00:11:06,740
+存在且手表的设置
+exists and the setting of the watch
+
+243
+00:11:06,740 --> 00:11:08,990
+中的观看信息点
+point of the watching information in the
+
+244
+00:11:08,990 --> 00:11:11,900
+在动物园看守人或原子里，所以什么都没有
+inside zookeeper or atomic so nothing
+
+245
+00:11:11,900 --> 00:11:13,330
+可能会发生在
+can happen between the point at which
+
+246
+00:11:13,330 --> 00:11:16,520
+写入流中的点，该点
+the point in the write stream which
+
+247
+00:11:16,520 --> 00:11:18,680
+动物园管理员查看这条路径是否
+zookeeper looks to see whether the path
+
+248
+00:11:18,680 --> 00:11:20,450
+存在，并且写入流中的点
+exists and the point in the write stream
+
+249
+00:11:20,450 --> 00:11:23,840
+动物园管理员把手表放在哪个位置
+at which zookeeper inserts the watch
+
+250
+00:11:23,840 --> 00:11:25,880
+放进它的桌子里，然后就像是非常
+into its table and then that's like very
+
+251
+00:11:25,880 --> 00:11:31,430
+对于正确性来说很重要，我们还
+important for for correctness we also
+
+252
+00:11:31,430 --> 00:11:37,430
+得到D，然后你会得到一条路径，然后再一次
+get D then you get a path and again the
+
+253
+00:11:37,430 --> 00:11:40,630
+手表旗，现在手表刚刚
+watch flag and now the watch just
+
+254
+00:11:40,630 --> 00:11:43,970
+应用于该文件的内容
+applies to the contents of that file
+
+255
+00:11:43,970 --> 00:11:47,380
+有设定的数据
+there's set data
+
+256
+00:11:50,470 --> 00:11:55,910
+再次对新数据进行路径选择，这
+again path the new data and this
+
+257
+00:11:55,910 --> 00:11:58,070
+条件版本，如果您将
+conditional version that if you pass an
+
+258
+00:11:58,070 --> 00:12:00,110
+倒置，那么实际上只有动物园饲养员
+inversion then zookeeper only actually
+
+259
+00:12:00,110 --> 00:12:02,180
+如果当前版本为
+does the right if the current version
+
+260
+00:12:02,180 --> 00:12:03,410
+文件的编号等于
+number of the file is equal to the
+
+261
+00:12:03,410 --> 00:12:10,370
+你传入的数字好的，让我们看看
+number you passed in okay so let's see
+
+262
+00:12:10,370 --> 00:12:13,220
+我们是如何使用这个的，第一个可能几乎是
+how we use this the first maybe almost
+
+263
+00:12:13,220 --> 00:12:14,990
+第一个非常简单的示例是
+this first very simple example is
+
+264
+00:12:14,990 --> 00:12:17,380
+假设我们在动物园管理员那里有一份文件
+supposing we have a file in zookeeper
+
+265
+00:12:17,380 --> 00:12:20,120
+我们想在里面存储一个数字
+and we want to store a number in that
+
+266
+00:12:20,120 --> 00:12:21,590
+文件，我们希望能够递增
+file and we want to be able to increment
+
+267
+00:12:21,590 --> 00:12:23,090
+这个数字，所以我们可能会保留一个
+that number so we're keeping maybe a
+
+268
+00:12:23,090 --> 00:12:24,920
+统计信息计数，只要客户端
+statistics count and whenever a client
+
+269
+00:12:24,920 --> 00:12:27,980
+你知道吗，我知道我收到了一个
+you know I know gets a request from a
+
+270
+00:12:27,980 --> 00:12:29,300
+网络用户或它将要使用的东西
+web user or something it's going to
+
+271
+00:12:29,300 --> 00:12:34,900
+增加ZooKeeper中计数，并
+increment that count in zookeeper and
+
+272
+00:12:34,900 --> 00:12:36,800
+多个客户端可能希望
+more than one client may want to
+
+273
+00:12:36,800 --> 00:12:39,260
+增加关键的计数
+increment the count that's the critical
+
+274
+00:12:39,260 --> 00:12:47,360
+这是一个例子，所以要分类的是一件事
+thing so an example so one thing to sort
+
+275
+00:12:47,360 --> 00:12:49,700
+让开的是我们是不是
+of get out of the way is whether we
+
+276
+00:12:49,700 --> 00:12:52,190
+实际上需要一些专门的接口
+actually need some specialized interface
+
+277
+00:12:52,190 --> 00:12:57,110
+为了支持客户协调
+in order to support client coordination
+
+278
+00:12:57,110 --> 00:12:59,150
+与仅仅是数据相反，这看起来像是
+as opposed to just data this looks like
+
+279
+00:12:59,150 --> 00:13:01,070
+一个文件系统，我们能不能只提供
+a file system could we just provide the
+
+280
+00:13:01,070 --> 00:13:03,220
+普通读写类文件系统
+ordinary readwrite kind of file system
+
+281
+00:13:03,220 --> 00:13:06,230
+那些标有典型储藏室日期的东西
+stuff that dated that typical storage
+
+282
+00:13:06,230 --> 00:13:09,680
+例如，系统提供了一些
+systems provide so for example some of
+
+283
+00:13:09,680 --> 00:13:11,180
+你们已经开始了，你们都将开始
+you have started and you'll all start
+
+284
+00:13:11,180 --> 00:13:13,220
+很快就会有Ladd3，你可以在其中建立一个密钥
+soon Ladd 3 in which you build a key
+
+285
+00:13:13,220 --> 00:13:15,950
+两个操作所在的值存储
+value store where the two operations are
+
+286
+00:13:15,950 --> 00:13:20,210
+唯一操作是PUT KEY VALUE
+the only operations are put key value
+
+287
+00:13:20,210 --> 00:13:27,410
+所以一个问题是我们能帮你
+and so one question is can we do you
+
+288
+00:13:27,410 --> 00:13:28,640
+了解所有我们可能需要的东西
+know all these things that we might want
+
+289
+00:13:28,640 --> 00:13:30,200
+与动物园管理员的关系，我们能不能就这么做？
+to do with zookeeper can we just do them
+
+290
+00:13:30,200 --> 00:13:32,180
+实验3的密钥具有密钥值
+with lab 3 with a key with a key value
+
+291
+00:13:32,180 --> 00:13:35,330
+把get接口放在这里，所以假设是为我准备的
+put get interface so supposing for my I
+
+292
+00:13:35,330 --> 00:13:38,810
+可能想要实现这个计数功能
+want to implement this count thing maybe
+
+293
+00:13:38,810 --> 00:13:40,760
+我只需用一下就可以实现计数
+I could implement the count with just
+
+294
+00:13:40,760 --> 00:13:43,400
+实验三的密钥值接口使您
+lab threes key value interface so you
+
+295
+00:13:43,400 --> 00:13:45,680
+可能会通过说x来递增计数
+might increment the count by saying x
+
+296
+00:13:45,680 --> 00:13:49,610
+等号让你知道不管是什么钥匙
+equals get you know whatever key were
+
+297
+00:13:49,610 --> 00:13:58,240
+使用该密钥，然后将该密钥X加1
+using and then put that key an X plus 1
+
+298
+00:13:59,549 --> 00:14:08,709
+为什么这是个糟糕的回答是的是的哦
+why why is this a bad answer yes yes oh
+
+299
+00:14:08,709 --> 00:14:11,079
+不是原子绝对是
+it's not atomic that is absolutely the
+
+300
+00:14:11,079 --> 00:14:15,910
+问题的根源在这里，你知道
+root of the problem here and you know
+
+301
+00:14:15,910 --> 00:14:19,689
+抽象地说，只有一个
+the abstract way of putting it but one
+
+302
+00:14:19,689 --> 00:14:20,949
+看待它的方式是两个人的观点
+way of looking at it is that of two
+
+303
+00:14:20,949 --> 00:14:22,540
+客户端都希望递增
+clients both want to increment the
+
+304
+00:14:22,540 --> 00:14:24,519
+同时计数，他们两个都是
+counter at the same time they're both
+
+305
+00:14:24,519 --> 00:14:26,439
+会读到他们都会用GET
+gonna read they're both gonna use get to
+
+306
+00:14:26,439 --> 00:14:28,439
+读一读旧的值，你就会知道10
+read the old value and get you know ten
+
+307
+00:14:28,439 --> 00:14:30,970
+这些人会把1加到10，然后得到11
+those gonna add one to ten and get 11
+
+308
+00:14:30,970 --> 00:14:33,339
+我本来要打给11岁的PUT的，所以现在
+and I was gonna call put with 11 so now
+
+309
+00:14:33,339 --> 00:14:36,069
+我们把柜台加了一，但是
+we've increased the counter by one but
+
+310
+00:14:36,069 --> 00:14:37,779
+有两个客户在这么做，所以我们肯定
+two clients were doing it so surely we
+
+311
+00:14:37,779 --> 00:14:39,189
+最终应该把它增加到
+should have ended up increasing it by
+
+312
+00:14:39,189 --> 00:14:44,290
+两个，所以这就是为什么三号实验室不能
+two so that's why the lab three cannot
+
+313
+00:14:44,290 --> 00:14:47,009
+即使在这个简单的示例中也会使用
+be used for even this simple example
+
+314
+00:14:47,009 --> 00:14:50,019
+此外，在动物园饲养员这类人中
+furthermore in the sort of zookeeper
+
+315
+00:14:50,019 --> 00:14:52,959
+访客可以返回陈旧数据的世界
+world where guests can return stale data
+
+316
+00:14:52,959 --> 00:14:55,869
+不是实验3或GET不允许
+is not lab 3 or gets are not allowed to
+
+317
+00:14:55,869 --> 00:14:57,879
+返回过时数据，但在ZooKeeper读取中
+return stale data but in zookeeper reads
+
+318
+00:14:57,879 --> 00:15:00,489
+可能是陈腐的，所以如果你读了一本陈腐的
+can be stale and so if you read a stale
+
+319
+00:15:00,489 --> 00:15:02,470
+当前计数器的版本并添加
+version of the current counter and add
+
+320
+00:15:02,470 --> 00:15:03,069
+一比一
+one to it
+
+321
+00:15:03,069 --> 00:15:05,829
+你现在写错了值，你
+you're now writing the wrong value you
+
+322
+00:15:05,829 --> 00:15:09,339
+我知道如果30值11，但你会得到
+know if 30 values 11 but you're get
+
+323
+00:15:09,339 --> 00:15:12,100
+返回将1加1后的陈旧值10
+returns a stale value of 10 you add 1 to
+
+324
+00:15:12,100 --> 00:15:14,079
+加11是个错误，因为
+that and put 11 that's a mistake because
+
+325
+00:15:14,079 --> 00:15:15,999
+我们真的应该把12个
+we really should have been putting 12 so
+
+326
+00:15:15,999 --> 00:15:17,470
+动物园管理员还有这个额外的问题
+zookeeper has this additional problem
+
+327
+00:15:17,470 --> 00:15:19,600
+我们不得不担心这一点
+that we have to worry about that
+
+328
+00:15:19,600 --> 00:15:24,660
+该GET不返回最新数据
+that gets don't return the latest data
+
+329
+00:15:25,169 --> 00:15:32,519
+好的，那么在动物园管理员你会怎么做呢？
+ok so how would you do this in zookeeper
+
+330
+00:15:32,519 --> 00:15:36,809
+以下是我在动物园饲养员做这件事的方式
+here's how I would do this in zookeeper
+
+331
+00:15:40,420 --> 00:15:42,709
+原来你需要做你需要做的事
+it turns out you need to do you need to
+
+332
+00:15:42,709 --> 00:15:46,339
+将此代码包装在西门子循环中，因为
+wrap this code Siemens in a loop because
+
+333
+00:15:46,339 --> 00:15:48,019
+不能保证第一次就能成功
+it's not guaranteed to succeed the first
+
+334
+00:15:48,019 --> 00:15:54,579
+时间到了，所以我们只想说虽然是真的
+time so we're just gonna say while true
+
+335
+00:15:55,060 --> 00:15:57,170
+我们将调用Get Data来获取
+we're gonna call get data to get the
+
+336
+00:15:57,170 --> 00:15:59,149
+计数器的当前值和
+current value of the counter and the
+
+337
+00:15:59,149 --> 00:16:01,639
+当前版本，所以我们会说X，V
+current version so we're gonna say X V
+
+338
+00:16:01,639 --> 00:16:09,709
+等于我得到了数据，我们需要说
+equals I'm get data and we need to say
+
+339
+00:16:09,709 --> 00:16:11,240
+最后的名字，我不在乎文件是什么
+final name I don't care what the file
+
+340
+00:16:11,240 --> 00:16:13,670
+名字就是我们只是说好听的，现在我们得到了
+name is we just say that nice now we get
+
+341
+00:16:13,670 --> 00:16:16,940
+我们就会得到一个值和一个版本
+the well we get a value and a version
+
+342
+00:16:16,940 --> 00:16:20,029
+号码可能不新鲜，可能已过期
+number possibly not fresh possibly stale
+
+343
+00:16:20,029 --> 00:16:26,029
+但也许是新鲜的，然后我们会用
+but maybe fresh and then we're gonna use
+
+344
+00:16:26,029 --> 00:16:31,360
+条件PUT条件设置
+a conditional put a conditional setting
+
+345
+00:16:45,639 --> 00:16:48,620
+如果设置数据是设置数据操作
+and if set data is a set data operation
+
+346
+00:16:48,620 --> 00:16:50,180
+返回它实际设置的真实含义
+return true meaning it actually did set
+
+347
+00:16:50,180 --> 00:16:52,310
+否则我们将打破的价值
+the value we're gonna break otherwise
+
+348
+00:16:52,310 --> 00:16:55,300
+只要回到循环的顶部就可以了
+just go back to the top of the loop
+
+349
+00:16:55,300 --> 00:17:00,199
+否则，这里发生的事情就是
+otherwise so what's going on here is
+
+350
+00:17:00,199 --> 00:17:03,079
+我们读到了一些价值和一些版本
+that we read some value and some version
+
+351
+00:17:03,079 --> 00:17:04,939
+号码可能还在，可能是刚出的
+number maybe still maybe fresh out of
+
+352
+00:17:04,939 --> 00:17:07,159
+副本是我们发送的集合数据
+the replicas the set data we send
+
+353
+00:17:07,159 --> 00:17:08,390
+实际上动物园管理员的领导
+actually did the zookeeper leader
+
+354
+00:17:08,390 --> 00:17:10,669
+因为所有的权利都属于领导者
+because all rights go to the leader and
+
+355
+00:17:10,669 --> 00:17:12,709
+这意味着仅将值设置为
+what this means is only set the value to
+
+356
+00:17:12,709 --> 00:17:15,319
+如果版本为实数，则X加1
+X plus one if the version with the real
+
+357
+00:17:15,319 --> 00:17:19,990
+版本最新版本仍为V
+version the latest version is still is V
+
+358
+00:17:19,990 --> 00:17:23,599
+所以如果我们读到最新的数据
+so if we read fresh data and nothing
+
+359
+00:17:23,599 --> 00:17:24,890
+否则就会在系统中发生，就像没有
+else is going on in the system like no
+
+360
+00:17:24,890 --> 00:17:26,689
+其他客户端正在尝试增加
+other clients are trying to increment
+
+361
+00:17:26,689 --> 00:17:29,179
+这就是我们要阅读的最新版本
+this then we'll read the latest version
+
+362
+00:17:29,179 --> 00:17:31,280
+最新值我们将在最新值上加一
+latest value we'll add one to the latest
+
+363
+00:17:31,280 --> 00:17:34,309
+值指定最新版本和我们的
+value specify the latest version and our
+
+364
+00:17:34,309 --> 00:17:35,960
+领导将接受设置的数据
+set data will be accepted by the leader
+
+365
+00:17:35,960 --> 00:17:39,409
+我们会得到肯定的答复
+and we'll get back a positive reply to
+
+366
+00:17:39,409 --> 00:17:42,470
+我们的请求在提交后
+our request after it's committed and
+
+367
+00:17:42,470 --> 00:17:45,110
+我们会休息的，因为如果我们有机会的话我们就完蛋了
+we'll break because we're done if we got
+
+368
+00:17:45,110 --> 00:17:47,960
+这里的数据是陈旧的，或者这是最新的数据
+stale data here or this was fresh data
+
+369
+00:17:47,960 --> 00:17:50,180
+但是到了那个时候
+but by the time
+
+370
+00:17:50,180 --> 00:17:52,130
+我们的设定数据传给了领先者一些
+our set data got to the leader some
+
+371
+00:17:52,130 --> 00:17:55,490
+其他客户端设置数据和其他一些
+other clients set data and some other
+
+372
+00:17:55,490 --> 00:17:56,720
+客户端正在尝试增加其集合
+client is trying to increment their set
+
+373
+00:17:56,720 --> 00:17:58,640
+数据比我们的版本早到那里
+data got there before us our version
+
+374
+00:17:58,640 --> 00:18:00,170
+号码将不再是新的
+number will no longer be fresh in either
+
+375
+00:18:00,170 --> 00:18:03,050
+在这些情况下，此设置数据将失败，并且
+those cases this set data will fail and
+
+376
+00:18:03,050 --> 00:18:05,510
+我们会拿回错误响应的
+we'll get an error response back it
+
+377
+00:18:05,510 --> 00:18:08,990
+不会跳出圈子，我们就走
+won't break out of the loop and we'll go
+
+378
+00:18:08,990 --> 00:18:11,570
+回来再试一次，希望我们能
+back and try again and hopefully we'll
+
+379
+00:18:11,570 --> 00:18:25,910
+这次成功是的是的所以
+succeed this time yes yes so the
+
+380
+00:18:25,910 --> 00:18:27,650
+问题是这会不会是一个While循环
+question is could this it's a while loop
+
+381
+00:18:27,650 --> 00:18:29,570
+否则我们保证永远不会结束
+or we guaranteed is ever going to finish
+
+382
+00:18:29,570 --> 00:18:32,540
+不，不，我们不是真的有保证
+and no no we're not really guaranteed
+
+383
+00:18:32,540 --> 00:18:36,980
+我们会在练习中完成你的训练
+that we're gonna finish in practice you
+
+384
+00:18:36,980 --> 00:18:39,620
+例如，如果我们的复制品是
+know so for example if our replicas were
+
+385
+00:18:39,620 --> 00:18:42,380
+朗读被切断了与领导的联系
+reading from is cut off from the leader
+
+386
+00:18:42,380 --> 00:18:45,250
+并永久地提供给我们陈旧的数据
+and permanently gives us stale data then
+
+387
+00:18:45,250 --> 00:18:47,390
+你知道，也许这不会奏效
+you know maybe this is not gonna work
+
+388
+00:18:47,390 --> 00:18:51,730
+出去，但你知道，但在现实生活中
+out but you know but in real life well
+
+389
+00:18:51,730 --> 00:18:53,990
+在现实生活中，你知道的领导者
+in real life the you know leaders
+
+390
+00:18:53,990 --> 00:18:56,510
+把所有的复制品都推向
+pushing all the replicas towards having
+
+391
+00:18:56,510 --> 00:18:58,850
+与领导者相同的数据，这样你就知道
+identical data to the leader so you know
+
+392
+00:18:58,850 --> 00:19:00,980
+如果我们这里只有陈旧的数据
+if we just got stale data here probably
+
+393
+00:19:00,980 --> 00:19:02,720
+当我们回去的时候，你知道也许我们应该
+when we go back you know maybe we should
+
+394
+00:19:02,720 --> 00:19:04,760
+睡10毫秒之类的
+sleep for 10 milliseconds or something
+
+395
+00:19:04,760 --> 00:19:07,040
+在这一点上，但是当我们回到这里的时候
+at this point but when we go back here
+
+396
+00:19:07,040 --> 00:19:08,150
+最终我们会看到最新的
+eventually we're gonna see the latest
+
+397
+00:19:08,150 --> 00:19:10,070
+数据显示，在这种情况下
+data the situation under which this
+
+398
+00:19:10,070 --> 00:19:13,460
+可能真的是相当坏的消息是如果
+might genuinely be pretty bad news is if
+
+399
+00:19:13,460 --> 00:19:17,090
+有非常高的持续负荷
+there's a very high continuous load of
+
+400
+00:19:17,090 --> 00:19:18,680
+来自您知道的客户的增量，如果我们
+increments from clients you know if we
+
+401
+00:19:18,680 --> 00:19:21,170
+有一千个客户都想要
+have a thousand clients all trying to do
+
+402
+00:19:21,170 --> 00:19:25,580
+增加的风险是可能没有
+increments the risk is that maybe none
+
+403
+00:19:25,580 --> 00:19:30,050
+他们中的一些人会成功或者别的什么
+of them will succeed or something I
+
+404
+00:19:30,050 --> 00:19:31,820
+我觉得其中一个会成功，因为我
+think one of them will succeed because I
+
+405
+00:19:31,820 --> 00:19:35,270
+我认为最成功的原因之一是
+think one of the most succeed because
+
+406
+00:19:35,270 --> 00:19:37,520
+你知道第一个拿到
+you know the the first one that gets its
+
+407
+00:19:37,520 --> 00:19:40,550
+将数据设置到引线中将成功
+set data into the leader will succeed
+
+408
+00:19:40,550 --> 00:19:41,840
+而睡觉都会失败，因为他们的
+and the rest will all fail because their
+
+409
+00:19:41,840 --> 00:19:43,790
+版本号都太低了，然后
+version numbers are all too low and then
+
+410
+00:19:43,790 --> 00:19:46,520
+接下来的999人会把数据放进去
+the next 999 will put and get data's in
+
+411
+00:19:46,520 --> 00:19:48,440
+他们中的一个会成功，所以一切都会成功
+and one of them will succeed so it all
+
+412
+00:19:48,440 --> 00:19:50,360
+有一种N平方的复杂性
+have a sort of N squared complexity to
+
+413
+00:19:50,360 --> 00:19:54,380
+接通所有其他客户端
+get through all of the all other clients
+
+414
+00:19:54,380 --> 00:19:55,940
+这是非常具破坏性的，但它会
+which is very damaging but it will
+
+415
+00:19:55,940 --> 00:19:57,800
+最终完成，所以如果你认为
+finish eventually and so if you thought
+
+416
+00:19:57,800 --> 00:19:59,450
+你会有很多客户，你
+you were gonna have a lot of clients you
+
+417
+00:19:59,450 --> 00:20:01,910
+会在这里使用不同的策略
+would use a different strategy here this
+
+418
+00:20:01,910 --> 00:20:02,400
+是好的吗？
+is good
+
+419
+00:20:02,400 --> 00:20:17,160
+或者加载情况是的，如果它们适合的话
+or load situations yes if they fit in
+
+420
+00:20:17,160 --> 00:20:18,990
+记忆，如果不合适也没问题
+memory it's no problem if they don't fit
+
+421
+00:20:18,990 --> 00:20:21,660
+记忆，这是一场灾难，所以，是的，当
+memory it's a disaster so yeah when
+
+422
+00:20:21,660 --> 00:20:23,460
+你用的是动物园看守人，你必须
+you're using zookeeper you have to keep
+
+423
+00:20:23,460 --> 00:20:26,310
+记住，这是对的，这是很棒的
+in mind that it's yeah it's great for
+
+424
+00:20:26,310 --> 00:20:29,220
+100兆字节的东西，很可能
+100 megabytes of stuff and probably
+
+425
+00:20:29,220 --> 00:20:31,500
+对于100G的东西来说太可怕了，所以
+terrible for 100 gigabytes of stuff so
+
+426
+00:20:31,500 --> 00:20:32,910
+这就是为什么人们认为它是储存
+that's why people think of it as storing
+
+427
+00:20:32,910 --> 00:20:35,160
+配置信息，而不是
+configuration information rather than
+
+428
+00:20:35,160 --> 00:20:38,900
+他们是你们大网站的老数据
+their we old data of your big website
+
+429
+00:20:38,900 --> 00:20:53,700
+是的，我的意思是有点像是在看这个。
+yes I mean it's sort of watch into this
+
+430
+00:20:53,700 --> 00:20:56,150
+序列
+sequence
+
+431
+00:20:58,740 --> 00:21:04,650
+然而，如果我们愿意的话，如果我们
+yet that could be so if we want if we
+
+432
+00:21:04,650 --> 00:21:06,690
+我想解决这个问题，让它在高压下工作
+wanted to fix this to work under high
+
+433
+00:21:06,690 --> 00:21:13,590
+加载，那么您肯定会想要
+load then you would certainly want to
+
+434
+00:21:13,590 --> 00:21:17,040
+在我不舒服的时候睡觉
+sleep at this point where I'm not well
+
+435
+00:21:17,040 --> 00:21:19,740
+我修复这件事的方式是我的直觉
+the way I would fix this my instinct I'm
+
+436
+00:21:19,740 --> 00:21:21,809
+解决这个问题的方法是插入睡眠
+fixing this would be to insert asleep
+
+437
+00:21:21,809 --> 00:21:25,950
+这里还有另外两倍的金额
+here and furthermore double the amount
+
+438
+00:21:25,950 --> 00:21:30,570
+它有点像是随机睡眠，
+of it sort of randomized sleep whose
+
+439
+00:21:30,570 --> 00:21:33,179
+随机性的范围在每次我们
+span of randomness doubles each time we
+
+440
+00:21:33,179 --> 00:21:37,080
+失败了，这是一种久经考验的真理
+fail and that's a sort of tried and true
+
+441
+00:21:37,080 --> 00:21:39,470
+策略指数回退是一种
+strategies exponential back-off is a
+
+442
+00:21:39,470 --> 00:21:42,390
+它实际上和救生筏的领头人很相似
+it's actually similar to raft leader
+
+443
+00:21:42,390 --> 00:21:44,850
+选举，这是一个合理的策略
+election it's a reasonable strategy for
+
+444
+00:21:44,850 --> 00:21:47,220
+适应未知数量的
+adapting to an unknown number of
+
+445
+00:21:47,220 --> 00:21:54,900
+并发客户端，所以好的，告诉我
+concurrent clients so okay tell me
+
+446
+00:21:54,900 --> 00:22:03,300
+什么是对的，好的，所以我们正在获取数据
+what's right okay so we're getting data
+
+447
+00:22:03,300 --> 00:22:07,250
+然后看着它的真面目
+and then watching its true
+
+448
+00:22:17,920 --> 00:22:22,750
+所以，是的，所以如果其他人修改了
+so yes so if somebody else modifies the
+
+449
+00:22:22,750 --> 00:22:25,060
+调用集合数据之前的数据可能
+data before you call set data maybe
+
+450
+00:22:25,060 --> 00:22:28,630
+你会收到一个手表通知，嗯，
+you'll get a watch notification um the
+
+451
+00:22:28,630 --> 00:22:30,610
+问题是计时不起作用
+problem is the timing is not working in
+
+452
+00:22:30,610 --> 00:22:32,290
+你的好意喜欢时间的长短
+your favor like the amount of time
+
+453
+00:22:32,290 --> 00:22:34,690
+从我收到这里的数据开始
+between when I received the data here
+
+454
+00:22:34,690 --> 00:22:37,210
+当我把信息发送给
+and when I send off the message to the
+
+455
+00:22:37,210 --> 00:22:39,730
+此新集合数据的引线为零
+leader with this new set data is zero
+
+456
+00:22:39,730 --> 00:22:42,270
+这就是这里要经过的时间
+that's how much time will pass here
+
+457
+00:22:42,270 --> 00:22:47,740
+粗略地说，如果有其他客户被派来
+roughly and if some other client is sent
+
+458
+00:22:47,740 --> 00:22:51,670
+大约在这个时候，它是递增的
+in increment at about this time it's
+
+459
+00:22:51,670 --> 00:22:53,410
+实际上有相当长的一段时间
+actually quite a long time between when
+
+460
+00:22:53,410 --> 00:22:54,760
+该客户端发送增量，并且
+that client sends in the increment and
+
+461
+00:22:54,760 --> 00:22:56,200
+当它以自己的方式通过领导者的时候
+when it works its way through the leader
+
+462
+00:22:56,200 --> 00:22:58,180
+并被送到追随者手中
+and is sent out to the followers and
+
+463
+00:22:58,180 --> 00:22:59,800
+实际上处决了追随者和
+actually executed the followers and the
+
+464
+00:22:59,800 --> 00:23:01,540
+追随者在他们的手表里查一下
+followers look it up in their watch
+
+465
+00:23:01,540 --> 00:23:03,880
+表，然后给我发个通知，所以我
+table and send me a notification so I
+
+466
+00:23:03,880 --> 00:23:06,510
+想
+think
+
+467
+00:23:17,590 --> 00:23:25,910
+它不会给您任何读取结果，或者如果
+it won't give you any read result or if
+
+468
+00:23:25,910 --> 00:23:28,670
+如果你要阅读，你可以在某一时刻阅读
+you read at a point if you're gonna read
+
+469
+00:23:28,670 --> 00:23:30,320
+在这一点上，在那里
+at a point that's after where the
+
+470
+00:23:30,320 --> 00:23:32,420
+发生了应引发的修改
+modification occurred that should raise
+
+471
+00:23:32,420 --> 00:23:34,820
+您将收到通知的手表
+the watch you'll get the notification of
+
+472
+00:23:34,820 --> 00:23:36,200
+在你拿到读数之前看表
+the watch before you get the read
+
+473
+00:23:36,200 --> 00:23:40,520
+回应，但不管怎样，我想没什么
+response but in any case I think nothing
+
+474
+00:23:40,520 --> 00:23:42,860
+这样可以救我们因为
+like this could save us because what's
+
+475
+00:23:42,860 --> 00:23:45,650
+将会发生的是所有的上千个客户
+gonna happen is all thousand clients are
+
+476
+00:23:45,650 --> 00:23:47,650
+不管是什么，我都会做同样的事
+gonna do the same thing whatever it is
+
+477
+00:23:47,650 --> 00:23:50,390
+好的，他们都会再做一次
+right they're all gonna do again and set
+
+478
+00:23:50,390 --> 00:23:52,100
+一块手表什么的他们都会
+a watch and whatever they're all gonna
+
+479
+00:23:52,100 --> 00:23:53,480
+同时收到通知
+get the notification at the same time
+
+480
+00:23:53,480 --> 00:23:54,830
+他们都会做出同样的决定
+they're all gonna make the same decision
+
+481
+00:23:54,830 --> 00:23:57,890
+关于他们都不会去
+about well they're all not gonna get to
+
+482
+00:23:57,890 --> 00:23:59,360
+注意了，因为他们中没有一个人做过
+watch because none of them has done the
+
+483
+00:23:59,360 --> 00:24:01,340
+将数据放在正确的位置
+put data yet right
+
+484
+00:24:01,340 --> 00:24:03,950
+所以最糟糕的情况是所有的客户
+so the worst case is all the clients are
+
+485
+00:24:03,950 --> 00:24:05,690
+从同一点开始，他们都做了一个
+starting at the same point they all do a
+
+486
+00:24:05,690 --> 00:24:08,000
+他们都拿到第一版了，他们都拿到了
+get they all get version one they all
+
+487
+00:24:08,000 --> 00:24:09,410
+设置一个观察点，他们得不到
+set a watch point they don't get a
+
+488
+00:24:09,410 --> 00:24:10,700
+通知，因为没有更改
+notification because no change has
+
+489
+00:24:10,700 --> 00:24:14,450
+发生时，它们都会将集合数据RPC发送到
+occurred they all send a set data RPC to
+
+490
+00:24:14,450 --> 00:24:17,900
+他们中的上千人都是首领
+the leader all thousand of them the
+
+491
+00:24:17,900 --> 00:24:21,080
+第一个更改数据，现在更改
+first one changes the data and now the
+
+492
+00:24:21,080 --> 00:24:23,360
+其他999，并在以下情况下收到通知
+other 999 and get a notification when
+
+493
+00:24:23,360 --> 00:24:24,980
+太晚了，因为他们已经
+it's too late because they've already
+
+494
+00:24:24,980 --> 00:24:29,780
+发送了设置数据，所以有可能
+sent the set data so it's possible that
+
+495
+00:24:29,780 --> 00:24:33,350
+手表可以帮到我们，但在某种程度上
+watch could help us here but sort of
+
+496
+00:24:33,350 --> 00:24:38,960
+我有一款简单易懂的手表
+straightforward version of watch I have
+
+497
+00:24:38,960 --> 00:24:42,230
+如果你想要邮件的感觉
+a feeling if you wanted the the mail
+
+498
+00:24:42,230 --> 00:24:43,280
+我们将在几分钟后讨论这个问题
+we'll talk about this in a few minutes
+
+499
+00:24:43,280 --> 00:24:48,110
+但是无名氏听到了第二次上锁的声音
+but the anon heard the second locking
+
+500
+00:24:48,110 --> 00:24:50,990
+这个例子完全解决了这类问题。
+example absolutely solves this kind of
+
+501
+00:24:50,990 --> 00:24:53,150
+这样我们才能适应第二个问题
+problem so we could adapt to the second
+
+502
+00:24:53,150 --> 00:24:54,770
+从论文中锁定示例，尝试
+locking example from the paper to try to
+
+503
+00:24:54,770 --> 00:24:57,500
+使增量一次一个地发生。
+cause the increments to happen one at a
+
+504
+00:24:57,500 --> 00:25:00,590
+如果有大量的客户，时间到了
+time if there's a huge number of clients
+
+505
+00:25:00,590 --> 00:25:03,710
+谁想做这件事其他问题是关于
+who want to do it other questions about
+
+506
+00:25:03,710 --> 00:25:08,570
+这个例子好的，这是一个例子
+this example okay this is an example of
+
+507
+00:25:08,570 --> 00:25:11,060
+一辆很多人称之为迷你的车
+a what many people call a mini
+
+508
+00:25:11,060 --> 00:25:13,970
+交易好的，是交易性的。
+transaction all right it's transactional
+
+509
+00:25:13,970 --> 00:25:15,740
+从某种意义上说，哇，你知道
+in a sense that wow there's you know a
+
+510
+00:25:15,740 --> 00:25:17,510
+这里发生了很多有趣的事情
+lot of funny stuff happening here the
+
+511
+00:25:17,510 --> 00:25:22,160
+效果是，一旦这一切都成功了，我们
+effect is that once it all succeeds we
+
+512
+00:25:22,160 --> 00:25:23,750
+已经实现了一种原子
+have achieved an atomic
+
+513
+00:25:23,750 --> 00:25:26,420
+计数器权限的读-修改-写
+read-modify-write of the counter right
+
+514
+00:25:26,420 --> 00:25:28,750
+这里的困难在于
+the difficulty here
+
+515
+00:25:28,750 --> 00:25:35,980
+它不是原子的读数
+is that it's not atomic the reading the
+
+516
+00:25:35,980 --> 00:25:37,420
+右读修改右
+right the read the modifying the right
+
+517
+00:25:37,420 --> 00:25:40,150
+原子不是我们拥有的东西吗
+are not atomic the thing that we have
+
+518
+00:25:40,150 --> 00:25:42,640
+从这里拉出来的就是这个序列
+pulled off here is that this sequence
+
+519
+00:25:42,640 --> 00:25:47,410
+一旦它完成了就是原子对的我们
+once it finishes is atomic right we
+
+520
+00:25:47,410 --> 00:25:49,270
+实际上，人和一旦我们必须上
+actually man and once we have to be on
+
+521
+00:25:49,270 --> 00:25:50,980
+我们成功地通过了这一关
+the pass through this that we succeeded
+
+522
+00:25:50,980 --> 00:25:53,760
+我们设法读取增量和写入
+we managed to read increment and write
+
+523
+00:25:53,760 --> 00:25:56,440
+在没有任何其他干预的情况下，我们
+without anything else intervening we
+
+524
+00:25:56,440 --> 00:25:59,970
+我成功地自动完成了这两个步骤
+managed to do these two steps atomically
+
+525
+00:25:59,970 --> 00:26:05,110
+你知道这不是因为这
+and you know this is not because this
+
+526
+00:26:05,110 --> 00:26:06,790
+不是一个完整的数据库事务，就像
+isn't a full database transaction like
+
+527
+00:26:06,790 --> 00:26:09,100
+真实数据库允许完全通用
+real databases allow fully general
+
+528
+00:26:09,100 --> 00:26:10,690
+您可以说开始的事务
+transactions where you can say start
+
+529
+00:26:10,690 --> 00:26:12,250
+事务，然后读取或写入
+transaction and then read or write
+
+530
+00:26:12,250 --> 00:26:14,020
+你喜欢的任何东西，可能有几千种
+anything you like maybe thousands of
+
+531
+00:26:14,020 --> 00:26:15,610
+不同的数据项，不管谁知道
+different data items whatever who knows
+
+532
+00:26:15,610 --> 00:26:17,470
+什么，然后说结束交易和
+what and then say end transaction and
+
+533
+00:26:17,470 --> 00:26:19,450
+数据库将巧妙地提交
+the database will cleverly commit the
+
+534
+00:26:19,450 --> 00:26:21,430
+整个事情就像一个原子事务，所以
+whole thing as an atomic transaction so
+
+535
+00:26:21,430 --> 00:26:22,540
+真实的交易可能非常
+real transactions can be very
+
+536
+00:26:22,540 --> 00:26:25,810
+复杂的动物园管理员支持这一点
+complicated zookeeper supports this
+
+537
+00:26:25,810 --> 00:26:27,880
+你知道的极其简化的版本
+extremely simplified version of you know
+
+538
+00:26:27,880 --> 00:26:30,880
+当你是那种人的时候，我们就能做到
+when you're sort of one we can do it
+
+539
+00:26:30,880 --> 00:26:34,540
+在一块上进行原子操作
+atomic sort of operations on one piece
+
+540
+00:26:34,540 --> 00:26:37,450
+的数据，但这足以获得增量
+of data but it's enough to get increment
+
+541
+00:26:37,450 --> 00:26:39,250
+还有其他一些东西，所以这些是用来
+and some other things so these are for
+
+542
+00:26:39,250 --> 00:26:40,660
+那是因为他们不是一般的
+that reason since they're not general
+
+543
+00:26:40,660 --> 00:26:42,640
+但是它们确实提供了原子性，这些是
+but they do provide atomicity these are
+
+544
+00:26:42,640 --> 00:26:50,470
+通常称为迷你事务，它
+often called mini transactions and it
+
+545
+00:26:50,470 --> 00:26:52,150
+事实证明，这种模式可以制作成
+turns out this pattern can be made to
+
+546
+00:26:52,150 --> 00:26:54,970
+也可以处理其他各种事情，比如
+work with various other things too like
+
+547
+00:26:54,970 --> 00:26:57,360
+如果我们想做测试并设置
+if we wanted to do the test and set that
+
+548
+00:26:57,360 --> 00:27:00,910
+VMware ft要求它可以实施
+vmware ft requires it can be implemented
+
+549
+00:27:00,910 --> 00:27:02,590
+在很大程度上，你知道，也许
+with very much this setup you know maybe
+
+550
+00:27:02,590 --> 00:27:06,670
+如果旧值为零，则我们尝试
+the old value if it's zero then we try
+
+551
+00:27:06,670 --> 00:27:08,500
+将其设置为1，但提供此版本
+to set it to one but give this version
+
+552
+00:27:08,500 --> 00:27:10,390
+你知道，没有其他人插手干预
+number you know nobody else intervened
+
+553
+00:27:10,390 --> 00:27:11,830
+而我们才是真正设法
+and we were the one who actually managed
+
+554
+00:27:11,830 --> 00:27:13,060
+将其设置为1，因为版本
+to set it to one because the version
+
+555
+00:27:13,060 --> 00:27:14,800
+号码没有变，但我是领队
+number hadn't changed but i'm leader got
+
+556
+00:27:14,800 --> 00:27:17,230
+我们的请求，我们赢得了另一个人
+our request and we win somebody else
+
+557
+00:27:17,230 --> 00:27:21,280
+在我们读完之后更改为1，然后
+changes to one after we read it then the
+
+558
+00:27:21,280 --> 00:27:23,140
+领导会告诉我们我们输了所以你
+leader will tell us that we lost so you
+
+559
+00:27:23,140 --> 00:27:24,880
+可以用此图案进行测试和设置
+can do test and set with this pattern
+
+560
+00:27:24,880 --> 00:27:29,920
+另外，您应该记住，这是
+also and you should remember this is the
+
+561
+00:27:29,920 --> 00:27:32,430
+战略
+strategy
+
+562
+00:27:33,500 --> 00:27:38,460
+好的，好的，下一个例子，我想谈谈
+okay alright next example I want to talk
+
+563
+00:27:38,460 --> 00:27:42,450
+是关于这些锁的，我说的是
+about is these locks and I'm talking
+
+564
+00:27:42,450 --> 00:27:43,830
+因为报纸上不是这么说的
+about this because it's in the paper not
+
+565
+00:27:43,830 --> 00:27:46,710
+因为我坚信这件事
+because I strongly believe that this
+
+566
+00:27:46,710 --> 00:27:52,639
+一种锁是有用的，但他们有
+kind of lock is useful but they have
+
+567
+00:27:52,639 --> 00:27:56,750
+他们举了一个例子，在这个例子中，一个合唱团
+they have an example in which a choir
+
+568
+00:27:57,649 --> 00:28:01,860
+有几个步骤，其中一个是我们试图创建的
+has a couple steps one we try to create
+
+569
+00:28:01,860 --> 00:28:05,789
+我们有一个锁定文件，我们尝试创建
+we have a lock file and we try to create
+
+570
+00:28:05,789 --> 00:28:11,490
+锁定文件现在又是一些带有
+the lock file now again some file with a
+
+571
+00:28:11,490 --> 00:28:17,419
+股骨设置为TRUE，因此如果
+femoral set to true and so if that
+
+572
+00:28:17,419 --> 00:28:22,260
+不管成功与否，我们已经获得了
+succeeds then or not we've acquired the
+
+573
+00:28:22,260 --> 00:28:27,240
+锁定第二个步骤，该步骤不会
+lock the second step that doesn't
+
+574
+00:28:27,240 --> 00:28:32,090
+成功，那么我们要等待任何人
+succeed then we want to wait for whoever
+
+575
+00:28:32,090 --> 00:28:34,919
+有没有拿到锁如果这不是
+did acquire the lock what if this isn't
+
+576
+00:28:34,919 --> 00:28:36,330
+TRUE，这意味着锁文件已经
+true that means the lock file already
+
+577
+00:28:36,330 --> 00:28:37,889
+是否存在，我是说，其他人已经获得了
+exists I mean somebody else has acquired
+
+578
+00:28:37,889 --> 00:28:39,330
+锁上了，所以我们要等他们
+the lock and so we want to wait for them
+
+579
+00:28:39,330 --> 00:28:40,649
+把锁打开，他们就会
+to release the lock and they're gonna
+
+580
+00:28:40,649 --> 00:28:42,120
+通过删除此文件来释放锁定
+release the lock by deleting this file
+
+581
+00:28:42,120 --> 00:28:46,639
+所以我们要看“是”
+so we're gonna watch yes
+
+582
+00:28:56,740 --> 00:28:59,530
+好的，我们要看我们要
+alright so we're gonna watch we're gonna
+
+583
+00:28:59,530 --> 00:29:11,020
+呼唤存在，守望是真的
+gonna call exists and watching is true
+
+584
+00:29:11,020 --> 00:29:15,350
+现在事实证明，嗯，好的，而且
+now it turns out that um okay and and
+
+585
+00:29:15,350 --> 00:29:17,240
+如果该文件仍然存在，那么
+and if the file still exists right which
+
+586
+00:29:17,240 --> 00:29:18,770
+我们希望如此，因为毕竟他们
+we expect it to because after all they
+
+587
+00:29:18,770 --> 00:29:20,180
+不存在的话大概会有
+didn't exist presumably would have
+
+588
+00:29:20,180 --> 00:29:21,740
+返回到这里，所以如果它存在，我们希望
+returned here so if it exists we want to
+
+589
+00:29:21,740 --> 00:29:25,040
+等待我们正在等待的通知
+wait for the notification we're waiting
+
+590
+00:29:25,040 --> 00:29:29,750
+对于此手表通知，请调用此
+for this watch notification call this
+
+591
+00:29:29,750 --> 00:29:39,560
+三步一步去什么所以
+three and a step for go to what so the
+
+592
+00:29:39,560 --> 00:29:41,240
+通常的做法是你知道我们叫Create
+usual deal is you know we call create
+
+593
+00:29:41,240 --> 00:29:45,650
+你知道，如果失败了，也许我们会赢
+you know maybe we win if it fails we
+
+594
+00:29:45,650 --> 00:29:47,480
+等待拥有锁的人释放
+wait for whoever owns a lock to release
+
+595
+00:29:47,480 --> 00:29:49,790
+如果我们在什么时候收到手表通知
+it we get the watch notification when
+
+596
+00:29:49,790 --> 00:29:51,680
+此时将删除该文件
+the file is deleted at that point this
+
+597
+00:29:51,680 --> 00:29:53,240
+等完了，我们就回孟加拉
+wait finishes and we go back to Mon and
+
+598
+00:29:53,240 --> 00:29:54,590
+希望我们能试着重新创建文件
+try to recreate the file hopefully we
+
+599
+00:29:54,590 --> 00:29:59,360
+这次会拿到文件的，好的，所以我们
+will get the file this time okay so we
+
+600
+00:29:59,360 --> 00:30:01,570
+应该问问我们自己关于
+should ask ourselves questions about
+
+601
+00:30:01,570 --> 00:30:04,250
+其他客户端的可能交叉
+possible interleavings of other clients
+
+602
+00:30:04,250 --> 00:30:07,910
+我们有四个步骤的活动，所以我们
+activities with our four steps so one we
+
+603
+00:30:07,910 --> 00:30:09,530
+我们肯定知道如果我们已经知道
+know for sure we know of already if
+
+604
+00:30:09,530 --> 00:30:11,090
+另一个客户端在相同的位置调用CREATE
+another client calls create at the same
+
+605
+00:30:11,090 --> 00:30:16,550
+时间到了，动物园管理员领队就要走了
+time then the zookeeper leader is going
+
+606
+00:30:16,550 --> 00:30:19,130
+处理这两个以创建RPC一个
+to process those two to create rpcs one
+
+607
+00:30:19,130 --> 00:30:20,300
+在某一时刻以某种顺序
+at a time in some order
+
+608
+00:30:20,300 --> 00:30:23,240
+所以要么迈克·里德被处决
+so either mike reid will be executed
+
+609
+00:30:23,240 --> 00:30:23,600
+第一
+first
+
+610
+00:30:23,600 --> 00:30:24,980
+否则创建的其他客户端将
+or the other clients create will be
+
+611
+00:30:24,980 --> 00:30:28,040
+被处死的第一个思想首先被处死的是我
+executed first minds executed first i'm
+
+612
+00:30:28,040 --> 00:30:29,690
+会得到一个真正的回报
+going to get a true back in return and
+
+613
+00:30:29,690 --> 00:30:31,550
+获取锁，另一个客户端
+acquire the lock and the other client is
+
+614
+00:30:31,550 --> 00:30:33,920
+保证会得到一份虚假的报税单，如果
+guaranteed to get a false return and if
+
+615
+00:30:33,920 --> 00:30:35,540
+首先要处理的是PC，它们将
+there are pcs processed first they'll
+
+616
+00:30:35,540 --> 00:30:36,830
+得到真正的回报，我保证
+get the true return and i'm guaranteed
+
+617
+00:30:36,830 --> 00:30:38,660
+以获得虚假的报税表，并且在任何一种情况下
+to get the false return and in either
+
+618
+00:30:38,660 --> 00:30:40,130
+在将创建文件的情况下
+case the file will be created
+
+619
+00:30:40,130 --> 00:30:45,670
+所以如果我们同时有
+so we're okay if we have simultaneous
+
+620
+00:30:45,670 --> 00:30:51,170
+对另一个人的处决是一个问题
+executions of one another question is
+
+621
+00:30:51,170 --> 00:30:54,920
+好吧，你知道如果我创造不了
+well you know if I if create doesn't
+
+622
+00:30:54,920 --> 00:30:57,410
+如果我成功了，我会打电话给EXISTS
+succeed for me and I'm gonna call exists
+
+623
+00:30:57,410 --> 00:31:01,130
+如果锁被释放，会发生什么情况
+what happens if the lock is released
+
+624
+00:31:01,130 --> 00:31:03,350
+实际上在Create和
+actually between the create and the
+
+625
+00:31:03,350 --> 00:31:05,890
+存在
+exists
+
+626
+00:31:09,740 --> 00:31:12,150
+所以这就是为什么我说唱我有一个
+so this is the reason why I rap I have a
+
+627
+00:31:12,150 --> 00:31:14,070
+在我周围的刀是存在的
+knife around me around the exists is
+
+628
+00:31:14,070 --> 00:31:15,870
+因为它实际上可能会被释放
+because it actually might be released
+
+629
+00:31:15,870 --> 00:31:19,530
+在我调用Exist之前，因为它可能
+before I call exists because it could
+
+630
+00:31:19,530 --> 00:31:21,000
+早在很久以前就被收购了
+have been acquired quite a long time ago
+
+631
+00:31:21,000 --> 00:31:22,620
+由某个其他客户端执行，然后如果
+by some other client and then if the
+
+632
+00:31:22,620 --> 00:31:25,020
+那么在这一点上文件不存在
+file doesn't exist at this point then
+
+633
+00:31:25,020 --> 00:31:26,640
+这会失败的，我会直接去
+this will fail and I'll just go directly
+
+634
+00:31:26,640 --> 00:31:30,980
+回到这里，转到1，然后再试一次
+back to this go to one and try again
+
+635
+00:31:32,150 --> 00:31:35,100
+同样，实际上也更有趣
+similarly and actually more interesting
+
+636
+00:31:35,100 --> 00:31:39,360
+如果拿着它的人
+is what happens if the whoever holds it
+
+637
+00:31:39,360 --> 00:31:43,620
+现在释放它，就像我调用eXist或
+now releases it just as I call exist or
+
+638
+00:31:43,620 --> 00:31:45,900
+因为我正在与之交谈的复制品在
+as the replica I'm talking to is in the
+
+639
+00:31:45,900 --> 00:31:49,890
+处理我的EXISTS请求的过程中
+middle of processing my exists requests
+
+640
+00:31:49,890 --> 00:31:54,930
+这个问题的答案是
+and the answer to that is that the
+
+641
+00:31:54,930 --> 00:31:57,300
+不管我看的是什么复制品，你知道的
+whatever replica I'm looking at you know
+
+642
+00:31:57,300 --> 00:32:02,880
+它记录或保证权限发生
+it's log or guaranteed that rights occur
+
+643
+00:32:02,880 --> 00:32:04,170
+按某种顺序排列，对吗？
+in some order right
+
+644
+00:32:04,170 --> 00:32:06,210
+所以我正在与之交谈的回复是，这是
+so the repla I'm talking to it's it's
+
+645
+00:32:06,210 --> 00:32:10,460
+以某种方式记录它的进程，然后我的
+log its proceeding in some way and my
+
+646
+00:32:10,460 --> 00:32:15,000
+保证执行Existes调用
+exists call is guaranteed to be executed
+
+647
+00:32:15,000 --> 00:32:18,420
+在右侧的两个日志条目之间
+between two log entries in the right
+
+648
+00:32:18,420 --> 00:32:21,420
+向右流，这是一条，这是一条
+stream right this is a this is a
+
+649
+00:32:21,420 --> 00:32:24,570
+只读请求，并且您知道
+read-only request and you know the
+
+650
+00:32:24,570 --> 00:32:26,130
+问题是有人删除了
+problem is that somebody's delete
+
+651
+00:32:26,130 --> 00:32:27,990
+请求正在处理中，大约在此
+request is being processed at about this
+
+652
+00:32:27,990 --> 00:32:32,040
+时间，所以日志中的某个地方已经过去了
+time so somewhere in the log is going
+
+653
+00:32:32,040 --> 00:32:35,130
+其中一个将是删除请求
+either is going to be the delete request
+
+654
+00:32:35,130 --> 00:32:37,950
+从另一个客户和代表那里
+from the other client and the rep and
+
+655
+00:32:37,950 --> 00:32:40,470
+你知道这是我的思想复制品
+you know this is my mind the replica
+
+656
+00:32:40,470 --> 00:32:42,150
+我在和动物园管理员的复制品谈话
+that I'm talking to zookeeper replicas
+
+657
+00:32:42,150 --> 00:32:45,000
+我在跟他的日志说话我的手表我的
+I'm talking to his log my watch my
+
+658
+00:32:45,000 --> 00:32:47,340
+现有的RPC被处理
+exists RPC is either processed
+
+659
+00:32:47,340 --> 00:32:50,280
+完全在这里处理，在这种情况下
+completely processed here in which case
+
+660
+00:32:50,280 --> 00:32:53,280
+复制品看到的还是文件
+the replica sees oh the file still
+
+661
+00:32:53,280 --> 00:32:56,840
+存在，并且复制副本插入监视
+exists and the replica inserts the watch
+
+662
+00:32:56,840 --> 00:32:59,250
+在此将信息放入其观察表中
+information into its watch table at this
+
+663
+00:32:59,250 --> 00:33:02,520
+指针，然后才执行删除
+point and only then executes the delete
+
+664
+00:33:02,520 --> 00:33:03,990
+所以当删除出现的时候是
+so when the delete comes in were
+
+665
+00:33:03,990 --> 00:33:05,880
+保证我的手表请求在
+guaranteed that my watch request is in
+
+666
+00:33:05,880 --> 00:33:07,530
+副本监视表，它将
+the replicas watch table and it will
+
+667
+00:33:07,530 --> 00:33:11,250
+向我发送通知权利或我的存在
+send me a notification right or my exist
+
+668
+00:33:11,250 --> 00:33:15,140
+请求在此处的某个时间点执行
+requests is executed here at a point
+
+669
+00:33:15,140 --> 00:33:17,760
+删除操作发生后，文件不会
+after the delete happen the file doesn't
+
+670
+00:33:17,760 --> 00:33:20,640
+存在，所以现在调用返回true
+exist and so now the call returns true
+
+671
+00:33:20,640 --> 00:33:20,970
+和
+and
+
+672
+00:33:20,970 --> 00:33:23,340
+不，实际上监视表项是
+no well actually a watch table entry is
+
+673
+00:33:23,340 --> 00:33:27,600
+进去了，但是我们不在乎，所以它是
+entered but we don't care right so it's
+
+674
+00:33:27,600 --> 00:33:28,770
+很重要的一点是，这些权利是
+quite important that the rights are
+
+675
+00:33:28,770 --> 00:33:32,460
+已排序，该读取发生在
+sequenced and that reads happen at
+
+676
+00:33:32,460 --> 00:33:54,870
+权利之间的确定点，是的，很好
+definite points between rights yes well
+
+677
+00:33:54,870 --> 00:33:57,150
+好的，是的，这就是存在的地方
+okay so yes so this is where the exists
+
+678
+00:33:57,150 --> 00:33:58,980
+执行时，文件不存在于
+is executed the file doesn't exist at
+
+679
+00:33:58,980 --> 00:34:01,320
+此点存在，返回FALSE，我们不
+this point exists returns false we don't
+
+680
+00:34:01,320 --> 00:34:04,890
+等等，我们转到一个，我们创建文件，然后
+wait we go to one we create the file and
+
+681
+00:34:04,890 --> 00:34:08,668
+回来，我们确实在这里安装了一块手表，
+return we did install a watch here that
+
+682
+00:34:08,668 --> 00:34:10,859
+手表会被触发，它不会
+watch will be triggered it doesn't
+
+683
+00:34:10,859 --> 00:34:11,820
+真的很重要因为我们并不是真的
+really matter because we're not really
+
+684
+00:34:11,820 --> 00:34:13,050
+在等它，但是手表会在
+waiting for it but the watch will be
+
+685
+00:34:13,050 --> 00:34:16,879
+由此创建的
+triggered by this created
+
+686
+00:34:23,300 --> 00:34:26,810
+我们不是在等它，但是好的，好的
+we're not waiting for it but yeah okay
+
+687
+00:34:26,810 --> 00:34:28,940
+所以这个文件不存在，我们去一个
+so the file doesn't exist we go to one
+
+688
+00:34:28,940 --> 00:34:31,250
+其他人已经创建了我们的文件
+somebody else has created the file we
+
+689
+00:34:31,250 --> 00:34:33,199
+尝试创建失败的文件
+try to create the file that fails we
+
+690
+00:34:33,199 --> 00:34:35,870
+再装一块手表，它就坏了
+install another watch and it's a dis
+
+691
+00:34:35,870 --> 00:34:38,570
+注意，我们不是在等待，所以这就是
+watch that we're not waiting for so this
+
+692
+00:34:38,570 --> 00:34:40,130
+路不会等待任何东西
+way does not a wait for anything to
+
+693
+00:34:40,130 --> 00:34:42,260
+尽管这真的无关紧要，但还是会发生
+happen although it doesn't really matter
+
+694
+00:34:42,260 --> 00:34:47,960
+在那一刻，去……不会有什么坏处。
+in the moment it's not harmful to to to
+
+695
+00:34:47,960 --> 00:34:49,340
+早点打破这个循环，只是
+break out of this loop early it's just
+
+696
+00:34:49,340 --> 00:34:53,570
+不管怎么说都是浪费，我们有所有的历史
+wasteful anyway we've all the history
+
+697
+00:34:53,570 --> 00:34:57,260
+此代码在某种程度上将手表留在
+this code leaves watches sort of in the
+
+698
+00:34:57,260 --> 00:34:58,580
+我真的不知道是什么
+system and I don't really know what does
+
+699
+00:34:58,580 --> 00:35:00,740
+我的新手表在同一文件覆盖
+my new watch on the same file override
+
+700
+00:35:00,740 --> 00:35:03,970
+我的旧手表我不太确定
+my old watch I'm not actually sure
+
+701
+00:35:08,560 --> 00:35:12,260
+好的，我终于做到了这个例子和
+okay I'm finally this example and the
+
+702
+00:35:12,260 --> 00:35:14,000
+前面的例子Suffle患上了
+previous example suffle suffer from the
+
+703
+00:35:14,000 --> 00:35:16,160
+羊群效应我们也听到了效应
+herd effect we also heard effect we
+
+704
+00:35:16,160 --> 00:35:18,140
+我是说我们刚才说的话
+talked about I mean what we were talking
+
+705
+00:35:18,140 --> 00:35:20,000
+当我们在担心的时候，哦，但是
+about when we were worrying about oh but
+
+706
+00:35:20,000 --> 00:35:22,130
+如果客户端，我将尝试在以下位置递增此值
+if clients I'll try to increment this at
+
+707
+00:35:22,130 --> 00:35:23,000
+同一时间
+the same time
+
+708
+00:35:23,000 --> 00:35:25,240
+天哪，那会是N的平方
+gosh that's going to have N squared
+
+709
+00:35:25,240 --> 00:35:28,010
+复杂到需要多长时间
+complexity as far as how long it takes
+
+710
+00:35:28,010 --> 00:35:30,140
+才能达到所有1000个客户端的此锁
+to get to all thousand clients this lock
+
+711
+00:35:30,140 --> 00:35:32,360
+方案也会受到羊群效应的影响
+scheme also suffers from the herd effect
+
+712
+00:35:32,360 --> 00:35:35,210
+因为如果有一千个客户
+in that if there are a thousand clients
+
+713
+00:35:35,210 --> 00:35:37,760
+试图拿到锁，然后是金额
+trying to get the lock then the amount
+
+714
+00:35:37,760 --> 00:35:40,580
+所需时间的长短
+of time that's required to sort of grant
+
+715
+00:35:40,580 --> 00:35:43,130
+上千人中的每一个人的锁
+the lock to each one of the thousand
+
+716
+00:35:43,130 --> 00:35:44,900
+客户与一千成正比
+clients is proportional to a thousand
+
+717
+00:35:44,900 --> 00:35:47,810
+平方，因为在每次发布之后
+squared because after every release all
+
+718
+00:35:47,810 --> 00:35:50,630
+的剩余客户端被触发
+of the remaining clients get triggered
+
+719
+00:35:50,630 --> 00:35:52,220
+到了这只表上，剩下的所有人
+by this watch all of the remaining
+
+720
+00:35:52,220 --> 00:35:53,870
+客户回到这里，送来一个
+clients go back up here and send in a
+
+721
+00:35:53,870 --> 00:35:55,730
+创建，因此创建总数
+create and so the total number create
+
+722
+00:35:55,730 --> 00:35:59,240
+我们生成的PC基本上是一个
+our pcs generated is basically a
+
+723
+00:35:59,240 --> 00:36:02,690
+一千的平方，所以这件事
+thousand squared so this suffers from
+
+724
+00:36:02,690 --> 00:36:06,170
+这个牛群，整个等待的牛群
+this herd the whole herd of waiting
+
+725
+00:36:06,170 --> 00:36:15,380
+客户们正在殴打另一名动物园管理员
+clients is beating on zookeeper another
+
+726
+00:36:15,380 --> 00:36:17,270
+它的名字是它是一个非
+name for this is that it's a non
+
+727
+00:36:17,270 --> 00:36:23,120
+可伸缩的锁，或者是的，好的，所以
+scalable lock or yeah okay and so the
+
+728
+00:36:23,120 --> 00:36:26,840
+纸是一笔实实在在的交易，我们将拭目以待。
+paper is a real deal and we'll see it
+
+729
+00:36:26,840 --> 00:36:31,280
+更多，在其他系统中，很快
+more and in other systems and soon
+
+730
+00:36:31,280 --> 00:36:32,990
+足够严重的问题结束了这篇论文
+enough serious end of problems the paper
+
+731
+00:36:32,990 --> 00:36:34,670
+实际上是在谈论如何解决这个问题
+actually talks about how to solve it
+
+732
+00:36:34,670 --> 00:36:36,470
+使用动物园饲养员和有趣的
+using zookeeper and the interesting
+
+733
+00:36:36,470 --> 00:36:37,160
+问题是，祖克
+thing is that Zook
+
+734
+00:36:37,160 --> 00:36:40,339
+它实际上有足够的表现力
+it's actually expressive enough to be
+
+735
+00:36:40,339 --> 00:36:46,430
+能够构建更复杂的锁定方案
+able to build a more complex lock scheme
+
+736
+00:36:46,430 --> 00:36:48,410
+不会受到这种伤害的人
+that doesn't suffer from this hurt
+
+737
+00:36:48,410 --> 00:36:49,910
+即使是一千个客户
+effect that even of a thousand clients
+
+738
+00:36:49,910 --> 00:36:53,660
+在等待一个客户的费用
+are waiting the cost of one client
+
+739
+00:36:53,660 --> 00:36:55,250
+放弃一把锁和另一次获取
+giving up a lock and another acquiring
+
+740
+00:36:55,250 --> 00:36:59,000
+它是阶数1而不是阶数n，并且
+it is order 1 instead of order n and
+
+741
+00:36:59,000 --> 00:37:02,119
+这是因为它有点
+this is the because it's a little bit
+
+742
+00:37:02,119 --> 00:37:05,480
+复杂这是
+complex this is the pseudocode in the
+
+743
+00:37:05,480 --> 00:37:08,270
+第2.4节中的论文如果出现以下情况，请参见第6页
+paper in section 2.4 it's on page 6 if
+
+744
+00:37:08,270 --> 00:37:23,599
+你想跟着走，所以这是
+you want to follow along so this is and
+
+745
+00:37:23,599 --> 00:37:25,549
+所以这一次没有一把锁
+so this time there is not a single lock
+
+746
+00:37:25,549 --> 00:37:27,049
+文件
+file
+
+747
+00:37:27,049 --> 00:37:38,000
+不，是的，这只是一个名字
+there's no yes it is just a name that
+
+748
+00:37:38,000 --> 00:37:40,010
+让我们都可以谈论同样的事情
+allows us to all talk about the same
+
+749
+00:37:40,010 --> 00:37:50,779
+锁上了，所以这只是个名字，现在我知道了
+lock so it's just a name know now I've
+
+750
+00:37:50,779 --> 00:37:53,020
+我拿到了锁，我能做到，我能做到
+acquired the lock and I can do I can
+
+751
+00:37:53,020 --> 00:37:55,849
+不管是什么锁在保护你
+whatever the lock was protecting you
+
+752
+00:37:55,849 --> 00:37:57,950
+一次可能只知道我们中的一个人
+know maybe only one of us at a time
+
+753
+00:37:57,950 --> 00:37:59,270
+应该被允许在
+should be allowed to give a lecture in
+
+754
+00:37:59,270 --> 00:38:00,799
+如果你想在这个演讲厅里
+this lecture hall if you want to give a
+
+755
+00:38:00,799 --> 00:38:02,119
+在这个讲堂里讲课，你先来
+lecture in this lecture hall you first
+
+756
+00:38:02,119 --> 00:38:07,000
+必须获取名为34100的锁
+have to acquire the lock called 34 100
+
+757
+00:38:07,000 --> 00:38:10,609
+结果是，是的，它是个Z
+the that turns out it's yes it's a Z
+
+758
+00:38:10,609 --> 00:38:12,589
+结点和动物园看守人，但它不喜欢任何人
+node and zookeeper but it like nobody
+
+759
+00:38:12,589 --> 00:38:14,599
+关心它的内容，我们只是需要它
+cares about its contents we just need it
+
+760
+00:38:14,599 --> 00:38:16,099
+为了能够就名称达成一致，
+to be able to agree on a name for the
+
+761
+00:38:16,099 --> 00:38:21,770
+锁，这就是它的意义所在
+lock that's the sense in which that's
+
+762
+00:38:21,770 --> 00:38:23,210
+PIYA这个看起来像是一个文件系统
+piyah this it looks like a file system
+
+763
+00:38:23,210 --> 00:38:28,569
+但这真的是一个命名系统好吗
+but it's really a naming system alright
+
+764
+00:38:28,569 --> 00:38:31,430
+所以第一步是我们创建一个序列
+so step one is we create a sequential
+
+765
+00:38:31,430 --> 00:38:33,849
+文件
+file
+
+766
+00:38:37,110 --> 00:38:39,840
+所以，是的，我们给它一个前缀名称，但是
+and so yeah we give it a prefix name but
+
+767
+00:38:39,840 --> 00:38:42,570
+它实际上创造的是如果你知道
+what it actually creates is you know if
+
+768
+00:38:42,570 --> 00:38:45,540
+这是第27个文件顺序文件
+this is the 27th file sequential file
+
+769
+00:38:45,540 --> 00:38:48,270
+使用前缀F创建，您知道
+created with with prefix F you know
+
+770
+00:38:48,270 --> 00:38:53,240
+也许我们得到的是F27或者别的什么，然后
+maybe we get F 27 or something and and
+
+771
+00:38:53,240 --> 00:38:56,220
+在按以下顺序排序的
+in the sequenced in the sequence of
+
+772
+00:38:56,220 --> 00:38:58,710
+写着动物园管理员是不是在工作
+writes that zookeeper is it's working
+
+773
+00:38:58,710 --> 00:39:03,030
+通过相继的创造获得提升
+through successive creates get ascending
+
+774
+00:39:03,030 --> 00:39:05,700
+保证上升，永不下降
+guaranteed ascending never descending
+
+775
+00:39:05,700 --> 00:39:08,340
+在以下情况下始终按升序排列序列号
+always ascending sequence numbers when
+
+776
+00:39:08,340 --> 00:39:15,330
+您创建了一个顺序文件，其中有
+you create a sequential file there was
+
+777
+00:39:15,330 --> 00:39:16,770
+我从清单上漏掉的一项手术
+an operation I left off from the list it
+
+778
+00:39:16,770 --> 00:39:18,150
+原来你可以得到一个文件列表
+turns out you can get a list of files
+
+779
+00:39:18,150 --> 00:39:25,220
+您可以在下面获得文件列表
+you can get a list of files underneath
+
+780
+00:39:25,220 --> 00:39:29,100
+你给出了泽诺的名字，那就是
+you give the name of Zeno that's
+
+781
+00:39:29,100 --> 00:39:30,420
+实际上是一个包含文件的目录
+actually a directory with files in it
+
+782
+00:39:30,420 --> 00:39:31,560
+您可以获得所有文件的列表，这些文件
+you can get a list of all the files that
+
+783
+00:39:31,560 --> 00:39:33,390
+目前都在该目录中，所以我们
+are currently in that directory so we're
+
+784
+00:39:33,390 --> 00:39:35,940
+我要列出我们开始的文件
+gonna list the files let's start with
+
+785
+00:39:35,940 --> 00:39:41,580
+你知道，也许我们能拿到f星
+that you know maybe list f star we get
+
+786
+00:39:41,580 --> 00:39:47,040
+返回一些列表，我们使用
+some list back we create a file with the
+
+787
+00:39:47,040 --> 00:39:48,720
+系统给我们分配了一个号码，在这里我们可以
+system allocated us a number here we can
+
+788
+00:39:48,720 --> 00:39:51,540
+看看这个数字，如果没有更低的话
+look at that number if there's no lower
+
+789
+00:39:51,540 --> 00:39:54,330
+在这个列表中编号的文件，那么我们就赢了
+numbered file in this list then we win
+
+790
+00:39:54,330 --> 00:39:55,440
+我们就能拿到锁
+and we get the lock
+
+791
+00:39:55,440 --> 00:39:57,360
+所以如果我们的顺序文件是最低的
+so if our sequential file is the lowest
+
+792
+00:39:57,360 --> 00:40:00,870
+带名称前缀编号文件我们赢了
+number file with that name prefix we win
+
+793
+00:40:00,870 --> 00:40:10,980
+所以没有更低的数字我们已经打开了锁
+so no lower number we've quired the lock
+
+794
+00:40:10,980 --> 00:40:18,420
+如果有的话，我们可以退货。
+and we can return if there is one then
+
+795
+00:40:18,420 --> 00:40:21,470
+再说一次我们想要等待的是什么
+again what we want to wait for then
+
+796
+00:40:21,470 --> 00:40:23,580
+事情是这样的，这些
+what's going on is that these
+
+797
+00:40:23,580 --> 00:40:25,920
+正在设置按顺序编号的文件
+sequentially numbered files are setting
+
+798
+00:40:25,920 --> 00:40:28,680
+向上移动锁的顺序
+up the order in which the lock is going
+
+799
+00:40:28,680 --> 00:40:30,630
+授予不同的客户
+to be granted to the different clients
+
+800
+00:40:30,630 --> 00:40:33,140
+所以如果我们不是锁定的赢家
+so if we're not the winner of the lock
+
+801
+00:40:33,140 --> 00:40:35,570
+我们要做的就是等待
+what we need to do is wait for the
+
+802
+00:40:35,570 --> 00:40:39,210
+以前与以下客户一起编号的客户
+previously numbered with the client who
+
+803
+00:40:39,210 --> 00:40:41,550
+创建了先前编号的文件以
+created the previously numbered file to
+
+804
+00:40:41,550 --> 00:40:43,290
+释放以获取，然后释放
+release to acquire and then release the
+
+805
+00:40:43,290 --> 00:40:45,620
+锁上了，我们要解开锁
+lock and we're going to release the lock
+
+806
+00:40:45,620 --> 00:40:47,970
+释放锁定的约定
+the convention for releasing the locking
+
+807
+00:40:47,970 --> 00:40:49,880
+在这个系统中是为了
+in this system is for
+
+808
+00:40:49,880 --> 00:40:51,260
+删除文件以删除您的
+remove the file to remove your
+
+809
+00:40:51,260 --> 00:40:53,480
+顺序文件，所以我们要等待
+sequential file so we want to wait for
+
+810
+00:40:53,480 --> 00:40:56,330
+先前编号的顺序文件
+the previously numbered sequential file
+
+811
+00:40:56,330 --> 00:40:59,120
+被删除，然后就轮到我们了
+to be deleted and then it's our turn and
+
+812
+00:40:59,120 --> 00:41:01,310
+我们拿到锁了，所以我们需要打电话给
+we get the lock so we need to call
+
+813
+00:41:01,310 --> 00:41:05,900
+所以我们要说如果这个电话
+exists so we're gonna say if the call
+
+814
+00:41:05,900 --> 00:41:09,220
+主要存在于设置观察点
+exists mostly to set a watch point
+
+815
+00:41:09,220 --> 00:41:16,270
+所以这是你知道的下一个较低数字的文件
+so it's you know next lower number file
+
+816
+00:41:16,270 --> 00:41:23,060
+我们想要一块手表来实现这一点
+and we want to have a watch get that
+
+817
+00:41:23,060 --> 00:41:25,690
+文件仍然存在，我们要等待
+file still exist we're gonna wait and
+
+818
+00:41:25,690 --> 00:41:28,550
+那就是第五步
+then so that's step 5
+
+819
+00:41:28,550 --> 00:41:32,050
+最后我们要回到
+and then finally we're gonna go back to
+
+820
+00:41:32,050 --> 00:41:33,980
+我们不会再次创建该文件
+we're not going to create the file again
+
+821
+00:41:33,980 --> 00:41:35,480
+因为它已经存在了我们要去
+because it already exists we're gonna go
+
+822
+00:41:35,480 --> 00:41:41,660
+回到列表上，是的，文件，所以
+back to listing the yeah the files so
+
+823
+00:41:41,660 --> 00:41:44,480
+这是我刚删掉的合唱团专辑
+this is a choir releases just I delete
+
+824
+00:41:44,480 --> 00:41:47,600
+如果我获得了锁，我会删除我的
+if I acquire the lock I delete my the
+
+825
+00:41:47,600 --> 00:41:50,830
+我创建的带有我的号码的文件
+file I created complete with my number
+
+826
+00:41:50,830 --> 00:41:53,830
+是
+yes
+
+827
+00:41:54,820 --> 00:41:59,020
+为什么需要再次列出这些文件
+why do you need to list the files again
+
+828
+00:42:02,000 --> 00:42:03,500
+这是个好问题，所以问题是
+that's a good question so the question
+
+829
+00:42:03,500 --> 00:42:08,750
+我们拿到了我们知道的文件清单
+is we got the list of files we know the
+
+830
+00:42:08,750 --> 00:42:11,270
+下一个较低编号的文件中有一个
+next lower number file there's a
+
+831
+00:42:11,270 --> 00:42:12,859
+顺序文件的保证
+guarantee of the sequential file
+
+832
+00:42:12,859 --> 00:42:15,770
+创造是，一旦提交了27份文件，
+creation is that once filed 27 is
+
+833
+00:42:15,770 --> 00:42:18,619
+将不会创建编号较小的文件
+created no file with a lower number will
+
+834
+00:42:18,619 --> 00:42:20,960
+曾经被创造过，所以我们现在
+ever subsequently be created so we now
+
+835
+00:42:20,960 --> 00:42:22,730
+我知道没有别的东西可以偷偷溜进来
+know nothing else could sneak in here so
+
+836
+00:42:22,730 --> 00:42:25,849
+下一个更低的号码怎么能把你
+how could the next lower number file you
+
+837
+00:42:25,849 --> 00:42:27,440
+知道为什么我们需要再次上市吗？
+know why why do we need to list again
+
+838
+00:42:27,440 --> 00:42:29,030
+我们为什么不回去等着
+why don't we just go back to waiting for
+
+839
+00:42:29,030 --> 00:42:34,520
+同样是那个编号较低的文件
+that same lower numbered file thing
+
+840
+00:42:34,520 --> 00:42:37,630
+布兰妮猜猜答案
+Britney guess the answer
+
+841
+00:42:43,050 --> 00:42:46,710
+我是说这个代码的工作方式
+I mean the the the way this code works
+
+842
+00:42:46,710 --> 00:42:49,050
+问题的答案是无论是谁
+the answer to the question is whoever
+
+843
+00:42:49,050 --> 00:42:51,090
+是下一个地位较低的人可能
+was the next lowered person might have
+
+844
+00:42:51,090 --> 00:42:53,460
+要么他至少拿到了锁
+either acquired him at least the lock
+
+845
+00:42:53,460 --> 00:42:59,400
+在我们注意到或死去之前
+before we noticed or have died and this
+
+846
+00:42:59,400 --> 00:43:04,010
+去了，这些是临时文件，抱歉
+went and these are transient files sorry
+
+847
+00:43:04,010 --> 00:43:06,960
+或者任何他们被称为短暂的东西
+or whatever they're called ephemeral
+
+848
+00:43:06,960 --> 00:43:13,350
+有一份短暂的文件，你甚至知道
+there's an ephemeral file you know even
+
+849
+00:43:13,350 --> 00:43:17,280
+如果我们排在第26行的第27位
+if we're 27th in line number 26 may have
+
+850
+00:43:17,280 --> 00:43:19,860
+在获得锁IF编号之前死亡
+died before getting the lock if number
+
+851
+00:43:19,860 --> 00:43:22,770
+26条死亡，系统自动删除
+26 dies the system automatically deletes
+
+852
+00:43:22,770 --> 00:43:25,470
+他们的临时文件，所以如果
+their ephemeral files and so if that
+
+853
+00:43:25,470 --> 00:43:27,210
+现在发生了，我们需要等待号码
+happened now we need to wait for number
+
+854
+00:43:27,210 --> 00:43:31,680
+那就是下一次了，如果都知道的话，你就知道了。
+25 that is the next you know it if all
+
+855
+00:43:31,680 --> 00:43:33,900
+您知道的文件2到27和
+files you know 2 through 27 and and
+
+856
+00:43:33,900 --> 00:43:35,430
+如果他们是我们的全部，我们就是27岁
+we're 27 if they're all they are and
+
+857
+00:43:35,430 --> 00:43:37,650
+他们都在等着，如果有锁的话
+they're all waiting there's a lock if if
+
+858
+00:43:37,650 --> 00:43:39,570
+前面的那个还没来得及死就死了
+the one before is dies before getting
+
+859
+00:43:39,570 --> 00:43:41,580
+锁现在我们需要等待
+the lock now we need to wait for the
+
+860
+00:43:41,580 --> 00:43:43,980
+下一个较低编号的文件不是因为
+next next lower number file not because
+
+861
+00:43:43,980 --> 00:43:47,100
+下一个更低的是已经走了，所以
+the next lower one is has gone away so
+
+862
+00:43:47,100 --> 00:43:48,450
+这就是为什么我们要回去重新登记
+that's why we have to go back and relist
+
+863
+00:43:48,450 --> 00:43:50,670
+这些文件以防我们的前任在
+the files in case our predecessor in the
+
+864
+00:43:50,670 --> 00:43:53,580
+出现的等待客户端列表
+list of waiting clients turned out to
+
+865
+00:43:53,580 --> 00:44:00,800
+耶
+die yes
+
+866
+00:44:02,210 --> 00:44:04,500
+如果没有比这更低编号文件
+if there's no lower numbered file than
+
+867
+00:44:04,500 --> 00:44:09,710
+你已经获得了绝对的锁
+you have acquired the lock absolutely
+
+868
+00:44:09,710 --> 00:44:15,510
+是的，这怎么就不会受到
+yes how does this not suffer from the
+
+869
+00:44:15,510 --> 00:44:20,160
+羊群效应假设我们有一千
+herd effect suppose we have a thousand
+
+870
+00:44:20,160 --> 00:44:22,460
+正在等待的客户端和当前客户端
+clients waiting and currently client
+
+871
+00:44:22,460 --> 00:44:24,720
+从最初的五百多美元中脱颖而出
+made through the first five hundred and
+
+872
+00:44:24,720 --> 00:44:30,300
+客户端500每隔一个时间持有锁
+client five hundred holds the lock every
+
+873
+00:44:30,300 --> 00:44:31,950
+客户等待每个客户都坐着
+client waiting every client is sitting
+
+874
+00:44:31,950 --> 00:44:36,150
+在这里等待一个事件，但只有
+here waiting for an event but only the
+
+875
+00:44:36,150 --> 00:44:38,580
+创建了五百个文件的客户端
+client that created file five hundred
+
+876
+00:44:38,580 --> 00:44:41,250
+还有一个他在等待的幻觉
+and one he's waiting for the vision of
+
+877
+00:44:41,250 --> 00:44:44,130
+提交五百份，所以每个人都在等着
+file five hundred so everybody's waiting
+
+878
+00:44:44,130 --> 00:44:45,990
+下一个较低的数字，也就是5
+for the next lower number so five
+
+879
+00:44:45,990 --> 00:44:48,330
+百人在等49929
+hundred is waiting for 499 twenty nine
+
+880
+00:44:48,330 --> 00:44:51,840
+九个人，但是每个人都在等着
+nine but everybody everybody's waiting
+
+881
+00:44:51,840 --> 00:44:53,970
+只有一个文件，当我释放
+for just one file when I release the
+
+882
+00:44:53,970 --> 00:44:56,400
+锁定只有一个客户
+lock there's only one other client the
+
+883
+00:44:56,400 --> 00:44:57,840
+下一个编号较高的客户端，即
+next higher numbered client that's
+
+884
+00:44:57,840 --> 00:44:59,790
+在等我的文件，所以当我释放的时候
+waiting for my file so when I release
+
+885
+00:44:59,790 --> 00:45:02,630
+锁定一个客户端将收到通知
+the lock one client gets a notification
+
+886
+00:45:02,630 --> 00:45:07,290
+一个客户端返回并列出文件
+one client goes back and lists the files
+
+887
+00:45:07,290 --> 00:45:10,650
+一个客户端和一个客户端现在具有
+one client and one client now has the
+
+888
+00:45:10,650 --> 00:45:14,490
+锁定，所以这种费用你不知道
+lock so the sort of expense you know no
+
+889
+00:45:14,490 --> 00:45:15,540
+重要的是有多少客户端是
+matter how many clients that are the
+
+890
+00:45:15,540 --> 00:45:18,660
+每个版本中的一个版本的费用，以及
+expense of one of each release and
+
+891
+00:45:18,660 --> 00:45:22,010
+Acquisition是我们固定数量的PC
+acquire is a constant number of our PCs
+
+892
+00:45:22,010 --> 00:45:26,700
+发行的费用在哪里？
+where's the expense of a release and
+
+893
+00:45:26,700 --> 00:45:28,560
+这里得到的是每一个人
+acquire here is that every single
+
+894
+00:45:28,560 --> 00:45:31,560
+通知正在等待的客户端，并且每隔
+waiting client is notified and every
+
+895
+00:45:31,560 --> 00:45:33,300
+其中一个发送写入请求
+single one of them sends a write request
+
+896
+00:45:33,300 --> 00:45:38,240
+而不是将创建请求发送到ZooKeeper
+than the create request into zookeeper
+
+897
+00:45:42,350 --> 00:45:54,730
+哦，你可以自由地去喝杯咖啡
+oh you're free to get a cup of coffee
+
+898
+00:45:54,730 --> 00:45:57,920
+是的，我是说，这是你知道的
+yeah I mean this is you know what the
+
+899
+00:45:57,920 --> 00:46:00,710
+编程接口看起来不是
+programming interface looks like is not
+
+900
+00:46:00,710 --> 00:46:03,500
+我们的生意，但这不是和
+our business but this is either and
+
+901
+00:46:03,500 --> 00:46:05,000
+对于什么有两种选择
+there's there's two options for what
+
+902
+00:46:05,000 --> 00:46:07,160
+这实际上意味着
+this actually means as far as what the
+
+903
+00:46:07,160 --> 00:46:09,230
+程序看起来像是有一些
+program looks like one is there's some
+
+904
+00:46:09,230 --> 00:46:11,930
+实际上处于同步状态的线程
+thread that's actually in a synchronous
+
+905
+00:46:11,930 --> 00:46:13,820
+等等，它已经进行了一个函数调用，说明
+wait it's made a function call saying
+
+906
+00:46:13,820 --> 00:46:14,870
+请获取此锁和
+please acquire this lock and the
+
+907
+00:46:14,870 --> 00:46:16,130
+函数HOLD不会返回，直到
+function hold doesn't return until the
+
+908
+00:46:16,130 --> 00:46:17,840
+最终获取的锁或
+locks finally acquired or the
+
+909
+00:46:17,840 --> 00:46:20,330
+通知返回的内容要多得多
+notification comes back of much more
+
+910
+00:46:20,330 --> 00:46:22,070
+复杂的界面将是一个
+sophisticated interface would being one
+
+911
+00:46:22,070 --> 00:46:23,810
+在这种情况下，您可以发出请求，而不是
+in which you fire off requests a
+
+912
+00:46:23,810 --> 00:46:25,850
+动物园管理员，不要再等了
+zookeeper and don't wait and then
+
+913
+00:46:25,850 --> 00:46:28,280
+分开来看，有一些方式
+separately there's some way of seeing
+
+914
+00:46:28,280 --> 00:46:29,720
+好吧，你信守诺言
+well as you keep your said anything
+
+915
+00:46:29,720 --> 00:46:32,960
+最近还是我有一些围棋的例行公事
+recently or I have some go routine whose
+
+916
+00:46:32,960 --> 00:46:34,420
+工作就是等待下一份工作
+job it is just wait for the next
+
+917
+00:46:34,420 --> 00:46:36,980
+不管是动物园管理员送来的什么
+whatever it is from zookeeper in the
+
+918
+00:46:36,980 --> 00:46:39,080
+同样的感觉，你可能会读到申请表
+same sense that you might read the apply
+
+919
+00:46:39,080 --> 00:46:40,370
+频道和各式各样的
+Channel and just all kinds of
+
+920
+00:46:40,370 --> 00:46:41,690
+有趣的事情会在申请中出现
+interesting stuff comes up on the apply
+
+921
+00:46:41,690 --> 00:46:44,300
+所以这是一种更有可能的方式
+channel so that's a more likely way to
+
+922
+00:46:44,300 --> 00:46:45,680
+构建这个，但是，是的，你完全是
+structure this but yeah you're totally
+
+923
+00:46:45,680 --> 00:46:48,980
+不管是通过穿线，还是通过某种
+either through threading or some sort of
+
+924
+00:46:48,980 --> 00:46:51,050
+事件驱动的事情你可以做一些事情
+event-driven thing you can do something
+
+925
+00:46:51,050 --> 00:47:06,500
+否则在你等待的时候是的是的或者如果
+else while you're waiting yes yes or if
+
+926
+00:47:06,500 --> 00:47:11,690
+在我之前的那个人也没有死
+the person before me has neither died
+
+927
+00:47:11,690 --> 00:47:17,060
+也没有公布，这是我面前的一份文件
+nor released it's a file before me
+
+928
+00:47:17,060 --> 00:47:20,870
+存在，这意味着要么该客户端
+exists that means either that client is
+
+929
+00:47:20,870 --> 00:47:22,640
+还活着，还在等待
+still alive and still waiting for the
+
+930
+00:47:22,640 --> 00:47:25,670
+锁上或仍然活着并握住锁
+lock or still alive and holds the lock
+
+931
+00:47:25,670 --> 00:47:28,540
+我们真的不知道
+we don't really know
+
+932
+00:47:35,510 --> 00:47:38,520
+只要客户端500
+it does it as long as that client 500
+
+933
+00:47:38,520 --> 00:47:42,240
+如果此存在失败，则仍处于活动状态
+still live if if this exists fails that
+
+934
+00:47:42,240 --> 00:47:43,740
+意味着两件事中的一件，要么是我的
+means one of two things either my
+
+935
+00:47:43,740 --> 00:47:45,150
+前任持有锁并且是
+predecessor held the lock and is
+
+936
+00:47:45,150 --> 00:47:47,670
+释放它并删除他们的文件或我的
+released it and deleted their file or my
+
+937
+00:47:47,670 --> 00:47:49,620
+前辈没有持有他们的锁
+predecessor didn't hold the lock they
+
+938
+00:47:49,620 --> 00:47:52,880
+已退出，动物园管理员删除了他们的文件
+exited and zookeeper deleted their file
+
+939
+00:47:52,880 --> 00:47:55,350
+因为这是一个短暂的文件，所以
+because it was an ephemeral file so
+
+940
+00:47:55,350 --> 00:47:58,700
+从这件事中走出来有两个原因
+there's two reasons to come out of this
+
+941
+00:47:58,700 --> 00:48:01,680
+才能减掉他的一两个体重
+to come out of his weight or four they
+
+942
+00:48:01,680 --> 00:48:03,690
+存在是为了返回假，这就是为什么我们
+exist to return false and that's why we
+
+943
+00:48:03,690 --> 00:48:08,520
+你得喜欢我们检查你的一切
+have to like we check everything you
+
+944
+00:48:08,520 --> 00:48:09,660
+我知道你真的不知道
+know you really don't know what the
+
+945
+00:48:09,660 --> 00:48:13,700
+情况是在EXISTS完成之后
+situation is after the exists completes
+
+946
+00:48:30,230 --> 00:48:32,670
+那可能是，对，也许是那样
+that might that yeah maybe maybe that
+
+947
+00:48:32,670 --> 00:48:33,720
+可能需要工作，这听起来
+could need to work that sounds
+
+948
+00:48:33,720 --> 00:48:34,770
+合理的
+reasonable
+
+949
+00:48:34,770 --> 00:48:38,010
+并且它保留了可伸缩的
+and it preserves the sort of scalable
+
+950
+00:48:38,010 --> 00:48:39,990
+每个人都需要这个和那个的性质
+nature of this and that each require
+
+951
+00:48:39,990 --> 00:48:43,770
+版本仅涉及几个客户端两个
+release only involves a few clients two
+
+952
+00:48:43,770 --> 00:48:45,980
+客户端
+clients
+
+953
+00:48:48,940 --> 00:48:52,760
+好的，实际上我喜欢这个式样。
+alright this pattern to me actually
+
+954
+00:48:52,760 --> 00:48:54,350
+第一次看到这个图案完全是
+first saw this pattern a totally
+
+955
+00:48:54,350 --> 00:48:56,930
+不同的上下文和可伸缩的锁
+different context and scalable locks for
+
+956
+00:48:56,930 --> 00:49:01,100
+线程系统，我把这一端放在这里
+threading systems I go this end in for
+
+957
+00:49:01,100 --> 00:49:02,450
+在世界上的大多数地方，这被称为天平
+most of the world this is called a scale
+
+958
+00:49:02,450 --> 00:49:04,870
+一把锁的
+of a lock
+
+959
+00:49:10,220 --> 00:49:12,650
+我发现它是那些有趣的东西之一
+I find it one of those interesting
+
+960
+00:49:12,650 --> 00:49:18,740
+我现在所见过的建筑
+constructions I've ever seen now and so
+
+961
+00:49:18,740 --> 00:49:20,780
+好像我印象深刻的是动物园管理员
+like I'm impressed that zookeeper is
+
+962
+00:49:20,780 --> 00:49:22,970
+能够表达它，而且它是一个有价值的
+able to express it and it's a valuable
+
+963
+00:49:22,970 --> 00:49:28,310
+我说过我有一点
+construct having said that I'm a little
+
+964
+00:49:28,310 --> 00:49:31,520
+有点不知所措，为什么动物园管理员会问为什么
+bit at sea about why zookeeper about why
+
+965
+00:49:31,520 --> 00:49:33,100
+报纸上谈到的都是锁
+the paper talks about locks at all
+
+966
+00:49:33,100 --> 00:49:38,690
+因为这些锁这些锁不是
+because these locks these locks are not
+
+967
+00:49:38,690 --> 00:49:41,900
+就像穿线锁一样，因为在
+like threading locks and go because in
+
+968
+00:49:41,900 --> 00:49:43,430
+线程没有线程的概念
+threading there's no notion of threads
+
+969
+00:49:43,430 --> 00:49:45,230
+失败至少在你不想要他们的时候
+failing at least if you don't want them
+
+970
+00:49:45,230 --> 00:49:46,520
+可能没有任何关于
+there to be there's no notions of
+
+971
+00:49:46,520 --> 00:49:48,170
+线条就像是随机死亡的
+threads just sort of randomly dying and
+
+972
+00:49:48,170 --> 00:49:50,000
+去吧，所以你唯一能做的就是
+go and so really the only thing you're
+
+973
+00:49:50,000 --> 00:49:52,430
+从互斥体中走出来真的是
+getting out of a mutex it's really the
+
+974
+00:49:52,430 --> 00:49:54,680
+当你使用它的时候，如果你用它的话
+case and go that when you use it if
+
+975
+00:49:54,680 --> 00:49:56,990
+每个人都正确使用互斥锁你是
+everybody uses mutexes correctly you are
+
+976
+00:49:56,990 --> 00:49:59,260
+获取序列的原子性
+getting atomicity for the sequence of
+
+977
+00:49:59,260 --> 00:50:02,210
+操作的互斥锁内的操作，您可以在互斥锁中
+operations inside the mutex that you
+
+978
+00:50:02,210 --> 00:50:04,760
+我知道如果你拿出一把锁
+know if you take out a lock and go and
+
+979
+00:50:04,760 --> 00:50:06,590
+你要做47种不同的读写
+you do 47 different read and write a lot
+
+980
+00:50:06,590 --> 00:50:07,820
+，然后释放锁。
+of variables and then release the lock
+
+981
+00:50:07,820 --> 00:50:09,350
+如果每个人都遵循那个锁
+if everybody follows that locking
+
+982
+00:50:09,350 --> 00:50:12,560
+策略没人会看到
+strategy nobody's ever going to see some
+
+983
+00:50:12,560 --> 00:50:14,480
+一种奇怪的中间版本
+sort of weird intermediate version of
+
+984
+00:50:14,480 --> 00:50:16,430
+截止到一半的数据你是
+the data as of halfway through you're
+
+985
+00:50:16,430 --> 00:50:18,170
+正确地更新它只会让事情变得
+updating it right just makes things
+
+986
+00:50:18,170 --> 00:50:20,900
+原子无参数这些锁不是
+atomic no argument these locks aren't
+
+987
+00:50:20,900 --> 00:50:22,820
+真的很喜欢，因为如果客户
+really like that because if the client
+
+988
+00:50:22,820 --> 00:50:25,550
+持有锁的那个失败了，它只是
+that holds the lock fails it just
+
+989
+00:50:25,550 --> 00:50:28,310
+释放锁，其他人就可以
+releases the lock and somebody else can
+
+990
+00:50:28,310 --> 00:50:30,350
+把锁拿起来，这样它就不会
+pick up the lock so it does not
+
+991
+00:50:30,350 --> 00:50:33,410
+保证原子性，因为您可以获得
+guarantee atomicity because you can get
+
+992
+00:50:33,410 --> 00:50:35,300
+部分故障与分布式系统
+partial failures and distributed systems
+
+993
+00:50:35,300 --> 00:50:37,730
+在那里你不会真的偏袒
+where you don't really get partial
+
+994
+00:50:37,730 --> 00:50:41,510
+普通线程代码的失败，因此如果
+failures of ordinary threaded code so if
+
+995
+00:50:41,510 --> 00:50:43,700
+现在的锁持有者有锁，
+the current lock holder had the lock and
+
+996
+00:50:43,700 --> 00:50:45,470
+需要更新一大堆东西
+needed to update a whole bunch of things
+
+997
+00:50:45,470 --> 00:50:46,910
+它们以前被锁保护过
+that were protected by that lock before
+
+998
+00:50:46,910 --> 00:50:48,860
+放飞，只走了一半
+releasing and only got halfway through
+
+999
+00:50:48,860 --> 00:50:51,250
+更新了这些东西，然后崩溃了
+updating this stuff and then crashed
+
+1000
+00:50:51,250 --> 00:50:53,420
+然后锁就会被释放你会
+then the lock will get released you'll
+
+1001
+00:50:53,420 --> 00:50:55,760
+拿到锁，但当你去看的时候
+get the lock and yet when you go to look
+
+1002
+00:50:55,760 --> 00:50:58,760
+在数据上它是垃圾，因为它是
+at the data it's garbage because it's
+
+1003
+00:50:58,760 --> 00:51:00,380
+不管它是什么随机的种子
+just whatever random seed it was in the
+
+1004
+00:51:00,380 --> 00:51:00,849
+中间
+middle of
+
+1005
+00:51:00,849 --> 00:51:04,599
+已更新，因此这些锁不会
+updated so there's these locks don't by
+
+1006
+00:51:04,599 --> 00:51:06,519
+它们本身提供了相同的原子性
+themselves provide the same atomicity
+
+1007
+00:51:06,519 --> 00:51:09,910
+保证线程锁可以这样做，因此
+guarantee that threading locks do and so
+
+1008
+00:51:09,910 --> 00:51:11,410
+我们在某种程度上可以想象
+we're sort of left to imagine for
+
+1009
+00:51:11,410 --> 00:51:13,269
+我们靠报纸或者为什么你会
+ourselves by the paper or why you would
+
+1010
+00:51:13,269 --> 00:51:15,069
+想要使用它们，或者为什么要使用这种类型
+want to use them or why this is the sort
+
+1011
+00:51:15,069 --> 00:51:16,960
+中的一些主要示例
+of some of the main examples in the
+
+1012
+00:51:16,960 --> 00:51:21,130
+所以我想如果你用像这样的锁
+paper so I think if you use locks like
+
+1013
+00:51:21,130 --> 00:51:22,539
+然后，您可以在分布式的
+this then you sort in a distributed
+
+1014
+00:51:22,539 --> 00:51:24,849
+系统，那么您有两个常规选项
+system then you have two general options
+
+1015
+00:51:24,849 --> 00:51:28,239
+一是每个获得锁的人都有
+one is everybody who acquires a lock has
+
+1016
+00:51:28,239 --> 00:51:30,849
+准备好清理一些
+to be prepared to clean up from some
+
+1017
+00:51:30,849 --> 00:51:33,339
+以前的灾难权利，所以您可以获得
+previous disaster right so you acquire
+
+1018
+00:51:33,339 --> 00:51:35,440
+此锁可查看您尝试的数据
+this lock you look at the data you try
+
+1019
+00:51:35,440 --> 00:51:37,630
+去找出天哪，如果以前的主人
+to figure out gosh if the previous owner
+
+1020
+00:51:37,630 --> 00:51:38,799
+一大堆坠毁的东西
+of a lot crashed
+
+1021
+00:51:38,799 --> 00:51:41,849
+你知道当我在看数据的时候
+you know when I'm looking at the data
+
+1022
+00:51:41,849 --> 00:51:44,259
+你知道我怎么才能把数据修改成
+you know how can I fix the data to make
+
+1023
+00:51:44,259 --> 00:51:46,269
+我怎么才能决定之前的
+up how can I decide if the previous
+
+1024
+00:51:46,269 --> 00:51:48,549
+车主崩溃了，我该怎么修理呢？
+owner crashed and what do I do to fix up
+
+1025
+00:51:48,549 --> 00:51:51,970
+然后你就可以玩这个游戏了
+the data and you can play that game
+
+1026
+00:51:51,970 --> 00:51:55,539
+特别是如果约定是你
+especially if the convention is that you
+
+1027
+00:51:55,539 --> 00:51:57,099
+始终按特定顺序更新
+always update in a particular sequence
+
+1028
+00:51:57,099 --> 00:51:58,900
+你也许能检测到它的位置
+you may be able to detect where in that
+
+1029
+00:51:58,900 --> 00:52:00,549
+前一个托架崩溃的顺序
+sequence the previous holder crashed
+
+1030
+00:52:00,549 --> 00:52:04,569
+假设他们坠毁了，但那是一个你
+assuming they crashed but it's a you
+
+1031
+00:52:04,569 --> 00:52:05,710
+我知道这是一场棘手的比赛
+know it's a tricky game the requires
+
+1032
+00:52:05,710 --> 00:52:07,869
+想出一种你不需要的东西
+thought of a kind you don't need for
+
+1033
+00:52:07,869 --> 00:52:10,690
+就像线程锁定，嗯，另一个原因
+like thread locking um the other reason
+
+1034
+00:52:10,690 --> 00:52:12,660
+也许这些锁是有意义的，如果
+maybe these locks would make sense is if
+
+1035
+00:52:12,660 --> 00:52:16,269
+有一种软锁可以保护
+there's sort of soft locks protecting
+
+1036
+00:52:16,269 --> 00:52:17,710
+一些真正无关紧要的事情
+something that doesn't really matter
+
+1037
+00:52:17,710 --> 00:52:20,259
+例如，如果您正在运行
+so for example if you're running
+
+1038
+00:52:20,259 --> 00:52:24,029
+MapReduce作业地图任务减少任务
+MapReduce jobs map tasks reduce tasks
+
+1039
+00:52:24,029 --> 00:52:26,710
+你可以用这种锁来做
+you could use this kind of lock to make
+
+1040
+00:52:26,710 --> 00:52:30,640
+当然，只有一项任务，只有一名工人
+sure only one task only one worker
+
+1041
+00:52:30,640 --> 00:52:33,160
+执行了每项任务，所以工作人员将运行
+executed each task so workers gonna run
+
+1042
+00:52:33,160 --> 00:52:36,089
+测试37它获得任务37的锁
+test 37 it gets the lock for task 37
+
+1043
+00:52:36,089 --> 00:52:38,440
+Execute它将其标记为已执行，并且
+execute it marks it as executed and
+
+1044
+00:52:38,440 --> 00:52:42,160
+以不生产的方式很好地释放它
+releases it well the way not produce
+
+1045
+00:52:42,160 --> 00:52:44,469
+它实际上是用来证明
+works it's actually proof against
+
+1046
+00:52:44,469 --> 00:52:49,809
+不管怎么说，撞车的工人，所以如果你抓住一个
+crashed workers anyway so if you grab a
+
+1047
+00:52:49,809 --> 00:52:51,160
+锁住了，然后你在半路上撞车了
+lock and you crash halfway through your
+
+1048
+00:52:51,160 --> 00:52:53,440
+MapReduce工作，那么下一个人会是什么呢
+MapReduce job so what the next person
+
+1049
+00:52:53,440 --> 00:52:55,239
+谁拿到了你知道的锁，因为你的
+who gets the lock you know because your
+
+1050
+00:52:55,239 --> 00:52:56,589
+当您崩溃时，锁将被释放
+lock will be released when you crash the
+
+1051
+00:52:56,589 --> 00:52:57,670
+拿到它的下一个版本将会看到您
+next version who gets it will see you
+
+1052
+00:52:57,670 --> 00:52:59,529
+没有完成任务，只有我们
+didn't finish the task and just we
+
+1053
+00:52:59,529 --> 00:53:01,539
+执行它，这就不是问题了
+execute it and it's just not a problem
+
+1054
+00:53:01,539 --> 00:53:03,960
+由于MapReduce的定义方式
+because of the way MapReduce is defined
+
+1055
+00:53:03,960 --> 00:53:05,979
+所以你可以用这些锁或者一些
+so you could use these locks or some
+
+1056
+00:53:05,979 --> 00:53:09,130
+一种软锁的东西，尽管不管怎样
+kind of soft lock thing although anyway
+
+1057
+00:53:09,130 --> 00:53:11,259
+你知道也许另一件事就是
+and you know maybe the other thing which
+
+1058
+00:53:11,259 --> 00:53:13,150
+我们应该考虑的是一些
+we should be thinking about is that some
+
+1059
+00:53:13,150 --> 00:53:14,170
+此版本的
+version of this
+
+1060
+00:53:14,170 --> 00:53:17,620
+被用来做像选举大师这样的事情
+be used to do things like elect a master
+
+1061
+00:53:17,620 --> 00:53:19,300
+但如果我们真正在这里做的是
+but if what we're really doing here is
+
+1062
+00:53:19,300 --> 00:53:22,510
+选举一位大师，你知道我们可以用
+electing a master you know we could use
+
+1063
+00:53:22,510 --> 00:53:23,890
+代码很像这样，那样就会
+code much like this and that would
+
+1064
+00:53:23,890 --> 00:53:25,570
+可能是个合理的方法是的
+probably be a reasonable approach yeah
+
+1065
+00:53:25,570 --> 00:53:42,280
+哦，好的，那么采摘
+oh yeah yeah yeah so the picking of
+
+1066
+00:53:42,280 --> 00:53:43,870
+纸质谈话，记住课文中的内容
+paper talk that remember the text in the
+
+1067
+00:53:43,870 --> 00:53:45,790
+报纸Ware说它将删除
+paper were says it's going to delete the
+
+1068
+00:53:45,790 --> 00:53:47,800
+准备好文件，然后做一堆
+ready file and then do a bunch of
+
+1069
+00:53:47,800 --> 00:53:49,960
+更新文件，然后重新创建
+updates to files and then recreate the
+
+1070
+00:53:49,960 --> 00:53:51,780
+准备好的文件，这将是一个
+ready file that would that is a
+
+1071
+00:53:51,780 --> 00:53:55,270
+一种奇妙的侦测方式
+fantastic way of sort of detecting and
+
+1072
+00:53:55,270 --> 00:53:57,250
+应对这样一种可能性，即
+coping with the possibility that the
+
+1073
+00:53:57,250 --> 00:53:58,930
+持有的上一个锁或上一个锁
+previous lock held or the previous
+
+1074
+00:53:58,930 --> 00:54:01,000
+师父或它在半路上坠毁的任何人
+master or whoever it is crashed halfway
+
+1075
+00:54:01,000 --> 00:54:02,620
+因为天哪，准备好的文件里有
+through because gosh the ready file has
+
+1076
+00:54:02,620 --> 00:54:05,520
+永不创建
+never be created
+
+1077
+00:54:18,400 --> 00:54:21,740
+伊尼戈计划，是的，很遗憾，那是
+Inigo program yeah sadly that is
+
+1078
+00:54:21,740 --> 00:54:25,490
+有可能，你要么知道，要么好的，所以
+possible and you know either okay so the
+
+1079
+00:54:25,490 --> 00:54:27,560
+问题不是关于动物园管理员，而是
+question is nothing about zookeeper but
+
+1080
+00:54:27,560 --> 00:54:29,330
+如果您正在编写线程化代码并执行
+if you're writing threaded code and go a
+
+1081
+00:54:29,330 --> 00:54:32,240
+线程获取锁是否会崩溃
+thread acquires a lock could it crash
+
+1082
+00:54:32,240 --> 00:54:34,490
+在中途握住锁的同时
+while holding the lock halfway through
+
+1083
+00:54:34,490 --> 00:54:37,250
+不管它应该做什么
+whatever stuff it's supposed to be doing
+
+1084
+00:54:37,250 --> 00:54:38,420
+同时拿着一把锁，答案是
+while holding a lock and the answer is
+
+1085
+00:54:38,420 --> 00:54:40,100
+是的，实际上有很多方法
+yes actually there are there are ways
+
+1086
+00:54:40,100 --> 00:54:42,830
+使单个线程崩溃并离开
+for an individual thread to crash and go
+
+1087
+00:54:42,830 --> 00:54:45,050
+哦，我忘了他们在哪里，也许会分开
+oh I forget where they are maybe divide
+
+1088
+00:54:45,050 --> 00:54:48,410
+通过零，某些恐慌不管怎样，你能做的
+by zero certain panics anyway you can do
+
+1089
+00:54:48,410 --> 00:54:54,800
+它和我关于如何思考的建议
+it and my advice about how to think
+
+1090
+00:54:54,800 --> 00:54:56,990
+关于这一点的是，这个项目现在是
+about that is that the program is now
+
+1091
+00:54:56,990 --> 00:55:00,280
+坏了，你必须杀了它，因为
+broken and you've got to kill it because
+
+1092
+00:55:00,280 --> 00:55:02,930
+在线程化代码中，关于
+in threaded code the way the thing about
+
+1093
+00:55:02,930 --> 00:55:06,770
+锁是指在持有锁的同时，
+locks is that while the lock is held the
+
+1094
+00:55:06,770 --> 00:55:09,850
+数据中的不变量并非如此
+invariants in the data don't hold so
+
+1095
+00:55:09,850 --> 00:55:12,890
+如果锁被锁住了，我们就不能继续前进了
+there's no way to proceed if the lock
+
+1096
+00:55:12,890 --> 00:55:15,350
+霍尔德坠毁了，没有安全的方法可以
+holder crashes there's no safe way to
+
+1097
+00:55:15,350 --> 00:55:17,480
+继续，因为你所知道的一切都是
+proceed because all you know is whatever
+
+1098
+00:55:17,480 --> 00:55:18,860
+不变量是锁是
+the invariants were that the lock was
+
+1099
+00:55:18,860 --> 00:55:23,660
+保护不再持有某某某某
+protecting no longer hold so and so and
+
+1100
+00:55:23,660 --> 00:55:24,890
+如果您确实想继续，您必须
+if you do want to proceed you have to
+
+1101
+00:55:24,890 --> 00:55:27,410
+将锁标记为持有，这样就不会
+leave the lock marked as held so that no
+
+1102
+00:55:27,410 --> 00:55:29,170
+其他人永远都不会得到它
+one else will ever be able to acquire it
+
+1103
+00:55:29,170 --> 00:55:31,820
+你知道除非你有一些聪明的
+and you know unless you have some clever
+
+1104
+00:55:31,820 --> 00:55:33,350
+这几乎就是你所拥有的方式
+idea that's pretty much the way you have
+
+1105
+00:55:33,350 --> 00:55:35,120
+在线程化程序中考虑它
+to think about it in a threaded program
+
+1106
+00:55:35,120 --> 00:55:37,130
+因为这是一种
+because that's kind of the style with
+
+1107
+00:55:37,130 --> 00:55:38,270
+哪些人编写线程锁
+which people write threaded lock
+
+1108
+00:55:38,270 --> 00:55:40,340
+程序，如果你超级聪明的话
+programs if you're super clever you
+
+1109
+00:55:40,340 --> 00:55:44,780
+可以玩同样的把戏，比如
+could play the same kinds of tricks like
+
+1110
+00:55:44,780 --> 00:55:49,310
+这个准备好的旗帜戏法现在太棒了
+this ready flag trick now it's super
+
+1111
+00:55:49,310 --> 00:55:51,110
+硬着头皮，因为内存模型
+hard and go because the memory model
+
+1112
+00:55:51,110 --> 00:55:54,430
+他说你没有什么可以依靠的
+says there is nothing you can count on
+
+1113
+00:55:54,430 --> 00:55:56,630
+除非之前发生过
+except if there's a happens before
+
+1114
+00:55:56,630 --> 00:55:59,120
+所以如果你玩这个游戏
+relationship so if you play this game of
+
+1115
+00:55:59,120 --> 00:56:00,950
+编写更改一些变量，然后
+writing changing some variables and then
+
+1116
+00:56:00,950 --> 00:56:04,760
+设置完成标志并不意味着
+setting a done flag that doesn't mean
+
+1117
+00:56:04,760 --> 00:56:08,000
+什么都行，除非你松开一把锁
+anything unless you release a lock and
+
+1118
+00:56:08,000 --> 00:56:10,580
+其他人获得了锁，并且只有
+somebody else acquires a lock and only
+
+1119
+00:56:10,580 --> 00:56:13,190
+那我们还能说些什么吗？
+then can anything be said about the
+
+1120
+00:56:13,190 --> 00:56:15,530
+按哪种顺序，甚至是按哪种顺序
+order in which or in even whether the
+
+1121
+00:56:15,530 --> 00:56:18,280
+更新会发生，所以这非常非常困难
+updates happen so this is very very hard
+
+1122
+00:56:18,280 --> 00:56:21,550
+它非常努力，要从一场灾难中恢复过来
+it rivairy hard and go to recover from a
+
+1123
+00:56:21,550 --> 00:56:25,180
+持有锁的线程崩溃
+crash of a thread that holds the lock
+
+1124
+00:56:25,180 --> 00:56:30,420
+这里可能更有可能
+here is maybe a little more possible
+
+1125
+00:56:31,170 --> 00:56:42,040
+好的，我想说的就这些。
+okay okay okay that's all I want to talk
+
+1126
+00:56:42,040 --> 00:56:44,339
+关于动物园管理员
+about with zoo keeper
+
+1127
+00:56:44,339 --> 00:56:46,720
+只有两件高价出价一件是
+it's just two pieces of high bid one is
+
+1128
+00:56:46,720 --> 00:56:48,400
+在这些高中生的聪明点子上
+at these clever ideas for high
+
+1129
+00:56:48,400 --> 00:56:50,079
+通过从任何复制副本读取来提高性能
+performance by reading from any replica
+
+1130
+00:56:50,079 --> 00:56:52,630
+但是他们牺牲了一点
+but the they sacrifice a bit of
+
+1131
+00:56:52,630 --> 00:56:55,720
+一致性和其他有趣的
+consistency and the other interesting
+
+1132
+00:56:55,720 --> 00:56:57,280
+乏味的是带回家的是
+thing uninteresting take-home is that
+
+1133
+00:56:57,280 --> 00:56:59,079
+他们制定了这个API，真的
+they worked out this API that really
+
+1134
+00:56:59,079 --> 00:57:02,559
+让它们成为一种通用的类型
+does let them be a general-purpose sort
+
+1135
+00:57:02,559 --> 00:57:04,900
+协调服务的一种方式
+of coordination service in a way that
+
+1136
+00:57:04,900 --> 00:57:06,819
+更简单的方案，如PUT、GET接口
+simpler schemes like put get interfaces
+
+1137
+00:57:06,819 --> 00:57:09,220
+只是做不到，所以他们想出了一套
+just can't do so they worked out a set
+
+1138
+00:57:09,220 --> 00:57:11,559
+一系列函数，使您可以执行以下操作
+of functions here that allows you to do
+
+1139
+00:57:11,559 --> 00:57:13,630
+写小事务和写小事务之类的事情
+things like write mini transactions and
+
+1140
+00:57:13,630 --> 00:57:15,940
+自己造锁，一切都能正常工作
+build your own locks and it all works
+
+1141
+00:57:15,940 --> 00:57:22,569
+虽然需要照顾，但现在好了，我
+out although requires care okay now I
+
+1142
+00:57:22,569 --> 00:57:24,670
+我想看看今天的报纸，它是
+want to turn to today's paper which is
+
+1143
+00:57:24,670 --> 00:57:34,150
+破解我们为什么要读一本
+crack the the reason why we're reading a
+
+1144
+00:57:34,150 --> 00:57:39,040
+破解纸有几个原因其中一个是
+crack paper it's a couple reasons one is
+
+1145
+00:57:39,040 --> 00:57:41,319
+是它为以下对象进行复制
+is that it's it does replication for
+
+1146
+00:57:41,319 --> 00:57:43,599
+容错，正如我们将看到的
+fault tolerance and as we'll see the
+
+1147
+00:57:43,599 --> 00:57:46,750
+你从裂缝中获得的属性或者它的
+properties you get out of crack or its
+
+1148
+00:57:46,750 --> 00:57:49,450
+前驱链复制是非常重要的
+predecessor chain replication are very
+
+1149
+00:57:49,450 --> 00:57:52,750
+在有趣的方面不同于
+different in interesting ways from the
+
+1150
+00:57:52,750 --> 00:57:54,160
+您从系统中获得的属性，如
+properties you get out of a system like
+
+1151
+00:57:54,160 --> 00:57:58,630
+木筏，所以我现在要讲的是
+raft and so I'm actually going to talk
+
+1152
+00:57:58,630 --> 00:58:00,250
+所以可卡因在某种程度上是一种
+about so crack is sort of an
+
+1153
+00:58:00,250 --> 00:58:01,809
+对较旧的方案进行优化，该方案称为
+optimization to an older scheme called
+
+1154
+00:58:01,809 --> 00:58:08,950
+链复制链复制
+chain replication chain replications
+
+1155
+00:58:08,950 --> 00:58:11,079
+实际上相当频繁地用在
+actually fairly frequently used in the
+
+1156
+00:58:11,079 --> 00:58:12,460
+现实世界里有一堆系统
+real world there's a bunch of systems
+
+1157
+00:58:12,460 --> 00:58:14,400
+使用它的人
+that use it
+
+1158
+00:58:14,400 --> 00:58:16,930
+裂缝是对它的优化
+crack is an optimization to it that
+
+1159
+00:58:16,930 --> 00:58:18,609
+实际上做了一个类似的把戏-
+actually does a similar trick -
+
+1160
+00:58:18,609 --> 00:58:20,109
+动物园管理员在那里它试图增加
+zookeeper where it's trying to increase
+
+1161
+00:58:20,109 --> 00:58:24,910
+通过允许读取两次来消除吞吐量
+weed throughput by allowing reads to two
+
+1162
+00:58:24,910 --> 00:58:26,770
+复制到任何副本，这样您就可以
+replicas to any replicas so that you get
+
+1163
+00:58:26,770 --> 00:58:29,589
+你知道复制品的数量因素
+you know number of replicas factor of
+
+1164
+00:58:29,589 --> 00:58:32,319
+提高了读取性能
+increase in the read performance the
+
+1165
+00:58:32,319 --> 00:58:34,630
+可卡因的有趣之处在于它
+interesting thing about crack is that it
+
+1166
+00:58:34,630 --> 00:58:39,760
+是不是在保存的同时
+does that while preserving
+
+1167
+00:58:39,760 --> 00:58:41,420
+线性化能力
+linearise ability
+
+1168
+00:58:41,420 --> 00:58:43,520
+不像你知道的动物园管理员
+unlike zookeeper which you know it
+
+1169
+00:58:43,520 --> 00:58:44,720
+似乎是为了能够阅读
+seemed like in order to be able to read
+
+1170
+00:58:44,720 --> 00:58:46,070
+从他们不得不牺牲的任何复制品中
+from any replica they had to sacrifice
+
+1171
+00:58:46,070 --> 00:58:47,690
+清新，因此流鼻涕
+freshness and therefore snot
+
+1172
+00:58:47,690 --> 00:58:50,590
+可线性化的裂缝实际上设法
+linearizable crack actually manages to
+
+1173
+00:58:50,590 --> 00:58:53,870
+在以下情况下从任何复制副本执行这些读取
+do these reads from any replica while
+
+1174
+00:58:53,870 --> 00:58:56,150
+保持强烈的一致性，我只是
+preserving strong consistency I'm just
+
+1175
+00:58:56,150 --> 00:59:00,290
+很有趣，好的，所以首先我想
+pretty interesting okay so first I want
+
+1176
+00:59:00,290 --> 00:59:01,790
+谈论较旧的系统链
+to talk about the older system chain
+
+1177
+00:59:01,790 --> 00:59:10,010
+复制青少年复制是它的
+replication teen replication is a it's
+
+1178
+00:59:10,010 --> 00:59:11,990
+这只是一个方案，因为你有多个
+just a scheme for you have multiple
+
+1179
+00:59:11,990 --> 00:59:13,220
+您要确保它们都是副本的副本
+copies you want to make sure they all
+
+1180
+00:59:13,220 --> 00:59:14,750
+看到了相同的权利序列，所以它是
+seen the same sequence of right so it's
+
+1181
+00:59:14,750 --> 00:59:17,690
+像是一个非常熟悉的基本概念，但它
+like a very familiar basic idea but it's
+
+1182
+00:59:17,690 --> 00:59:21,410
+一个不同的拓扑，然后是筏子，因此
+a different topology then raft so the
+
+1183
+00:59:21,410 --> 00:59:25,640
+想法是有一个服务器链
+idea is that there's a chain of servers
+
+1184
+00:59:25,640 --> 00:59:29,480
+和链式复制，第一个
+and chain replication and the first one
+
+1185
+00:59:29,480 --> 00:59:32,900
+被称为最前面的，最后一个被称为
+is called the head last one's called the
+
+1186
+00:59:32,900 --> 00:59:36,890
+当右手进入时尾部，当客户端
+tail when a right comes in when a client
+
+1187
+00:59:36,890 --> 00:59:39,430
+想写点什么，比如某个客户
+wants to write something say some client
+
+1188
+00:59:39,430 --> 00:59:42,380
+它总是把奥尔布赖特的被送到
+it sends always Albright's get sent to
+
+1189
+00:59:42,380 --> 00:59:46,490
+磁头更新它的或
+the head the head updates its or
+
+1190
+00:59:46,490 --> 00:59:48,410
+替换其数据的当前副本
+replaces its current copy of the data
+
+1191
+00:59:48,410 --> 00:59:49,820
+客户写信给你这样你就可以
+that the clients writing so you can
+
+1192
+00:59:49,820 --> 00:59:54,650
+想象一下，你要把密钥值存储起来，这样你
+imagine be go put key value store so you
+
+1193
+00:59:54,650 --> 00:59:56,600
+如果每个人都是从你开始的
+know if everybody started out with you
+
+1194
+00:59:56,600 --> 00:59:58,940
+了解数据的a版和以下版本
+know version a of the data and under
+
+1195
+00:59:58,940 --> 01:00:01,220
+头部处理时的链复制
+chain replication when the head process
+
+1196
+01:00:01,220 --> 01:00:02,540
+是正确的，也许我们在写
+is the right and maybe we're writing
+
+1197
+01:00:02,540 --> 01:00:04,550
+价值B，你知道头部只是取代了
+value B you know the head just replaces
+
+1198
+01:00:04,550 --> 01:00:07,760
+A带B，向下传右
+its a with a B and passes the right down
+
+1199
+01:00:07,760 --> 01:00:11,150
+链，因为每个节点都看到它的右边
+the chain as each node sees the right it
+
+1200
+01:00:11,150 --> 01:00:13,930
+替换覆盖其拷贝的数据
+replaces over writes its copy the data
+
+1201
+01:00:13,930 --> 01:00:17,270
+当权限获得时的新数据
+the new data when the right gets the
+
+1202
+01:00:17,270 --> 01:00:21,710
+尾部将回复发送回
+tail the tail sends the reply back to
+
+1203
+01:00:21,710 --> 01:00:23,450
+客户说我们完成了你的
+the client saying we completed your
+
+1204
+01:00:23,450 --> 01:00:25,270
+正确的
+right
+
+1205
+01:00:25,270 --> 01:00:30,950
+这就是权利工作的内容，如果一个客户
+that's how rights work reads if a client
+
+1206
+01:00:30,950 --> 01:00:33,500
+想要执行它将读取发送到的读取
+wants to do a read it sends the read to
+
+1207
+01:00:33,500 --> 01:00:35,870
+尾部表示尾部的读取请求
+the tail the read request of the tail
+
+1208
+01:00:35,870 --> 01:00:38,150
+它的尾巴就会从它的
+and the tail just answers out of its
+
+1209
+01:00:38,150 --> 01:00:40,310
+当前状态，所以如果我们要求这样做
+current state so if we ask for this
+
+1210
+01:00:40,310 --> 01:00:42,260
+不管这个物体是什么，它的尾巴
+whatever this object was the tail which
+
+1211
+01:00:42,260 --> 01:00:45,500
+我希望现在的价值是杂草
+is I hope current values be weeds are a
+
+1212
+01:00:45,500 --> 01:00:48,100
+好得多，更简单
+good deal simpler
+
+1213
+01:00:52,500 --> 01:00:55,119
+好的，那么它应该考虑一下
+okay so it should think for a moment
+
+1214
+01:00:55,119 --> 01:00:59,320
+比如为什么要链式复制
+like why to chain chain replication so
+
+1215
+01:00:59,320 --> 01:01:01,180
+这不是破解，只是为了澄清这一点
+this is not crack just to be clear this
+
+1216
+01:01:01,180 --> 01:01:03,130
+链复制是链复制吗
+is chain replication chain replication
+
+1217
+01:01:03,130 --> 01:01:08,080
+是可以线性化的，你知道，在不存在的情况下
+is linearizable you know in the absence
+
+1218
+01:01:08,080 --> 01:01:10,330
+失败的原因是我们
+of failures what's going on is that we
+
+1219
+01:01:10,330 --> 01:01:12,880
+从本质上讲，我可以把它看作是真正意义上的
+can essentially view it as really than
+
+1220
+01:01:12,880 --> 01:01:14,490
+思考的目的是为了
+the purposes of thinking about
+
+1221
+01:01:14,490 --> 01:01:16,810
+一致性只有这一台服务器
+consistency it's just this one server
+
+1222
+01:01:16,810 --> 01:01:19,210
+服务器会看到所有权限，并且它
+the server sees all the rights and it
+
+1223
+01:01:19,210 --> 01:01:21,130
+查看所有读取并对其进行处理
+sees all the reads and process them one
+
+1224
+01:01:21,130 --> 01:01:24,130
+一次，你知道一次阅读只会
+at a time and you know a read will just
+
+1225
+01:01:24,130 --> 01:01:25,780
+查看写入的最新值，并
+see the latest value that's written and
+
+1226
+01:01:25,780 --> 01:01:27,130
+这几乎就是它的全部内容。
+that's pretty much all there is to it
+
+1227
+01:01:27,130 --> 01:01:29,290
+从这个角度看，如果有
+from the point of view look if there's
+
+1228
+01:01:29,290 --> 01:01:33,359
+没有崩溃，一致性是什么样子
+no crashes what the consistency is like
+
+1229
+01:01:34,830 --> 01:01:45,369
+非常简单的故障恢复
+pretty simple the failure recovery the a
+
+1230
+01:01:45,369 --> 01:01:47,890
+连锁店背后的很多理由
+lot of the rationale behind chain
+
+1231
+01:01:47,890 --> 01:01:51,640
+复制是一组状态
+replication is that the set of states
+
+1232
+01:01:51,640 --> 01:01:53,680
+你可以看到在失败之后
+you can see when after there's a failure
+
+1233
+01:01:53,680 --> 01:01:56,080
+是相对受限的，因为
+is relatively constrained because of
+
+1234
+01:01:56,080 --> 01:01:58,390
+这是一种非常有规律的模式，它是如何
+this very regular pattern with how the
+
+1235
+01:01:58,390 --> 01:02:01,900
+写入被传播，并且处于较高水平
+writes get propagated and at a high
+
+1236
+01:02:01,900 --> 01:02:03,430
+水平是怎么回事，有没有
+level what's going on is that any
+
+1237
+01:02:03,430 --> 01:02:05,920
+任何速率的提交写入
+committed write that is any rate that
+
+1238
+01:02:05,920 --> 01:02:07,690
+可能已经向客户确认了
+could have been acknowledged to a client
+
+1239
+01:02:07,690 --> 01:02:09,910
+发送到书写客户端，或者以任何速率
+to the writing client or any rate that
+
+1240
+01:02:09,910 --> 01:02:12,570
+可能是在一次阅读中暴露的
+could have been exposed in a read
+
+1241
+01:02:12,570 --> 01:02:14,470
+那是不会的，那两个都不会
+that'll neither of those will ever
+
+1242
+01:02:14,470 --> 01:02:16,180
+除非写入到达
+happen unless that write reached the
+
+1243
+01:02:16,180 --> 01:02:17,770
+尾巴才能到达尾巴
+tail in order for it to reach the tail
+
+1244
+01:02:17,770 --> 01:02:19,750
+它必须在过程中经过它们
+it had to a pass through them in process
+
+1245
+01:02:19,750 --> 01:02:22,630
+链中的每一个节点，所以我们
+by every single node in the chain so we
+
+1246
+01:02:22,630 --> 01:02:24,220
+要知道如果我们曾经接触过写作
+know that if we ever exposed to write
+
+1247
+01:02:24,220 --> 01:02:26,890
+曾经确认过的写入是否将其用于
+ever acknowledged write ever use it to a
+
+1248
+01:02:26,890 --> 01:02:29,260
+读取，这意味着
+read that means every single node in the
+
+1249
+01:02:29,260 --> 01:02:33,490
+尾巴一定知道我们不知道的权利
+tail must know about that right we don't
+
+1250
+01:02:33,490 --> 01:02:34,960
+把这些情况弄清楚，比如如果你要打电话给
+get these situations like if you'll call
+
+1251
+01:02:34,960 --> 01:02:37,930
+图7图8和RAF纸张
+figure seven figure eight and RAF paper
+
+1252
+01:02:37,930 --> 01:02:39,640
+在那里你可以让人毛骨悚然
+where you can have just hair-raising
+
+1253
+01:02:39,640 --> 01:02:41,619
+复杂性以及它们之间的不同之处
+complexity and how the different
+
+1254
+01:02:41,619 --> 01:02:44,470
+如果这里发生崩溃，复制件就会不同
+replicas differ if there's a crash here
+
+1255
+01:02:44,470 --> 01:02:47,950
+你知道它要么是承诺的，要么就是
+you know either that it is committed or
+
+1256
+01:02:47,950 --> 01:02:49,930
+它在坠机前应该会达到一些
+it before the crash should reach some
+
+1257
+01:02:49,930 --> 01:02:52,540
+这一点，在那点之后就无处可去了
+point and nowhere after that point
+
+1258
+01:02:52,540 --> 01:02:53,950
+因为权利的进步
+because the progress of rights has
+
+1259
+01:02:53,950 --> 01:02:55,690
+始终菜单，因此提交的权限是
+always menu so committed rights are
+
+1260
+01:02:55,690 --> 01:02:57,609
+如果没有权利，到处都知道
+always known everywhere if a right isn't
+
+1261
+01:02:57,609 --> 01:02:58,690
+这意味着在此之前
+committed that means that before
+
+1262
+01:02:58,690 --> 01:03:00,550
+不管是什么撞车事件扰乱了
+whatever crash it was that disturb the
+
+1263
+01:03:00,550 --> 01:03:01,810
+系统进入某一特定区域的速率
+system the rate of got into a certain
+
+1264
+01:03:01,810 --> 01:03:04,060
+指向该点之前的任何地方，然后
+point everywhere before that point and
+
+1265
+01:03:04,060 --> 01:03:04,680
+此后无处可寻
+nowhere after
+
+1266
+01:03:04,680 --> 01:03:07,190
+我要指出的是，实际上只有两个设置
+point there's really the only two setups
+
+1267
+01:03:07,190 --> 01:03:12,440
+在较高级别上，故障恢复是
+and at a high level failure recovery is
+
+1268
+01:03:12,440 --> 01:03:16,400
+如果头部发生故障，也相对简单
+relatively simple also if the head fails
+
+1269
+01:03:16,400 --> 01:03:19,260
+然后到下一次的第一次近似值
+then to a first approximation the next
+
+1270
+01:03:19,260 --> 01:03:21,529
+节点可以简单地接管他的头
+node can simply take over his head and
+
+1271
+01:03:21,529 --> 01:03:24,839
+没有其他事情需要做了，因为
+nothing else needs to get done because
+
+1272
+01:03:24,839 --> 01:03:27,210
+任何让它走到最远的速度
+any rate that made it as far as the
+
+1273
+01:03:27,210 --> 01:03:28,619
+第二个节点，而它是头部
+second node while it was the head that
+
+1274
+01:03:28,619 --> 01:03:30,059
+失败了，所以权利会继续下去
+failed so that right will keep on going
+
+1275
+01:03:30,059 --> 01:03:32,520
+我们会承诺如果有一个比率
+and we'll commit if there's a rate that
+
+1276
+01:03:32,520 --> 01:03:34,559
+在撞车前撞到了头部，但是
+made it to the head before a crash but
+
+1277
+01:03:34,559 --> 01:03:36,690
+头部没有很好地向前推进，那是
+the head didn't forward it well that's
+
+1278
+01:03:36,690 --> 01:03:38,039
+绝对没有承诺没人知道
+definitely not committed nobody knows
+
+1279
+01:03:38,039 --> 01:03:39,869
+关于这件事，我们绝对没有派
+about it and we definitely didn't send
+
+1280
+01:03:39,869 --> 01:03:41,369
+这是对写作的承认
+it an acknowledgment to the writing
+
+1281
+01:03:41,369 --> 01:03:43,200
+客户端，因为写入没有写下来
+client because the write didn't get down
+
+1282
+01:03:43,200 --> 01:03:45,390
+在这里，所以我们没有义务做任何事情
+here so we're not obliged to do anything
+
+1283
+01:03:45,390 --> 01:03:47,640
+关于一次写入，它只达到了崩溃
+about a write it only reached a crashed
+
+1284
+01:03:47,640 --> 01:03:50,309
+在它失败之前的头我可能是
+head before it failed I may be the
+
+1285
+01:03:50,309 --> 01:03:52,740
+我们犯了罪的客户，但你不知道
+client where we sinned but you know not
+
+1286
+01:03:52,740 --> 01:03:56,099
+我们的问题是如果故事失败了
+our problem if the tale fails it's
+
+1287
+01:03:56,099 --> 01:03:58,950
+实际上非常类似的故事失败了
+actually very similar the tale fails the
+
+1288
+01:03:58,950 --> 01:04:01,380
+下一个节点可以直接接管，因为
+next node can directly take over because
+
+1289
+01:04:01,380 --> 01:04:04,920
+故事所知道的一切然后下一步
+everything the tale knew then next the
+
+1290
+01:04:04,920 --> 01:04:06,630
+节点之前的节点也知道，因为
+node just before it also knows because
+
+1291
+01:04:06,630 --> 01:04:08,549
+这个故事只从节点听到消息
+the tale only hears things from the node
+
+1292
+01:04:08,549 --> 01:04:14,700
+就在它之前，它有一点
+just before it and it's a little bit
+
+1293
+01:04:14,700 --> 01:04:16,230
+中间节点的联合体出现故障
+complex of an intermediate node fails
+
+1294
+01:04:16,230 --> 01:04:18,809
+但基本上需要做的是
+but basically what needs to be done is
+
+1295
+01:04:18,809 --> 01:04:20,369
+我们需要把它从链子上扔掉
+we need to drop it from the chain and
+
+1296
+01:04:20,369 --> 01:04:22,349
+现在可能有它拥有的权利
+now there may be rights that it had
+
+1297
+01:04:22,349 --> 01:04:24,150
+收到下一个节点尚未
+received that the next node hasn't
+
+1298
+01:04:24,150 --> 01:04:27,390
+还没收到，所以如果我们丢了一张纸条
+received yet and so if we drop a note
+
+1299
+01:04:27,390 --> 01:04:29,640
+在链之外，前辈可以
+out of the chain the predecessor may
+
+1300
+01:04:29,640 --> 01:04:33,510
+需要将最近的权限重新发送给
+need to resend recent rights to the to
+
+1301
+01:04:33,510 --> 01:04:37,740
+它的新继承权，也就是
+its new successor right that's the
+
+1302
+01:04:37,740 --> 01:04:41,400
+一言以蔽之，这就是为什么
+recovery in a nutshell that's for why
+
+1303
+01:04:41,400 --> 01:04:45,510
+这个结构为什么不是这个而是这个
+this construction why this instead of
+
+1304
+01:04:45,510 --> 01:04:47,549
+一些其他的东西，比如为什么这一节是
+something else like why this verse is
+
+1305
+01:04:47,549 --> 01:04:54,829
+包装，例如表演
+wrapped for example the performance
+
+1306
+01:04:54,829 --> 01:04:59,069
+原因是如果你还记得我们在木筏上
+reason is that in raft if you recall we
+
+1307
+01:04:59,069 --> 01:05:01,589
+你知道如果我们有一个领袖和一群
+you know if we have a leader and a bunch
+
+1308
+01:05:01,589 --> 01:05:03,270
+你们中的一些人知道一些复制品
+of you know some number of replicas
+
+1309
+01:05:03,270 --> 01:05:05,579
+对领队来说，它不是在一个
+right with the leader it's not in a
+
+1310
+01:05:05,579 --> 01:05:07,770
+链子我们有这些复制品都是
+chain we got these the replicas are all
+
+1311
+01:05:07,770 --> 01:05:09,990
+直接由领导喂食，所以如果一个
+directly fed by the leader so if a
+
+1312
+01:05:09,990 --> 01:05:11,970
+客户端权限进入或客户端读取
+client right comes in or a client read
+
+1313
+01:05:11,970 --> 01:05:15,599
+就此而言，领导人必须
+for that matter the the leader has to
+
+1314
+01:05:15,599 --> 01:05:18,319
+将其自身发送到每个复制件
+send it itself to each of the replicas
+
+1315
+01:05:18,319 --> 01:05:20,640
+而在链复制中，领先者
+whereas in chain replication the leader
+
+1316
+01:05:20,640 --> 01:05:22,349
+头上只需要做一次
+on the head only has to do once and
+
+1317
+01:05:22,349 --> 01:05:23,789
+网络上的这些美分实际上是
+these cents on the network are actually
+
+1318
+01:05:23,789 --> 01:05:26,849
+相当昂贵，所以这意味着
+reasonably expensive and so that means
+
+1319
+01:05:26,849 --> 01:05:28,799
+筏头上的负载量将会是
+the load on a raft leader is going to be
+
+1320
+01:05:28,799 --> 01:05:31,170
+高于链条上的负荷
+higher than the load on a chain
+
+1321
+01:05:31,170 --> 01:05:33,539
+复制领先者，这意味着
+replication leader and so that means
+
+1322
+01:05:33,539 --> 01:05:37,349
+你知道的客户数量
+that you know as the number of client
+
+1323
+01:05:37,349 --> 01:05:39,029
+您每秒收到的请求数
+requests per second that you're getting
+
+1324
+01:05:39,029 --> 01:05:41,430
+从客户那里升起的救生筏领袖将
+from clients goes up a raft leader will
+
+1325
+01:05:41,430 --> 01:05:44,069
+达到了极限，就不能再得到
+hit a limit and stop being able to get
+
+1326
+01:05:44,069 --> 01:05:46,740
+比链式复制更快
+faster sooner than a chain replication
+
+1327
+01:05:46,740 --> 01:05:49,020
+头部，因为它做的工作比
+head because it's doing more work than
+
+1328
+01:05:49,020 --> 01:05:51,329
+链复制还有另一个
+the chain replication had another
+
+1329
+01:05:51,329 --> 01:05:53,549
+链之间有趣的区别
+interesting difference between chain
+
+1330
+01:05:53,549 --> 01:05:55,799
+复制和木筏是芦苇
+replication and raft is that the reeds
+
+1331
+01:05:55,799 --> 01:05:59,460
+在木筏上也都要求
+in raft are all also required to be
+
+1332
+01:05:59,460 --> 01:06:01,109
+由领导者看到的领导者处理
+processed by the leaders the leader sees
+
+1333
+01:06:01,109 --> 01:06:02,579
+来自客户端的每个请求
+every single request from clients
+
+1334
+01:06:02,579 --> 01:06:04,829
+这里在哪里？头看到每个人
+where's here the head sees everybody
+
+1335
+01:06:04,829 --> 01:06:08,190
+看到所有权利，但只有尾巴看到
+sees all the rights but only a tail sees
+
+1336
+01:06:08,190 --> 01:06:11,130
+芦苇请求，因此可能会有一个
+the reed requests so there may be an
+
+1337
+01:06:11,130 --> 01:06:12,539
+负载在某种程度上
+extent to which the load is sort of
+
+1338
+01:06:12,539 --> 01:06:13,770
+头部和尾部分开
+split between the head and the tail
+
+1339
+01:06:13,770 --> 01:06:17,599
+而不是集中在领导者身上
+rather than concentrated in the leader
+
+1340
+01:06:17,599 --> 01:06:24,930
+而且就像我之前提到的
+and and as I mentioned before the
+
+1341
+01:06:24,930 --> 01:06:27,869
+故障不同类型的分析
+failure different sort of analysis
+
+1342
+01:06:27,869 --> 01:06:28,680
+需要考虑不同的
+required to think about different
+
+1343
+01:06:28,680 --> 01:06:30,900
+故障场景要简单得多
+failure scenarios is a good deal simpler
+
+1344
+01:06:30,900 --> 01:06:32,690
+和链式复制，而不是
+and chain replication than it is and
+
+1345
+01:06:32,690 --> 01:06:35,400
+木筏和作为一个很大的动力，因为
+raft and as a big motivation because
+
+1346
+01:06:35,400 --> 01:06:39,770
+这东西很难弄对，是的。
+it's hard to get this stuff correct yes
+
+1347
+01:06:45,340 --> 01:06:48,200
+是的，所以如果故事失败了，但它
+yeah so if the tale fails but its
+
+1348
+01:06:48,200 --> 01:06:50,360
+前任已经看到了一项权利，即
+predecessor had seen a right that the
+
+1349
+01:06:50,360 --> 01:06:52,460
+当时的故事还没有看到
+tale hadn't seen then the failure of
+
+1350
+01:06:52,460 --> 01:06:54,080
+黑尔基本上承诺了这一权利
+that Hale basically commits that right
+
+1351
+01:06:54,080 --> 01:06:56,150
+现在是承诺的，因为它已经到了
+is now committed because it's reached
+
+1352
+01:06:56,150 --> 01:06:58,580
+新故事，这样他就可以回应
+the new tale and so he could respond to
+
+1353
+01:06:58,580 --> 01:07:00,580
+客户可能不会，因为它
+the client it probably won't because it
+
+1354
+01:07:00,580 --> 01:07:04,370
+你知道它不是一条尾巴
+you know it wasn't a tail when it
+
+1355
+01:07:04,370 --> 01:07:07,160
+接收到权利，因此客户端可以
+received the right and so the client may
+
+1356
+01:07:07,160 --> 01:07:08,930
+重新发送右边，那太糟糕了，
+resend the right and that's too bad and
+
+1357
+01:07:08,930 --> 01:07:10,850
+所以我们需要抑制重复
+so we need duplicate suppression
+
+1358
+01:07:10,850 --> 01:07:14,960
+可能是在头部，基本上所有的
+probably at the head basically all the
+
+1359
+01:07:14,960 --> 01:07:16,940
+系统正在讨论的是Required In
+systems were talking about require in
+
+1360
+01:07:16,940 --> 01:07:19,100
+除了其他一切压制之外
+addition to everything else suppression
+
+1361
+01:07:19,100 --> 01:07:32,090
+重复客户端请求的百分比是粉红色
+of duplicate client requests yes pink
+
+1362
+01:07:32,090 --> 01:07:39,560
+你想知道你想知道的是谁
+psyche setting in you want to know who
+
+1363
+01:07:39,560 --> 01:07:42,290
+做出关于如何做到这一点的决定
+makes the decisions about how to that's
+
+1364
+01:07:42,290 --> 01:07:45,880
+一个悬而未决的问题这个问题是
+a outstanding question the question is
+
+1365
+01:07:45,880 --> 01:07:48,170
+或者稍微改变一下问题的表达方式，如果
+or rephrase the question a bit if
+
+1366
+01:07:48,170 --> 01:07:51,680
+有一个失败，就像或者假设
+there's a failure like or suppose the
+
+1367
+01:07:51,680 --> 01:07:54,230
+第二个节点停止能够与
+second node stops being able to talk to
+
+1368
+01:07:54,230 --> 01:07:58,400
+头能不能这第二个节点只取
+the head can this second node just take
+
+1369
+01:07:58,400 --> 01:08:01,040
+它能自己决定吗，天哪
+over can it decide for itself gosh the
+
+1370
+01:08:01,040 --> 01:08:02,510
+头似乎在想，我要
+head seems to thought away I'm gonna
+
+1371
+01:08:02,510 --> 01:08:04,310
+接管他的头，告诉客户
+take over his head and tell clients to
+
+1372
+01:08:04,310 --> 01:08:06,710
+跟我说话而不是跟老头子说话
+talk to me instead of the old head but
+
+1373
+01:08:06,710 --> 01:08:11,140
+你觉得这不像是个计划吗
+what do you think that's not like a plan
+
+1374
+01:08:15,140 --> 01:08:17,790
+带着我们通常做的假设
+with the usual assumptions we make about
+
+1375
+01:08:17,790 --> 01:08:20,520
+网络是如何运作的，这是一个秘诀
+how the network behaves that's a recipe
+
+1376
+01:08:20,520 --> 01:08:24,510
+如果你真的这么做的话你的大脑就会分裂
+for split brain right if you do exactly
+
+1377
+01:08:24,510 --> 01:08:26,370
+我说这些话当然是因为
+what I said because of course what
+
+1378
+01:08:26,370 --> 01:08:28,859
+真正发生的是那个眼神
+really happened was that look the
+
+1379
+01:08:28,859 --> 01:08:31,260
+网络在此出现故障，机头完全故障
+network failed here the head is totally
+
+1380
+01:08:31,260 --> 01:08:33,330
+活着，头认为它的继任者
+alive and the head thinks its successor
+
+1381
+01:08:33,330 --> 01:08:35,939
+已经死了，你知道继任者
+has died you know the successors
+
+1382
+01:08:35,939 --> 01:08:37,170
+实际上它还活着，它认为它的头
+actually alive it thinks the head has
+
+1383
+01:08:37,170 --> 01:08:39,390
+死了，他们都说，天哪
+died and they both say well gosh that
+
+1384
+01:08:39,390 --> 01:08:40,979
+另一个服务器似乎死了，我是
+other server seems to have died I'm
+
+1385
+01:08:40,979 --> 01:08:42,960
+会接手，然后头就会
+gonna take over and the head is gonna
+
+1386
+01:08:42,960 --> 01:08:44,700
+说，哦，我只会是一个唯一的复制品，而我
+say oh I'll just be a sole replica and I
+
+1387
+01:08:44,700 --> 01:08:47,490
+你知道，扮演头部和尾巴的角色
+you know act as the head and the tail
+
+1388
+01:08:47,490 --> 01:08:49,200
+因为睡觉的变化似乎
+because the rest of the change seems to
+
+1389
+01:08:49,200 --> 01:08:50,910
+已经走了，然后我来做
+have gone away and second I'll do the
+
+1390
+01:08:50,910 --> 01:08:51,810
+同样的事情，现在我们有两个
+same thing and now we have two
+
+1391
+01:08:51,810 --> 01:08:55,920
+独立的大脑分裂版本
+independent split brain versions of the
+
+1392
+01:08:55,920 --> 01:08:57,660
+数据将逐渐从
+data which will gradually get out of
+
+1393
+01:08:57,660 --> 01:09:04,529
+同步，因此此构造不是证明
+sync so this construction is not proof
+
+1394
+01:09:04,529 --> 01:09:09,029
+针对网络分区，并且没有
+against network partition and has not
+
+1395
+01:09:09,029 --> 01:09:10,920
+没有针对分裂的防御措施
+does not have a defense against split
+
+1396
+01:09:10,920 --> 01:09:13,439
+大脑，这在实践中意味着
+brain and what that means in practice is
+
+1397
+01:09:13,439 --> 01:09:16,529
+如果它不能自己使用，就像
+if it cannot be used by itself it's like
+
+1398
+01:09:16,529 --> 01:09:18,090
+在我们背后有一件很有帮助的事情
+a helpful thing to have in our back
+
+1399
+01:09:18,090 --> 01:09:19,939
+口袋里，但它不是完整的
+pocket but it's not a complete
+
+1400
+01:09:19,939 --> 01:09:24,149
+复制的故事，所以这是非常重要的
+replication story so it's it's very
+
+1401
+01:09:24,149 --> 01:09:26,029
+通常使用，但它用在这个
+commonly used but it's used in this
+
+1402
+01:09:26,029 --> 01:09:28,979
+以一种风格化的方式，总有一种
+stylized way in which there's always an
+
+1403
+01:09:28,979 --> 01:09:33,000
+外部权威，你知道的，不是这个
+external Authority you know not not this
+
+1404
+01:09:33,000 --> 01:09:36,930
+决定谁是那种人的链条
+chain that decides who's that sort of
+
+1405
+01:09:36,930 --> 01:09:40,080
+打电话给谁还活着，谁
+makes a call on who's alive and who's
+
+1406
+01:09:40,080 --> 01:09:43,560
+并确保每个人都同意一个
+dead and make sure everybody agrees on a
+
+1407
+01:09:43,560 --> 01:09:46,500
+关于谁构成的单一故事
+single story about who constitutes the
+
+1408
+01:09:46,500 --> 01:09:48,060
+改变，永远不会有任何分歧
+change there's never any disagreement
+
+1409
+01:09:48,060 --> 01:09:49,740
+有些人认为变化是这个不
+some people think the change is this no
+
+1410
+01:09:49,740 --> 01:09:51,240
+一些人认为链条就是这个
+and some people think the chain is this
+
+1411
+01:09:51,240 --> 01:09:53,580
+其他节点，通常是什么
+other node so what's that's usually
+
+1412
+01:09:53,580 --> 01:10:00,240
+作为配置管理器调用，并且
+called as a configuration manager and
+
+1413
+01:10:00,240 --> 01:10:02,970
+它的工作就是监视活跃度和
+its job is just a monitor aliveness and
+
+1414
+01:10:02,970 --> 01:10:05,370
+每次它看到所有服务器中的
+every time it sees of all the servers
+
+1415
+01:10:05,370 --> 01:10:06,780
+每次伊希斯每次
+every time Isis every time the
+
+1416
+01:10:06,780 --> 01:10:08,670
+配置管理器认为
+configuration manager thinks the
+
+1417
+01:10:08,670 --> 01:10:10,860
+服务器死了，它发出了一个新的
+server's dead it sends out a new
+
+1418
+01:10:10,860 --> 01:10:13,680
+配置，在该配置中，您知道
+configuration in which you know that
+
+1419
+01:10:13,680 --> 01:10:16,080
+这条链有了新的定义
+this chain has a new definition had
+
+1420
+01:10:16,080 --> 01:10:19,980
+不管尾巴是什么，那是什么服务器
+whatever tail and that's server that the
+
+1421
+01:10:19,980 --> 01:10:21,570
+配置管理器认为可以
+configuration manager thinks is that may
+
+1422
+01:10:21,570 --> 01:10:22,800
+或者可能没有死，但我们不在乎
+or may not be dead but we don't care
+
+1423
+01:10:22,800 --> 01:10:25,620
+因为每个人都必须遵守
+because everybody is required to follow
+
+1424
+01:10:25,620 --> 01:10:26,960
+然后您的配置
+then your configuration
+
+1425
+01:10:26,960 --> 01:10:29,489
+所以不可能有任何分歧
+and so there can't be any disagreement
+
+1426
+01:10:29,489 --> 01:10:31,890
+因为只有一个政党
+because there's only one party making
+
+1427
+01:10:31,890 --> 01:10:33,360
+这些决定不会有异议
+these decisions not going to disagree
+
+1428
+01:10:33,360 --> 01:10:35,430
+当然，有了它自己，你怎么做一个
+with itself of course how do you make a
+
+1429
+01:10:35,430 --> 01:10:36,810
+具有容错能力的服务
+service that's fault tolerant and
+
+1430
+01:10:36,810 --> 01:10:38,370
+不会与自己意见相左，但也不会
+doesn't disagree with itself but doesn't
+
+1431
+01:10:38,370 --> 01:10:39,780
+患有脑裂，如果有
+suffer from split brain if there's
+
+1432
+01:10:39,780 --> 01:10:41,370
+网络分区和答案
+network partitions and the answer to
+
+1433
+01:10:41,370 --> 01:10:43,380
+也就是说，配置管理器
+that is that the configuration manager
+
+1434
+01:10:43,380 --> 01:10:49,110
+通常用愤怒或长袍或者在
+usually uses wrath or paxos or in the
+
+1435
+01:10:49,110 --> 01:10:52,260
+一名优秀的动物园饲养员本身就是一名动物饲养员
+case of crack zookeeper which itself of
+
+1436
+01:10:52,260 --> 01:10:56,600
+球场是建在木筏上的，所以
+course is built on a raft like scheme so
+
+1437
+01:10:56,600 --> 01:11:00,450
+所以你要按照通常的完整设置
+so you to the usual complete set up in
+
+1438
+01:11:00,450 --> 01:11:01,800
+您的数据中心是不是您拥有
+your data center is it you have a
+
+1439
+01:11:01,800 --> 01:11:04,430
+配置管理器，这是它所基于的
+configuration manager it's it's based on
+
+1440
+01:11:04,430 --> 01:11:06,900
+或者在政治行动委员会之后或者其他什么，所以这是错的
+or after PACs or whatever so it's fault
+
+1441
+01:11:06,900 --> 01:11:09,360
+宽容，不受分裂之苦
+tolerant and does not suffer from split
+
+1442
+01:11:09,360 --> 01:11:11,400
+大脑，然后你拆分你的数据
+brain and then you split up your data
+
+1443
+01:11:11,400 --> 01:11:13,890
+一大堆零钱，如果你知道房间的话
+over a bunch of change if you know room
+
+1444
+01:11:13,890 --> 01:11:15,900
+里面有一千台服务器，而你
+with a thousand servers in it and you
+
+1445
+01:11:15,900 --> 01:11:20,700
+你知道A链吗？你知道它是
+have you know chain a you know it's
+
+1446
+01:11:20,700 --> 01:11:22,560
+这些服务器或配置
+these servers or the configuration
+
+1447
+01:11:22,560 --> 01:11:25,680
+经理决定更改应
+manager decides that the change should
+
+1448
+01:11:25,680 --> 01:11:28,020
+看起来a链是由一号服务器组成的
+look like chain a is made of server one
+
+1449
+01:11:28,020 --> 01:11:32,220
+服务器到服务器的三条链是你知道的
+server to server three chain be you know
+
+1450
+01:11:32,220 --> 01:11:36,000
+用于服务器5和6的服务器，无论是什么服务器和
+server for server 5 over 6 whatever and
+
+1451
+01:11:36,000 --> 01:11:38,850
+它告诉所有人这份名单上的人
+it tells everybody this whole list it's
+
+1452
+01:11:38,850 --> 01:11:40,230
+所有客户端都知道所有服务器
+all the clients know all the servers
+
+1453
+01:11:40,230 --> 01:11:44,190
+了解和个别服务器的意见
+know and the individual servers opinions
+
+1454
+01:11:44,190 --> 01:11:46,320
+关于其他服务器是否处于活动状态或
+about whether other servers are alive or
+
+1455
+01:11:46,320 --> 01:11:48,420
+死人完全不是这里也不是那里
+dead are totally neither here nor there
+
+1456
+01:11:48,420 --> 01:11:54,420
+如果这台服务器真的死了，那么
+if this server really does die then then
+
+1457
+01:11:54,420 --> 01:11:56,030
+头部需要不断地尝试
+the head is required to keep trying
+
+1458
+01:11:56,030 --> 01:11:58,440
+直到我猜到一个新的
+indefinitely until I guess a new
+
+1459
+01:11:58,440 --> 01:12:00,330
+配置中的配置
+configuration from the configuration
+
+1460
+01:12:00,330 --> 01:12:02,670
+不允许经理做出决定
+manager not allowed to make decisions
+
+1461
+01:12:02,670 --> 01:12:07,950
+关于谁活着，谁死了是什么
+about who's alive and who's dead what's
+
+1462
+01:12:07,950 --> 01:12:09,199
+那
+that
+
+1463
+01:12:09,199 --> 01:12:12,290
+哦，孩子，你有一个严重的问题，所以
+oh boy you've got a serious problem so
+
+1464
+01:12:12,290 --> 01:12:14,000
+这就是为什么你用RAFT复制
+that's why you replicated using raft
+
+1465
+01:12:14,000 --> 01:12:15,920
+确保不同的复制副本处于打开状态
+make sure the different replicas are on
+
+1466
+01:12:15,920 --> 01:12:18,520
+不同的电源供应整个工程
+different power supplies the whole works
+
+1467
+01:12:18,520 --> 01:12:22,820
+但这是我建的这个建筑
+but this this construction I've set up
+
+1468
+01:12:22,820 --> 01:12:24,980
+在这里，这是非常常见的，这就是为什么
+here it's extremely common and it's how
+
+1469
+01:12:24,980 --> 01:12:26,840
+旨在使用链复制
+chain replication is intended to be used
+
+1470
+01:12:26,840 --> 01:12:29,870
+如何使用裂缝，以及
+how cracks intend to be used and the
+
+1471
+01:12:29,870 --> 01:12:33,190
+其逻辑是需要类似链
+logic of it is that like chain require
+
+1472
+01:12:33,190 --> 01:12:35,480
+复制，如果您不必担心的话
+replication if you don't have to worry
+
+1473
+01:12:35,480 --> 01:12:37,910
+关于分区和分裂大脑，你可以
+about partition and split brain you can
+
+1474
+01:12:37,910 --> 01:12:39,980
+建造速度非常快，效率非常高
+build very high speed efficient
+
+1475
+01:12:39,980 --> 01:12:41,929
+使用链的复制系统
+replication systems using chain
+
+1476
+01:12:41,929 --> 01:12:43,610
+例如复制，因此这些
+replication for example so these
+
+1477
+01:12:43,610 --> 01:12:48,710
+您知道的个人数据复制和
+individual you know data replication and
+
+1478
+01:12:48,710 --> 01:12:50,600
+我们正在将数据分成多个链
+we're sharding the data over many chains
+
+1479
+01:12:50,600 --> 01:12:52,190
+单独地，这些链可以是
+individually this these chains can be
+
+1480
+01:12:52,190 --> 01:12:54,860
+建造得恰好是最高效的
+built to be just the most efficient
+
+1481
+01:12:54,860 --> 01:12:56,570
+针对特定类型事物的方案
+scheme for the particular kind of thing
+
+1482
+01:12:56,570 --> 01:12:58,280
+你正在复制的你可能会读到
+that you're replicating you may read
+
+1483
+01:12:58,280 --> 01:13:00,410
+重，右，重，不管是什么，但是我们不
+heavy right heavy whatever but we don't
+
+1484
+01:13:00,410 --> 01:13:01,699
+我不得不过于担心分区问题
+have to worry too much about partitions
+
+1485
+01:13:01,699 --> 01:13:04,429
+然后所有的担忧都会集中起来
+and then all that worry is concentrated
+
+1486
+01:13:04,429 --> 01:13:07,060
+在可靠的非分裂大脑中
+in the reliable non split-brain
+
+1487
+01:13:07,060 --> 01:13:10,420
+配置管理器
+configuration manager
+
+1488
+01:13:17,969 --> 01:13:23,530
+好的，那么你的问题是我们为什么
+okay so your question is why are we
+
+1489
+01:13:23,530 --> 01:13:25,690
+此处使用链复制，而不是
+using chain replication here instead of
+
+1490
+01:13:25,690 --> 01:13:33,100
+木筏好的，所以这就像是完全
+raft okay so it's like a totally
+
+1491
+01:13:33,100 --> 01:13:39,040
+合理的问题，嗯，它
+reasonable question um the the it
+
+1492
+01:13:39,040 --> 01:13:40,780
+对这件事来说真的无关紧要
+doesn't really matter for this
+
+1493
+01:13:40,780 --> 01:13:42,580
+因为即使我们使用的是
+construction because even if we're using
+
+1494
+01:13:42,580 --> 01:13:48,510
+木筏在这里，我们还需要一方人来
+raft here we still need one party to
+
+1495
+01:13:48,510 --> 01:13:51,070
+做出一个可以与之相适应的决定
+make a decision with which there can be
+
+1496
+01:13:51,070 --> 01:13:53,409
+对于数据是如何存储的，没有异议
+no disagreement about how the data is
+
+1497
+01:13:53,409 --> 01:13:57,090
+在我们的上百个不同的
+divided over our hundred different
+
+1498
+01:13:57,090 --> 01:13:59,920
+复制组是正确的，所以您所知道的
+replication groups right so all you know
+
+1499
+01:13:59,920 --> 01:14:01,060
+我需要一个很大的系统
+and I need kind of big system you're
+
+1500
+01:14:01,060 --> 01:14:02,650
+拆分您的切分或拆分
+splitting your sharding or splitting up
+
+1501
+01:14:02,650 --> 01:14:03,219
+数据
+the data
+
+1502
+01:14:03,219 --> 01:14:04,989
+需要有人来决定数据是如何
+somebody needs to decide how the data is
+
+1503
+01:14:04,989 --> 01:14:07,210
+分配给不同的复制
+assigned to the different replication
+
+1504
+01:14:07,210 --> 01:14:08,830
+这必须随着时间的推移而改变，因为
+groups this has to change over time as
+
+1505
+01:14:08,830 --> 01:14:10,480
+您或多或少可以获得更多的硬件和更多的数据
+you get more or less Hardware more data
+
+1506
+01:14:10,480 --> 01:14:12,639
+或者随便什么，如果没有别的事的话
+or whatever so if nothing else the
+
+1507
+01:14:12,639 --> 01:14:14,560
+配置管理器说得很好
+configuration manager is saying well
+
+1508
+01:14:14,560 --> 01:14:16,330
+听着，你知道钥匙是以a或B开头的
+look you know the keys start with a or B
+
+1509
+01:14:16,330 --> 01:14:20,110
+先到这里，然后C或D甚至到这里
+goes here or then C or D goes here even
+
+1510
+01:14:20,110 --> 01:14:22,030
+如果你现在在这里使用Paxos，还有
+if you use Paxos here now there's also
+
+1511
+01:14:22,030 --> 01:14:23,920
+如果我们不吃东西的话这个小问题
+this smaller question if we didn't eat
+
+1512
+01:14:23,920 --> 01:14:24,760
+你知道我们应该用来做什么吗？
+you know what should we use for
+
+1513
+01:14:24,760 --> 01:14:26,980
+复制应为链式复制
+replication should be chain replication
+
+1514
+01:14:26,980 --> 01:14:33,969
+或者是睡衣或者木筏，或者其他任何东西，还有人
+or paxos or raft or whatever and people
+
+1515
+01:14:33,969 --> 01:14:36,550
+做一些有些人做的不同的事情
+do different things some people do
+
+1516
+01:14:36,550 --> 01:14:38,739
+实际使用基于Paxos的复制
+actually use Paxos based replication
+
+1517
+01:14:38,739 --> 01:14:40,150
+就像扳手一样，我想我们会
+like spanner which I think we're gonna
+
+1518
+01:14:40,150 --> 01:14:43,210
+看这学期晚些时候有这个
+look at later in the semester has this
+
+1519
+01:14:43,210 --> 01:14:45,670
+结构，但它实际上使用Paxos来
+structure but it actually uses Paxos to
+
+1520
+01:14:45,670 --> 01:14:49,210
+您已知的数据的复制权限
+replicate rights for the data you know
+
+1521
+01:14:49,210 --> 01:14:50,710
+您可能不想使用的原因是
+the reason why you might not want to use
+
+1522
+01:14:50,710 --> 01:14:55,719
+政治行动委员会是如此的漂浮，以至于它可以说是
+PAC so so raft is that it's arguably
+
+1523
+01:14:55,719 --> 01:14:57,429
+更高效地使用这条链
+more efficient to use this chain
+
+1524
+01:14:57,429 --> 01:14:59,290
+构造，因为它减少了负载。
+construction because it reduces the load
+
+1525
+01:14:59,290 --> 01:15:01,659
+可能是也可能不是
+on the leader and that may or may not be
+
+1526
+01:15:01,659 --> 01:15:07,260
+一个关键问题，一个值得支持的理由
+a critical issue the a reason to favor
+
+1527
+01:15:07,260 --> 01:15:11,590
+拉夫帕克索斯认为他们没有必要
+rafter Paxos is that they do not have to
+
+1528
+01:15:11,590 --> 01:15:14,170
+等待此链的滞后副本
+wait for a lagging replica this chain
+
+1529
+01:15:14,170 --> 01:15:15,969
+复制存在性能问题
+replication has a performance problem
+
+1530
+01:15:15,969 --> 01:15:18,010
+如果这些复制品中有一个速度很慢
+that if one of these replicas is slow
+
+1531
+01:15:18,010 --> 01:15:20,350
+因为即使有那么一刻
+because even for a moment
+
+1532
+01:15:20,350 --> 01:15:22,480
+你知道，因为每种价格都得
+you know because every rate has to go
+
+1533
+01:15:22,480 --> 01:15:24,550
+通过每个复制副本，即使是单个速度较慢的副本
+through every replica even a single slow
+
+1534
+01:15:24,550 --> 01:15:27,280
+复制副本放慢了所有产品的速度，一切正常
+replica slows down all offer all right
+
+1535
+01:15:27,280 --> 01:15:29,220
+行动和我可能会有很大的破坏力
+operations and I can be very damaging
+
+1536
+01:15:29,220 --> 01:15:30,840
+你知道如果你有数以千计的
+you know if you have thousands of
+
+1537
+01:15:30,840 --> 01:15:32,970
+服务器可能会在您指定的任何时间
+servers probably did any given time you
+
+1538
+01:15:32,970 --> 01:15:37,470
+我知道他们中的七个人出去吃午饭了
+know seven of them are out to lunch or
+
+1539
+01:15:37,470 --> 01:15:39,600
+不可靠或慢，因为某人
+unreliable or slow because somebody's
+
+1540
+01:15:39,600 --> 01:15:41,130
+安装新软件谁知道是什么
+installing new software who knows what
+
+1541
+01:15:41,130 --> 01:15:46,620
+所以说，如果有一件事是有一点破坏性的，那就是
+and that so it's a bit damaging to have
+
+1542
+01:15:46,620 --> 01:15:48,900
+每个请求在某种程度上都受到
+every request be sort of limited by the
+
+1543
+01:15:48,900 --> 01:15:52,370
+最慢的服务器，而Brafton paxos
+slowest server whereas brafton paxos
+
+1544
+01:15:52,370 --> 01:15:54,930
+嗯，这太棒了，比如说，如果其中一个
+well it's so rad for example if one of
+
+1545
+01:15:54,930 --> 01:15:56,400
+追随者是这样的，所以这无关紧要
+the followers is so it doesn't matter
+
+1546
+01:15:56,400 --> 01:15:57,690
+因为那个领袖只需要等待
+because that leader only has to wait for
+
+1547
+01:15:57,690 --> 01:15:59,340
+它不需要等待多数票
+a majority it doesn't have to wait for
+
+1548
+01:15:59,340 --> 01:16:01,530
+所有人，你知道，归根结底，他们都是
+all of them you know ultimately they all
+
+1549
+01:16:01,530 --> 01:16:04,910
+必须迎头赶上，但木筏要好得多
+have to catch up but raft is much better
+
+1550
+01:16:04,910 --> 01:16:07,890
+抵抗暂时性减速和一些
+resisting transient slowdown and some
+
+1551
+01:16:07,890 --> 01:16:09,390
+基于Paxos的系统，尽管不是真的
+Paxos based systems although not really
+
+1552
+01:16:09,390 --> 01:16:12,870
+筏子也很善于处理
+raft are also good at dealing with the
+
+1553
+01:16:12,870 --> 01:16:14,370
+复制品可能在
+possibility that the replicas are in
+
+1554
+01:16:14,370 --> 01:16:16,080
+不同的数据中心，可能还很远
+different data centers and maybe far
+
+1555
+01:16:16,080 --> 01:16:17,490
+因为你们只有
+from each other and because you only
+
+1556
+01:16:17,490 --> 01:16:19,140
+需要多数票你不需要
+need a majority you don't have to
+
+1557
+01:16:19,140 --> 01:16:21,300
+一定要等待确认
+necessarily wait for acknowledgments
+
+1558
+01:16:21,300 --> 01:16:23,250
+从远程数据中心，因此
+from a distant data center and so that
+
+1559
+01:16:23,250 --> 01:16:25,680
+还可以引导人们使用帕克斯木筏
+can also leads people to use paxos raft
+
+1560
+01:16:25,680 --> 01:16:28,650
+像多数人计划一样，而不是连锁计划
+like majority schemes rather than chain
+
+1561
+01:16:28,650 --> 01:16:31,860
+复制，但这在某种程度上是它
+replication but this is sort of a it
+
+1562
+01:16:31,860 --> 01:16:34,020
+很大程度上取决于你的工作量
+depends very much on your workload and
+
+1563
+01:16:34,020 --> 01:16:35,430
+你想要达到的目标，但这
+what you're trying to achieve but this
+
+1564
+01:16:35,430 --> 01:16:41,400
+整体架构很流行，我不知道
+overall architecture is in I don't know
+
+1565
+01:16:41,400 --> 01:16:42,660
+如果它是通用的，但它非常
+if it's Universal but it's extremely
+
+1566
+01:16:42,660 --> 01:16:45,020
+常见
+common
+
+1567
+01:17:02,350 --> 01:17:07,760
+就像故意的拓扑一样，没问题
+like intentional topologies okay the for
+
+1568
+01:17:07,760 --> 01:17:10,400
+A表示未中断的网络
+a for a network that's not broken the
+
+1569
+01:17:10,400 --> 01:17:12,830
+通常的假设是所有的
+usual assumption is that all the
+
+1570
+01:17:12,830 --> 01:17:14,270
+计算机之间可以通过
+computers can talk to each other through
+
+1571
+01:17:14,270 --> 01:17:16,220
+出现故障的网络的网络
+the network for networks that are broken
+
+1572
+01:17:16,220 --> 01:17:18,620
+因为有人踩到了电缆或者
+because somebody stepped on a cable or
+
+1573
+01:17:18,620 --> 01:17:22,580
+一些路由器错误配置了任何疯狂
+some routers misconfigured any crazy
+
+1574
+01:17:22,580 --> 01:17:23,900
+事情可能会发生
+thing can happen
+
+1575
+01:17:23,900 --> 01:17:27,620
+所以绝对是由于缺少配置
+so absolutely due to miss configuration
+
+1576
+01:17:27,620 --> 01:17:30,080
+你可以得到这样一种情况，你知道
+you can get a situation where you know
+
+1577
+01:17:30,080 --> 01:17:31,970
+这两个节点可以与
+these two nodes can talk to the
+
+1578
+01:17:31,970 --> 01:17:33,080
+配置管理器和
+configuration manager and the
+
+1579
+01:17:33,080 --> 01:17:34,580
+配置经理认为，先生，他们是
+configuration managers think sir they're
+
+1580
+01:17:34,580 --> 01:17:38,530
+但是他们不能互相交谈，所以
+up but they can't talk to each other so
+
+1581
+01:17:38,530 --> 01:17:41,540
+是的，而且这是这件事的杀手锏
+yes and and that's a killer for this
+
+1582
+01:17:41,540 --> 01:17:42,650
+正确，因为其他配置
+right because other configuration
+
+1583
+01:17:42,650 --> 01:17:44,180
+经理认为他们不能
+manager thinks that are up they can't
+
+1584
+01:17:44,180 --> 01:17:46,220
+互相交谈，男孩，就像是
+talk to each other boy it's just like
+
+1585
+01:17:46,220 --> 01:17:50,450
+这是一场灾难，如果你需要你的
+it's a disaster and if you need your
+
+1586
+01:17:50,450 --> 01:17:52,940
+系统对此有抵抗力，那么你
+system to be resistant to that then you
+
+1587
+01:17:52,940 --> 01:17:53,930
+需要有一个更谨慎的
+need to have a more careful
+
+1588
+01:17:53,930 --> 01:17:56,090
+您需要在其中加入逻辑的配置管理器
+configuration manager you need logic in
+
+1589
+01:17:56,090 --> 01:17:57,980
+说“天哪”的配置管理器
+the configuration manager that says gosh
+
+1590
+01:17:57,980 --> 01:17:59,240
+我只会用这些东西做成一条链子
+I'm only gonna form a chain out of these
+
+1591
+01:17:59,240 --> 01:18:01,700
+服务部门，我不仅可以和他们交谈，而且
+services not only I can talk to that but
+
+1592
+01:18:01,700 --> 01:18:03,440
+他们可以互相交谈，有点像
+they can talk to each other and sort of
+
+1593
+01:18:03,440 --> 01:18:05,750
+明确地检查了一下，我不知道
+explicitly check and I don't know if
+
+1594
+01:18:05,750 --> 01:18:07,930
+这很常见，我是说，我猜不是
+that's common I mean I'm gonna guess not
+
+1595
+01:18:07,930 --> 01:18:10,070
+但如果你特别小心你会想要
+but if you were super careful you'd want
+
+1596
+01:18:10,070 --> 01:18:11,270
+因为即使我们谈到
+to because even though we talked about
+
+1597
+01:18:11,270 --> 01:18:13,480
+网络分区，类似于
+network partition that's like a
+
+1598
+01:18:13,480 --> 01:18:16,520
+抽象，而在现实中，你可以得到
+abstraction and in reality you can get
+
+1599
+01:18:16,520 --> 01:18:19,130
+可以与谁交谈的任何组合
+any combination of who can talk to who
+
+1600
+01:18:19,130 --> 01:18:23,950
+其他的和一些可能会有很大的破坏性
+else and some are may be very damaging
+
+1601
+01:18:24,310 --> 01:18:28,850
+好的，我要结束了，下次再见
+okay I'm gonna wrap up and see you next
+
+1602
+01:18:28,850 --> 00:00:00,000
+星期
+week
+
