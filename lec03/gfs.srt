@@ -8085,12 +8085,12 @@ so the primary can proceed with the remaining secondaries
 
 1619
 01:17:39,140 --> 01:17:41,750
-但这两点 GFS 都没有做 至少没有做对
+但这两点 GFS 都没有做 至少没有马上做
 but GFS kind of doesn't
 
 1620
 01:17:41,750 --> 01:17:44,950
-但这两点 GFS 都没有做 至少没有做对
+但这两点 GFS 都没有做 至少没有马上做
 either at least not right away
 
 1621
