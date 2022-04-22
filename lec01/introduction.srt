@@ -6167,13 +6167,13 @@ a task so we have the entire job and
 
 1234
 00:55:19,000 --> 00:55:21,010
-它由一堆数学任务组成
-it's made up of a bunch of math tasks
+它由一堆map任务以及
+it's made up of a bunch of map tasks
 
 1235
 00:55:21,010 --> 00:55:27,220
-然后是一堆生成的任务
-and then a bunch of produced tasks so
+一堆reduce任务组成
+and then a bunch of reduce tasks so
 
 1236
 00:55:27,220 --> 00:55:29,860
