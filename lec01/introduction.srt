@@ -7177,8 +7177,8 @@ function itself calls Reduce emit which
 
 1437
 01:05:58,470 --> 01:06:01,890
-emit与其中的Map不同
-is different from the Map in it and what
+Reduce emit与Map emit不同
+is different from the Map emit and what
 
 1438
 01:06:01,890 --> 01:06:04,710
