@@ -3288,7 +3288,7 @@ clients talk to and then under the
 
 823
 00:40:39,810 --> 00:40:42,510
-zookeeper layer is the xab system that
+zookeeper layer is the zab system that
 
 824
 00:40:42,510 --> 00:40:44,730
