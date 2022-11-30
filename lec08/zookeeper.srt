@@ -4048,7 +4048,7 @@ linear linearizable system ok so how
 
 1013
 00:49:28,119 --> 00:49:29,619
-does how does ooh keep our deal with
+does how does zookeeper our deal with
 
 1014
 00:49:29,619 --> 00:49:31,180
@@ -4084,7 +4084,7 @@ requests from the additional servers the
 
 1022
 00:49:46,869 --> 00:49:50,050
-replicas so how does ooh keeper make
+replicas so how does zookeeper make
 
 1023
 00:49:50,050 --> 00:49:52,410
@@ -5464,7 +5464,7 @@ is that there's an out there's this
 
 1367
 01:05:42,630 --> 01:05:44,160
-operation called sink which is
+operation called sync which is
 
 1368
 01:05:44,160 --> 01:05:47,010
@@ -5488,7 +5488,7 @@ you wrote so I actually want fresh data
 
 1373
 01:05:54,660 --> 01:05:57,780
-I can send in one of these sink
+I can send in one of these sync
 
 1374
 01:05:57,780 --> 01:06:03,180
@@ -5528,7 +5528,7 @@ don't serve this read until you've seen
 
 1383
 01:06:23,079 --> 01:06:26,079
-my last sink and that actually falls out
+my last sync and that actually falls out
 
 1384
 01:06:26,079 --> 01:06:29,190
@@ -5552,7 +5552,7 @@ up to date is the last right from that
 
 1389
 01:06:39,130 --> 01:06:41,410
-client and so if I send in a sink and
+client and so if I send in a sync and
 
 1390
 01:06:41,410 --> 01:06:45,160
@@ -5564,7 +5564,7 @@ obliged to give me data that's visas up
 
 1392
 01:06:47,410 --> 01:06:49,960
-to date as where my sink fell in the log
+to date as where my sync fell in the log
 
 1393
 01:06:49,960 --> 01:06:52,269
@@ -5572,7 +5572,7 @@ order anyway if I need to read
 
 1394
 01:06:52,269 --> 01:06:54,759
-up-to-date data send in a sink then do a
+up-to-date data send in a sync then do a
 
 1395
 01:06:54,759 --> 01:06:57,630
@@ -5596,7 +5596,7 @@ because you now we converted a cheap
 
 1400
 01:07:08,559 --> 01:07:11,500
-read into the sink operation which
+read into the sync operation which
 
 1401
 01:07:11,500 --> 01:07:14,109
@@ -6328,7 +6328,7 @@ and so what actually happens the way you
 
 1583
 01:15:27,979 --> 01:15:29,780
-would actually use ooh keeper is that
+would actually use zookeeper is that
 
 1584
 01:15:29,780 --> 01:15:32,599
