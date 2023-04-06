@@ -96,7 +96,7 @@ answer the question oh was that was that
 
 25
 00:01:04,699 --> 00:01:06,609
-Stevens of operations I just saw
+sequence of operations I just saw
 
 26
 00:01:06,609 --> 00:01:10,490
@@ -196,7 +196,7 @@ request is a write and asks to set
 
 50
 00:02:12,430 --> 00:02:17,980
-variable or key or whatever x2 value 0
+variable or key or whatever x to value 0
 
 51
 00:02:17,980 --> 00:02:20,659
@@ -352,7 +352,7 @@ reads if all you have is writes well
 
 89
 00:04:01,450 --> 00:04:04,010
-well you have us right so it's it's hard
+all you have is writes so it's it's hard
 
 90
 00:04:04,010 --> 00:04:05,659
@@ -392,7 +392,7 @@ and the second time it got an answer for
 
 99
 00:04:30,010 --> 00:04:34,300
-red key accent got value to so
+read key x got value 2
 
 100
 00:04:34,300 --> 00:04:37,450
@@ -480,7 +480,7 @@ cycle in this operation must come before
 
 121
 00:05:32,140 --> 00:05:33,970
-that operation we can find a psych on
+that operation we can find a cycle on
 
 122
 00:05:33,970 --> 00:05:35,980
